@@ -6,254 +6,868 @@
   <title>Beoflow | Bastida Systems</title>
   <link rel="icon" type="image/png" href="img/logobeoflow.png">
 
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
   <link rel="stylesheet" href="beoflow.css">
 </head>
 
-<body class="text-black bg-white">
+<body class="beoflow-page">
 
-  <div id="site-header"></div>
+  <header class="beo-header">
+    <nav class="header-inner" aria-label="Bastida Systems navigation">
+      <a href="index.html" class="brand-link">
+        <img src="img/logo_bastida_sys.png" alt="Bastida Systems Logo">
+        <span>Bastida Systems LLC</span>
+      </a>
 
-  <script>
-    const sharedHeader = `
-      <nav class="flex justify-between items-center px-4 md:px-8 py-5 border-b border-gray-200 bg-white sticky top-0 z-50">
-        <div class="flex items-center gap-3">
-          <a href="index.html" class="flex items-center gap-3">
-            <img src="img/logo_bastida_sys.png" alt="Bastida Systems Logo" class="h-8 w-auto object-contain">
-            <span class="hidden md:inline text-base font-semibold tracking-[0.08em] text-black uppercase">Bastida Systems LLC</span>
+      <div class="nav-links">
+        <a href="index.html#products" data-i18n="nav.products">Products</a>
+        <a href="about.html" data-i18n="nav.about">About</a>
+        <a href="index.html#contact" data-i18n="nav.contact">Contact</a>
+        <label class="language-picker">
+          <span data-i18n="nav.language">Language</span>
+          <select id="language-select" aria-label="Language selector" data-i18n-aria-label="nav.languageSelector">
+            <option value="en">EN</option>
+            <option value="es">ES</option>
+          </select>
+        </label>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero-section">
+      <img src="img/beoflow-dashboard.jpeg" alt="" class="hero-bg" aria-hidden="true">
+      <div class="hero-overlay" aria-hidden="true"></div>
+
+      <div class="hero-center">
+        <img src="img/logobeoflow.png" alt="Beoflow Logo" class="product-logo fade-up">
+        <p class="hero-kicker fade-up delay-1" data-i18n="hero.kicker">Beoflow</p>
+
+        <h1 class="text-color-shift fade-up delay-2" data-i18n-html="hero.heading">
+          Kitchen Operations<br>Built for Culinary Teams.
+        </h1>
+
+        <p class="hero-body fade-up delay-3" data-i18n="hero.body">
+          Beoflow keeps menus, prep, production, staff, inventory, and reports in one clean control
+          center so culinary teams can plan faster and execute with confidence.
+        </p>
+
+        <div class="hero-actions fade-up delay-4">
+          <a href="#demo-access" data-demo-access class="button-primary demo-button" data-i18n="common.requestDemo">
+            Request Demo
+          </a>
+          <a href="#preview" class="button-secondary">
+            <span data-i18n="hero.viewProduct">View Product</span>
           </a>
         </div>
-
-        <div class="flex items-center gap-4 md:gap-8 text-sm font-medium text-gray-600">
-          <a href="index.html#products" class="hover:text-black transition">Products</a>
-          <a href="about.html" class="hover:text-black transition">About</a>
-          <a href="index.html#contact" class="hover:text-black transition">Contact</a>
-        </div>
-      </nav>
-    `;
-
-    const headerTarget = document.getElementById('site-header');
-
-    fetch('header.html')
-      .then(response => {
-        if (!response.ok) throw new Error('header.html not found');
-        return response.text();
-      })
-      .then(html => {
-        headerTarget.innerHTML = html;
-      })
-      .catch(() => {
-        headerTarget.innerHTML = sharedHeader;
-      });
-  </script>
-
-  <!-- HERO -->
-  <section class="hero-section min-h-[88vh] flex flex-col justify-center items-center text-center px-6 py-24 relative overflow-hidden">
-
-    <img src="img/beoflow-dashboard.jpeg" alt="Beoflow dashboard background" class="hero-bg absolute inset-0 h-full w-full object-cover object-top opacity-10 z-0">
-    <div class="absolute inset-0 bg-white/90 z-0"></div>
-
-    <img src="img/logobeoflow.png" alt="Beoflow Logo" class="fade-up w-24 h-14 mb-6 object-contain relative z-10">
-    <p class="fade-up delay-1 text-sm tracking-widest uppercase text-black mb-4 relative z-10">Beoflow</p>
-
-    <h1 class="text-color-shift fade-up delay-2 text-5xl md:text-7xl font-bold mb-6 relative z-10">
-      BEO Management<br>Built for Banquet Teams.
-    </h1>
-
-    <p class="fade-up delay-3 text-gray-600 max-w-2xl mb-8 leading-8 relative z-10">
-      Beoflow keeps event details, menus, production, staff, and reports in one clean control center
-      so banquet teams can plan faster and execute with confidence.
-    </p>
-
-    <div class="fade-up delay-4 flex flex-col sm:flex-row gap-4 relative z-10">
-      <a href="#demo-access" data-demo-access class="demo-button px-6 py-3 bg-black text-white rounded-full font-medium hover:opacity-90 hover:scale-105 transition inline-block">
-        Request Demo
-      </a>
-      <a href="#preview" class="px-6 py-3 border border-gray-300 rounded-full font-medium hover:border-black hover:scale-105 transition inline-block">
-        View Product
-      </a>
-    </div>
-  </section>
-
-  <!-- BENEFITS -->
-  <section class="reveal px-8 py-16 border-t border-gray-200">
-
-    <h2 class="text-3xl font-semibold mb-10 text-center">Made for event execution</h2>
-
-    <div class="grid md:grid-cols-3 gap-8">
-
-      <div class="promo-card p-6 border border-gray-200 rounded-lg">
-        <h3 class="text-xl font-semibold mb-3">Centralize BEOs</h3>
-        <p class="text-gray-600 leading-7">
-          Create events, upload BEO images, confirm details, and keep every order easy to find.
-        </p>
       </div>
+    </section>
 
-      <div class="promo-card p-6 border border-gray-200 rounded-lg">
-        <h3 class="text-xl font-semibold mb-3">Plan production</h3>
-        <p class="text-gray-600 leading-7">
-          Turn menus and recipes into clear preparation work with quantities, status, and assignments.
-        </p>
-      </div>
+    <!-- PRODUCT INTRO -->
+    <section class="hero-detail-section reveal">
+      <div class="hero-shell">
+        <div class="hero-detail-copy">
+          <img src="img/logobeoflow.png" alt="Beoflow Logo" class="product-logo detail-logo">
+          <h2 class="hero-detail-title">Beoflow</h2>
+          <p class="hero-subtitle" data-i18n="hero.subtitle">
+            Integrated kitchen operations system for menus, inventory, recipes, production,
+            staffing, and service.
+          </p>
+          <p class="hero-detail-body" data-i18n="detail.body">
+            Connect operational planning with real costs and smart signals to reduce waste,
+            anticipate needs, and improve profitability across every service.
+          </p>
 
-      <div class="promo-card p-6 border border-gray-200 rounded-lg">
-        <h3 class="text-xl font-semibold mb-3">Stay ready</h3>
-        <p class="text-gray-600 leading-7">
-          Track upcoming events, draft BEOs, confirmed events, staff, inventory, and reports from one dashboard.
-        </p>
-      </div>
-
-    </div>
-
-  </section>
-
-  <!-- WATCH FLOW -->
-  <section class="reveal px-8 py-14 border-t border-gray-200 bg-[#fbfaf8]">
-
-    <div class="max-w-6xl mx-auto grid lg:grid-cols-[0.95fr_1.05fr] gap-12 items-center">
-      <div>
-        <p class="text-sm tracking-widest uppercase text-[#c89458] mb-4">Apple Watch ready</p>
-        <h2 class="text-3xl md:text-4xl font-semibold mb-6">Control the floor from your wrist</h2>
-        <p class="text-gray-600 leading-8 mb-8">
-          Beoflow extends key operational signals to Apple Watch, helping teams check live guests,
-          inventory value, item counts, and low-stock alerts without stepping away from service.
-        </p>
-
-        <div class="grid sm:grid-cols-2 gap-4 mb-4">
-          <div class="watch-detail border border-gray-200 rounded-lg p-5 bg-white/80">
-            <h3 class="text-lg font-semibold mb-2">Voice access</h3>
-            <p class="text-gray-600 leading-7">
-              Siri support gives busy banquet teams a fast path into Beoflow when their hands are full.
-            </p>
+          <div class="hero-actions">
+            <a href="#demo-access" data-demo-access class="button-primary" data-i18n="common.requestDemo">
+              Request Demo
+            </a>
+            <a href="#system" class="button-secondary">
+              <span data-i18n="hero.viewSystem">View System</span>
+              <svg aria-hidden="true" viewBox="0 0 24 24" class="button-icon">
+                <path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </a>
           </div>
+        </div>
 
-          <div class="watch-detail border border-gray-200 rounded-lg p-5 bg-white/80">
-            <h3 class="text-lg font-semibold mb-2">Inventory on watch</h3>
-            <p class="text-gray-600 leading-7">
-              Category views keep produce, protein, dairy, bakery, and drink counts easy to scan.
-            </p>
+        <div class="hero-visual" aria-label="Beoflow dashboard view" data-i18n-aria-label="hero.visualLabel">
+          <div class="hero-screen">
+            <img src="img/beoflow-dashboard.jpeg" alt="Beoflow dashboard with calendar and kitchen service planning" data-i18n-alt="images.dashboardAlt">
+          </div>
+          <div class="hero-signal hero-signal-top">
+            <span data-i18n="hero.signalTopLabel">AI Predictions</span>
+            <strong data-i18n="hero.signalTop">anticipates production and resources</strong>
+          </div>
+          <div class="hero-signal hero-signal-bottom">
+            <span data-i18n="hero.signalBottomLabel">End-to-end</span>
+            <strong data-i18n="hero.signalBottom">inventory, menu, prep, and staff</strong>
           </div>
         </div>
       </div>
 
-      <article class="watch-feature-card border border-gray-200 rounded-lg overflow-hidden bg-white">
-        <img src="img/promtion4.png" alt="Beoflow Apple Watch operational dashboard promotion" class="watch-promo-image">
-      </article>
-    </div>
-
-    <div class="max-w-5xl mx-auto grid md:grid-cols-2 gap-6 mt-8">
-      <article class="watch-gallery-card border border-gray-200 rounded-lg overflow-hidden bg-white">
-        <div class="aspect-[5/4]">
-          <img src="img/beoflowintory.png" alt="Beoflow Apple Watch inventory category screen" class="watch-gallery-image">
+      <div class="hero-proof" aria-label="Main benefits" data-i18n-aria-label="hero.proofLabel">
+        <div>
+          <strong data-i18n="hero.proofOneTitle">Lower food & labor cost</strong>
+          <span data-i18n="hero.proofOneBody">Less waste, more control.</span>
         </div>
-        <div class="p-5 border-t border-gray-200">
-          <h3 class="text-lg font-semibold mb-2">Inventory categories</h3>
-          <p class="text-gray-600 leading-7">Quick category navigation built for short, repeated checks during service.</p>
+        <div>
+          <strong data-i18n="hero.proofTwoTitle">Higher margin</strong>
+          <span data-i18n="hero.proofTwoBody">Decisions based on real data.</span>
         </div>
-      </article>
-
-      <article class="watch-gallery-card border border-gray-200 rounded-lg overflow-hidden bg-white">
-        <div class="aspect-[5/4]">
-          <img src="img/promotion3.png" alt="Beoflow Siri voice control promotion for Apple Watch" class="watch-gallery-image">
+        <div>
+          <strong data-i18n="hero.proofThreeTitle">Built for kitchens</strong>
+          <span data-i18n="hero.proofThreeBody">Operations flow built specifically for culinary teams.</span>
         </div>
-        <div class="p-5 border-t border-gray-200">
-          <h3 class="text-lg font-semibold mb-2">Siri shortcut</h3>
-          <p class="text-gray-600 leading-7">Voice launch keeps Beoflow accessible when teams are moving between rooms.</p>
+      </div>
+    </section>
+
+    <!-- PROBLEM -->
+    <section class="problem-section">
+      <div class="section-shell problem-grid">
+        <div>
+          <span class="section-label" data-i18n="problem.label">The problem</span>
+          <h2 data-i18n="problem.heading">Kitchen operations still make decisions with disconnected data.</h2>
         </div>
-      </article>
-    </div>
 
-  </section>
+        <div class="problem-cards">
+          <article class="problem-card">
+            <span class="card-number">01</span>
+            <h3 data-i18n="problem.cardOneTitle">Losing money</h3>
+            <p data-i18n="problem.cardOneBody">Miscalculated costs and uncontrolled waste when inventory, recipes, and sales are not connected.</p>
+          </article>
 
-  <!-- PRODUCT PREVIEW -->
-  <section id="preview" class="reveal px-8 py-16 border-t border-gray-200">
+          <article class="problem-card">
+            <span class="card-number">02</span>
+            <h3 data-i18n="problem.cardTwoTitle">Inefficiency</h3>
+            <p data-i18n="problem.cardTwoBody">Production and staffing are planned with estimates instead of real service needs.</p>
+          </article>
 
-    <h2 class="text-3xl font-semibold mb-6 text-center">See the flow</h2>
+          <article class="problem-card">
+            <span class="card-number">03</span>
+            <h3 data-i18n="problem.cardThreeTitle">Thin margins</h3>
+            <p data-i18n="problem.cardThreeBody">Without consolidated information, it is hard to protect profitability before service starts.</p>
+          </article>
+        </div>
+      </div>
+    </section>
 
-    <p class="text-gray-600 max-w-2xl mx-auto text-center leading-8 mb-12">
-      Four screens cover the core operation: dashboard, setup, inventory, and calendar control.
-    </p>
-
-    <div class="grid gap-8 max-w-6xl mx-auto">
-      <article class="screen-card border border-gray-200 rounded-lg overflow-hidden bg-white">
-        <div class="p-6">
-          <h3 class="text-xl font-semibold mb-2">Dashboard</h3>
-          <p class="text-gray-600 leading-7">
-            Live view of event counts, draft BEOs, confirmed events, the calendar, and the next event.
+    <!-- SOLUTION -->
+    <section id="system" class="solution-section reveal">
+      <div class="section-shell">
+        <div class="section-heading">
+          <span class="section-label" data-i18n="solution.label">The solution</span>
+          <h2 data-i18n="solution.heading">A complete, connected, real-time system.</h2>
+          <p data-i18n="solution.body">
+            Beoflow integrates inventory, recipes, menus, prep plans, production, staff, and predictions
+            to provide operational and financial visibility at every stage.
           </p>
         </div>
-        <div class="aspect-[16/7] border-t border-gray-200">
-          <img src="img/beoflow-dashboard.jpeg" alt="Beoflow dashboard with event calendar" class="screen-shot">
+
+        <div class="module-grid">
+          <article class="module-card">
+            <svg aria-hidden="true" viewBox="0 0 24 24" class="module-icon">
+              <path d="M3 7.5 12 3l9 4.5-9 4.5L3 7.5Z"></path>
+              <path d="M3 7.5V16l9 5 9-5V7.5"></path>
+              <path d="M12 12v9"></path>
+            </svg>
+            <h3 data-i18n="solution.moduleOneTitle">Inventory & Recipes</h3>
+            <p data-i18n="solution.moduleOneBody">Control ingredients, units, waste, and automatic portion costing.</p>
+          </article>
+
+          <article class="module-card">
+            <svg aria-hidden="true" viewBox="0 0 24 24" class="module-icon">
+              <path d="M7 3v4"></path>
+              <path d="M17 3v4"></path>
+              <path d="M4 8h16"></path>
+              <path d="M5 5h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"></path>
+              <path d="M9 14h6"></path>
+            </svg>
+            <h3 data-i18n="solution.moduleTwoTitle">Menu & Service Planning</h3>
+            <p data-i18n="solution.moduleTwoBody">Menus linked to recipes and inventory to calculate service needs.</p>
+          </article>
+
+          <article class="module-card">
+            <svg aria-hidden="true" viewBox="0 0 24 24" class="module-icon">
+              <path d="M4 20V9l5 3V9l5 3V6l6 3v11H4Z"></path>
+              <path d="M7 17h2M11 17h2M15 17h2"></path>
+            </svg>
+            <h3 data-i18n="solution.moduleThreeTitle">Production & Staff</h3>
+            <p data-i18n="solution.moduleThreeBody">Kitchen planning, progress statuses, shifts, schedules, and demand-based roles.</p>
+          </article>
+
+          <article class="module-card">
+            <svg aria-hidden="true" viewBox="0 0 24 24" class="module-icon">
+              <path d="M12 3a5 5 0 0 0-5 5v1a4 4 0 0 0 2 3.46V15h6v-2.54A4 4 0 0 0 17 9V8a5 5 0 0 0-5-5Z"></path>
+              <path d="M9 19h6"></path>
+              <path d="M10 22h4"></path>
+              <path d="M5 12H3M21 12h-2M5.6 5.6 4.2 4.2M19.8 4.2l-1.4 1.4"></path>
+            </svg>
+            <h3 data-i18n="solution.moduleFourTitle">Predictions</h3>
+            <p data-i18n="solution.moduleFourBody">Smart analysis to anticipate operational needs and optimize resources.</p>
+          </article>
         </div>
-      </article>
+      </div>
+    </section>
 
-      <div class="grid gap-8 lg:grid-cols-3 lg:items-start">
-        <article class="screen-card border border-gray-200 rounded-lg overflow-hidden bg-white">
-          <div class="p-6">
-            <h3 class="text-xl font-semibold mb-2">Smart setup</h3>
-            <p class="text-gray-600 leading-7">
-              Guided checklist to bring inventory, recipes, menus, events, and dashboard progress online.
-            </p>
+    <!-- SYSTEM FLOW -->
+    <section class="flow-map-section reveal">
+      <div class="section-shell">
+        <div class="flow-map-header">
+          <div>
+            <span class="section-label" data-i18n="flow.label">System flow</span>
+            <h2 data-i18n="flow.heading">From unit cost to kitchen execution.</h2>
           </div>
-          <div class="aspect-[4/5] border-t border-gray-200">
-            <img src="img/beoflow-smart-setup.jpeg" alt="Beoflow smart setup checklist" class="screen-shot screen-shot-center">
-          </div>
-        </article>
+          <p data-i18n="flow.body">
+            Each module feeds the next to ensure cost accuracy, operational control,
+            and financial visibility before, during, and after service.
+          </p>
+        </div>
 
-        <article class="screen-card border border-gray-200 rounded-lg overflow-hidden bg-white lg:col-span-2">
-          <div class="p-6">
-            <h3 class="text-xl font-semibold mb-2">Inventory</h3>
-            <p class="text-gray-600 leading-7">
-              Track item quantity, cost, storage area, category, and stock status for event prep.
-            </p>
-          </div>
-          <div class="aspect-[16/7] border-t border-gray-200">
-            <img src="img/beoflow-inventory.jpeg" alt="Beoflow inventory control screen" class="screen-shot">
-          </div>
-        </article>
+        <div class="flow-map" aria-label="Connected Beoflow module flow" data-i18n-aria-label="flow.mapLabel">
+          <article>
+            <span>01</span>
+            <strong data-i18n="flow.stepOneTitle">Inventory</strong>
+            <p data-i18n="flow.stepOneBody">Items, costs, quantities, and areas.</p>
+          </article>
+          <article>
+            <span>02</span>
+            <strong data-i18n="flow.stepTwoTitle">Recipes</strong>
+            <p data-i18n="flow.stepTwoBody">Portions, waste, and unit conversions.</p>
+          </article>
+          <article>
+            <span>03</span>
+            <strong data-i18n="flow.stepThreeTitle">Menu</strong>
+            <p data-i18n="flow.stepThreeBody">Buffet or plated menus with per-person cost.</p>
+          </article>
+          <article>
+            <span>04</span>
+            <strong data-i18n="flow.stepFourTitle">Service</strong>
+            <p data-i18n="flow.stepFourBody">Menus, covers, and exact needs.</p>
+          </article>
+          <article>
+            <span>05</span>
+            <strong data-i18n="flow.stepFiveTitle">Production</strong>
+            <p data-i18n="flow.stepFiveBody">Tasks, statuses, staff, and control.</p>
+          </article>
+        </div>
+      </div>
+    </section>
 
-        <article class="screen-card border border-gray-200 rounded-lg overflow-hidden bg-white lg:col-span-3">
-          <div class="p-6">
-            <h3 class="text-xl font-semibold mb-2">Event calendar</h3>
-            <p class="text-gray-600 leading-7">
-              Review scheduled events by month and keep event days visible before production begins.
-            </p>
+    <!-- INVENTORY / MENU -->
+    <section class="feature-section reveal">
+      <div class="section-shell feature-grid">
+        <div class="feature-media">
+          <img src="img/beoflow-inventory.jpeg" alt="Beoflow inventory screen with categories, costs, and quantities" data-i18n-alt="images.inventoryAlt">
+        </div>
+
+        <div class="feature-copy">
+          <span class="section-label" data-i18n="inventory.label">Inventory, recipes & menu</span>
+          <h2 data-i18n="inventory.heading">The profitability base starts with every ingredient.</h2>
+          <p data-i18n="inventory.body">
+            Register ingredients, pack sizes, storage areas, units, and costs.
+            Then turn those data points into recipes, reusable prep items, and commercial menus.
+          </p>
+
+          <div class="feature-list">
+            <div>
+              <strong data-i18n="inventory.pointOneTitle">Smart costing</strong>
+              <span data-i18n="inventory.pointOneBody">Portion cost with quantity, waste, portions, and unit conversion.</span>
+            </div>
+            <div>
+              <strong data-i18n="inventory.pointTwoTitle">Reusable inputs</strong>
+              <span data-i18n="inventory.pointTwoBody">Sauces, bases, and dressings can be saved as inventory items.</span>
+            </div>
+            <div>
+              <strong data-i18n="inventory.pointThreeTitle">Connected menu</strong>
+              <span data-i18n="inventory.pointThreeBody">Every menu stays linked to recipes and live inventory.</span>
+            </div>
           </div>
-          <div class="aspect-[16/5] border-t border-gray-200">
-            <img src="img/beoflow-calendar.jpeg" alt="Beoflow event calendar view" class="screen-shot">
+        </div>
+      </div>
+    </section>
+
+    <!-- EVENTS / PRODUCTION -->
+    <section class="events-section reveal">
+      <div class="section-shell events-grid">
+        <div class="feature-copy">
+          <span class="section-label" data-i18n="events.label">Service planning</span>
+          <h2 data-i18n="events.heading">The service plan automatically activates production, inventory, and staff.</h2>
+          <p data-i18n="events.body">
+            When guest counts and menu are entered, Beoflow calculates preparation quantities,
+            inventory impact, and operational needs for upcoming service.
+          </p>
+
+          <ol class="event-steps">
+            <li><span>1</span><span data-i18n="events.stepOne">Covers + menu</span></li>
+            <li><span>2</span><span data-i18n="events.stepTwo">Exact quantities to prepare</span></li>
+            <li><span>3</span><span data-i18n="events.stepThree">Inventory impact</span></li>
+            <li><span>4</span><span data-i18n="events.stepFour">Future service planning</span></li>
+          </ol>
+        </div>
+
+        <div class="feature-media events-media">
+          <img src="img/beoflow-calendar.jpeg" alt="Beoflow service calendar for reviewing scheduled kitchen work" data-i18n-alt="images.calendarAlt">
+        </div>
+      </div>
+    </section>
+
+    <!-- OPERATIONS -->
+    <section class="operations-section reveal">
+      <div class="section-shell">
+        <div class="section-heading">
+          <span class="section-label" data-i18n="operations.label">Production & staff</span>
+          <h2 data-i18n="operations.heading">Operational control for kitchen and service teams.</h2>
+          <p data-i18n="operations.body">
+            Turn service needs into actionable tasks and assign staff based on demand, schedules, and roles.
+          </p>
+        </div>
+
+        <div class="operations-grid">
+          <article class="operation-panel">
+            <div class="panel-title">
+              <span data-i18n="operations.panelOneLabel">Operations</span>
+              <h3 data-i18n="operations.panelOneTitle">Production Planning</h3>
+            </div>
+            <p data-i18n="operations.panelOneBody">Define what to prep, in what quantity, and when. Track status: not started, in progress, or completed.</p>
+            <ul>
+              <li data-i18n="operations.panelOneItemOne">Planned and controlled production</li>
+              <li data-i18n="operations.panelOneItemTwo">Kitchen progress visibility</li>
+              <li data-i18n="operations.panelOneItemThree">Fewer errors and delays</li>
+            </ul>
+          </article>
+
+          <article class="operation-panel">
+            <div class="panel-title">
+              <span data-i18n="operations.panelTwoLabel">People</span>
+              <h3 data-i18n="operations.panelTwoTitle">Staff Scheduling</h3>
+            </div>
+            <p data-i18n="operations.panelTwoBody">Assign staff by service with shifts, schedules, and roles to balance labor load and cost.</p>
+            <ul>
+              <li data-i18n="operations.panelTwoItemOne">Better staff utilization</li>
+              <li data-i18n="operations.panelTwoItemTwo">Lower labor costs</li>
+              <li data-i18n="operations.panelTwoItemThree">More organized operation</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRODUCT PREVIEW -->
+    <section id="preview" class="preview-section reveal">
+      <div class="section-shell">
+        <div class="preview-heading">
+          <div>
+            <span class="section-label" data-i18n="preview.label">Dashboard & product</span>
+            <h2 data-i18n="preview.heading">Operational visibility for faster decisions.</h2>
+          </div>
+          <p data-i18n="preview.body">
+            Today's service, inventory, calendar, station assignments, reports, and readiness
+            are available from one control center.
+          </p>
+        </div>
+
+        <article class="flow-carousel">
+          <div class="flow-copy">
+            <div>
+              <p id="flow-count" class="flow-count">01 / 07</p>
+              <h3 id="flow-title">Executive dashboard</h3>
+              <p id="flow-description">
+                Fast view of service, production, staffing, inventory, calendar, and readiness.
+              </p>
+            </div>
+
+            <div>
+              <div class="flow-tabs" aria-label="Beoflow screen selector">
+                <button type="button" class="flow-tab is-active" data-flow-index="0">Dashboard</button>
+                <button type="button" class="flow-tab" data-flow-index="1">Inventory</button>
+                <button type="button" class="flow-tab" data-flow-index="2">Calendar</button>
+                <button type="button" class="flow-tab" data-flow-index="3">Shifts</button>
+                <button type="button" class="flow-tab" data-flow-index="4">Stations</button>
+                <button type="button" class="flow-tab" data-flow-index="5">Reports</button>
+                <button type="button" class="flow-tab" data-flow-index="6">Mobile</button>
+              </div>
+
+              <div class="flow-arrows">
+                <button type="button" id="flow-prev" class="flow-arrow" aria-label="Previous screen">
+                  <svg aria-hidden="true" viewBox="0 0 24 24">
+                    <path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
+                </button>
+                <button type="button" id="flow-next" class="flow-arrow" aria-label="Next screen">
+                  <svg aria-hidden="true" viewBox="0 0 24 24">
+                    <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="flow-image-wrap">
+            <img id="flow-image" src="img/beoflow-dashboard.jpeg" alt="Beoflow dashboard with calendar and kitchen service planning" class="flow-image">
           </div>
         </article>
       </div>
-    </div>
+    </section>
 
-  </section>
+    <!-- WATCH FLOW -->
+    <section class="watch-section reveal">
+      <div class="section-shell watch-grid">
+        <div class="feature-copy">
+          <span class="section-label" data-i18n="watch.label">Operations in motion</span>
+          <h2 data-i18n="watch.heading">Operational signals from Apple Watch, too.</h2>
+          <p data-i18n="watch.body">
+            Beoflow extends key information to the wrist so teams can review service counts,
+            inventory value, item counts, and low-stock alerts without leaving service.
+          </p>
 
-  <!-- CTA -->
-  <section class="reveal px-8 py-16 border-t border-gray-200 text-center">
+          <div class="watch-points">
+            <div>
+              <strong data-i18n="watch.pointOneTitle">Voice access</strong>
+              <span data-i18n="watch.pointOneBody">Siri helps the team get into Beoflow quickly when work is moving.</span>
+            </div>
+            <div>
+              <strong data-i18n="watch.pointTwoTitle">Visible inventory</strong>
+              <span data-i18n="watch.pointTwoBody">Categories like produce, protein, dairy, bakery, and drinks stay close at hand.</span>
+            </div>
+          </div>
+        </div>
 
-    <h2 class="text-3xl font-semibold mb-6">Ready to run events with better control?</h2>
+        <div class="watch-media">
+          <img src="img/promtion4.png" alt="Beoflow Apple Watch promotion with operational metrics" data-i18n-alt="images.watchAlt">
+        </div>
+      </div>
+    </section>
 
-    <p class="text-gray-600 max-w-2xl mx-auto leading-8 mb-8">
-      Beoflow helps banquet teams move from BEO details to production and execution without losing visibility.
-    </p>
-
-    <a href="#demo-access" data-demo-access class="demo-button px-6 py-3 bg-black text-white rounded-full font-medium hover:opacity-90 hover:scale-105 transition inline-block">
-      Request Demo
-    </a>
-
-  </section>
+    <!-- CTA -->
+    <section class="cta-section reveal">
+      <div class="section-shell cta-shell">
+        <h2 data-i18n="cta.heading">Beoflow turns kitchen operations into an intelligent, profitable, and scalable system.</h2>
+        <p data-i18n="cta.body">
+          Fewer manual errors, better inventory control, precise costing, optimized production,
+          and better staff usage.
+        </p>
+        <a href="#demo-access" data-demo-access class="button-primary" data-i18n="common.requestDemo">Request Demo</a>
+      </div>
+    </section>
+  </main>
 
   <script>
     const demoAccessCode = 'B@stida420';
     const demoAccessUrl = 'https://bastidadavid.github.io/beoflow/#';
 
+    const translations = {
+      en: {
+        strings: {
+          'meta.title': 'Beoflow | Bastida Systems',
+          'nav.products': 'Products',
+          'nav.about': 'About',
+          'nav.contact': 'Contact',
+          'nav.language': 'Language',
+          'nav.languageSelector': 'Language selector',
+          'common.requestDemo': 'Request Demo',
+          'hero.subtitle': 'Integrated kitchen operations system for menus, inventory, recipes, production, staffing, and service.',
+          'hero.kicker': 'Beoflow',
+          'hero.heading': 'Kitchen Operations<br>Built for Culinary Teams.',
+          'hero.body': 'Beoflow keeps menus, prep, production, staff, inventory, and reports in one clean control center so culinary teams can plan faster and execute with confidence.',
+          'hero.viewSystem': 'View System',
+          'hero.viewProduct': 'View Product',
+          'detail.body': 'Connect kitchen planning with real costs and smart signals to reduce waste, anticipate needs, and improve profitability across every service.',
+          'hero.visualLabel': 'Beoflow dashboard view',
+          'hero.signalTopLabel': 'AI Predictions',
+          'hero.signalTop': 'anticipates production and resources',
+          'hero.signalBottomLabel': 'End-to-end',
+          'hero.signalBottom': 'inventory, menu, prep, and staff',
+          'hero.proofLabel': 'Main benefits',
+          'hero.proofOneTitle': 'Lower food & labor cost',
+          'hero.proofOneBody': 'Less waste, more control.',
+          'hero.proofTwoTitle': 'Higher margin',
+          'hero.proofTwoBody': 'Decisions based on real data.',
+          'hero.proofThreeTitle': 'Built for kitchens',
+          'hero.proofThreeBody': 'Operations flow built specifically for culinary teams.',
+          'problem.label': 'The problem',
+          'problem.heading': 'Kitchen operations still make decisions with disconnected data.',
+          'problem.cardOneTitle': 'Losing money',
+          'problem.cardOneBody': 'Miscalculated costs and uncontrolled waste when inventory, recipes, and sales are not connected.',
+          'problem.cardTwoTitle': 'Inefficiency',
+          'problem.cardTwoBody': 'Production and staffing are planned with estimates instead of real service needs.',
+          'problem.cardThreeTitle': 'Thin margins',
+          'problem.cardThreeBody': 'Without consolidated information, it is hard to protect profitability before service starts.',
+          'solution.label': 'The solution',
+          'solution.heading': 'A complete, connected, real-time system.',
+          'solution.body': 'Beoflow integrates inventory, recipes, menus, prep plans, production, staff, and predictions to provide operational and financial visibility at every stage.',
+          'solution.moduleOneTitle': 'Inventory & Recipes',
+          'solution.moduleOneBody': 'Control ingredients, units, waste, and automatic portion costing.',
+          'solution.moduleTwoTitle': 'Menu & Service Planning',
+          'solution.moduleTwoBody': 'Menus linked to recipes and inventory to calculate service needs.',
+          'solution.moduleThreeTitle': 'Production & Staff',
+          'solution.moduleThreeBody': 'Kitchen planning, progress statuses, shifts, schedules, and demand-based roles.',
+          'solution.moduleFourTitle': 'Predictions',
+          'solution.moduleFourBody': 'Smart analysis to anticipate operational needs and optimize resources.',
+          'flow.label': 'System flow',
+          'flow.heading': 'From unit cost to kitchen execution.',
+          'flow.body': 'Each module feeds the next to ensure cost accuracy, operational control, and financial visibility before, during, and after service.',
+          'flow.mapLabel': 'Connected Beoflow module flow',
+          'flow.stepOneTitle': 'Inventory',
+          'flow.stepOneBody': 'Items, costs, quantities, and areas.',
+          'flow.stepTwoTitle': 'Recipes',
+          'flow.stepTwoBody': 'Portions, waste, and unit conversions.',
+          'flow.stepThreeTitle': 'Menu',
+          'flow.stepThreeBody': 'Buffet or plated menus with per-person cost.',
+          'flow.stepFourTitle': 'Service',
+          'flow.stepFourBody': 'Menus, covers, and exact needs.',
+          'flow.stepFiveTitle': 'Production',
+          'flow.stepFiveBody': 'Tasks, statuses, staff, and control.',
+          'inventory.label': 'Inventory, recipes & menu',
+          'inventory.heading': 'The profitability base starts with every ingredient.',
+          'inventory.body': 'Register ingredients, pack sizes, storage areas, units, and costs. Then turn those data points into recipes, reusable prep items, and commercial menus.',
+          'inventory.pointOneTitle': 'Smart costing',
+          'inventory.pointOneBody': 'Portion cost with quantity, waste, portions, and unit conversion.',
+          'inventory.pointTwoTitle': 'Reusable inputs',
+          'inventory.pointTwoBody': 'Sauces, bases, and dressings can be saved as inventory items.',
+          'inventory.pointThreeTitle': 'Connected menu',
+          'inventory.pointThreeBody': 'Every menu stays linked to recipes and live inventory.',
+          'events.label': 'Service planning',
+          'events.heading': 'The service plan automatically activates production, inventory, and staff.',
+          'events.body': 'When covers and menu are entered, Beoflow calculates preparation quantities, inventory impact, and operational needs for upcoming service.',
+          'events.stepOne': 'Covers + menu',
+          'events.stepTwo': 'Exact quantities to prepare',
+          'events.stepThree': 'Inventory impact',
+          'events.stepFour': 'Future service planning',
+          'operations.label': 'Production & staff',
+          'operations.heading': 'Operational control for kitchen and service teams.',
+          'operations.body': 'Turn service needs into actionable tasks and assign staff based on demand, schedules, and roles.',
+          'operations.panelOneLabel': 'Operations',
+          'operations.panelOneTitle': 'Production Planning',
+          'operations.panelOneBody': 'Define what to prep, in what quantity, and when. Track status: not started, in progress, or completed.',
+          'operations.panelOneItemOne': 'Planned and controlled production',
+          'operations.panelOneItemTwo': 'Kitchen progress visibility',
+          'operations.panelOneItemThree': 'Fewer errors and delays',
+          'operations.panelTwoLabel': 'People',
+          'operations.panelTwoTitle': 'Staff Scheduling',
+          'operations.panelTwoBody': 'Assign staff by service with shifts, schedules, and roles to balance labor load and cost.',
+          'operations.panelTwoItemOne': 'Better staff utilization',
+          'operations.panelTwoItemTwo': 'Lower labor costs',
+          'operations.panelTwoItemThree': 'More organized operation',
+          'preview.label': 'Dashboard & product',
+          'preview.heading': 'Operational visibility for faster decisions.',
+          'preview.body': "Today's service, inventory, calendar, station assignments, reports, and readiness are available from one control center.",
+          'watch.label': 'Operations in motion',
+          'watch.heading': 'Operational signals from Apple Watch, too.',
+          'watch.body': 'Beoflow extends key information to the wrist so teams can review service counts, inventory value, item counts, and low-stock alerts without leaving the kitchen flow.',
+          'watch.pointOneTitle': 'Voice access',
+          'watch.pointOneBody': 'Siri helps the team get into Beoflow quickly when work is moving.',
+          'watch.pointTwoTitle': 'Visible inventory',
+          'watch.pointTwoBody': 'Categories like produce, protein, dairy, bakery, and drinks stay close at hand.',
+          'cta.heading': 'Beoflow turns kitchen operations into an intelligent, profitable, and scalable system.',
+          'cta.body': 'Fewer manual errors, better inventory control, precise costing, optimized production, and better staff usage.',
+          'demo.prompt': 'Enter the access code:',
+          'demo.invalid': 'Invalid access code.',
+          'images.dashboardAlt': 'Beoflow dashboard with calendar and kitchen service planning',
+          'images.inventoryAlt': 'Beoflow inventory screen with categories, costs, and quantities',
+          'images.calendarAlt': 'Beoflow service calendar for reviewing scheduled kitchen work',
+          'images.watchAlt': 'Beoflow Apple Watch promotion with operational metrics'
+        },
+        flowSlides: [
+          {
+            tab: 'Dashboard',
+            title: 'Executive dashboard',
+            description: "Fast view of today's service, production, staffing, inventory, calendar, and readiness.",
+            image: 'img/beoflow-dashboard.jpeg',
+            alt: 'Beoflow dashboard with calendar and kitchen service planning'
+          },
+          {
+            tab: 'Inventory',
+            title: 'Connected inventory',
+            description: 'Control quantity, cost, storage area, category, unit, and stock status to plan with real data.',
+            image: 'img/beoflow-inventory.jpeg',
+            alt: 'Beoflow inventory screen with costs and quantities'
+          },
+          {
+            tab: 'Calendar',
+            title: 'Service calendar',
+            description: 'Review scheduled service by month and keep key days visible before production starts.',
+            image: 'img/beoflow-calendar.jpeg',
+            alt: 'Beoflow service calendar'
+          },
+          {
+            tab: 'Shifts',
+            title: 'Shift Readiness',
+            description: 'Import shifts, assign stations, detect absences, and review weekly coverage before service.',
+            image: 'img/2.png',
+            alt: 'Weekly Shift Readiness view with stations, schedules, substitutions, and absences'
+          },
+          {
+            tab: 'Stations',
+            title: 'Stations ready',
+            description: 'Review owners by station, schedules, meal breaks, and closing tasks for each post.',
+            image: 'img/3.png',
+            alt: 'Station cards with assigned employees, schedules, and meal breaks'
+          },
+          {
+            tab: 'Reports',
+            title: 'Operational reports',
+            description: 'Consolidate service, inventory, production, readiness, and feedback to turn observations into actions.',
+            image: 'img/1.png',
+            alt: 'Beoflow reports panel with operational summary and feedback'
+          },
+          {
+            tab: 'Mobile',
+            title: 'Mobile setup',
+            description: 'Mobile flow for reviewing operational information and keeping execution available away from the desktop.',
+            image: 'img/beoflowmobile.png',
+            alt: 'Beoflow mobile view'
+          }
+        ]
+      },
+      es: {
+        strings: {
+          'meta.title': 'Beoflow | Bastida Systems',
+          'nav.products': 'Productos',
+          'nav.about': 'Acerca de',
+          'nav.contact': 'Contacto',
+          'nav.language': 'Idioma',
+          'nav.languageSelector': 'Selector de idioma',
+          'common.requestDemo': 'Solicitar demo',
+          'hero.subtitle': 'Sistema integral de operación de cocina para menús, inventario, recetas, producción, personal y servicio.',
+          'hero.kicker': 'Beoflow',
+          'hero.heading': 'Operación de cocina<br>para equipos culinarios.',
+          'hero.body': 'Beoflow mantiene menús, preparación, producción, personal, inventario y reportes en un centro de control limpio para que los equipos de cocina planeen más rápido y ejecuten con confianza.',
+          'hero.viewSystem': 'Ver sistema',
+          'hero.viewProduct': 'Ver producto',
+          'detail.body': 'Conecta la planeación de cocina con costos reales y señales inteligentes para reducir desperdicio, anticipar necesidades y mejorar la rentabilidad de cada servicio.',
+          'hero.visualLabel': 'Vista del dashboard de Beoflow',
+          'hero.signalTopLabel': 'Predicciones IA',
+          'hero.signalTop': 'anticipa producción y recursos',
+          'hero.signalBottomLabel': 'Integral',
+          'hero.signalBottom': 'inventario, menú, preparación y personal',
+          'hero.proofLabel': 'Beneficios principales',
+          'hero.proofOneTitle': 'Menor costo de comida y labor',
+          'hero.proofOneBody': 'Menos desperdicio, más control.',
+          'hero.proofTwoTitle': 'Mayor margen',
+          'hero.proofTwoBody': 'Decisiones basadas en datos reales.',
+          'hero.proofThreeTitle': 'Diseñado para cocinas',
+          'hero.proofThreeBody': 'Flujo operativo específico para equipos culinarios.',
+          'problem.label': 'El problema',
+          'problem.heading': 'Las operaciones de cocina siguen tomando decisiones con datos separados.',
+          'problem.cardOneTitle': 'Pérdida de dinero',
+          'problem.cardOneBody': 'Costos mal calculados y desperdicio no controlado cuando inventario, recetas y ventas no están conectados.',
+          'problem.cardTwoTitle': 'Ineficiencia',
+          'problem.cardTwoBody': 'Producción y personal se planean con estimaciones, no con necesidades reales del servicio.',
+          'problem.cardThreeTitle': 'Bajo margen',
+          'problem.cardThreeBody': 'Sin información consolidada, es difícil proteger la rentabilidad antes de ejecutar el servicio.',
+          'solution.label': 'La solución',
+          'solution.heading': 'Un sistema completo, conectado y en tiempo real.',
+          'solution.body': 'Beoflow integra inventario, recetas, menús, planes de preparación, producción, personal y predicciones para dar visibilidad operativa y financiera en cada etapa.',
+          'solution.moduleOneTitle': 'Inventario y recetas',
+          'solution.moduleOneBody': 'Control de insumos, unidades, mermas y costeo automático por porción.',
+          'solution.moduleTwoTitle': 'Menú y planificación de servicio',
+          'solution.moduleTwoBody': 'Menús vinculados a recetas e inventario para calcular necesidades por servicio.',
+          'solution.moduleThreeTitle': 'Producción y personal',
+          'solution.moduleThreeBody': 'Planeación de cocina, estados de avance, turnos, horarios y roles por demanda.',
+          'solution.moduleFourTitle': 'Predicciones',
+          'solution.moduleFourBody': 'Análisis inteligente para anticipar necesidades operativas y optimizar recursos.',
+          'flow.label': 'Flujo del sistema',
+          'flow.heading': 'De costo unitario a ejecución de cocina.',
+          'flow.body': 'Cada módulo alimenta al siguiente para asegurar precisión en costos, control operativo y visibilidad financiera antes, durante y después del servicio.',
+          'flow.mapLabel': 'Flujo conectado de módulos Beoflow',
+          'flow.stepOneTitle': 'Inventario',
+          'flow.stepOneBody': 'Insumos, costos, cantidades y áreas.',
+          'flow.stepTwoTitle': 'Recetas',
+          'flow.stepTwoBody': 'Porciones, merma y conversión de unidades.',
+          'flow.stepThreeTitle': 'Menú',
+          'flow.stepThreeBody': 'Buffet o plated con costo por persona.',
+          'flow.stepFourTitle': 'Servicio',
+          'flow.stepFourBody': 'Menús, cubiertos y necesidades exactas.',
+          'flow.stepFiveTitle': 'Producción',
+          'flow.stepFiveBody': 'Tareas, estados, personal y control.',
+          'inventory.label': 'Inventario, recetas y menú',
+          'inventory.heading': 'La base de rentabilidad empieza en cada insumo.',
+          'inventory.body': 'Registra ingredientes, presentaciones, áreas de almacenamiento, unidades y costos. Luego convierte esos datos en recetas, preparaciones reutilizables y menús comerciales.',
+          'inventory.pointOneTitle': 'Costeo inteligente',
+          'inventory.pointOneBody': 'Costo por porción con cantidad, merma, porciones y conversión de unidades.',
+          'inventory.pointTwoTitle': 'Insumos reutilizables',
+          'inventory.pointTwoBody': 'Salsas, bases y aderezos pueden guardarse como artículos de inventario.',
+          'inventory.pointThreeTitle': 'Menú conectado',
+          'inventory.pointThreeBody': 'Cada menú queda vinculado a recetas e inventario en tiempo real.',
+          'events.label': 'Planificación de servicio',
+          'events.heading': 'El plan de servicio activa automáticamente producción, inventario y personal.',
+          'events.body': 'Al registrar cubiertos y menú, Beoflow calcula las cantidades a preparar, el impacto en inventario y las necesidades operativas para próximos servicios.',
+          'events.stepOne': 'Cubiertos + menú',
+          'events.stepTwo': 'Cantidades exactas a preparar',
+          'events.stepThree': 'Impacto en inventario',
+          'events.stepFour': 'Planeación de servicios futuros',
+          'operations.label': 'Producción y personal',
+          'operations.heading': 'Control operativo para cocina y equipo de servicio.',
+          'operations.body': 'Transforma necesidades de servicio en tareas accionables y asigna personal según demanda, horarios y roles.',
+          'operations.panelOneLabel': 'Operaciones',
+          'operations.panelOneTitle': 'Planeación de producción',
+          'operations.panelOneBody': 'Define qué preparar, en qué cantidad y cuándo. Da seguimiento por estado: no iniciado, en proceso o completado.',
+          'operations.panelOneItemOne': 'Producción planificada y controlada',
+          'operations.panelOneItemTwo': 'Visibilidad del avance en cocina',
+          'operations.panelOneItemThree': 'Reducción de errores y tiempos',
+          'operations.panelTwoLabel': 'Personal',
+          'operations.panelTwoTitle': 'Programación de personal',
+          'operations.panelTwoBody': 'Asigna personal por servicio con turnos, horarios y roles para equilibrar carga laboral y costos.',
+          'operations.panelTwoItemOne': 'Optimización del uso del personal',
+          'operations.panelTwoItemTwo': 'Reducción de costos laborales',
+          'operations.panelTwoItemThree': 'Operación más organizada',
+          'preview.label': 'Dashboard y producto',
+          'preview.heading': 'Visibilidad operativa para tomar decisiones rápidas.',
+          'preview.body': 'Servicio del día, inventario, calendario, asignación de estaciones, reportes y readiness quedan disponibles desde un centro de control.',
+          'watch.label': 'Operación en movimiento',
+          'watch.heading': 'Señales operativas también desde Apple Watch.',
+          'watch.body': 'Beoflow extiende información clave a la muñeca para revisar conteos de servicio, valor de inventario, artículos y alertas de bajo stock sin alejarse del flujo de cocina.',
+          'watch.pointOneTitle': 'Acceso por voz',
+          'watch.pointOneBody': 'Siri permite entrar rápido a Beoflow cuando el equipo está en movimiento.',
+          'watch.pointTwoTitle': 'Inventario visible',
+          'watch.pointTwoBody': 'Categorías como produce, protein, dairy, bakery y drinks quedan a mano.',
+          'cta.heading': 'Beoflow transforma la operación de cocina en un sistema inteligente, rentable y escalable.',
+          'cta.body': 'Menos errores manuales, mejor control de inventario, costeo preciso, producción optimizada y mejor uso del personal.',
+          'demo.prompt': 'Ingresa el código de acceso:',
+          'demo.invalid': 'Código de acceso inválido.',
+          'images.dashboardAlt': 'Dashboard de Beoflow con calendario y planificación de servicio de cocina',
+          'images.inventoryAlt': 'Pantalla de inventario de Beoflow con categorías, costos y cantidades',
+          'images.calendarAlt': 'Calendario de servicio de Beoflow para revisar trabajo de cocina programado',
+          'images.watchAlt': 'Promoción de Beoflow en Apple Watch con métricas operativas'
+        },
+        flowSlides: [
+          {
+            tab: 'Dashboard',
+            title: 'Dashboard ejecutivo',
+            description: 'Vista rápida de servicio del día, producción, personal, inventario, calendario y readiness.',
+            image: 'img/beoflow-dashboard.jpeg',
+            alt: 'Dashboard de Beoflow con calendario y planificación de servicio de cocina'
+          },
+          {
+            tab: 'Inventario',
+            title: 'Inventario conectado',
+            description: 'Controla cantidad, costo, área de almacenamiento, categoría, unidad y estado de stock para planear con datos reales.',
+            image: 'img/beoflow-inventory.jpeg',
+            alt: 'Pantalla de inventario de Beoflow con costos y cantidades'
+          },
+          {
+            tab: 'Calendario',
+            title: 'Calendario de servicio',
+            description: 'Revisa servicios programados por mes y mantiene visibles los días clave antes de iniciar producción.',
+            image: 'img/beoflow-calendar.jpeg',
+            alt: 'Calendario de servicio de Beoflow'
+          },
+          {
+            tab: 'Turnos',
+            title: 'Shift Readiness',
+            description: 'Importa turnos, asigna estaciones, detecta ausencias y revisa la cobertura semanal antes de operar.',
+            image: 'img/2.png',
+            alt: 'Vista semanal de Shift Readiness con estaciones, horarios, sustituciones y ausencias'
+          },
+          {
+            tab: 'Estaciones',
+            title: 'Estaciones listas',
+            description: 'Revisa responsables por estación, horarios, meal breaks y tareas de cierre para cada puesto.',
+            image: 'img/3.png',
+            alt: 'Tarjetas de estaciones con empleados asignados, horarios y meal breaks'
+          },
+          {
+            tab: 'Reportes',
+            title: 'Reportes operativos',
+            description: 'Consolida servicio, inventario, producción, readiness y feedback para convertir observaciones en acciones.',
+            image: 'img/1.png',
+            alt: 'Panel de reportes de Beoflow con resumen operativo y feedback'
+          },
+          {
+            tab: 'Móvil',
+            title: 'Setup móvil',
+            description: 'Flujo móvil para revisar información operativa y mantener la ejecución disponible fuera del escritorio.',
+            image: 'img/beoflowmobile.png',
+            alt: 'Vista móvil de Beoflow'
+          }
+        ]
+      }
+    };
+
+    const flowTitle = document.getElementById('flow-title');
+    const flowDescription = document.getElementById('flow-description');
+    const flowCount = document.getElementById('flow-count');
+    const flowImage = document.getElementById('flow-image');
+    const flowTabs = document.querySelectorAll('[data-flow-index]');
+    const flowPrev = document.getElementById('flow-prev');
+    const flowNext = document.getElementById('flow-next');
+    const languageSelect = document.getElementById('language-select');
+    let activeFlowIndex = 0;
+    let activeLanguage = localStorage.getItem('beoflow-language') || (navigator.language.startsWith('es') ? 'es' : 'en');
+
+    if (!translations[activeLanguage]) {
+      activeLanguage = 'en';
+    }
+
+    const translate = key => (
+      translations[activeLanguage].strings[key] ||
+      translations.en.strings[key] ||
+      ''
+    );
+
+    const updateFlowTabs = () => {
+      translations[activeLanguage].flowSlides.forEach((slide, index) => {
+        const tab = flowTabs[index];
+        if (tab) tab.textContent = slide.tab;
+      });
+    };
+
+    const updateFlowSlide = index => {
+      const slides = translations[activeLanguage].flowSlides;
+      activeFlowIndex = (index + slides.length) % slides.length;
+      const slide = slides[activeFlowIndex];
+
+      flowImage.classList.add('is-changing');
+
+      window.setTimeout(() => {
+        flowTitle.textContent = slide.title;
+        flowDescription.textContent = slide.description;
+        flowCount.textContent = `${String(activeFlowIndex + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
+        flowImage.src = slide.image;
+        flowImage.alt = slide.alt;
+
+        flowTabs.forEach(tab => {
+          tab.classList.toggle('is-active', Number(tab.dataset.flowIndex) === activeFlowIndex);
+        });
+
+        flowImage.classList.remove('is-changing');
+      }, 160);
+    };
+
+    const applyLanguage = language => {
+      activeLanguage = translations[language] ? language : 'en';
+      document.documentElement.lang = activeLanguage;
+      document.title = translate('meta.title');
+      localStorage.setItem('beoflow-language', activeLanguage);
+
+      document.querySelectorAll('[data-i18n]').forEach(element => {
+        element.textContent = translate(element.dataset.i18n);
+      });
+
+      document.querySelectorAll('[data-i18n-html]').forEach(element => {
+        element.innerHTML = translate(element.dataset.i18nHtml);
+      });
+
+      document.querySelectorAll('[data-i18n-alt]').forEach(element => {
+        element.alt = translate(element.dataset.i18nAlt);
+      });
+
+      document.querySelectorAll('[data-i18n-aria-label]').forEach(element => {
+        element.setAttribute('aria-label', translate(element.dataset.i18nAriaLabel));
+      });
+
+      languageSelect.value = activeLanguage;
+      updateFlowTabs();
+      updateFlowSlide(activeFlowIndex);
+    };
+
     document.querySelectorAll('[data-demo-access]').forEach(link => {
       link.addEventListener('click', event => {
         event.preventDefault();
 
-        const enteredCode = prompt('Ingresa el codigo de acceso:');
+        const enteredCode = prompt(translate('demo.prompt'));
 
         if (enteredCode === null) return;
 
@@ -262,9 +876,35 @@
           return;
         }
 
-        alert('Codigo de acceso invalido.');
+        alert(translate('demo.invalid'));
       });
     });
+
+    languageSelect.addEventListener('change', event => {
+      applyLanguage(event.target.value);
+    });
+
+    flowTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        updateFlowSlide(Number(tab.dataset.flowIndex));
+      });
+    });
+
+    flowPrev.addEventListener('click', () => {
+      updateFlowSlide(activeFlowIndex - 1);
+    });
+
+    flowNext.addEventListener('click', () => {
+      updateFlowSlide(activeFlowIndex + 1);
+    });
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        applyLanguage(activeLanguage);
+      });
+    } else {
+      applyLanguage(activeLanguage);
+    }
 
     const revealElements = document.querySelectorAll('.reveal');
 
@@ -289,26 +929,19 @@
   </script>
 
   <!-- FOOTER -->
-  <footer class="px-8 py-10 border-t border-gray-200 text-gray-600 text-sm text-center">
-
-    <div class="flex justify-center gap-6 mb-4 text-gray-500">
-      <a href="index.html#products" class="hover:text-black transition">Products</a>
-      <a href="about.html" class="hover:text-black transition">About</a>
-      <a href="index.html#contact" class="hover:text-black transition">Contact</a>
+  <footer class="site-footer">
+    <div class="footer-links">
+      <a href="index.html#products" data-i18n="nav.products">Products</a>
+      <a href="about.html" data-i18n="nav.about">About</a>
+      <a href="index.html#contact" data-i18n="nav.contact">Contact</a>
     </div>
 
-    <div class="flex flex-col items-start gap-4">
-      <a href="mailto:bastidasystems@gmail.com" class="inline-block px-6 py-3 border border-gray-600 rounded-full hover:border-black transition duration-300 hover:scale-105">
-        bastidasystems@gmail.com
-      </a>
-
-      <a href="tel:+17020000000" class="inline-block px-6 py-3 border border-gray-600 rounded-full hover:border-black transition duration-300 hover:scale-105">
-        +1 (702) 661-7149
-      </a>
+    <div class="footer-contact">
+      <a href="mailto:bastidasystems@gmail.com">bastidasystems@gmail.com</a>
+      <a href="tel:+17026617149">+1 (702) 661-7149</a>
     </div>
 
     <p>&copy; 2026 Bastida Systems. All rights reserved.</p>
-
   </footer>
 
 </body>
