@@ -7,7 +7,294 @@
   <link rel="icon" type="image/png" href="img/logobeoflow.png">
 
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="beoflow.css?v=20260507-safari">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Manrope', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      letter-spacing: 0;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    .beoflow-page {
+      background: #f8f5ef;
+      color: #14384f;
+    }
+
+    .beo-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      border-bottom: 1px solid rgba(20, 56, 79, 0.14);
+      background: rgba(255, 255, 255, 0.94);
+      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(16px);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: min(1240px, calc(100% - 32px));
+      min-height: 4.6rem;
+      margin: 0 auto;
+      gap: 1rem;
+    }
+
+    .brand-link,
+    .nav-links {
+      display: flex;
+      align-items: center;
+    }
+
+    .brand-link {
+      gap: 0.75rem;
+      color: #0f172a;
+      font-size: 0.92rem;
+      font-weight: 800;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
+    .brand-link img {
+      width: auto;
+      height: 2rem;
+      object-fit: contain;
+    }
+
+    .nav-links {
+      gap: 1.4rem;
+    }
+
+    .nav-links a {
+      color: #526477;
+      font-size: 0.92rem;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .language-picker {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      min-height: 2.45rem;
+      padding: 0.28rem 0.35rem 0.28rem 0.75rem;
+      border: 1px solid rgba(20, 56, 79, 0.18);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.78);
+      color: #526477;
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .language-picker select {
+      min-width: 3.25rem;
+      border: 0;
+      border-radius: 6px;
+      background: #10182d;
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .hero-section {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 88vh;
+      min-height: 88svh;
+      padding: 6rem 1.5rem;
+      background: #fff;
+      text-align: center;
+    }
+
+    .hero-bg,
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+    }
+
+    .hero-bg {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      opacity: 0.1;
+    }
+
+    .hero-overlay {
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .hero-center {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: min(100%, 72rem);
+      padding: 0 1rem;
+    }
+
+    .product-logo {
+      width: 6rem;
+      height: 3.5rem;
+      object-fit: contain;
+      object-position: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-kicker {
+      margin: 0 0 1rem;
+      color: #111827;
+      font-size: 0.875rem;
+      font-weight: 300;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .hero-center h1 {
+      margin: 0 0 1.5rem;
+      color: #d6a66f;
+      font-size: clamp(3rem, 5.6vw, 4.5rem);
+      line-height: 1;
+      font-weight: 700;
+      text-wrap: balance;
+    }
+
+    .text-color-shift {
+      display: inline-block;
+      max-width: 100%;
+      -webkit-animation: textColorSweep 5.5s ease-in-out 0.25s infinite alternate;
+      animation: textColorSweep 5.5s ease-in-out 0.25s infinite alternate;
+      background-image: linear-gradient(90deg, #00b875 0%, #00b875 18%, #111827 42%, #d6a66f 64%, #d6a66f 100%);
+      background-size: 320% 100%;
+      background-position: left center;
+      -webkit-box-decoration-break: clone;
+      box-decoration-break: clone;
+      text-shadow: 0 10px 35px rgba(0, 184, 117, 0.12);
+      transform: translateZ(0);
+    }
+
+    @supports ((-webkit-background-clip: text) or (background-clip: text)) {
+      .text-color-shift {
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        -webkit-text-fill-color: transparent;
+      }
+    }
+
+    .hero-body {
+      max-width: 42rem;
+      margin: 0 0 2rem;
+      color: #4b5563;
+      font-size: 1rem;
+      line-height: 2;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .button-primary,
+    .button-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 3rem;
+      min-width: 9.6rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .button-primary {
+      background: #000;
+      color: #fff;
+    }
+
+    .button-secondary {
+      border: 1px solid #d1d5db;
+      background: #fff;
+      color: #111827;
+    }
+
+    @media (max-width: 760px) {
+      .hero-section {
+        min-height: 82vh;
+        min-height: 82svh;
+        padding: 4rem 1rem;
+      }
+
+      .hero-center h1 {
+        font-size: clamp(2.75rem, 11vw, 4rem);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .brand-link span,
+      .language-picker span {
+        display: none;
+      }
+
+      .nav-links {
+        gap: 0.8rem;
+      }
+
+      .hero-center h1 {
+        font-size: clamp(2.55rem, 13vw, 3.3rem);
+        line-height: 1.03;
+      }
+    }
+
+    @keyframes textColorSweep {
+      0% {
+        background-position: left center;
+        text-shadow: 0 10px 35px rgba(0, 184, 117, 0.14);
+      }
+
+      50% {
+        background-position: 52% 50%;
+        text-shadow: 0 10px 35px rgba(15, 23, 42, 0.08);
+      }
+
+      100% {
+        background-position: right center;
+        text-shadow: 0 10px 35px rgba(214, 166, 111, 0.2);
+      }
+    }
+
+    @-webkit-keyframes textColorSweep {
+      0% {
+        background-position: left center;
+        text-shadow: 0 10px 35px rgba(0, 184, 117, 0.14);
+      }
+
+      50% {
+        background-position: 52% 50%;
+        text-shadow: 0 10px 35px rgba(15, 23, 42, 0.08);
+      }
+
+      100% {
+        background-position: right center;
+        text-shadow: 0 10px 35px rgba(214, 166, 111, 0.2);
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="./beoflow.css?v=20260507-safari2">
 </head>
 
 <body class="beoflow-page">
