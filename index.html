@@ -41,6 +41,47 @@
       opacity: 1;
       transform: translateY(0);
     }
+
+    .site-nav {
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .language-picker {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      min-height: 2.45rem;
+      padding: 0.28rem 0.35rem 0.28rem 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      background: #fff;
+      color: #4b5563;
+      font-size: 0.875rem;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+
+    .language-picker select {
+      min-width: 3.25rem;
+      border: 0;
+      border-radius: 6px;
+      background: #10182d;
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    @media (max-width: 640px) {
+      .language-picker {
+        padding: 0.22rem;
+      }
+
+      .language-picker span {
+        display: none;
+      }
+    }
   </style>
 </head>
 
@@ -49,6 +90,88 @@
   <div id="site-header"></div>
 
   <script>
+    const siteTranslations = {
+      en: {
+        'meta.title': 'Bastida Systems',
+        'nav.products': 'Products',
+        'nav.about': 'About',
+        'nav.contact': 'Contact',
+        'nav.language': 'Language',
+        'nav.languageSelector': 'Language selector',
+        'hero.heading': 'Engineering Intelligent Systems',
+        'hero.body': 'Bastida Systems develops intelligent software platforms that enable operations to monitor critical infrastructure, reduce operational risk, and maintain compliance through real-time data and automation.',
+        'hero.explore': 'Explore Products',
+        'products.heading': 'Products',
+        'products.filtracore.body': 'A smart filtration monitoring system designed for casinos, restaurants, and industrial environments. Track PSI, filter lifespan, and maintenance in real time.',
+        'products.beoflow.body': 'Kitchen operations platform for menus, inventory, production, staff, service planning, and daily execution.',
+        'products.learnMore': 'Learn More',
+        'contact.heading': 'Contact',
+        'contact.body': 'Interested in FiltraCore, Beoflow, or custom intelligent systems for your operation? Let’s connect.',
+        'footer.rights': '© 2026 Bastida Systems. All rights reserved.'
+      },
+      es: {
+        'meta.title': 'Bastida Systems',
+        'nav.products': 'Productos',
+        'nav.about': 'Acerca de',
+        'nav.contact': 'Contacto',
+        'nav.language': 'Idioma',
+        'nav.languageSelector': 'Selector de idioma',
+        'hero.heading': 'Ingeniería de Sistemas Inteligentes',
+        'hero.body': 'Bastida Systems desarrolla plataformas de software inteligentes que ayudan a las operaciones a monitorear infraestructura crítica, reducir riesgos operativos y mantener cumplimiento con datos en tiempo real y automatización.',
+        'hero.explore': 'Ver Productos',
+        'products.heading': 'Productos',
+        'products.filtracore.body': 'Sistema inteligente de monitoreo de filtración diseñado para casinos, restaurantes y entornos industriales. Controla PSI, vida útil de filtros y mantenimiento en tiempo real.',
+        'products.beoflow.body': 'Plataforma de operación de cocina para menús, inventario, producción, personal, planeación de servicio y ejecución diaria.',
+        'products.learnMore': 'Ver Más',
+        'contact.heading': 'Contacto',
+        'contact.body': '¿Te interesa FiltraCore, Beoflow o un sistema inteligente personalizado para tu operación? Conversemos.',
+        'footer.rights': '© 2026 Bastida Systems. Todos los derechos reservados.'
+      }
+    };
+
+    const languageStorageKey = 'site-language';
+    let activeLanguage = localStorage.getItem(languageStorageKey) || (navigator.language.startsWith('es') ? 'es' : 'en');
+
+    if (!siteTranslations[activeLanguage]) {
+      activeLanguage = 'en';
+    }
+
+    const translate = key => (
+      siteTranslations[activeLanguage][key] ||
+      siteTranslations.en[key] ||
+      ''
+    );
+
+    const applyLanguage = language => {
+      activeLanguage = siteTranslations[language] ? language : 'en';
+      document.documentElement.lang = activeLanguage;
+      document.title = translate('meta.title');
+      localStorage.setItem(languageStorageKey, activeLanguage);
+
+      document.querySelectorAll('[data-i18n]').forEach(element => {
+        element.textContent = translate(element.dataset.i18n);
+      });
+
+      document.querySelectorAll('[data-i18n-aria-label]').forEach(element => {
+        element.setAttribute('aria-label', translate(element.dataset.i18nAriaLabel));
+      });
+
+      const languageSelect = document.getElementById('language-select');
+      if (languageSelect) {
+        languageSelect.value = activeLanguage;
+      }
+    };
+
+    const languagePicker = `
+      <label class="language-picker">
+        <span data-i18n="nav.language">Language</span>
+        <select id="language-select" aria-label="Language selector" data-i18n-aria-label="nav.languageSelector">
+          <option value="en">EN</option>
+          <option value="es">ES</option>
+        </select>
+      </label>
+    `;
+
     const sharedHeader = `
       <nav class="flex justify-between items-center px-4 md:px-8 py-5 border-b border-gray-200 bg-white sticky top-0 z-50">
         <div class="flex items-center gap-3">
@@ -68,6 +191,37 @@
 
     const headerTarget = document.getElementById('site-header');
 
+    const enhanceHeader = () => {
+      const navLinks = headerTarget.querySelector('nav > div:last-child');
+      if (!navLinks) return;
+
+      navLinks.classList.add('site-nav');
+
+      const navMap = {
+        'index.html#products': 'nav.products',
+        'about.html': 'nav.about',
+        'index.html#contact': 'nav.contact'
+      };
+
+      navLinks.querySelectorAll('a').forEach(link => {
+        const key = navMap[link.getAttribute('href')];
+        if (key) {
+          link.dataset.i18n = key;
+        }
+      });
+
+      if (!navLinks.querySelector('#language-select')) {
+        navLinks.insertAdjacentHTML('beforeend', languagePicker);
+      }
+
+      const languageSelect = document.getElementById('language-select');
+      if (languageSelect) {
+        languageSelect.addEventListener('change', event => {
+          applyLanguage(event.target.value);
+        });
+      }
+    };
+
     fetch('header.html')
       .then(response => {
         if (!response.ok) throw new Error('header.html not found');
@@ -75,10 +229,22 @@
       })
       .then(html => {
         headerTarget.innerHTML = html;
+        enhanceHeader();
+        applyLanguage(activeLanguage);
       })
       .catch(() => {
         headerTarget.innerHTML = sharedHeader;
+        enhanceHeader();
+        applyLanguage(activeLanguage);
       });
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        applyLanguage(activeLanguage);
+      });
+    } else {
+      applyLanguage(activeLanguage);
+    }
   </script>
 
   <!-- HERO -->
@@ -86,19 +252,19 @@
     <div class="absolute inset-0 bg-gradient-to-br from-transparent via-gray-900/40 to-black z-0"></div>
     <img src="img/logo_bastida_sys.png" alt="Background Logo" class="absolute inset-0 m-auto -translate-y-10 w-96 opacity-10 pointer-events-none select-none z-0">
     
-    <h1 class="text-5xl md:text-7xl font-bold mb-10 relative z-20 gradient-text leading-[1.22] tracking-normal">
+    <h1 class="text-5xl md:text-7xl font-bold mb-10 relative z-20 gradient-text leading-[1.22] tracking-normal" data-i18n="hero.heading">
       Engineering Intelligent Systems
     </h1>
 
-    <p class="text-lg text-gray-400 max-w-2xl mb-8 relative z-20">
+    <p class="text-lg text-gray-400 max-w-2xl mb-8 relative z-20" data-i18n="hero.body">
       Bastida Systems develops intelligent software platforms that enable operations to monitor critical infrastructure, reduce operational risk, and maintain compliance through real-time data and automation.
     </p>
 
     <div class="flex gap-4 relative z-20">
-      <a href="#products" class="px-6 py-3 bg-white text-black rounded-full font-medium hover:opacity-80 transition duration-300 hover:scale-105 inline-block">
+      <a href="#products" class="px-6 py-3 bg-white text-black rounded-full font-medium hover:opacity-80 transition duration-300 hover:scale-105 inline-block" data-i18n="hero.explore">
         Explore Products
       </a>
-      <a href="#contact" class="px-6 py-3 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105 inline-block">
+      <a href="#contact" class="px-6 py-3 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105 inline-block" data-i18n="nav.contact">
         Contact
       </a>
     </div>
@@ -108,7 +274,7 @@
   <!-- PRODUCTS -->
   <section id="products" class="px-8 py-20 border-t border-gray-800 fade-in">
 
-    <h2 class="text-3xl font-semibold mb-10">Products</h2>
+    <h2 class="text-3xl font-semibold mb-10" data-i18n="products.heading">Products</h2>
 
     <div class="grid gap-8 lg:grid-cols-2">
       <div class="bg-gray-900/60 backdrop-blur-md p-8 rounded-2xl border border-gray-800 hover:border-gray-600 transition">
@@ -121,12 +287,12 @@
               <h3 class="text-2xl font-semibold">FiltraCore</h3>
             </div>
 
-            <p class="text-gray-400 mb-6">
+            <p class="text-gray-400 mb-6" data-i18n="products.filtracore.body">
               A smart filtration monitoring system designed for casinos, restaurants, and industrial environments. 
               Track PSI, filter lifespan, and maintenance in real time.
             </p>
 
-            <a href="filtracore.html" class="px-5 py-2 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105 inline-block">
+            <a href="filtracore.html" class="px-5 py-2 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105 inline-block" data-i18n="products.learnMore">
               Learn More
             </a>
 
@@ -149,11 +315,11 @@
               <h3 class="text-2xl font-semibold">Beoflow</h3>
             </div>
 
-            <p class="text-gray-400 mb-6">
-              BEO management for event calendars, inventory, production, staff, and banquet execution.
+            <p class="text-gray-400 mb-6" data-i18n="products.beoflow.body">
+              Kitchen operations platform for menus, inventory, production, staff, service planning, and daily execution.
             </p>
 
-            <a href="beoflow.html" class="px-5 py-2 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105 inline-block">
+            <a href="beoflow.html" class="px-5 py-2 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105 inline-block" data-i18n="products.learnMore">
               Learn More
             </a>
 
@@ -171,8 +337,8 @@
 
   <!-- CONTACT -->
   <section id="contact" class="px-8 py-20 border-t border-gray-800 fade-in">
-    <h2 class="text-3xl font-semibold mb-8">Contact</h2>
-    <p class="text-gray-400 max-w-2xl leading-8 mb-6">
+    <h2 class="text-3xl font-semibold mb-8" data-i18n="contact.heading">Contact</h2>
+    <p class="text-gray-400 max-w-2xl leading-8 mb-6" data-i18n="contact.body">
       Interested in FiltraCore, Beoflow, or custom intelligent systems for your operation? Let’s connect.
     </p>
     <div class="flex flex-col items-start gap-4">
@@ -190,12 +356,12 @@
   <footer class="px-8 py-10 border-t border-gray-800 text-gray-500 text-sm text-center">
 
     <div class="flex justify-center gap-6 mb-4 text-gray-400">
-      <a href="index.html#products" class="hover:text-white transition">Products</a>
-      <a href="about.html" class="hover:text-white transition">About</a>
-      <a href="index.html#contact" class="hover:text-white transition">Contact</a>
+      <a href="index.html#products" class="hover:text-white transition" data-i18n="nav.products">Products</a>
+      <a href="about.html" class="hover:text-white transition" data-i18n="nav.about">About</a>
+      <a href="index.html#contact" class="hover:text-white transition" data-i18n="nav.contact">Contact</a>
     </div>
 
-    <p>© 2026 Bastida Systems. All rights reserved.</p>
+    <p data-i18n="footer.rights">© 2026 Bastida Systems. All rights reserved.</p>
 
   </footer>
 
