@@ -52,6 +52,7 @@ img {
   z-index: 50;
   border-bottom: 1px solid rgba(20, 56, 79, 0.14);
   background: rgba(255, 255, 255, 0.94);
+  -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
 }
 
@@ -231,6 +232,7 @@ img {
   align-items: center;
   justify-content: center;
   min-height: 88vh;
+  min-height: 88svh;
   padding: 6rem 1.5rem;
   background: #fff;
   text-align: center;
@@ -250,6 +252,7 @@ img {
   opacity: 0.1;
   animation: heroZoom 16s ease-in-out infinite alternate;
   transform-origin: top center;
+  will-change: transform;
 }
 
 .hero-overlay {
@@ -264,6 +267,7 @@ img {
   flex-direction: column;
   align-items: center;
   width: min(100%, 72rem);
+  padding: 0 1rem;
 }
 
 .product-logo {
@@ -288,19 +292,32 @@ img {
   font-size: clamp(3rem, 5.6vw, 4.5rem);
   line-height: 1;
   font-weight: 700;
+  text-wrap: balance;
 }
 
 .text-color-shift {
+  display: inline-block;
+  max-width: 100%;
+  color: var(--gold);
+  -webkit-animation: textColorSweep 5.5s ease-in-out 0.25s infinite alternate;
   animation: textColorSweep 5.5s ease-in-out 0.25s infinite alternate;
-  background: linear-gradient(90deg, #00b875 0%, #00b875 18%, #111827 42%, #d6a66f 64%, #d6a66f 100%);
-  background-size: 260% 100%;
-  background-position: 0% 50%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(90deg, #00b875 0%, #00b875 18%, #111827 42%, #d6a66f 64%, #d6a66f 100%);
+  background-size: 320% 100%;
+  background-position: left center;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
   text-shadow: 0 10px 35px rgba(0, 184, 117, 0.12);
+  transform: translateZ(0);
   will-change: background-position, text-shadow;
+}
+
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .text-color-shift {
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
 }
 
 .hero-body {
@@ -1102,7 +1119,7 @@ img {
 
 @keyframes textColorSweep {
   0% {
-    background-position: 0% 50%;
+    background-position: left center;
     text-shadow: 0 10px 35px rgba(0, 184, 117, 0.14);
   }
 
@@ -1112,7 +1129,24 @@ img {
   }
 
   100% {
-    background-position: 100% 50%;
+    background-position: right center;
+    text-shadow: 0 10px 35px rgba(214, 166, 111, 0.2);
+  }
+}
+
+@-webkit-keyframes textColorSweep {
+  0% {
+    background-position: left center;
+    text-shadow: 0 10px 35px rgba(0, 184, 117, 0.14);
+  }
+
+  50% {
+    background-position: 52% 50%;
+    text-shadow: 0 10px 35px rgba(15, 23, 42, 0.08);
+  }
+
+  100% {
+    background-position: right center;
     text-shadow: 0 10px 35px rgba(214, 166, 111, 0.2);
   }
 }
@@ -1168,11 +1202,12 @@ img {
 
   .hero-section {
     min-height: 82vh;
+    min-height: 82svh;
     padding: 4rem 1rem;
   }
 
   .hero-center h1 {
-    font-size: 4rem;
+    font-size: clamp(2.75rem, 11vw, 4rem);
   }
 
   .hero-detail-title {
@@ -1271,7 +1306,8 @@ img {
   }
 
   .hero-center h1 {
-    font-size: 3.3rem;
+    font-size: clamp(2.55rem, 13vw, 3.3rem);
+    line-height: 1.03;
   }
 
   .button-primary,
