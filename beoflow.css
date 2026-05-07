@@ -792,7 +792,8 @@ img {
   font-weight: 800;
 }
 
-.event-steps span {
+.event-steps li > span:first-child {
+  flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -802,6 +803,16 @@ img {
   background: var(--navy);
   color: #fff;
   font-size: 0.9rem;
+}
+
+.event-steps li > span:last-child {
+  display: block;
+  min-width: 0;
+  width: auto;
+  height: auto;
+  color: var(--ink-strong);
+  font-size: 1rem;
+  line-height: 1.35;
 }
 
 .operations-grid {
