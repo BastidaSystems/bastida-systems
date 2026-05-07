@@ -18,6 +18,19 @@
       font-family: 'Manrope', sans-serif;
       letter-spacing: 0.02em;
     }
+
+    @media print {
+      #site-header,
+      #site-header nav {
+        position: static !important;
+        top: auto !important;
+        z-index: auto !important;
+      }
+
+      #site-header nav {
+        break-after: avoid;
+      }
+    }
   </style>
 
 </head>

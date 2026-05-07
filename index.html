@@ -82,6 +82,24 @@
         display: none;
       }
     }
+
+    @media print {
+      #site-header,
+      #site-header nav {
+        position: static !important;
+        top: auto !important;
+        z-index: auto !important;
+      }
+
+      #site-header nav {
+        break-after: avoid;
+      }
+
+      .fade-in {
+        opacity: 1 !important;
+        transform: none !important;
+      }
+    }
   </style>
 </head>
 

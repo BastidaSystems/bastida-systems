@@ -276,6 +276,24 @@
       }
     }
 
+    @media print {
+      .beo-header {
+        position: static !important;
+        top: auto !important;
+        z-index: auto !important;
+        break-after: avoid;
+      }
+
+      .hero-section {
+        min-height: auto !important;
+        padding: 3rem 1.5rem !important;
+      }
+
+      .hero-bg {
+        animation: none !important;
+      }
+    }
+
     @keyframes textColorSweep {
       0% {
         background-position: left center;
@@ -310,7 +328,7 @@
       }
     }
   </style>
-  <link rel="stylesheet" href="./beoflow.css?v=20260507-header">
+  <link rel="stylesheet" href="./beoflow.css?v=20260507-print">
 </head>
 
 <body class="beoflow-page">

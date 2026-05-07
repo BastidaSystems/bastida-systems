@@ -1364,3 +1364,28 @@ img {
     transition-duration: 0.001ms !important;
   }
 }
+
+@media print {
+  .beo-header {
+    position: static !important;
+    top: auto !important;
+    z-index: auto !important;
+    break-after: avoid;
+  }
+
+  .hero-section {
+    min-height: auto !important;
+    padding: 3rem 1.5rem !important;
+  }
+
+  .hero-bg {
+    animation: none !important;
+  }
+
+  .fade-up,
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+}
