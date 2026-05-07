@@ -373,6 +373,35 @@ img {
   border-color: #111827;
 }
 
+.principle-section {
+  padding: 3.4rem 0;
+  border-top: 1px solid rgba(20, 56, 79, 0.1);
+  border-bottom: 1px solid rgba(20, 56, 79, 0.1);
+  background: #fff;
+}
+
+.principle-shell {
+  max-width: 1040px;
+  text-align: center;
+}
+
+.principle-shell h2 {
+  margin: 1rem auto 0;
+  color: var(--ink);
+  font-size: clamp(2.15rem, 4vw, 3.4rem);
+  line-height: 1.04;
+  font-weight: 800;
+  text-wrap: balance;
+}
+
+.principle-shell p {
+  max-width: 940px;
+  margin: 1.2rem auto 0;
+  color: var(--muted);
+  font-size: 1.04rem;
+  line-height: 1.85;
+}
+
 .hero-detail-section {
   padding: 5.5rem 0 4.5rem;
   background: linear-gradient(180deg, #fff 0%, var(--paper-soft) 100%);
@@ -1254,6 +1283,7 @@ img {
   }
 
   .problem-section,
+  .principle-section,
   .hero-detail-section,
   .solution-section,
   .flow-map-section,
