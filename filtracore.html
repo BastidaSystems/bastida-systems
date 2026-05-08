@@ -4,19 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FiltraCore | Bastida Systems</title>
+  <meta name="description" content="FiltraCore is a filter intelligence system for restaurants, casinos, and operations teams that need cleaner PSI tracking, filter lifecycle visibility, inventory control, and maintenance records.">
   <link rel="icon" type="image/png" href="img/LOGO_FILTRACOREXCODE.png">
 
   <script src="https://cdn.tailwindcss.com"></script>
-
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-
-  <!-- Custom CSS -->
   <link rel="stylesheet" href="filtra.css">
+
   <style>
     body {
       font-family: 'Manrope', sans-serif;
-      letter-spacing: 0.02em;
+      letter-spacing: 0;
     }
 
     @media print {
@@ -32,11 +30,9 @@
       }
     }
   </style>
-
 </head>
 
-<body class="text-black bg-white">
-
+<body>
   <div id="site-header"></div>
 
   <script>
@@ -72,201 +68,265 @@
       });
   </script>
 
-  <!-- HERO -->
-  <section class="h-screen flex flex-col justify-center items-center text-center px-6 relative overflow-hidden">
+  <main class="fc-page">
+    <section class="fc-hero" aria-labelledby="hero-title">
+      <div class="fc-container fc-hero-grid">
+        <div class="fc-hero-copy">
+          <a href="index.html" class="fc-brand-lockup" aria-label="Bastida Systems home">
+            <img src="img/LOGO_FILTRACOREXCODE.png" alt="" class="fc-brand-mark">
+            <span>
+              <strong>FiltraCore</strong>
+              <small>Filter Intelligence System</small>
+            </span>
+          </a>
 
-  <!-- Background Image -->
-  <img src="img/filtracore-dashboard.jpeg" alt="FiltraCore dashboard background" class="absolute inset-0 h-full w-full object-cover object-top opacity-10 z-0">
+          <h1 id="hero-title">
+            <span class="fc-title-desktop">Every filter, machine,<br>PSI check, and<br>maintenance action<br>in one system.</span>
+            <span class="fc-title-mobile">Every filter,<br>machine, PSI<br>check, and<br>maintenance<br>action in one<br>system.</span>
+          </h1>
 
-  <!-- Dark Overlay -->
-  <div class="absolute inset-0 bg-white/70 z-0"></div>
+          <p class="fc-hero-lede">
+            The new FiltraCore update makes setup faster from mobile: add machines, register inventory,
+            install filters, log maintenance, and review operational risk from the floor.
+          </p>
 
-    <img src="img/LOGO_FILTRACOREXCODE.png" alt="FiltraCore Logo" class="w-16 h-16 mb-6 opacity-90 relative z-10">
-    <p class="text-sm tracking-widest uppercase text-black mb-4 relative z-10">FiltraCore</p>
+          <div class="fc-hero-actions" aria-label="FiltraCore calls to action">
+            <a href="#demo-access" data-demo-access class="fc-button fc-button-primary">Request Demo</a>
+            <a href="#mobile-update" class="fc-button fc-button-secondary">See Mobile Update</a>
+          </div>
+        </div>
 
-    <h1 class="filtracore-text-shift text-5xl md:text-7xl font-bold mb-6 relative z-10">
-      Track Every Filter.<br>Prevent Every Failure.
-    </h1>
+        <div class="fc-hero-visual" aria-label="FiltraCore desktop and mobile product mockups">
+          <figure class="fc-computer-mockup">
+            <div class="fc-computer-frame">
+              <div class="fc-computer-screen">
+                <img src="img/filtracore-desktop/dashboard.png" alt="FiltraCore desktop dashboard showing filter spend, risk exposure, setup progress, and system metrics" decoding="async" fetchpriority="high">
+              </div>
+              <div class="fc-computer-chin"></div>
+            </div>
+            <div class="fc-computer-stand"></div>
+            <div class="fc-computer-base"></div>
+          </figure>
 
-    <p class="text-gray-600 max-w-3xl mb-8 leading-8 relative z-10">
-      FiltraCore is a smart filtration monitoring system designed for casinos, restaurants,
-      and industrial operations. It is built around preventive maintenance workflows inspired by
-      FDA Food Code guidance, HACCP system thinking, and NSF-aligned sanitation practices to help
-      teams monitor PSI, track filter lifespan, document replacements, and maintain cleaner,
-      more consistent water systems.
-    </p>
-
-    <div class="flex gap-4 relative z-10">
-      <a href="#demo-access" data-demo-access class="px-6 py-3 bg-black text-white rounded-full font-medium hover:opacity-90 hover:scale-105 transition inline-block">
-        Request Demo
-      </a>
-    </div>
-  </section>
-
-  <!-- FEATURES -->
-  <section class="px-8 py-20 border-t border-gray-200">
-
-    <h2 class="text-3xl font-semibold mb-12 text-center">Core Features</h2>
-
-    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-
-      <div class="p-6 border border-gray-200 rounded-xl">
-        <h3 class="text-xl font-semibold mb-3">Machine setup</h3>
-        <p class="text-gray-600 mb-5">
-          Register each machine with location, department, brand, model, and machine ID before assigning filters.
-        </p>
-
-        <div class="aspect-[4/3] overflow-hidden rounded-lg border border-gray-200">
-          <img src="img/filtracore-machines.jpeg" alt="FiltraCore machine registration screen" class="h-full w-full object-cover object-left-top">
+          <figure class="fc-phone-mockup">
+            <img src="img/filtracore-mobile/dashboard.png" alt="FiltraCore mobile dashboard with machine, filter, stock, and priority status cards" decoding="async" fetchpriority="high">
+          </figure>
         </div>
       </div>
+    </section>
 
-      <div class="p-6 border border-gray-200 rounded-xl">
-        <h3 class="text-xl font-semibold mb-3">Guided workflow</h3>
-        <p class="text-gray-600 mb-5">
-          Walk through machine registration, filter installation, lifespan setup, dashboard review, and reporting.
-        </p>
+    <section class="fc-metrics" aria-label="FiltraCore product highlights">
+      <div class="fc-container fc-metric-grid">
+        <article>
+          <span>Setup</span>
+          <strong>Mobile first</strong>
+          <p>Create operational records without returning to a desktop workstation.</p>
+        </article>
 
-        <div class="aspect-[4/3] overflow-hidden rounded-lg border border-gray-200 bg-white">
-          <img src="img/filtracore-setup.jpeg" alt="FiltraCore setup checklist" class="h-full w-full object-contain object-top">
+        <article>
+          <span>Lifecycle</span>
+          <strong>3 active filters</strong>
+          <p>Track due dates, PSI history, and filter status by machine.</p>
+        </article>
+
+        <article>
+          <span>Controls</span>
+          <strong>$2,148.35</strong>
+          <p>Keep inventory value and stock levels visible for purchasing decisions.</p>
+        </article>
+
+        <article>
+          <span>Risk</span>
+          <strong>2 alerts</strong>
+          <p>Surface watch items before they become downtime or service quality issues.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="mobile-update" class="fc-section fc-mobile-update" aria-labelledby="mobile-title">
+      <div class="fc-container">
+        <div class="fc-section-header fc-section-header-split">
+          <div>
+            <p class="fc-section-label">New mobile workflow</p>
+            <h2 id="mobile-title">A simpler process for the people doing the work.</h2>
+          </div>
+
+          <p>
+            The phone screens now cover the core field routine: create the machine, add the filter product,
+            install the filter, record PSI, and log maintenance without jumping through the desktop modules.
+          </p>
+        </div>
+
+        <div class="fc-mobile-workflow">
+          <article class="fc-step-card">
+            <span>01</span>
+            <h3>Add the machine</h3>
+            <p>Capture name, type, location, department, brand, model, and machine ID in one clean form.</p>
+            <img src="img/filtracore-mobile/add-machine.png" alt="Mobile Add Machine form in FiltraCore" loading="lazy" decoding="async">
+          </article>
+
+          <article class="fc-step-card">
+            <span>02</span>
+            <h3>Install the filter</h3>
+            <p>Select the machine, choose inventory, set lifespan, and create due dates from the phone.</p>
+            <img src="img/filtracore-mobile/install-filter.png" alt="Mobile Install Filter form in FiltraCore" loading="lazy" decoding="async">
+          </article>
+
+          <article class="fc-step-card">
+            <span>03</span>
+            <h3>Monitor PSI</h3>
+            <p>Review active filters, update pressure readings, and flag watch items from the same mobile view.</p>
+            <img src="img/filtracore-mobile/filters.png" alt="Mobile Filters screen showing PSI tracking and active status" loading="lazy" decoding="async">
+          </article>
+
+          <article class="fc-step-card">
+            <span>04</span>
+            <h3>Log maintenance</h3>
+            <p>Record inspections, corrected PSI, notes, and replacement actions while the work is fresh.</p>
+            <img src="img/filtracore-mobile/log-maintenance.png" alt="Mobile Log Maintenance form in FiltraCore" loading="lazy" decoding="async">
+          </article>
         </div>
       </div>
+    </section>
 
-      <div class="p-6 border border-gray-200 rounded-xl">
-        <h3 class="text-xl font-semibold mb-3">Maintenance layer</h3>
-        <p class="text-gray-600 mb-5">
-          Resolve alerts, log inspections, document replacements, and keep maintenance records visible.
-        </p>
+    <section class="fc-section fc-system" aria-labelledby="system-title">
+      <div class="fc-container">
+        <div class="fc-section-header">
+          <p class="fc-section-label">Desktop command center</p>
+          <h2 id="system-title">The full operation stays organized by module.</h2>
+          <p>
+            Supervisors can move through machines, inventory, filters, maintenance, and reports while the mobile
+            workflow keeps frontline updates flowing into the same system.
+          </p>
+        </div>
 
-        <div class="aspect-[4/3] overflow-hidden rounded-lg border border-gray-200 bg-white">
-          <img src="img/filtracore-maintenance.jpeg" alt="FiltraCore maintenance summary" class="h-full w-full object-contain object-left-top">
+        <div class="fc-showcase">
+          <figure class="fc-showcase-main">
+            <img src="img/filtracore-desktop/machines.png" alt="FiltraCore Machines module with registration form and machine table" loading="lazy" decoding="async">
+          </figure>
+
+          <div class="fc-module-list">
+            <article>
+              <span>Machines</span>
+              <h3>Register assets before assigning filters.</h3>
+              <p>Location, department, model, ID, status, PSI, and installed filter stay tied to each machine.</p>
+            </article>
+
+            <article>
+              <span>Inventory</span>
+              <h3>Control product stock and unit cost.</h3>
+              <p>Track reorder levels and inventory value before filters are assigned into the lifecycle.</p>
+            </article>
+
+            <article>
+              <span>Filters</span>
+              <h3>Monitor lifecycle and pressure.</h3>
+              <p>Due dates, days left, PSI, watch status, and maintenance actions are visible in one table.</p>
+            </article>
+          </div>
+        </div>
+
+        <div class="fc-desktop-gallery" aria-label="FiltraCore desktop module screenshots">
+          <figure>
+            <img src="img/filtracore-desktop/inventory.png" alt="FiltraCore inventory desktop screen" loading="lazy" decoding="async">
+            <figcaption>Inventory layer</figcaption>
+          </figure>
+
+          <figure>
+            <img src="img/filtracore-desktop/filters.png" alt="FiltraCore filters desktop screen" loading="lazy" decoding="async">
+            <figcaption>Lifecycle layer</figcaption>
+          </figure>
+
+          <figure>
+            <img src="img/filtracore-desktop/maintenance.png" alt="FiltraCore maintenance desktop screen" loading="lazy" decoding="async">
+            <figcaption>Maintenance layer</figcaption>
+          </figure>
         </div>
       </div>
+    </section>
 
-      <div class="p-6 border border-gray-200 rounded-xl">
-        <h3 class="text-xl font-semibold mb-3">Module navigation</h3>
-        <p class="text-gray-600 mb-5">
-          Move between dashboard, machines, inventory, filters, maintenance, and reports quickly.
-        </p>
+    <section class="fc-section fc-intelligence" aria-labelledby="intelligence-title">
+      <div class="fc-container fc-intelligence-grid">
+        <div>
+          <p class="fc-section-label">Executive intelligence</p>
+          <h2 id="intelligence-title">Reports connect financial exposure with operational risk.</h2>
+          <p>
+            FiltraCore turns filter data into a practical management view: total spend, average cost,
+            monthly and annual estimates, pending maintenance, risk exposure, potential savings, stock control,
+            and printable summaries.
+          </p>
 
-        <div class="aspect-[4/3] overflow-hidden rounded-lg border border-gray-200 bg-white">
-          <img src="img/filtracore-navigation.jpeg" alt="FiltraCore module navigation" class="h-full w-full object-contain object-top">
+          <div class="fc-intelligence-points">
+            <article>
+              <strong>Financial overview</strong>
+              <span>Installed filter cost, average filter cost, monthly spend, and annual spend.</span>
+            </article>
+
+            <article>
+              <strong>Operational summary</strong>
+              <span>Total machines, at-risk assets, installed filters, and intelligence alerts.</span>
+            </article>
+
+            <article>
+              <strong>Maintenance output</strong>
+              <span>Generate summaries and print reports when the layout is ready for leadership review.</span>
+            </article>
+          </div>
+        </div>
+
+        <figure class="fc-report-mockup">
+          <img src="img/filtracore-desktop/reports.png" alt="FiltraCore reports desktop screen with financial overview, operational summary, and report actions" loading="lazy" decoding="async">
+        </figure>
+      </div>
+    </section>
+
+    <section class="fc-section fc-ops" aria-labelledby="ops-title">
+      <div class="fc-container">
+        <div class="fc-section-header">
+          <p class="fc-section-label">Food service operations</p>
+          <h2 id="ops-title">Built around preventive filter discipline.</h2>
+          <p>
+            FiltraCore supports daily routines inspired by HACCP-style prevention, FIFO inventory habits,
+            traceable maintenance logs, and NSF-focused sanitation practices. It is designed to help teams
+            document work consistently before small filter issues turn into service disruption.
+          </p>
+        </div>
+
+        <div class="fc-ops-grid">
+          <article>
+            <h3>PSI monitoring</h3>
+            <p>Record baseline and corrected pressure readings so changing flow conditions are visible.</p>
+          </article>
+
+          <article>
+            <h3>Filter lifecycle</h3>
+            <p>Track installation dates, due dates, lifespan months, and days left by machine.</p>
+          </article>
+
+          <article>
+            <h3>Traceability logs</h3>
+            <p>Keep maintenance type, notes, technician action, and filter replacement context in one record trail.</p>
+          </article>
+
+          <article>
+            <h3>Inventory readiness</h3>
+            <p>Connect available stock, reorder levels, and installed filters so purchasing has better context.</p>
+          </article>
         </div>
       </div>
+    </section>
 
-    </div>
+    <section id="demo-access" class="fc-cta" aria-labelledby="cta-title">
+      <div class="fc-container fc-cta-inner">
+        <div>
+          <h2 id="cta-title">Ready to bring FiltraCore online?</h2>
+          <p>Request access to the current demo and review the new mobile workflow with the desktop command center.</p>
+        </div>
 
-    <div class="mt-16 flex justify-center relative">
-      <img src="img/filtracore-dashboard.jpeg" alt="FiltraCore dashboard overview" class="w-full max-w-5xl rounded-xl border border-gray-200 object-contain">
-    </div>
-
-  </section>
-
-  <!-- COMPLIANCE SECTION -->
-  <section class="px-8 py-20 border-t border-gray-200">
-
-    <h2 class="text-3xl font-semibold mb-6 text-center">Built around food safety systems</h2>
-
-    <p class="text-gray-600 max-w-3xl mx-auto text-center leading-8 mb-12">
-      FiltraCore is designed to support operational routines inspired by FDA Food Code principles,
-      HACCP-style preventive control systems, and NSF-focused sanitation best practices. Rather than waiting
-      for failures, teams can document filter activity, verify replacement intervals, and build cleaner
-      maintenance habits into daily operations.
-    </p>
-
-    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-
-      <div class="p-6 border border-gray-200 rounded-xl">
-        <h3 class="text-lg font-semibold mb-3">HACCP mindset</h3>
-        <p class="text-gray-600 leading-7">
-          Apply preventive thinking to water filtration by treating PSI drops, overdue filters, and poor water flow
-          as critical warning points before they affect service quality, equipment reliability, or food safety routines.
-        </p>
+        <a href="#demo-access" data-demo-access class="fc-button fc-button-primary">Request Demo</a>
       </div>
-
-      <div class="p-6 border border-gray-200 rounded-xl">
-        <h3 class="text-lg font-semibold mb-3">FIFO filter rotation</h3>
-        <p class="text-gray-600 leading-7">
-          Support first-in, first-out inventory habits so older cartridges, stored filters, and replacement stock
-          are used in the correct order and tracked clearly across locations and machines.
-        </p>
-      </div>
-
-      <div class="p-6 border border-gray-200 rounded-xl">
-        <h3 class="text-lg font-semibold mb-3">Traceability logs</h3>
-        <p class="text-gray-600 leading-7">
-          Record installation dates, due dates, PSI values, technician actions, and service notes to strengthen
-          accountability, verification, and inspection-ready maintenance history.
-        </p>
-      </div>
-
-      <div class="p-6 border border-gray-200 rounded-xl">
-        <h3 class="text-lg font-semibold mb-3">NSF-aligned sanitation focus</h3>
-        <p class="text-gray-600 leading-7">
-          Reinforce cleaner equipment practices by supporting scheduled filter changes, cleaner water pathways,
-          and more consistent maintenance verification for beverage, ice, and food service systems.
-        </p>
-      </div>
-
-      <div class="p-6 border border-gray-200 rounded-xl">
-        <h3 class="text-lg font-semibold mb-3">Corrective action tracking</h3>
-        <p class="text-gray-600 leading-7">
-          When PSI falls outside target range or a replacement is overdue, FiltraCore helps teams document
-          corrective actions before the issue turns into downtime or a sanitation risk.
-        </p>
-      </div>
-
-      <div class="p-6 border border-gray-200 rounded-xl">
-        <h3 class="text-lg font-semibold mb-3">Date marking & intervals</h3>
-        <p class="text-gray-600 leading-7">
-          Keep visible replacement intervals, install dates, and next-service dates so operators can verify
-          schedules quickly and maintain disciplined preventive maintenance routines.
-        </p>
-      </div>
-
-      <div class="p-6 border border-gray-200 rounded-xl">
-        <h3 class="text-lg font-semibold mb-3">Machine-by-machine visibility</h3>
-        <p class="text-gray-600 leading-7">
-          View each machine as its own monitored control point with service history, filter status,
-          and replacement accountability tied directly to the unit.
-        </p>
-      </div>
-
-      <div class="p-6 border border-gray-200 rounded-xl">
-        <h3 class="text-lg font-semibold mb-3">Inspection-ready records</h3>
-        <p class="text-gray-600 leading-7">
-          Build a more organized record trail for supervisors, engineers, and operations teams by keeping
-          maintenance documentation accessible, consistent, and easy to verify.
-        </p>
-      </div>
-
-    </div>
-
-  </section>
-
-  <!-- ROI SECTION -->
-  <section class="px-8 py-20 border-t border-gray-200 text-center">
-
-    <h2 class="text-3xl font-semibold mb-6">Why FiltraCore?</h2>
-
-    <p class="text-gray-600 max-w-3xl mx-auto leading-8">
-      Avoid health violations, reduce maintenance costs, and support better food safety routines across beverage,
-      ice, coffee, and water systems. FiltraCore helps teams stay organized with filter traceability, FIFO-ready
-      inventory logic, preventive maintenance records, and cleaner operational discipline.
-    </p>
-
-  </section>
-
-  <!-- CTA -->
-  <section class="px-8 py-20 border-t border-gray-200 text-center">
-
-    <h2 class="text-3xl font-semibold mb-6">Ready to take control?</h2>
-
-    <a href="#demo-access" data-demo-access class="px-6 py-3 bg-black text-white rounded-full font-medium hover:opacity-90 hover:scale-105 transition inline-block">
-      Request Demo
-    </a>
-
-  </section>
+    </section>
+  </main>
 
   <script>
     const demoAccessCode = 'B@stida420';
@@ -290,28 +350,19 @@
     });
   </script>
 
-  <!-- FOOTER -->
-  <footer class="px-8 py-10 border-t border-gray-200 text-gray-600 text-sm text-center">
-
-    <div class="flex justify-center gap-6 mb-4 text-gray-500">
-      <a href="index.html#products" class="hover:text-black transition">Products</a>
-      <a href="about.html" class="hover:text-black transition">About</a>
-      <a href="index.html#contact" class="hover:text-black transition">Contact</a>
+  <footer class="fc-footer">
+    <div class="fc-footer-links">
+      <a href="index.html#products">Products</a>
+      <a href="about.html">About</a>
+      <a href="index.html#contact">Contact</a>
     </div>
 
-    <div class="flex flex-col items-start gap-4">
-      <a href="mailto:bastidasystems@gmail.com" class="inline-block px-6 py-3 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105">
-        bastidasystems@gmail.com
-      </a>
-
-      <a href="tel:+17020000000" class="inline-block px-6 py-3 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105">
-        +1 (702) 661-7149
-      </a>
+    <div class="fc-footer-contact">
+      <a href="mailto:bastidasystems@gmail.com">bastidasystems@gmail.com</a>
+      <a href="tel:+17026617149">+1 (702) 661-7149</a>
     </div>
 
-    <p>© 2026 Bastida Systems. All rights reserved.</p>
-
+    <p>&copy; 2026 Bastida Systems. All rights reserved.</p>
   </footer>
-
 </body>
 </html>
