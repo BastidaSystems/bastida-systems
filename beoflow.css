@@ -1515,6 +1515,26 @@ img {
     break-before: page;
   }
 
+  .principle-section {
+    display: flex !important;
+    align-items: center !important;
+    min-height: 6.7in !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  .principle-shell {
+    width: min(8.6in, 100%) !important;
+    margin-right: auto !important;
+    margin-left: auto !important;
+    text-align: center !important;
+  }
+
+  .principle-shell h2 {
+    margin-right: auto !important;
+    margin-left: auto !important;
+  }
+
   .hero-shell,
   .problem-grid,
   .feature-grid,
