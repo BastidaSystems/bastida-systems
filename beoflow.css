@@ -1395,7 +1395,22 @@ img {
   }
 }
 
+@page {
+  size: letter landscape;
+  margin: 0.38in;
+}
+
 @media print {
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+  }
+
   .beo-header {
     position: static !important;
     top: auto !important;
@@ -1403,14 +1418,55 @@ img {
     break-after: avoid;
   }
 
-  .hero-section {
-    min-height: auto !important;
-    padding: 3rem 1.5rem !important;
-    overflow: visible !important;
+  main > section,
+  .hero-proof,
+  .hero-shell,
+  .problem-card,
+  .module-card,
+  .flow-map,
+  .flow-map article,
+  .feature-grid,
+  .events-grid,
+  .operations-grid,
+  .operation-panel,
+  .flow-carousel,
+  .watch-grid,
+  .cta-shell {
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 
-  .hero-bg {
+  .section-shell,
+  .hero-shell,
+  .hero-proof {
+    width: 100% !important;
+  }
+
+  .principle-section,
+  .hero-detail-section,
+  .problem-section,
+  .solution-section,
+  .flow-map-section,
+  .feature-section,
+  .events-section,
+  .operations-section,
+  .preview-section,
+  .watch-section,
+  .cta-section {
+    padding: 0.34in 0 !important;
+  }
+
+  .hero-section {
+    min-height: auto !important;
+    padding: 0.45in 0 !important;
+    overflow: visible !important;
+    break-after: page;
+  }
+
+  .hero-bg,
+  .hero-overlay {
     animation: none !important;
+    display: none !important;
   }
 
   .hero-center {
@@ -1435,6 +1491,105 @@ img {
     font-size: 38pt !important;
     line-height: 1.18 !important;
     padding-bottom: 0.08em !important;
+  }
+
+  .hero-body {
+    max-width: 7in !important;
+    line-height: 1.55 !important;
+  }
+
+  .principle-section,
+  .problem-section,
+  .flow-map-section,
+  .events-section,
+  .preview-section,
+  .cta-section {
+    break-before: page;
+  }
+
+  .hero-shell,
+  .problem-grid,
+  .feature-grid,
+  .events-grid,
+  .watch-grid,
+  .flow-map-header,
+  .preview-heading,
+  .flow-carousel {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.35in !important;
+    align-items: center !important;
+  }
+
+  .module-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 0.14in !important;
+  }
+
+  .operations-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .flow-map {
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  }
+
+  .hero-proof {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  .section-heading h2,
+  .flow-map-header h2,
+  .feature-copy h2,
+  .preview-heading h2,
+  .cta-shell h2,
+  .problem-grid h2,
+  .hero-detail-title {
+    font-size: 24pt !important;
+    line-height: 1.08 !important;
+  }
+
+  .section-heading p,
+  .flow-map-header p,
+  .feature-copy p,
+  .preview-heading p,
+  .cta-shell p,
+  .principle-shell p,
+  .hero-detail-body {
+    font-size: 10pt !important;
+    line-height: 1.45 !important;
+  }
+
+  .hero-screen img,
+  .feature-media img,
+  .watch-media img,
+  .flow-image {
+    width: 100% !important;
+    max-height: 3.7in !important;
+    object-fit: contain !important;
+  }
+
+  .flow-image-wrap,
+  .flow-copy {
+    min-height: 0 !important;
+    height: auto !important;
+  }
+
+  .flow-copy {
+    padding: 0.28in !important;
+  }
+
+  .module-card,
+  .operation-panel,
+  .problem-card {
+    box-shadow: none !important;
+  }
+
+  .button-primary,
+  .button-secondary,
+  .flow-arrows,
+  .language-picker {
+    display: none !important;
   }
 
   .fade-up,

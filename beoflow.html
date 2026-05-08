@@ -276,7 +276,22 @@
       }
     }
 
+    @page {
+      size: letter landscape;
+      margin: 0.38in;
+    }
+
     @media print {
+      * {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      html,
+      body {
+        background: #fff !important;
+      }
+
       .beo-header {
         position: static !important;
         top: auto !important;
@@ -284,14 +299,24 @@
         break-after: avoid;
       }
 
-      .hero-section {
-        min-height: auto !important;
-        padding: 3rem 1.5rem !important;
-        overflow: visible !important;
+      main > section,
+      .hero-shell,
+      .hero-proof {
+        break-inside: avoid;
+        page-break-inside: avoid;
       }
 
-      .hero-bg {
+      .hero-section {
+        min-height: auto !important;
+        padding: 0.45in 0 !important;
+        overflow: visible !important;
+        break-after: page;
+      }
+
+      .hero-bg,
+      .hero-overlay {
         animation: none !important;
+        display: none !important;
       }
 
       .hero-center {
@@ -316,6 +341,29 @@
         font-size: 38pt !important;
         line-height: 1.18 !important;
         padding-bottom: 0.08em !important;
+      }
+
+      .principle-section,
+      .problem-section,
+      .flow-map-section,
+      .events-section,
+      .preview-section,
+      .cta-section {
+        break-before: page;
+      }
+
+      .hero-shell,
+      .problem-grid,
+      .feature-grid,
+      .events-grid,
+      .watch-grid,
+      .flow-map-header,
+      .preview-heading,
+      .flow-carousel {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 0.35in !important;
+        align-items: center !important;
       }
     }
 
@@ -353,7 +401,7 @@
       }
     }
   </style>
-  <link rel="stylesheet" href="./beoflow.css?v=20260507-print-title">
+  <link rel="stylesheet" href="./beoflow.css?v=20260508-print-landscape">
 </head>
 
 <body class="beoflow-page">
