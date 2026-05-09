@@ -190,16 +190,11 @@ p {
   position: relative;
   min-height: calc(100vh - 74px);
   padding: 72px 0 46px;
-  background:
-    linear-gradient(180deg, rgba(246, 248, 251, 0.02) 0%, rgba(246, 248, 251, 0.92) 90%),
-    url('img/filtracore-desktop/dashboard.png') center top / cover no-repeat;
+  background: linear-gradient(180deg, #ffffff 0%, var(--fc-bg) 100%);
 }
 
 .fc-hero::before {
-  position: absolute;
-  inset: 0;
-  content: "";
-  background: rgba(255, 255, 255, 0.74);
+  display: none;
 }
 
 .fc-hero-grid {
@@ -394,7 +389,8 @@ p {
 }
 
 .fc-phone-device {
-  aspect-ratio: 620 / 1300;
+  position: relative;
+  aspect-ratio: 368 / 800;
   padding: 7px;
   border: 1px solid rgba(148, 163, 184, 0.38);
   border-radius: 32px;
@@ -434,7 +430,7 @@ p {
   border-radius: 25px;
   background: #fff;
   object-fit: cover;
-  object-position: center top;
+  object-position: center center;
   box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.1);
 }
 
