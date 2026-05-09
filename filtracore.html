@@ -9,7 +9,7 @@
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="filtra.css">
+  <link rel="stylesheet" href="filtra.css?v=20260508-language-print-v2">
 
   <style>
     body {
@@ -76,23 +76,23 @@
             <img src="img/LOGO_FILTRACOREXCODE.png" alt="" class="fc-brand-mark">
             <span>
               <strong>FiltraCore</strong>
-              <small>Filter Intelligence System</small>
+              <small data-i18n="hero.brandSystem">Filter Intelligence System</small>
             </span>
           </a>
 
           <h1 id="hero-title">
-            <span class="fc-title-desktop">Every filter, machine,<br>PSI check, and<br>maintenance action<br>in one system.</span>
-            <span class="fc-title-mobile">Every filter,<br>machine, PSI<br>check, and<br>maintenance<br>action in one<br>system.</span>
+            <span class="fc-title-desktop" data-i18n-html="hero.titleDesktop">Every filter, machine,<br>PSI check, and<br>maintenance action<br>in one system.</span>
+            <span class="fc-title-mobile" data-i18n-html="hero.titleMobile">Every filter,<br>machine, PSI<br>check, and<br>maintenance<br>action in one<br>system.</span>
           </h1>
 
-          <p class="fc-hero-lede">
+          <p class="fc-hero-lede" data-i18n="hero.lede">
             The new FiltraCore update makes setup faster from mobile: add machines, register inventory,
             install filters, log maintenance, and review operational risk from the floor.
           </p>
 
           <div class="fc-hero-actions" aria-label="FiltraCore calls to action">
-            <a href="#demo-access" data-demo-access class="fc-button fc-button-primary">Request Demo</a>
-            <a href="#mobile-update" class="fc-button fc-button-secondary">See Mobile Update</a>
+            <a href="#demo-access" data-demo-access class="fc-button fc-button-primary" data-i18n="cta.requestDemo">Request Demo</a>
+            <a href="#mobile-update" class="fc-button fc-button-secondary" data-i18n="hero.seeMobileUpdate">See Mobile Update</a>
           </div>
         </div>
 
@@ -118,27 +118,27 @@
     <section class="fc-metrics" aria-label="FiltraCore product highlights">
       <div class="fc-container fc-metric-grid">
         <article>
-          <span>Setup</span>
-          <strong>Mobile first</strong>
-          <p>Create operational records without returning to a desktop workstation.</p>
+          <span data-i18n="metrics.setupLabel">Setup</span>
+          <strong data-i18n="metrics.setupValue">Mobile first</strong>
+          <p data-i18n="metrics.setupText">Create operational records without returning to a desktop workstation.</p>
         </article>
 
         <article>
-          <span>Lifecycle</span>
-          <strong>3 active filters</strong>
-          <p>Track due dates, PSI history, and filter status by machine.</p>
+          <span data-i18n="metrics.lifecycleLabel">Lifecycle</span>
+          <strong data-i18n="metrics.lifecycleValue">3 active filters</strong>
+          <p data-i18n="metrics.lifecycleText">Track due dates, PSI history, and filter status by machine.</p>
         </article>
 
         <article>
-          <span>Controls</span>
-          <strong>$2,148.35</strong>
-          <p>Keep inventory value and stock levels visible for purchasing decisions.</p>
+          <span data-i18n="metrics.controlsLabel">Controls</span>
+          <strong data-i18n="metrics.controlsValue">$2,148.35</strong>
+          <p data-i18n="metrics.controlsText">Keep inventory value and stock levels visible for purchasing decisions.</p>
         </article>
 
         <article>
-          <span>Risk</span>
-          <strong>2 alerts</strong>
-          <p>Surface watch items before they become downtime or service quality issues.</p>
+          <span data-i18n="metrics.riskLabel">Risk</span>
+          <strong data-i18n="metrics.riskValue">2 alerts</strong>
+          <p data-i18n="metrics.riskText">Surface watch items before they become downtime or service quality issues.</p>
         </article>
       </div>
     </section>
@@ -147,11 +147,11 @@
       <div class="fc-container">
         <div class="fc-section-header fc-section-header-split">
           <div>
-            <p class="fc-section-label">New mobile workflow</p>
-            <h2 id="mobile-title">A simpler process for the people doing the work.</h2>
+            <p class="fc-section-label" data-i18n="mobile.label">New mobile workflow</p>
+            <h2 id="mobile-title" data-i18n="mobile.title">A simpler process for the people doing the work.</h2>
           </div>
 
-          <p>
+          <p data-i18n="mobile.body">
             The phone screens now cover the core field routine: create the machine, add the filter product,
             install the filter, record PSI, and log maintenance without jumping through the desktop modules.
           </p>
@@ -160,8 +160,8 @@
         <div class="fc-mobile-workflow">
           <article class="fc-step-card">
             <span>01</span>
-            <h3>Add the machine</h3>
-            <p>Capture name, type, location, department, brand, model, and machine ID in one clean form.</p>
+            <h3 data-i18n="mobile.step1Title">Add the machine</h3>
+            <p data-i18n="mobile.step1Text">Capture name, type, location, department, brand, model, and machine ID in one clean form.</p>
             <div class="fc-step-phone fc-phone-device">
               <img src="img/filtracore-mobile/add-machine.png" alt="Mobile Add Machine form in FiltraCore" loading="lazy" decoding="async">
             </div>
@@ -169,8 +169,8 @@
 
           <article class="fc-step-card">
             <span>02</span>
-            <h3>Install the filter</h3>
-            <p>Select the machine, choose inventory, set lifespan, and create due dates from the phone.</p>
+            <h3 data-i18n="mobile.step2Title">Install the filter</h3>
+            <p data-i18n="mobile.step2Text">Select the machine, choose inventory, set lifespan, and create due dates from the phone.</p>
             <div class="fc-step-phone fc-phone-device">
               <img src="img/filtracore-mobile/install-filter.png" alt="Mobile Install Filter form in FiltraCore" loading="lazy" decoding="async">
             </div>
@@ -178,8 +178,8 @@
 
           <article class="fc-step-card">
             <span>03</span>
-            <h3>Monitor PSI</h3>
-            <p>Review active filters, update pressure readings, and flag watch items from the same mobile view.</p>
+            <h3 data-i18n="mobile.step3Title">Monitor PSI</h3>
+            <p data-i18n="mobile.step3Text">Review active filters, update pressure readings, and flag watch items from the same mobile view.</p>
             <div class="fc-step-phone fc-phone-device">
               <img src="img/filtracore-mobile/filters.png" alt="Mobile Filters screen showing PSI tracking and active status" loading="lazy" decoding="async">
             </div>
@@ -187,8 +187,8 @@
 
           <article class="fc-step-card">
             <span>04</span>
-            <h3>Log maintenance</h3>
-            <p>Record inspections, corrected PSI, notes, and replacement actions while the work is fresh.</p>
+            <h3 data-i18n="mobile.step4Title">Log maintenance</h3>
+            <p data-i18n="mobile.step4Text">Record inspections, corrected PSI, notes, and replacement actions while the work is fresh.</p>
             <div class="fc-step-phone fc-phone-device">
               <img src="img/filtracore-mobile/log-maintenance.png" alt="Mobile Log Maintenance form in FiltraCore" loading="lazy" decoding="async">
             </div>
@@ -200,9 +200,9 @@
     <section class="fc-section fc-system" aria-labelledby="system-title">
       <div class="fc-container">
         <div class="fc-section-header">
-          <p class="fc-section-label">Desktop command center</p>
-          <h2 id="system-title">The full operation stays organized by module.</h2>
-          <p>
+          <p class="fc-section-label" data-i18n="system.label">Desktop command center</p>
+          <h2 id="system-title" data-i18n="system.title">The full operation stays organized by module.</h2>
+          <p data-i18n="system.body">
             Supervisors can move through machines, inventory, filters, maintenance, and reports while the mobile
             workflow keeps frontline updates flowing into the same system.
           </p>
@@ -215,21 +215,21 @@
 
           <div class="fc-module-list">
             <article>
-              <span>Machines</span>
-              <h3>Register assets before assigning filters.</h3>
-              <p>Location, department, model, ID, status, PSI, and installed filter stay tied to each machine.</p>
+              <span data-i18n="system.machinesLabel">Machines</span>
+              <h3 data-i18n="system.machinesTitle">Register assets before assigning filters.</h3>
+              <p data-i18n="system.machinesText">Location, department, model, ID, status, PSI, and installed filter stay tied to each machine.</p>
             </article>
 
             <article>
-              <span>Inventory</span>
-              <h3>Control product stock and unit cost.</h3>
-              <p>Track reorder levels and inventory value before filters are assigned into the lifecycle.</p>
+              <span data-i18n="system.inventoryLabel">Inventory</span>
+              <h3 data-i18n="system.inventoryTitle">Control product stock and unit cost.</h3>
+              <p data-i18n="system.inventoryText">Track reorder levels and inventory value before filters are assigned into the lifecycle.</p>
             </article>
 
             <article>
-              <span>Filters</span>
-              <h3>Monitor lifecycle and pressure.</h3>
-              <p>Due dates, days left, PSI, watch status, and maintenance actions are visible in one table.</p>
+              <span data-i18n="system.filtersLabel">Filters</span>
+              <h3 data-i18n="system.filtersTitle">Monitor lifecycle and pressure.</h3>
+              <p data-i18n="system.filtersText">Due dates, days left, PSI, watch status, and maintenance actions are visible in one table.</p>
             </article>
           </div>
         </div>
@@ -237,17 +237,17 @@
         <div class="fc-desktop-gallery" aria-label="FiltraCore desktop module screenshots">
           <figure>
             <img src="img/filtracore-desktop/inventory.png" alt="FiltraCore inventory desktop screen" loading="lazy" decoding="async">
-            <figcaption>Inventory layer</figcaption>
+            <figcaption data-i18n="system.galleryInventory">Inventory layer</figcaption>
           </figure>
 
           <figure>
             <img src="img/filtracore-desktop/filters.png" alt="FiltraCore filters desktop screen" loading="lazy" decoding="async">
-            <figcaption>Lifecycle layer</figcaption>
+            <figcaption data-i18n="system.galleryLifecycle">Lifecycle layer</figcaption>
           </figure>
 
           <figure>
             <img src="img/filtracore-desktop/maintenance.png" alt="FiltraCore maintenance desktop screen" loading="lazy" decoding="async">
-            <figcaption>Maintenance layer</figcaption>
+            <figcaption data-i18n="system.galleryMaintenance">Maintenance layer</figcaption>
           </figure>
         </div>
       </div>
@@ -256,9 +256,9 @@
     <section class="fc-section fc-intelligence" aria-labelledby="intelligence-title">
       <div class="fc-container fc-intelligence-grid">
         <div>
-          <p class="fc-section-label">Executive intelligence</p>
-          <h2 id="intelligence-title">Reports connect financial exposure with operational risk.</h2>
-          <p>
+          <p class="fc-section-label" data-i18n="intelligence.label">Executive intelligence</p>
+          <h2 id="intelligence-title" data-i18n="intelligence.title">Reports connect financial exposure with operational risk.</h2>
+          <p data-i18n="intelligence.body">
             FiltraCore turns filter data into a practical management view: total spend, average cost,
             monthly and annual estimates, pending maintenance, risk exposure, potential savings, stock control,
             and printable summaries.
@@ -266,18 +266,18 @@
 
           <div class="fc-intelligence-points">
             <article>
-              <strong>Financial overview</strong>
-              <span>Installed filter cost, average filter cost, monthly spend, and annual spend.</span>
+              <strong data-i18n="intelligence.point1Title">Financial overview</strong>
+              <span data-i18n="intelligence.point1Text">Installed filter cost, average filter cost, monthly spend, and annual spend.</span>
             </article>
 
             <article>
-              <strong>Operational summary</strong>
-              <span>Total machines, at-risk assets, installed filters, and intelligence alerts.</span>
+              <strong data-i18n="intelligence.point2Title">Operational summary</strong>
+              <span data-i18n="intelligence.point2Text">Total machines, at-risk assets, installed filters, and intelligence alerts.</span>
             </article>
 
             <article>
-              <strong>Maintenance output</strong>
-              <span>Generate summaries and print reports when the layout is ready for leadership review.</span>
+              <strong data-i18n="intelligence.point3Title">Maintenance output</strong>
+              <span data-i18n="intelligence.point3Text">Generate summaries and print reports when the layout is ready for leadership review.</span>
             </article>
           </div>
         </div>
@@ -291,9 +291,9 @@
     <section class="fc-section fc-ops" aria-labelledby="ops-title">
       <div class="fc-container">
         <div class="fc-section-header">
-          <p class="fc-section-label">Food service operations</p>
-          <h2 id="ops-title">Built around preventive filter discipline.</h2>
-          <p>
+          <p class="fc-section-label" data-i18n="ops.label">Food service operations</p>
+          <h2 id="ops-title" data-i18n="ops.title">Built around preventive filter discipline.</h2>
+          <p data-i18n="ops.body">
             FiltraCore supports daily routines inspired by HACCP-style prevention, FIFO inventory habits,
             traceable maintenance logs, and NSF-focused sanitation practices. It is designed to help teams
             document work consistently before small filter issues turn into service disruption.
@@ -302,23 +302,23 @@
 
         <div class="fc-ops-grid">
           <article>
-            <h3>PSI monitoring</h3>
-            <p>Record baseline and corrected pressure readings so changing flow conditions are visible.</p>
+            <h3 data-i18n="ops.card1Title">PSI monitoring</h3>
+            <p data-i18n="ops.card1Text">Record baseline and corrected pressure readings so changing flow conditions are visible.</p>
           </article>
 
           <article>
-            <h3>Filter lifecycle</h3>
-            <p>Track installation dates, due dates, lifespan months, and days left by machine.</p>
+            <h3 data-i18n="ops.card2Title">Filter lifecycle</h3>
+            <p data-i18n="ops.card2Text">Track installation dates, due dates, lifespan months, and days left by machine.</p>
           </article>
 
           <article>
-            <h3>Traceability logs</h3>
-            <p>Keep maintenance type, notes, technician action, and filter replacement context in one record trail.</p>
+            <h3 data-i18n="ops.card3Title">Traceability logs</h3>
+            <p data-i18n="ops.card3Text">Keep maintenance type, notes, technician action, and filter replacement context in one record trail.</p>
           </article>
 
           <article>
-            <h3>Inventory readiness</h3>
-            <p>Connect available stock, reorder levels, and installed filters so purchasing has better context.</p>
+            <h3 data-i18n="ops.card4Title">Inventory readiness</h3>
+            <p data-i18n="ops.card4Text">Connect available stock, reorder levels, and installed filters so purchasing has better context.</p>
           </article>
         </div>
       </div>
@@ -327,11 +327,11 @@
     <section id="demo-access" class="fc-cta" aria-labelledby="cta-title">
       <div class="fc-container fc-cta-inner">
         <div>
-          <h2 id="cta-title">Ready to bring FiltraCore online?</h2>
-          <p>Request access to the current demo and review the new mobile workflow with the desktop command center.</p>
+          <h2 id="cta-title" data-i18n="finalCta.title">Ready to bring FiltraCore online?</h2>
+          <p data-i18n="finalCta.body">Request access to the current demo and review the new mobile workflow with the desktop command center.</p>
         </div>
 
-        <a href="#demo-access" data-demo-access class="fc-button fc-button-primary">Request Demo</a>
+        <a href="#demo-access" data-demo-access class="fc-button fc-button-primary" data-i18n="cta.requestDemo">Request Demo</a>
       </div>
     </section>
   </main>
@@ -339,12 +339,246 @@
   <script>
     const demoAccessCode = 'B@stida420';
     const demoAccessUrl = 'https://bastidadavid.github.io/filtracore-v2/';
+    const filtraTranslations = {
+      en: {
+        'meta.title': 'FiltraCore | Bastida Systems',
+        'nav.language': 'Language',
+        'nav.languageSelector': 'Language selector',
+        'nav.products': 'Products',
+        'nav.about': 'About',
+        'nav.contact': 'Contact',
+        'hero.brandSystem': 'Filter Intelligence System',
+        'hero.titleDesktop': 'Every filter, machine,<br>PSI check, and<br>maintenance action<br>in one system.',
+        'hero.titleMobile': 'Every filter,<br>machine, PSI<br>check, and<br>maintenance<br>action in one<br>system.',
+        'hero.lede': 'The new FiltraCore update makes setup faster from mobile: add machines, register inventory, install filters, log maintenance, and review operational risk from the floor.',
+        'hero.seeMobileUpdate': 'See Mobile Update',
+        'cta.requestDemo': 'Request Demo',
+        'metrics.setupLabel': 'Setup',
+        'metrics.setupValue': 'Mobile first',
+        'metrics.setupText': 'Create operational records without returning to a desktop workstation.',
+        'metrics.lifecycleLabel': 'Lifecycle',
+        'metrics.lifecycleValue': '3 active filters',
+        'metrics.lifecycleText': 'Track due dates, PSI history, and filter status by machine.',
+        'metrics.controlsLabel': 'Controls',
+        'metrics.controlsValue': '$2,148.35',
+        'metrics.controlsText': 'Keep inventory value and stock levels visible for purchasing decisions.',
+        'metrics.riskLabel': 'Risk',
+        'metrics.riskValue': '2 alerts',
+        'metrics.riskText': 'Surface watch items before they become downtime or service quality issues.',
+        'mobile.label': 'New mobile workflow',
+        'mobile.title': 'A simpler process for the people doing the work.',
+        'mobile.body': 'The phone screens now cover the core field routine: create the machine, add the filter product, install the filter, record PSI, and log maintenance without jumping through the desktop modules.',
+        'mobile.step1Title': 'Add the machine',
+        'mobile.step1Text': 'Capture name, type, location, department, brand, model, and machine ID in one clean form.',
+        'mobile.step2Title': 'Install the filter',
+        'mobile.step2Text': 'Select the machine, choose inventory, set lifespan, and create due dates from the phone.',
+        'mobile.step3Title': 'Monitor PSI',
+        'mobile.step3Text': 'Review active filters, update pressure readings, and flag watch items from the same mobile view.',
+        'mobile.step4Title': 'Log maintenance',
+        'mobile.step4Text': 'Record inspections, corrected PSI, notes, and replacement actions while the work is fresh.',
+        'system.label': 'Desktop command center',
+        'system.title': 'The full operation stays organized by module.',
+        'system.body': 'Supervisors can move through machines, inventory, filters, maintenance, and reports while the mobile workflow keeps frontline updates flowing into the same system.',
+        'system.machinesLabel': 'Machines',
+        'system.machinesTitle': 'Register assets before assigning filters.',
+        'system.machinesText': 'Location, department, model, ID, status, PSI, and installed filter stay tied to each machine.',
+        'system.inventoryLabel': 'Inventory',
+        'system.inventoryTitle': 'Control product stock and unit cost.',
+        'system.inventoryText': 'Track reorder levels and inventory value before filters are assigned into the lifecycle.',
+        'system.filtersLabel': 'Filters',
+        'system.filtersTitle': 'Monitor lifecycle and pressure.',
+        'system.filtersText': 'Due dates, days left, PSI, watch status, and maintenance actions are visible in one table.',
+        'system.galleryInventory': 'Inventory layer',
+        'system.galleryLifecycle': 'Lifecycle layer',
+        'system.galleryMaintenance': 'Maintenance layer',
+        'intelligence.label': 'Executive intelligence',
+        'intelligence.title': 'Reports connect financial exposure with operational risk.',
+        'intelligence.body': 'FiltraCore turns filter data into a practical management view: total spend, average cost, monthly and annual estimates, pending maintenance, risk exposure, potential savings, stock control, and printable summaries.',
+        'intelligence.point1Title': 'Financial overview',
+        'intelligence.point1Text': 'Installed filter cost, average filter cost, monthly spend, and annual spend.',
+        'intelligence.point2Title': 'Operational summary',
+        'intelligence.point2Text': 'Total machines, at-risk assets, installed filters, and intelligence alerts.',
+        'intelligence.point3Title': 'Maintenance output',
+        'intelligence.point3Text': 'Generate summaries and print reports when the layout is ready for leadership review.',
+        'ops.label': 'Food service operations',
+        'ops.title': 'Built around preventive filter discipline.',
+        'ops.body': 'FiltraCore supports daily routines inspired by HACCP-style prevention, FIFO inventory habits, traceable maintenance logs, and NSF-focused sanitation practices. It is designed to help teams document work consistently before small filter issues turn into service disruption.',
+        'ops.card1Title': 'PSI monitoring',
+        'ops.card1Text': 'Record baseline and corrected pressure readings so changing flow conditions are visible.',
+        'ops.card2Title': 'Filter lifecycle',
+        'ops.card2Text': 'Track installation dates, due dates, lifespan months, and days left by machine.',
+        'ops.card3Title': 'Traceability logs',
+        'ops.card3Text': 'Keep maintenance type, notes, technician action, and filter replacement context in one record trail.',
+        'ops.card4Title': 'Inventory readiness',
+        'ops.card4Text': 'Connect available stock, reorder levels, and installed filters so purchasing has better context.',
+        'finalCta.title': 'Ready to bring FiltraCore online?',
+        'finalCta.body': 'Request access to the current demo and review the new mobile workflow with the desktop command center.',
+        'footer.rights': '\u00a9 2026 Bastida Systems. All rights reserved.',
+        'demo.prompt': 'Enter the access code:',
+        'demo.invalid': 'Invalid access code.'
+      },
+      es: {
+        'meta.title': 'FiltraCore | Bastida Systems',
+        'nav.language': 'Idioma',
+        'nav.languageSelector': 'Selector de idioma',
+        'nav.products': 'Productos',
+        'nav.about': 'Acerca',
+        'nav.contact': 'Contacto',
+        'hero.brandSystem': 'Sistema de inteligencia para filtros',
+        'hero.titleDesktop': 'Filtros, maquinas,<br>revision PSI y<br>mantenimiento<br>en un solo sistema.',
+        'hero.titleMobile': 'Filtros,<br>maquinas, PSI<br>y mantenimiento<br>en un solo<br>sistema.',
+        'hero.lede': 'La nueva actualizacion de FiltraCore hace mas rapido el proceso desde el celular: agrega maquinas, registra inventario, instala filtros, documenta mantenimiento y revisa el riesgo operativo desde el piso.',
+        'hero.seeMobileUpdate': 'Ver actualizacion movil',
+        'cta.requestDemo': 'Solicitar demo',
+        'metrics.setupLabel': 'Configuracion',
+        'metrics.setupValue': 'Primero movil',
+        'metrics.setupText': 'Crea registros operativos sin regresar a una computadora.',
+        'metrics.lifecycleLabel': 'Ciclo de vida',
+        'metrics.lifecycleValue': '3 filtros activos',
+        'metrics.lifecycleText': 'Controla fechas de cambio, historial PSI y estado del filtro por maquina.',
+        'metrics.controlsLabel': 'Control',
+        'metrics.controlsValue': '$2,148.35',
+        'metrics.controlsText': 'Mantiene visible el valor de inventario y el stock para decisiones de compra.',
+        'metrics.riskLabel': 'Riesgo',
+        'metrics.riskValue': '2 alertas',
+        'metrics.riskText': 'Detecta puntos en vigilancia antes de que generen tiempo muerto o problemas de servicio.',
+        'mobile.label': 'Nuevo flujo movil',
+        'mobile.title': 'Un proceso mas simple para quienes hacen el trabajo.',
+        'mobile.body': 'Las pantallas del celular ahora cubren la rutina principal: crear la maquina, agregar el producto, instalar el filtro, registrar PSI y documentar mantenimiento sin saltar entre modulos de escritorio.',
+        'mobile.step1Title': 'Agregar maquina',
+        'mobile.step1Text': 'Captura nombre, tipo, ubicacion, departamento, marca, modelo e ID de maquina en un formulario limpio.',
+        'mobile.step2Title': 'Instalar filtro',
+        'mobile.step2Text': 'Selecciona la maquina, elige inventario, define vida util y crea fechas de cambio desde el celular.',
+        'mobile.step3Title': 'Monitorear PSI',
+        'mobile.step3Text': 'Revisa filtros activos, actualiza lecturas de presion y marca elementos en vigilancia desde la misma vista movil.',
+        'mobile.step4Title': 'Registrar mantenimiento',
+        'mobile.step4Text': 'Documenta inspecciones, PSI corregido, notas y reemplazos mientras el trabajo esta fresco.',
+        'system.label': 'Centro de control desktop',
+        'system.title': 'Toda la operacion queda organizada por modulo.',
+        'system.body': 'Los supervisores pueden revisar maquinas, inventario, filtros, mantenimiento y reportes mientras el flujo movil alimenta el mismo sistema con actualizaciones del equipo operativo.',
+        'system.machinesLabel': 'Maquinas',
+        'system.machinesTitle': 'Registra activos antes de asignar filtros.',
+        'system.machinesText': 'Ubicacion, departamento, modelo, ID, estado, PSI y filtro instalado quedan conectados a cada maquina.',
+        'system.inventoryLabel': 'Inventario',
+        'system.inventoryTitle': 'Controla stock y costo unitario.',
+        'system.inventoryText': 'Revisa niveles de reorden y valor de inventario antes de asignar filtros al ciclo de vida.',
+        'system.filtersLabel': 'Filtros',
+        'system.filtersTitle': 'Monitorea ciclo de vida y presion.',
+        'system.filtersText': 'Fechas de cambio, dias restantes, PSI, estado de vigilancia y acciones de mantenimiento quedan en una tabla.',
+        'system.galleryInventory': 'Capa de inventario',
+        'system.galleryLifecycle': 'Capa de ciclo de vida',
+        'system.galleryMaintenance': 'Capa de mantenimiento',
+        'intelligence.label': 'Inteligencia ejecutiva',
+        'intelligence.title': 'Los reportes conectan exposicion financiera con riesgo operativo.',
+        'intelligence.body': 'FiltraCore convierte los datos de filtros en una vista practica de gestion: gasto total, costo promedio, estimados mensual y anual, mantenimiento pendiente, exposicion al riesgo, ahorros potenciales, control de stock y resumenes imprimibles.',
+        'intelligence.point1Title': 'Vista financiera',
+        'intelligence.point1Text': 'Costo de filtros instalados, costo promedio, gasto mensual y gasto anual.',
+        'intelligence.point2Title': 'Resumen operativo',
+        'intelligence.point2Text': 'Total de maquinas, activos en riesgo, filtros instalados y alertas de inteligencia.',
+        'intelligence.point3Title': 'Salida de mantenimiento',
+        'intelligence.point3Text': 'Genera resumenes e imprime reportes cuando el layout este listo para revision.',
+        'ops.label': 'Operaciones de food service',
+        'ops.title': 'Creado alrededor de disciplina preventiva para filtros.',
+        'ops.body': 'FiltraCore apoya rutinas diarias inspiradas en prevencion tipo HACCP, habitos FIFO de inventario, bitacoras trazables de mantenimiento y practicas de sanidad enfocadas en NSF. Esta pensado para documentar el trabajo de forma consistente antes de que pequenos problemas se vuelvan interrupciones.',
+        'ops.card1Title': 'Monitoreo PSI',
+        'ops.card1Text': 'Registra presion base y corregida para detectar cambios en el flujo.',
+        'ops.card2Title': 'Ciclo de vida del filtro',
+        'ops.card2Text': 'Controla fecha de instalacion, fecha de cambio, meses de vida util y dias restantes por maquina.',
+        'ops.card3Title': 'Bitacoras trazables',
+        'ops.card3Text': 'Guarda tipo de mantenimiento, notas, accion del tecnico y contexto de reemplazo en un historial.',
+        'ops.card4Title': 'Inventario listo',
+        'ops.card4Text': 'Conecta stock disponible, niveles de reorden y filtros instalados para dar mejor contexto a compras.',
+        'finalCta.title': 'Listo para poner FiltraCore en marcha?',
+        'finalCta.body': 'Solicita acceso al demo actual y revisa el nuevo flujo movil junto con el centro de control desktop.',
+        'footer.rights': '\u00a9 2026 Bastida Systems. Todos los derechos reservados.',
+        'demo.prompt': 'Ingresa el codigo de acceso:',
+        'demo.invalid': 'Codigo de acceso invalido.'
+      }
+    };
+
+    const translate = key => {
+      const table = filtraTranslations[activeLanguage] || filtraTranslations.en;
+      return table[key] || filtraTranslations.en[key] || '';
+    };
+    let activeLanguage = localStorage.getItem('filtracore-language') || (navigator.language.startsWith('es') ? 'es' : 'en');
+
+    if (!filtraTranslations[activeLanguage]) {
+      activeLanguage = 'en';
+    }
+
+    const setupLanguagePicker = () => {
+      const nav = document.querySelector('#site-header nav');
+      if (!nav || document.getElementById('filtracore-language-select')) return Boolean(nav);
+
+      nav.querySelector('a[href="index.html#products"]')?.setAttribute('data-i18n', 'nav.products');
+      nav.querySelector('a[href="about.html"]')?.setAttribute('data-i18n', 'nav.about');
+      nav.querySelector('a[href="index.html#contact"]')?.setAttribute('data-i18n', 'nav.contact');
+
+      const links = nav.querySelector('div:last-child');
+      if (!links) return false;
+
+      links.insertAdjacentHTML('beforeend', `
+        <label class="fc-language-picker">
+          <span data-i18n="nav.language">Language</span>
+          <select id="filtracore-language-select" aria-label="Language selector" data-i18n-aria-label="nav.languageSelector">
+            <option value="en">EN</option>
+            <option value="es">ES</option>
+          </select>
+        </label>
+      `);
+
+      const select = document.getElementById('filtracore-language-select');
+      select.value = activeLanguage;
+      select.addEventListener('change', event => {
+        applyLanguage(event.target.value);
+      });
+
+      return true;
+    };
+
+    const applyLanguage = language => {
+      activeLanguage = filtraTranslations[language] ? language : 'en';
+      document.documentElement.lang = activeLanguage;
+      document.title = translate('meta.title');
+      localStorage.setItem('filtracore-language', activeLanguage);
+
+      document.querySelectorAll('[data-i18n]').forEach(element => {
+        element.textContent = translate(element.dataset.i18n);
+      });
+
+      document.querySelectorAll('[data-i18n-html]').forEach(element => {
+        element.innerHTML = translate(element.dataset.i18nHtml);
+      });
+
+      document.querySelectorAll('[data-i18n-aria-label]').forEach(element => {
+        element.setAttribute('aria-label', translate(element.dataset.i18nAriaLabel));
+      });
+
+      const select = document.getElementById('filtracore-language-select');
+      if (select) select.value = activeLanguage;
+    };
+
+    const observeHeader = () => {
+      if (setupLanguagePicker()) {
+        applyLanguage(activeLanguage);
+        return;
+      }
+
+      const observer = new MutationObserver(() => {
+        if (setupLanguagePicker()) {
+          applyLanguage(activeLanguage);
+          observer.disconnect();
+        }
+      });
+
+      observer.observe(document.getElementById('site-header'), { childList: true, subtree: true });
+    };
 
     document.querySelectorAll('[data-demo-access]').forEach(link => {
       link.addEventListener('click', event => {
         event.preventDefault();
 
-        const enteredCode = prompt('Ingresa el codigo de acceso:');
+        const enteredCode = prompt(translate('demo.prompt'));
 
         if (enteredCode === null) return;
 
@@ -353,16 +587,19 @@
           return;
         }
 
-        alert('Codigo de acceso invalido.');
+        alert(translate('demo.invalid'));
       });
     });
+
+    observeHeader();
+    applyLanguage(activeLanguage);
   </script>
 
   <footer class="fc-footer">
     <div class="fc-footer-links">
-      <a href="index.html#products">Products</a>
-      <a href="about.html">About</a>
-      <a href="index.html#contact">Contact</a>
+      <a href="index.html#products" data-i18n="nav.products">Products</a>
+      <a href="about.html" data-i18n="nav.about">About</a>
+      <a href="index.html#contact" data-i18n="nav.contact">Contact</a>
     </div>
 
     <div class="fc-footer-contact">
@@ -370,7 +607,7 @@
       <a href="tel:+17026617149">+1 (702) 661-7149</a>
     </div>
 
-    <p>&copy; 2026 Bastida Systems. All rights reserved.</p>
+    <p data-i18n="footer.rights">&copy; 2026 Bastida Systems. All rights reserved.</p>
   </footer>
 </body>
 </html>
