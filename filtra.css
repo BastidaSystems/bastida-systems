@@ -506,8 +506,7 @@ p {
 .fc-hero-phone-status,
 .fc-hero-phone-title,
 .fc-hero-phone-grid,
-.fc-hero-phone-list,
-.fc-hero-phone-nav {
+.fc-hero-phone-list {
   display: flex;
 }
 
@@ -598,29 +597,9 @@ p {
   line-height: 1;
 }
 
-.fc-hero-phone-nav {
-  align-items: center;
-  justify-content: space-around;
-  min-height: 22px;
-  padding: 5px 10px;
-  border-radius: 999px;
-  background: rgba(15, 23, 42, 0.07);
-}
-
-.fc-hero-phone-nav i {
-  width: 9px;
-  height: 9px;
-  border-radius: 999px;
-  background: rgba(15, 23, 42, 0.34);
-}
-
-.fc-hero-phone-nav i:first-child {
-  background: var(--fc-green);
-}
-
 .fc-phone-mockup {
   position: absolute;
-  right: 0;
+  right: -2px;
   bottom: 18px;
   z-index: 2;
   width: min(30%, 208px);
