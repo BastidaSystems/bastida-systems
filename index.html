@@ -120,7 +120,7 @@
         'hero.body': 'Bastida Systems develops intelligent software platforms that enable operations to monitor critical infrastructure, reduce operational risk, and maintain compliance through real-time data and automation.',
         'hero.explore': 'Explore Products',
         'products.heading': 'Products',
-        'products.filtracore.body': 'A smart filtration monitoring system designed for casinos, restaurants, and industrial environments. Track PSI, filter lifespan, and maintenance in real time.',
+        'products.filtracore.body': 'A smart filtration monitoring system designed for casinos, restaurants, and industrial environments. Track PSI, filter lifespan, stock readiness, and maintenance in real time.',
         'products.beoflow.body': 'Kitchen operations platform for menus, inventory, production, staff, service planning, and daily execution.',
         'products.learnMore': 'Learn More',
         'products.openLogin': 'Open Login',
@@ -139,7 +139,7 @@
         'hero.body': 'Bastida Systems desarrolla plataformas de software inteligentes que ayudan a las operaciones a monitorear infraestructura crítica, reducir riesgos operativos y mantener cumplimiento con datos en tiempo real y automatización.',
         'hero.explore': 'Ver Productos',
         'products.heading': 'Productos',
-        'products.filtracore.body': 'Sistema inteligente de monitoreo de filtración diseñado para casinos, restaurantes y entornos industriales. Controla PSI, vida útil de filtros y mantenimiento en tiempo real.',
+        'products.filtracore.body': 'Sistema inteligente de monitoreo de filtración diseñado para casinos, restaurantes y entornos industriales. Controla PSI, vida útil de filtros, stock listo y mantenimiento en tiempo real.',
         'products.beoflow.body': 'Plataforma de operación de cocina para menús, inventario, producción, personal, planeación de servicio y ejecución diaria.',
         'products.learnMore': 'Ver Más',
         'products.openLogin': 'Abrir Login',
@@ -341,7 +341,7 @@
 
             <p class="text-gray-400 mb-6" data-i18n="products.filtracore.body">
               A smart filtration monitoring system designed for casinos, restaurants, and industrial environments.
-              Track PSI, filter lifespan, and maintenance in real time.
+              Track PSI, filter lifespan, stock readiness, and maintenance in real time.
             </p>
 
             <div class="flex flex-wrap gap-3">
@@ -355,8 +355,19 @@
 
           </div>
 
-          <div class="hidden h-28 w-48 overflow-hidden rounded-lg border border-gray-800 md:block">
-            <img src="img/filtracore-dashboard.jpeg" alt="FiltraCore Dashboard" class="h-full w-full object-cover object-left-top">
+          <div class="hidden h-28 w-48 overflow-hidden rounded-lg border border-gray-800 bg-slate-950 md:block" aria-label="FiltraCore promotional preview">
+            <div class="flex h-full w-full flex-col justify-between bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950 p-4">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-300">FiltraCore</span>
+                <img src="img/LOGO_FILTRACOREXCODE.png" alt="" class="h-6 w-6 rounded bg-white/90 object-contain p-0.5">
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <span class="rounded-md border border-white/10 bg-white/10 px-2 py-1 text-[10px] font-semibold text-white">PSI</span>
+                <span class="rounded-md border border-white/10 bg-white/10 px-2 py-1 text-[10px] font-semibold text-white">Lifecycle</span>
+                <span class="rounded-md border border-white/10 bg-white/10 px-2 py-1 text-[10px] font-semibold text-white">Stock</span>
+                <span class="rounded-md border border-white/10 bg-white/10 px-2 py-1 text-[10px] font-semibold text-white">Reports</span>
+              </div>
+            </div>
           </div>
 
         </div>
