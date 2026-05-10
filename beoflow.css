@@ -451,14 +451,10 @@ img {
 .hero-visual {
   position: relative;
   min-width: 0;
-  padding: clamp(0.8rem, 1.6vw, 1.25rem) clamp(6rem, 11vw, 8.75rem) clamp(2.6rem, 4.4vw, 3.5rem) 0;
 }
 
 .hero-screen {
-  position: relative;
-  z-index: 1;
   overflow: hidden;
-  width: 100%;
   border: 1px solid rgba(20, 56, 79, 0.18);
   border-radius: 8px;
   background: #fff;
@@ -472,26 +468,8 @@ img {
   object-position: left top;
 }
 
-.hero-phone-mockup {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  z-index: 3;
-  width: clamp(8rem, 13vw, 11rem);
-  margin: 0;
-  pointer-events: none;
-  filter: drop-shadow(0 24px 34px rgba(15, 23, 42, 0.22));
-}
-
-.hero-phone-mockup img {
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-}
-
 .hero-signal {
   position: absolute;
-  z-index: 4;
   width: 15rem;
   padding: 1rem;
   border: 1px solid rgba(20, 56, 79, 0.18);
@@ -518,7 +496,7 @@ img {
 
 .hero-signal-top {
   top: -1.2rem;
-  right: clamp(7.2rem, 13vw, 10rem);
+  right: 1.2rem;
 }
 
 .hero-signal-bottom {
@@ -1232,12 +1210,6 @@ img {
     max-width: 44rem;
   }
 
-  .hero-visual {
-    width: min(100%, 44rem);
-    margin-right: auto;
-    margin-left: auto;
-  }
-
   .module-grid,
   .flow-map {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1299,20 +1271,6 @@ img {
 
   .hero-signal {
     display: none;
-  }
-
-  .hero-visual {
-    display: grid;
-    gap: 1.2rem;
-    padding: 0;
-  }
-
-  .hero-phone-mockup {
-    position: relative;
-    right: auto;
-    bottom: auto;
-    justify-self: center;
-    width: min(54vw, 11rem);
   }
 
   .hero-proof,
@@ -1606,20 +1564,6 @@ img {
 
   .hero-proof {
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  }
-
-  .hero-visual {
-    display: grid !important;
-    grid-template-columns: minmax(0, 1fr) auto !important;
-    gap: 0.16in !important;
-    padding: 0 !important;
-  }
-
-  .hero-phone-mockup {
-    position: static !important;
-    width: 1.05in !important;
-    align-self: end !important;
-    filter: none !important;
   }
 
   .section-heading h2,
