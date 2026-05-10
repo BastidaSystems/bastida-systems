@@ -658,8 +658,7 @@
   </section>
 
   <script>
-    const demoAccessCode = 'B@stida420';
-    const demoAccessUrl = 'https://bastidadavid.github.io/filtracore-v2/';
+    const demoAccessUrl = 'https://filtracore-v2-api.onrender.com/';
     const filtraTranslations = {
       en: {
         'meta.title': 'FiltraCore | Bastida Systems',
@@ -680,7 +679,7 @@
         'print.docTitle': 'Operating brief',
         'print.coverLabel': 'Filter operations',
         'print.nextTitle': 'Demo review path',
-        'cta.requestDemo': 'Request Demo',
+        'cta.requestDemo': 'Open Login',
         'metrics.setupLabel': 'Fast setup',
         'metrics.setupValue': 'Mobile workflow',
         'metrics.setupText': 'Add machines, install filters, and log work from the floor.',
@@ -765,8 +764,6 @@
         'finalCta.step2': 'Walk mobile setup',
         'finalCta.step3': 'Print the report',
         'footer.rights': '\u00a9 2026 Bastida Systems. All rights reserved.',
-        'demo.prompt': 'Enter the access code:',
-        'demo.invalid': 'Invalid access code.'
       },
       es: {
         'meta.title': 'FiltraCore | Bastida Systems',
@@ -787,7 +784,7 @@
         'print.docTitle': 'Resumen operativo',
         'print.coverLabel': 'Operacion de filtros',
         'print.nextTitle': 'Ruta de revision del demo',
-        'cta.requestDemo': 'Solicitar demo',
+        'cta.requestDemo': 'Abrir login',
         'metrics.setupLabel': 'Setup rapido',
         'metrics.setupValue': 'Flujo movil',
         'metrics.setupText': 'Agrega maquinas, instala filtros y registra trabajo desde el piso.',
@@ -872,8 +869,6 @@
         'finalCta.step2': 'Ver setup movil',
         'finalCta.step3': 'Imprimir reporte',
         'footer.rights': '\u00a9 2026 Bastida Systems. Todos los derechos reservados.',
-        'demo.prompt': 'Ingresa el codigo de acceso:',
-        'demo.invalid': 'Codigo de acceso invalido.'
       }
     };
 
@@ -958,17 +953,7 @@
     document.querySelectorAll('[data-demo-access]').forEach(link => {
       link.addEventListener('click', event => {
         event.preventDefault();
-
-        const enteredCode = prompt(translate('demo.prompt'));
-
-        if (enteredCode === null) return;
-
-        if (enteredCode.trim() === demoAccessCode) {
-          window.location.href = demoAccessUrl;
-          return;
-        }
-
-        alert(translate('demo.invalid'));
+        window.location.href = demoAccessUrl;
       });
     });
 
