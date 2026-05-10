@@ -936,35 +936,58 @@ p {
 
 .fc-intelligence-grid {
   display: grid;
-  grid-template-columns: minmax(360px, 0.78fr) minmax(0, 1.22fr);
-  gap: clamp(28px, 5vw, 70px);
+  grid-template-columns: minmax(420px, 0.92fr) minmax(0, 1.08fr);
+  gap: clamp(24px, 4vw, 54px);
   align-items: center;
+}
+
+.fc-intelligence .fc-intelligence-grid h2 {
+  max-width: 560px;
+  font-size: clamp(2.55rem, 3.6vw, 3.3rem);
+  line-height: 1.05;
 }
 
 .fc-intelligence-points {
   display: grid;
-  gap: 14px;
-  margin-top: 32px;
+  gap: 10px;
+  margin-top: 24px;
 }
 
 .fc-intelligence-points article {
+  padding: 18px 20px;
   box-shadow: none;
+}
+
+.fc-intelligence .fc-intelligence-points strong {
+  margin-top: 0;
+  font-size: 1rem;
+}
+
+.fc-intelligence .fc-intelligence-points span {
+  margin-top: 8px;
+  line-height: 1.55;
 }
 
 .fc-report-mockup {
   margin: 0;
+  padding: 10px;
   border: 1px solid var(--fc-border);
   border-radius: 12px;
-  background: var(--fc-surface);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(247, 250, 252, 0.96));
   overflow: hidden;
   box-shadow: var(--fc-shadow);
 }
 
-.fc-report-mockup img {
+.fc-intelligence .fc-report-mockup img {
+  display: block;
   width: 100%;
-  min-height: 430px;
-  object-fit: cover;
-  object-position: left top;
+  height: auto;
+  min-height: 0;
+  aspect-ratio: 2550 / 1346;
+  border-radius: 8px;
+  object-fit: contain;
+  object-position: center top;
 }
 
 .fc-buyer {
@@ -1161,6 +1184,14 @@ p {
 
   .fc-mobile-workflow {
     grid-template-columns: repeat(2, minmax(240px, 1fr));
+  }
+
+  .fc-intelligence-grid {
+    gap: 30px;
+  }
+
+  .fc-intelligence .fc-intelligence-grid h2 {
+    max-width: 760px;
   }
 }
 
@@ -1373,6 +1404,20 @@ p {
     margin-bottom: 0;
   }
 
+  .fc-intelligence .fc-intelligence-grid h2 {
+    font-size: clamp(2.15rem, 8vw, 2.65rem);
+    line-height: 1.08;
+  }
+
+  .fc-intelligence-points article {
+    padding: 18px;
+  }
+
+  .fc-report-mockup {
+    padding: 8px;
+    border-radius: 10px;
+  }
+
   .fc-showcase-main img,
   .fc-report-mockup img {
     min-height: 300px;
@@ -1432,6 +1477,10 @@ p {
 
   .fc-metric-grid article {
     min-height: auto;
+  }
+
+  .fc-intelligence .fc-intelligence-grid h2 {
+    font-size: 2.08rem;
   }
 }
 
