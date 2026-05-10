@@ -9,7 +9,7 @@
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="filtra.css?v=20260510-promo-cleanup">
+  <link rel="stylesheet" href="filtra.css?v=20260510-info-clean">
 
   <style>
     body {
@@ -91,7 +91,7 @@
           </p>
 
           <div class="fc-hero-actions" aria-label="FiltraCore calls to action">
-            <a href="#demo-access" data-demo-access class="fc-button fc-button-primary" data-i18n="cta.requestDemo">Request Demo</a>
+            <a href="#product-access" data-product-access class="fc-button fc-button-primary" data-i18n="cta.openLogin">Open Login</a>
             <a href="#mobile-update" class="fc-button fc-button-secondary" data-i18n="hero.seeMobileUpdate">See Mobile Update</a>
           </div>
 
@@ -107,38 +107,7 @@
           <figure class="fc-computer-mockup">
             <div class="fc-computer-frame">
               <div class="fc-computer-screen">
-                <div class="fc-product-screen fc-product-dashboard" role="img" aria-label="Generic FiltraCore dashboard preview">
-                  <div class="fc-product-bar">
-                    <span>FiltraCore</span>
-                    <strong>Operations Ready</strong>
-                  </div>
-                  <div class="fc-product-layout">
-                    <aside class="fc-product-nav">
-                      <span class="active">Dashboard</span>
-                      <span>Machines</span>
-                      <span>Stock</span>
-                      <span>Filters</span>
-                      <span>Maintenance</span>
-                    </aside>
-                    <section class="fc-product-main">
-                      <div class="fc-product-header">
-                        <span>Readiness Center</span>
-                        <strong>Filter operation overview</strong>
-                      </div>
-                      <div class="fc-product-card-grid">
-                        <article><span>Sites covered</span><strong>Ready</strong></article>
-                        <article><span>Active filters</span><strong>Visible</strong></article>
-                        <article><span>Priority review</span><strong>Queued</strong></article>
-                        <article><span>Setup progress</span><strong>On track</strong></article>
-                      </div>
-                      <div class="fc-product-worklist">
-                        <div><strong>Machine readiness</strong><span>Connected to filter lifecycle</span></div>
-                        <div><strong>PSI monitoring</strong><span>Pressure history by station</span></div>
-                        <div><strong>Maintenance notes</strong><span>Actions ready for review</span></div>
-                      </div>
-                    </section>
-                  </div>
-                </div>
+                <img src="img/filtracore-desktop/dashboard.png" alt="FiltraCore desktop dashboard showing filter readiness, risk exposure, setup progress, and system metrics" decoding="async" fetchpriority="high">
               </div>
               <div class="fc-computer-chin"></div>
             </div>
@@ -148,20 +117,7 @@
 
           <figure class="fc-phone-mockup fc-phone-device">
             <span class="fc-phone-screen">
-              <div class="fc-phone-preview" role="img" aria-label="Generic FiltraCore mobile dashboard preview">
-                <strong>FiltraCore</strong>
-                <div class="fc-phone-kpis">
-                  <span>Machines<br><b>Ready</b></span>
-                  <span>Filters<br><b>Active</b></span>
-                  <span>Stock<br><b>Checked</b></span>
-                  <span>Risk<br><b>Review</b></span>
-                </div>
-                <div class="fc-phone-list">
-                  <p>Priority machines</p>
-                  <span>Water station <b>Watch</b></span>
-                  <span>Ice machine <b>Healthy</b></span>
-                </div>
-              </div>
+              <img src="img/filtracore-mobile/dashboard.png" alt="FiltraCore mobile dashboard with machine, filter, stock, and priority status cards" decoding="async" fetchpriority="high">
             </span>
           </figure>
         </div>
@@ -184,7 +140,7 @@
 
         <article>
           <span data-i18n="metrics.controlsLabel">Stock readiness</span>
-          <strong data-i18n="metrics.controlsValue">Demo-ready flow</strong>
+          <strong data-i18n="metrics.controlsValue">Launch-ready flow</strong>
           <p data-i18n="metrics.controlsText">Show availability and reorder context without exposing private purchasing data.</p>
         </article>
 
@@ -239,7 +195,7 @@
 
           <p data-i18n="mobile.body">
             The phone screens now cover the core field routine: create the machine, add the filter product,
-            install the filter, record PSI, and log maintenance without jumping through desktop modules.
+            install the filter, record PSI, and log maintenance without jumping through the desktop modules.
           </p>
         </div>
 
@@ -250,14 +206,7 @@
             <p data-i18n="mobile.step1Text">Capture name, type, location, department, brand, model, and machine ID in one clean form.</p>
             <div class="fc-step-phone fc-phone-device">
               <span class="fc-phone-screen">
-                <div class="fc-mobile-screen fc-mobile-screen-machine" role="img" aria-label="Generic add machine mobile screen">
-                  <strong>Add Machine</strong>
-                  <span>Machine name</span>
-                  <span>Location</span>
-                  <span>Department</span>
-                  <span>Machine ID</span>
-                  <b>Save Machine</b>
-                </div>
+                <img src="img/filtracore-mobile/add-machine.png" alt="Mobile Add Machine form in FiltraCore" loading="eager" decoding="async">
               </span>
             </div>
           </article>
@@ -268,14 +217,7 @@
             <p data-i18n="mobile.step2Text">Select the machine, choose the filter product, set lifespan, and create due dates from the phone.</p>
             <div class="fc-step-phone fc-phone-device">
               <span class="fc-phone-screen">
-                <div class="fc-mobile-screen fc-mobile-screen-install" role="img" aria-label="Generic install filter mobile screen">
-                  <strong>Install Filter</strong>
-                  <span>Machine</span>
-                  <span>Filter product</span>
-                  <span>Lifespan</span>
-                  <span>Due date</span>
-                  <b>Create install</b>
-                </div>
+                <img src="img/filtracore-mobile/install-filter.png" alt="Mobile Install Filter form in FiltraCore" loading="eager" decoding="async">
               </span>
             </div>
           </article>
@@ -283,15 +225,10 @@
           <article class="fc-step-card">
             <span>03</span>
             <h3 data-i18n="mobile.step3Title">Monitor PSI</h3>
-            <p data-i18n="mobile.step3Text">Review active filters, update pressure readings, and flag items from the same mobile view.</p>
+            <p data-i18n="mobile.step3Text">Review active filters, update pressure readings, and flag watch items from the same mobile view.</p>
             <div class="fc-step-phone fc-phone-device">
               <span class="fc-phone-screen">
-                <div class="fc-mobile-screen fc-mobile-screen-psi" role="img" aria-label="Generic PSI monitoring mobile screen">
-                  <strong>Filters</strong>
-                  <article><span>Water station</span><b>PSI Watch</b></article>
-                  <article><span>Ice machine</span><b>Active</b></article>
-                  <article><span>Beverage line</span><b>Healthy</b></article>
-                </div>
+                <img src="img/filtracore-mobile/filters.png" alt="Mobile Filters screen showing PSI tracking and active status" loading="eager" decoding="async">
               </span>
             </div>
           </article>
@@ -302,13 +239,7 @@
             <p data-i18n="mobile.step4Text">Record inspections, corrected PSI, notes, and replacement actions while the work is fresh.</p>
             <div class="fc-step-phone fc-phone-device">
               <span class="fc-phone-screen">
-                <div class="fc-mobile-screen fc-mobile-screen-maintenance" role="img" aria-label="Generic log maintenance mobile screen">
-                  <strong>Log Maintenance</strong>
-                  <span>Maintenance type</span>
-                  <span>Corrected PSI</span>
-                  <span>Notes</span>
-                  <b>Save record</b>
-                </div>
+                <img src="img/filtracore-mobile/log-maintenance.png" alt="Mobile Log Maintenance form in FiltraCore" loading="eager" decoding="async">
               </span>
             </div>
           </article>
@@ -329,30 +260,7 @@
 
         <div class="fc-showcase">
           <figure class="fc-showcase-main">
-            <div class="fc-product-screen fc-product-machines" role="img" aria-label="Generic FiltraCore machines module preview">
-              <div class="fc-product-bar">
-                <span>Asset Layer</span>
-                <strong>Machines</strong>
-              </div>
-              <div class="fc-module-preview-grid">
-                <section>
-                  <h4>Add Machine</h4>
-                  <span>Machine name</span>
-                  <span>Location</span>
-                  <span>Department</span>
-                  <span>Machine ID</span>
-                  <b>Save Machine</b>
-                </section>
-                <section>
-                  <h4>Machine List</h4>
-                  <div class="fc-preview-table">
-                    <p><strong>Water station</strong><span>PSI visible</span><b>Watch</b></p>
-                    <p><strong>Ice machine</strong><span>Lifecycle ready</span><b>Healthy</b></p>
-                    <p><strong>Beverage line</strong><span>Filter assigned</span><b>Ready</b></p>
-                  </div>
-                </section>
-              </div>
-            </div>
+            <img src="img/filtracore-desktop/machines.png" alt="FiltraCore Machines module with registration form and machine table" loading="eager" decoding="async">
           </figure>
 
           <div class="fc-module-list">
@@ -378,29 +286,17 @@
 
         <div class="fc-desktop-gallery" aria-label="FiltraCore desktop module screenshots">
           <figure>
-            <div class="fc-mini-preview fc-mini-stock" role="img" aria-label="Generic stock readiness preview">
-              <strong>Stock readiness</strong>
-              <span>Products checked</span>
-              <span>Reorder context</span>
-            </div>
+            <img src="img/filtracore-desktop/inventory.png" alt="FiltraCore stock desktop screen" loading="eager" decoding="async">
             <figcaption data-i18n="system.galleryInventory">Stock layer</figcaption>
           </figure>
 
           <figure>
-            <div class="fc-mini-preview fc-mini-lifecycle" role="img" aria-label="Generic filter lifecycle preview">
-              <strong>Lifecycle</strong>
-              <span>Due dates</span>
-              <span>PSI history</span>
-            </div>
+            <img src="img/filtracore-desktop/filters.png" alt="FiltraCore filters desktop screen" loading="eager" decoding="async">
             <figcaption data-i18n="system.galleryLifecycle">Lifecycle layer</figcaption>
           </figure>
 
           <figure>
-            <div class="fc-mini-preview fc-mini-maintenance" role="img" aria-label="Generic maintenance preview">
-              <strong>Maintenance</strong>
-              <span>Action logs</span>
-              <span>Review queue</span>
-            </div>
+            <img src="img/filtracore-desktop/maintenance.png" alt="FiltraCore maintenance desktop screen" loading="eager" decoding="async">
             <figcaption data-i18n="system.galleryMaintenance">Maintenance layer</figcaption>
           </figure>
         </div>
@@ -436,20 +332,7 @@
         </div>
 
         <figure class="fc-report-mockup">
-          <div class="fc-product-screen fc-product-report" role="img" aria-label="Generic FiltraCore report preview">
-            <div class="fc-product-bar">
-              <span>Executive Report</span>
-              <strong>Service readiness summary</strong>
-            </div>
-            <div class="fc-report-preview-grid">
-              <article><span>Coverage</span><strong>Ready</strong></article>
-              <article><span>Priority</span><strong>Review</strong></article>
-              <article><span>Maintenance</span><strong>Logged</strong></article>
-            </div>
-            <div class="fc-report-lines">
-              <span></span><span></span><span></span><span></span>
-            </div>
-          </div>
+          <img src="img/filtracore-desktop/reports.png" alt="FiltraCore reports desktop screen with readiness overview, operational summary, and report actions" loading="eager" decoding="async">
         </figure>
       </div>
     </section>
@@ -528,20 +411,20 @@
       </div>
     </section>
 
-    <section id="demo-access" class="fc-cta" aria-labelledby="cta-title">
+    <section id="product-access" class="fc-cta" aria-labelledby="cta-title">
       <div class="fc-container fc-cta-inner">
         <div>
           <h2 id="cta-title" data-i18n="finalCta.title">Ready to bring FiltraCore online?</h2>
-          <p data-i18n="finalCta.body">Request access to the current demo and review the exact workflow a team would use from setup to report.</p>
+          <p data-i18n="finalCta.body">Open the current system and review the exact workflow a team would use from setup to report.</p>
         </div>
 
-        <div class="fc-cta-steps" aria-label="Demo review steps">
+        <div class="fc-cta-steps" aria-label="Product access steps">
           <span data-i18n="finalCta.step1">Review dashboard</span>
           <span data-i18n="finalCta.step2">Walk mobile setup</span>
           <span data-i18n="finalCta.step3">Print the report</span>
         </div>
 
-        <a href="#demo-access" data-demo-access class="fc-button fc-button-primary" data-i18n="cta.requestDemo">Request Demo</a>
+        <a href="#product-access" data-product-access class="fc-button fc-button-primary" data-i18n="cta.openLogin">Open Login</a>
       </div>
     </section>
   </main>
@@ -578,24 +461,10 @@
 
         <div class="fc-print-device-stack">
           <figure class="fc-print-desktop-frame">
-            <div class="fc-product-screen fc-product-dashboard fc-product-print" role="img" aria-label="Generic FiltraCore dashboard print preview">
-              <div class="fc-product-bar"><span>FiltraCore</span><strong>Operations Ready</strong></div>
-              <div class="fc-product-card-grid">
-                <article><span>Sites</span><strong>Ready</strong></article>
-                <article><span>Filters</span><strong>Active</strong></article>
-                <article><span>Priority</span><strong>Review</strong></article>
-                <article><span>Setup</span><strong>On track</strong></article>
-              </div>
-            </div>
+            <img src="img/filtracore-desktop/print-dashboard.jpg" alt="FiltraCore dashboard print preview">
           </figure>
           <figure class="fc-print-phone-frame">
-            <div class="fc-phone-preview fc-phone-preview-print" role="img" aria-label="Generic FiltraCore mobile print preview">
-              <strong>FiltraCore</strong>
-              <div class="fc-phone-kpis">
-                <span>Machines<br><b>Ready</b></span>
-                <span>Risk<br><b>Review</b></span>
-              </div>
-            </div>
+            <img src="img/filtracore-mobile/dashboard.png" alt="FiltraCore mobile dashboard print preview">
           </figure>
         </div>
       </div>
@@ -613,7 +482,7 @@
         </article>
         <article>
           <span data-i18n="metrics.controlsLabel">Stock readiness</span>
-          <strong data-i18n="metrics.controlsValue">Demo-ready flow</strong>
+          <strong data-i18n="metrics.controlsValue">Launch-ready flow</strong>
           <p data-i18n="metrics.controlsText">Show availability and reorder context without exposing private purchasing data.</p>
         </article>
         <article>
@@ -665,7 +534,7 @@
           </article>
           <article>
             <span>02</span>
-            <h3 data-i18n="sales.card2Title">Managers see cost and risk together.</h3>
+            <h3 data-i18n="sales.card2Title">Managers see status and risk together.</h3>
             <p data-i18n="sales.card2Text">Stock availability, watch items, due dates, and maintenance history stay connected without exposing private totals.</p>
           </article>
           <article>
@@ -685,7 +554,7 @@
         </div>
         <p data-i18n="mobile.body">
           The phone screens now cover the core field routine: create the machine, add the filter product,
-          install the filter, record PSI, and log maintenance without jumping through desktop modules.
+          install the filter, record PSI, and log maintenance without jumping through the desktop modules.
         </p>
       </header>
 
@@ -694,25 +563,25 @@
           <span>01</span>
           <h3 data-i18n="mobile.step1Title">Add the machine</h3>
           <p data-i18n="mobile.step1Text">Capture name, type, location, department, brand, model, and machine ID in one clean form.</p>
-          <figure><div class="fc-mobile-screen fc-mobile-screen-machine" role="img" aria-label="Generic add machine mobile print screen"><strong>Add Machine</strong><span>Machine name</span><span>Location</span><span>Department</span><b>Save</b></div></figure>
+          <figure><img src="img/filtracore-mobile/add-machine.png" alt="Add machine mobile screen"></figure>
         </article>
         <article>
           <span>02</span>
           <h3 data-i18n="mobile.step2Title">Install the filter</h3>
           <p data-i18n="mobile.step2Text">Select the machine, choose the filter product, set lifespan, and create due dates from the phone.</p>
-          <figure><div class="fc-mobile-screen fc-mobile-screen-install" role="img" aria-label="Generic install filter mobile print screen"><strong>Install Filter</strong><span>Machine</span><span>Filter product</span><span>Lifespan</span><b>Save</b></div></figure>
+          <figure><img src="img/filtracore-mobile/install-filter.png" alt="Install filter mobile screen"></figure>
         </article>
         <article>
           <span>03</span>
           <h3 data-i18n="mobile.step3Title">Monitor PSI</h3>
-          <p data-i18n="mobile.step3Text">Review active filters, update pressure readings, and flag items from the same mobile view.</p>
-          <figure><div class="fc-mobile-screen fc-mobile-screen-psi" role="img" aria-label="Generic PSI mobile print screen"><strong>Filters</strong><article><span>Water station</span><b>Watch</b></article><article><span>Ice machine</span><b>Active</b></article></div></figure>
+          <p data-i18n="mobile.step3Text">Review active filters, update pressure readings, and flag watch items from the same mobile view.</p>
+          <figure><img src="img/filtracore-mobile/filters.png" alt="Filter PSI mobile screen"></figure>
         </article>
         <article>
           <span>04</span>
           <h3 data-i18n="mobile.step4Title">Log maintenance</h3>
           <p data-i18n="mobile.step4Text">Record inspections, corrected PSI, notes, and replacement actions while the work is fresh.</p>
-          <figure><div class="fc-mobile-screen fc-mobile-screen-maintenance" role="img" aria-label="Generic log maintenance mobile print screen"><strong>Maintenance</strong><span>Type</span><span>Corrected PSI</span><span>Notes</span><b>Save</b></div></figure>
+          <figure><img src="img/filtracore-mobile/log-maintenance.png" alt="Log maintenance mobile screen"></figure>
         </article>
       </div>
     </article>
@@ -731,14 +600,7 @@
 
       <div class="fc-print-system-grid">
         <figure class="fc-print-large-shot">
-          <div class="fc-product-screen fc-product-machines fc-product-print" role="img" aria-label="Generic FiltraCore machines print preview">
-            <div class="fc-product-bar"><span>Asset Layer</span><strong>Machines</strong></div>
-            <div class="fc-preview-table">
-              <p><strong>Water station</strong><span>PSI visible</span><b>Watch</b></p>
-              <p><strong>Ice machine</strong><span>Lifecycle ready</span><b>Healthy</b></p>
-              <p><strong>Beverage line</strong><span>Filter assigned</span><b>Ready</b></p>
-            </div>
-          </div>
+          <img src="img/filtracore-desktop/print-machines.jpg" alt="FiltraCore desktop machines module">
         </figure>
 
         <div class="fc-print-module-stack">
@@ -775,24 +637,17 @@
 
       <div class="fc-print-report-grid">
         <figure class="fc-print-large-shot">
-          <div class="fc-product-screen fc-product-report fc-product-print" role="img" aria-label="Generic FiltraCore report print preview">
-            <div class="fc-product-bar"><span>Executive Report</span><strong>Service readiness summary</strong></div>
-            <div class="fc-report-preview-grid">
-              <article><span>Coverage</span><strong>Ready</strong></article>
-              <article><span>Priority</span><strong>Review</strong></article>
-              <article><span>Maintenance</span><strong>Logged</strong></article>
-            </div>
-          </div>
+          <img src="img/filtracore-desktop/print-reports.jpg" alt="FiltraCore executive report module">
         </figure>
 
         <aside class="fc-print-next">
-          <h3 data-i18n="print.nextTitle">Demo review path</h3>
+          <h3 data-i18n="print.nextTitle">Access review path</h3>
           <ol>
             <li data-i18n="finalCta.step1">Review dashboard</li>
             <li data-i18n="finalCta.step2">Walk mobile setup</li>
             <li data-i18n="finalCta.step3">Print the report</li>
           </ol>
-          <p data-i18n="finalCta.body">Request access to the current demo and review the exact workflow a team would use from setup to report.</p>
+          <p data-i18n="finalCta.body">Open the current system and review the exact workflow a team would use from setup to report.</p>
           <strong>bastidasystems@gmail.com</strong>
           <strong>+1 (702) 661-7149</strong>
         </aside>
@@ -801,7 +656,7 @@
   </section>
 
   <script>
-    const demoAccessUrl = 'https://filtracore-v2-api.onrender.com/';
+    const productAccessUrl = 'https://filtracore-v2-api.onrender.com/';
     const filtraTranslations = {
       en: {
         'meta.title': 'FiltraCore | Bastida Systems',
@@ -821,8 +676,8 @@
         'hero.proof4': 'Printable reports',
         'print.docTitle': 'Operating brief',
         'print.coverLabel': 'Filter operations',
-        'print.nextTitle': 'Demo review path',
-        'cta.requestDemo': 'Open Login',
+        'print.nextTitle': 'Access review path',
+        'cta.openLogin': 'Open Login',
         'metrics.setupLabel': 'Fast setup',
         'metrics.setupValue': 'Mobile workflow',
         'metrics.setupText': 'Add machines, install filters, and log work from the floor.',
@@ -830,7 +685,7 @@
         'metrics.lifecycleValue': 'Due dates visible',
         'metrics.lifecycleText': 'Track lifespan, days left, status, and PSI by machine.',
         'metrics.controlsLabel': 'Stock readiness',
-        'metrics.controlsValue': 'Demo-ready flow',
+        'metrics.controlsValue': 'Launch-ready flow',
         'metrics.controlsText': 'Show availability and reorder context without exposing private purchasing data.',
         'metrics.riskLabel': 'Risk',
         'metrics.riskValue': 'Priority queue',
@@ -846,13 +701,13 @@
         'sales.card3Text': 'Clean summaries help leadership understand what is installed, what is pending, and what needs attention.',
         'mobile.label': 'New mobile workflow',
         'mobile.title': 'A simpler process for the people doing the work.',
-        'mobile.body': 'The phone screens now cover the core field routine: create the machine, add the filter product, install the filter, record PSI, and log maintenance without jumping through desktop modules.',
+        'mobile.body': 'The phone screens now cover the core field routine: create the machine, add the filter product, install the filter, record PSI, and log maintenance without jumping through the desktop modules.',
         'mobile.step1Title': 'Add the machine',
         'mobile.step1Text': 'Capture name, type, location, department, brand, model, and machine ID in one clean form.',
         'mobile.step2Title': 'Install the filter',
         'mobile.step2Text': 'Select the machine, choose the filter product, set lifespan, and create due dates from the phone.',
         'mobile.step3Title': 'Monitor PSI',
-        'mobile.step3Text': 'Review active filters, update pressure readings, and flag items from the same mobile view.',
+        'mobile.step3Text': 'Review active filters, update pressure readings, and flag watch items from the same mobile view.',
         'mobile.step4Title': 'Log maintenance',
         'mobile.step4Text': 'Record inspections, corrected PSI, notes, and replacement actions while the work is fresh.',
         'system.label': 'Desktop command center',
@@ -902,7 +757,7 @@
         'ops.card4Title': 'Stock readiness',
         'ops.card4Text': 'Connect available stock, reorder context, and installed filters so purchasing has better visibility.',
         'finalCta.title': 'Ready to bring FiltraCore online?',
-        'finalCta.body': 'Request access to the current demo and review the exact workflow a team would use from setup to report.',
+        'finalCta.body': 'Open the current system and review the exact workflow a team would use from setup to report.',
         'finalCta.step1': 'Review dashboard',
         'finalCta.step2': 'Walk mobile setup',
         'finalCta.step3': 'Print the report',
@@ -926,8 +781,8 @@
         'hero.proof4': 'Reportes imprimibles',
         'print.docTitle': 'Resumen operativo',
         'print.coverLabel': 'Operacion de filtros',
-        'print.nextTitle': 'Ruta de revision del demo',
-        'cta.requestDemo': 'Abrir login',
+        'print.nextTitle': 'Ruta de revision de acceso',
+        'cta.openLogin': 'Abrir login',
         'metrics.setupLabel': 'Setup rapido',
         'metrics.setupValue': 'Flujo movil',
         'metrics.setupText': 'Agrega maquinas, instala filtros y registra trabajo desde el piso.',
@@ -935,7 +790,7 @@
         'metrics.lifecycleValue': 'Fechas visibles',
         'metrics.lifecycleText': 'Controla vida util, dias restantes, estado y PSI por maquina.',
         'metrics.controlsLabel': 'Stock listo',
-        'metrics.controlsValue': 'Flujo listo para demo',
+        'metrics.controlsValue': 'Flujo listo para operar',
         'metrics.controlsText': 'Muestra disponibilidad y contexto de reorden sin exponer datos privados de compra.',
         'metrics.riskLabel': 'Riesgo',
         'metrics.riskValue': 'Cola prioritaria',
@@ -1007,7 +862,7 @@
         'ops.card4Title': 'Stock listo',
         'ops.card4Text': 'Conecta stock disponible, contexto de reorden y filtros instalados para dar mejor visibilidad a compras.',
         'finalCta.title': 'Listo para poner FiltraCore en marcha?',
-        'finalCta.body': 'Solicita acceso al demo actual y revisa el flujo exacto que usaria un equipo desde el setup hasta el reporte.',
+        'finalCta.body': 'Abre el sistema actual y revisa el flujo exacto que usaria un equipo desde el setup hasta el reporte.',
         'finalCta.step1': 'Revisar dashboard',
         'finalCta.step2': 'Ver setup movil',
         'finalCta.step3': 'Imprimir reporte',
@@ -1093,10 +948,10 @@
       observer.observe(document.getElementById('site-header'), { childList: true, subtree: true });
     };
 
-    document.querySelectorAll('[data-demo-access]').forEach(link => {
+    document.querySelectorAll('[data-product-access]').forEach(link => {
       link.addEventListener('click', event => {
         event.preventDefault();
-        window.location.href = demoAccessUrl;
+        window.location.href = productAccessUrl;
       });
     });
 
