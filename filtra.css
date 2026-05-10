@@ -1919,6 +1919,12 @@ p {
     background: #ffffff !important;
   }
 
+  .fc-print-document *,
+  .fc-print-document *::before,
+  .fc-print-document *::after {
+    box-shadow: none !important;
+  }
+
   .fc-print-page {
     position: relative;
     display: block;
@@ -2097,7 +2103,6 @@ p {
     width: 100%;
     padding: 0.12in 0.12in 0.22in;
     border-radius: 0.16in;
-    box-shadow: 0 0.16in 0.42in rgba(16, 24, 40, 0.12);
   }
 
   .fc-print-desktop-frame img {
@@ -2114,7 +2119,6 @@ p {
     width: 1.18in;
     padding: 0.04in;
     border-radius: 0.2in;
-    box-shadow: 0 0.16in 0.36in rgba(16, 24, 40, 0.18);
   }
 
   .fc-print-phone-frame img {
