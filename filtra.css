@@ -606,10 +606,17 @@ p {
   right: -2px;
   bottom: 18px;
   z-index: 2;
-  width: min(30%, 208px);
-  min-width: 166px;
+  width: min(34%, 230px);
+  min-width: 178px;
   margin: 0;
   filter: drop-shadow(0 28px 36px rgba(16, 24, 40, 0.24));
+}
+
+.fc-hero-phone-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
 }
 
 .fc-metrics {
@@ -1675,6 +1682,7 @@ p {
   }
 
   .fc-computer-screen img,
+  .fc-hero-phone-image img,
   .fc-showcase-main img,
   .fc-desktop-gallery img,
   .fc-report-mockup img {
