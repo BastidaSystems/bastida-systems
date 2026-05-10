@@ -597,6 +597,10 @@ p {
   line-height: 1;
 }
 
+.fc-hero-phone-nav {
+  display: none !important;
+}
+
 .fc-phone-mockup {
   position: absolute;
   right: -2px;
