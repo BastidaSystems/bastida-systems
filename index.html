@@ -20,15 +20,36 @@
     }
     html {
       scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+    body {
+      overflow-x: hidden;
     }
     .gradient-text {
-      background: linear-gradient(90deg, #00ff9c 0%, #00ff9c 40%, #ffffff 60%, #ffffff 100%);
+      background: linear-gradient(115deg, #00ff9c 0%, #00ff9c 28%, #a8ffd9 38%, #ffffff 48%, #00ff9c 62%, #ffffff 78%, #00ff9c 100%);
+      background-size: 260% 100%;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      display: inline-block;
+      display: block;
+      width: min(100%, 64rem);
+      margin-left: auto;
+      margin-right: auto;
       line-height: 1.22;
       padding-bottom: 0.18em;
+      animation: diagonalColorSweep 5.5s ease-in-out infinite;
+    }
+
+    @keyframes diagonalColorSweep {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
     }
   </style>
   <style>
@@ -41,10 +62,148 @@
       opacity: 1;
       transform: translateY(0);
     }
+    .fade-in:target {
+      opacity: 1;
+      transform: translateY(0);
+    }
 
     .site-nav {
       flex-wrap: wrap;
       justify-content: flex-end;
+    }
+
+    .product-panel {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(75, 85, 99, 0.5);
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(0, 255, 156, 0.13), transparent 34%),
+        linear-gradient(145deg, rgba(17, 24, 39, 0.94), rgba(3, 7, 18, 0.92));
+      box-shadow: 0 28px 90px rgba(0, 0, 0, 0.32);
+      transition: border-color 220ms ease, transform 220ms ease, box-shadow 220ms ease;
+    }
+
+    .product-panel:hover {
+      transform: translateY(-4px);
+      border-color: rgba(0, 255, 156, 0.55);
+      box-shadow: 0 34px 110px rgba(0, 0, 0, 0.46);
+    }
+
+    .product-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.08) 48%, transparent 64%);
+      opacity: 0;
+      transform: translateX(-45%);
+      transition: opacity 220ms ease, transform 600ms ease;
+    }
+
+    .product-panel:hover::before {
+      opacity: 1;
+      transform: translateX(45%);
+    }
+
+    .product-preview {
+      position: relative;
+      min-height: 18rem;
+      border-top: 1px solid rgba(75, 85, 99, 0.55);
+      background: #05070c;
+    }
+
+    .product-preview img {
+      width: 100%;
+      height: 100%;
+      min-height: 18rem;
+      object-fit: cover;
+      object-position: left top;
+      filter: saturate(1.05) contrast(1.04);
+      opacity: 0.88;
+      transition: transform 420ms ease, opacity 220ms ease;
+    }
+
+    .product-panel:hover .product-preview img {
+      transform: scale(1.035);
+      opacity: 0.96;
+    }
+
+    .product-preview::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 38%, rgba(3, 7, 18, 0.94) 100%);
+      pointer-events: none;
+    }
+
+    .product-points {
+      display: grid;
+      gap: 0.65rem;
+      margin: 1.4rem 0 1.6rem;
+    }
+
+    .product-points li {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      color: #d1d5db;
+      font-size: 0.9rem;
+    }
+
+    .product-points li::before {
+      content: "";
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 999px;
+      background: #00ff9c;
+      box-shadow: 0 0 16px rgba(0, 255, 156, 0.85);
+      flex: 0 0 auto;
+    }
+
+    .product-tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 2rem;
+      padding: 0.35rem 0.7rem;
+      border: 1px solid rgba(0, 255, 156, 0.24);
+      border-radius: 999px;
+      color: #9ca3af;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .preview-caption {
+      position: absolute;
+      left: 1.25rem;
+      right: 1.25rem;
+      bottom: 1.15rem;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      color: #f9fafb;
+      font-size: 0.92rem;
+      font-weight: 800;
+    }
+
+    .preview-caption span:last-child {
+      color: #00ff9c;
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .hero-body {
+      width: min(100%, 42rem);
+    }
+
+    .hero-actions {
+      width: min(100%, 22rem);
     }
 
     .language-picker {
@@ -74,8 +233,42 @@
     }
 
     @media (max-width: 640px) {
+      .gradient-text {
+        width: min(100%, 21rem);
+      }
+
+      .hero-body {
+        width: min(100%, 20.5rem);
+        font-size: 1rem;
+        line-height: 1.65;
+      }
+
+      .hero-actions {
+        width: min(100%, 20.5rem);
+      }
+
+      #site-header nav {
+        align-items: flex-start;
+        gap: 0.8rem;
+        padding-top: 0.95rem !important;
+        padding-bottom: 0.95rem !important;
+      }
+
+      #site-header nav > div:last-child {
+        width: 100%;
+        justify-content: flex-start;
+        gap: 1rem;
+        overflow-x: auto;
+        padding-bottom: 0.1rem;
+      }
+
+      #site-header nav > div:last-child > a {
+        flex: 0 0 auto;
+      }
+
       .language-picker {
         padding: 0.22rem;
+        flex: 0 0 auto;
       }
 
       .language-picker span {
@@ -100,6 +293,31 @@
         transform: none !important;
       }
     }
+
+    @media (max-width: 768px) {
+      .product-preview,
+      .product-preview img {
+        min-height: 14rem;
+      }
+
+      .preview-caption {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.35rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .gradient-text {
+        animation: none;
+      }
+
+      .product-panel,
+      .product-panel::before,
+      .product-preview img {
+        transition: none;
+      }
+    }
   </style>
 </head>
 
@@ -121,8 +339,20 @@
         'hero.body': 'Bastida Systems develops intelligent software platforms that enable operations to monitor critical infrastructure, reduce operational risk, and maintain compliance through real-time data and automation.',
         'hero.explore': 'Explore Products',
         'products.heading': 'Products',
+        'products.intro': 'Focused tools that support, extend, and simplify real operational systems without forcing teams to abandon what already works.',
+        'products.beoflow.tag': 'Kitchen operations',
         'products.filtracore.body': 'Filtration operations platform for casinos, restaurants, and service teams. Track PSI, filter lifespan, maintenance, and stock readiness in real time.',
         'products.beoflow.body': 'Kitchen operations platform for menus, inventory, production, staff, service planning, and daily execution.',
+        'products.beoflow.point1': 'Inventory, recipes, and menu control',
+        'products.beoflow.point2': 'Service planning and production visibility',
+        'products.beoflow.point3': 'Staff schedules, stations, and reports',
+        'products.beoflow.preview': 'Kitchen command center',
+        'products.filtracore.tag': 'Filter intelligence',
+        'products.filtracore.point1': 'PSI monitoring and pressure history',
+        'products.filtracore.point2': 'Filter lifecycle and due dates',
+        'products.filtracore.point3': 'Maintenance records and stock readiness',
+        'products.filtracore.preview': 'Filter operations view',
+        'products.previewStatus': 'Live workflow',
         'products.learnMore': 'Learn More',
         'products.openLogin': 'Open Login',
         'contact.heading': 'Contact',
@@ -141,8 +371,20 @@
         'hero.body': 'Bastida Systems desarrolla plataformas de software inteligentes que ayudan a las operaciones a monitorear infraestructura crítica, reducir riesgos operativos y mantener cumplimiento con datos en tiempo real y automatización.',
         'hero.explore': 'Ver Productos',
         'products.heading': 'Productos',
+        'products.intro': 'Herramientas enfocadas que apoyan, extienden y simplifican sistemas operativos reales sin obligar a los equipos a abandonar lo que ya funciona.',
+        'products.beoflow.tag': 'Operación de cocina',
         'products.filtracore.body': 'Plataforma de operación para filtración en casinos, restaurantes y equipos de servicio. Controla PSI, vida útil de filtros, mantenimiento y stock listo en tiempo real.',
         'products.beoflow.body': 'Plataforma de operación de cocina para menús, inventario, producción, personal, planeación de servicio y ejecución diaria.',
+        'products.beoflow.point1': 'Control de inventario, recetas y menús',
+        'products.beoflow.point2': 'Planeación de servicio y visibilidad de producción',
+        'products.beoflow.point3': 'Horarios, estaciones y reportes',
+        'products.beoflow.preview': 'Centro de control de cocina',
+        'products.filtracore.tag': 'Inteligencia para filtros',
+        'products.filtracore.point1': 'Monitoreo PSI e historial de presión',
+        'products.filtracore.point2': 'Ciclo de vida de filtros y fechas de cambio',
+        'products.filtracore.point3': 'Mantenimiento y stock listo',
+        'products.filtracore.preview': 'Vista de operación de filtros',
+        'products.previewStatus': 'Flujo activo',
         'products.learnMore': 'Ver Más',
         'products.openLogin': 'Abrir Login',
         'contact.heading': 'Contacto',
@@ -274,15 +516,15 @@
     <div class="absolute inset-0 bg-gradient-to-br from-transparent via-gray-900/40 to-black z-0"></div>
     <img src="img/logo_bastida_sys.png" alt="Background Logo" class="absolute inset-0 m-auto -translate-y-10 w-96 opacity-10 pointer-events-none select-none z-0">
     
-    <h1 class="text-5xl md:text-7xl font-bold mb-10 relative z-20 gradient-text leading-[1.22] tracking-normal" data-i18n="hero.heading">
+    <h1 class="max-w-5xl px-2 text-4xl sm:text-5xl md:text-7xl font-bold mb-10 relative z-20 gradient-text leading-[1.22] tracking-normal" data-i18n="hero.heading">
       Engineering Intelligent Systems
     </h1>
 
-    <p class="text-lg text-gray-400 max-w-2xl mb-8 relative z-20" data-i18n="hero.body">
+    <p class="hero-body text-lg text-gray-400 mb-8 relative z-20" data-i18n="hero.body">
       Bastida Systems develops intelligent software platforms that enable operations to monitor critical infrastructure, reduce operational risk, and maintain compliance through real-time data and automation.
     </p>
 
-    <div class="flex gap-4 relative z-20">
+    <div class="hero-actions flex flex-wrap justify-center gap-4 relative z-20">
       <a href="#products" class="px-6 py-3 bg-white text-black rounded-full font-medium hover:opacity-80 transition duration-300 hover:scale-105 inline-block" data-i18n="hero.explore">
         Explore Products
       </a>
@@ -294,24 +536,37 @@
   </section>
 
   <!-- PRODUCTS -->
-  <section id="products" class="px-8 py-20 border-t border-gray-800 fade-in">
+  <section id="products" class="px-6 md:px-8 py-24 border-t border-gray-800 fade-in">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-12">
+        <h2 class="text-3xl md:text-4xl font-semibold" data-i18n="products.heading">Products</h2>
+        <p class="text-gray-400 max-w-2xl leading-7" data-i18n="products.intro">
+          Focused tools that support, extend, and simplify real operational systems without forcing teams to abandon what already works.
+        </p>
+      </div>
 
-    <h2 class="text-3xl font-semibold mb-10" data-i18n="products.heading">Products</h2>
-
-    <div class="grid gap-8 lg:grid-cols-2">
-      <div class="bg-gray-900/60 backdrop-blur-md p-8 rounded-2xl border border-gray-800 hover:border-gray-600 transition">
-        <div class="flex items-center justify-between gap-10">
-
-          <div class="max-w-xl">
-
-            <div class="flex items-center gap-3 mb-4">
-              <img src="img/logobeoflow.png" alt="Beoflow Logo" class="w-10 h-8 object-contain">
-              <h3 class="text-2xl font-semibold">Beoflow</h3>
+      <div class="grid gap-6 lg:grid-cols-2">
+        <article class="product-panel">
+          <div class="relative z-10 p-6 md:p-8">
+            <div class="flex flex-wrap items-start justify-between gap-4 mb-7">
+              <div class="flex items-center gap-4">
+                <img src="img/logobeoflow.png" alt="Beoflow Logo" class="h-10 w-12 object-contain">
+                <div>
+                  <h3 class="text-2xl md:text-3xl font-semibold">Beoflow</h3>
+                </div>
+              </div>
+              <span class="product-tag" data-i18n="products.beoflow.tag">Kitchen operations</span>
             </div>
 
-            <p class="text-gray-400 mb-6" data-i18n="products.beoflow.body">
+            <p class="text-gray-300 leading-7" data-i18n="products.beoflow.body">
               Kitchen operations platform for menus, inventory, production, staff, service planning, and daily execution.
             </p>
+
+            <ul class="product-points" aria-label="Beoflow features">
+              <li data-i18n="products.beoflow.point1">Inventory, recipes, and menu control</li>
+              <li data-i18n="products.beoflow.point2">Service planning and production visibility</li>
+              <li data-i18n="products.beoflow.point3">Staff schedules, stations, and reports</li>
+            </ul>
 
             <div class="flex flex-wrap gap-3">
               <a href="beoflow.html" class="px-5 py-2 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105 inline-block" data-i18n="products.learnMore">
@@ -321,30 +576,38 @@
                 Open Login
               </a>
             </div>
-
           </div>
 
-          <div class="hidden h-28 w-48 overflow-hidden rounded-lg border border-gray-800 md:block">
-            <img src="img/beoflow-dashboard.jpeg" alt="Beoflow Dashboard" class="h-full w-full object-cover object-left-top">
+          <div class="product-preview">
+            <img src="img/beoflow-dashboard.jpeg" alt="Beoflow dashboard preview">
+            <div class="preview-caption">
+              <span data-i18n="products.beoflow.preview">Kitchen command center</span>
+              <span data-i18n="products.previewStatus">Live workflow</span>
+            </div>
           </div>
+        </article>
 
-        </div>
-      </div>
-
-      <div class="bg-gray-900/60 backdrop-blur-md p-8 rounded-2xl border border-gray-800 hover:border-gray-600 transition">
-        <div class="flex items-center justify-between gap-10">
-
-          <div class="max-w-xl">
-
-            <div class="flex items-center gap-3 mb-4">
-              <img src="img/LOGO_FILTRACOREXCODE.png" alt="FiltraCore Logo" class="w-8 h-8 object-contain">
-              <h3 class="text-2xl font-semibold">FiltraCore</h3>
+        <article class="product-panel">
+          <div class="relative z-10 p-6 md:p-8">
+            <div class="flex flex-wrap items-start justify-between gap-4 mb-7">
+              <div class="flex items-center gap-4">
+                <img src="img/LOGO_FILTRACOREXCODE.png" alt="FiltraCore Logo" class="h-10 w-10 object-contain">
+                <div>
+                  <h3 class="text-2xl md:text-3xl font-semibold">FiltraCore</h3>
+                </div>
+              </div>
+              <span class="product-tag" data-i18n="products.filtracore.tag">Filter intelligence</span>
             </div>
 
-            <p class="text-gray-400 mb-6" data-i18n="products.filtracore.body">
-              Filtration operations platform for casinos, restaurants, and service teams.
-              Track PSI, filter lifespan, maintenance, and stock readiness in real time.
+            <p class="text-gray-300 leading-7" data-i18n="products.filtracore.body">
+              Filtration operations platform for casinos, restaurants, and service teams. Track PSI, filter lifespan, maintenance, and stock readiness in real time.
             </p>
+
+            <ul class="product-points" aria-label="FiltraCore features">
+              <li data-i18n="products.filtracore.point1">PSI monitoring and pressure history</li>
+              <li data-i18n="products.filtracore.point2">Filter lifecycle and due dates</li>
+              <li data-i18n="products.filtracore.point3">Maintenance records and stock readiness</li>
+            </ul>
 
             <div class="flex flex-wrap gap-3">
               <a href="filtracore.html" class="px-5 py-2 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105 inline-block" data-i18n="products.learnMore">
@@ -354,17 +617,18 @@
                 Open Login
               </a>
             </div>
-
           </div>
 
-          <div class="hidden h-28 w-48 overflow-hidden rounded-lg border border-gray-800 md:block">
-            <img src="img/filtracore-dashboard.jpeg" alt="FiltraCore Dashboard" class="h-full w-full object-cover object-left-top">
+          <div class="product-preview">
+            <img src="img/filtracore-dashboard.jpeg" alt="FiltraCore dashboard preview">
+            <div class="preview-caption">
+              <span data-i18n="products.filtracore.preview">Filter operations view</span>
+              <span data-i18n="products.previewStatus">Live workflow</span>
+            </div>
           </div>
-
-        </div>
+        </article>
       </div>
     </div>
-
   </section>
 
   <!-- CONTACT -->
@@ -409,6 +673,10 @@
 
     document.querySelectorAll('.fade-in').forEach(el => {
       observer.observe(el);
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        el.classList.add('visible');
+      }
     });
   </script>
 
