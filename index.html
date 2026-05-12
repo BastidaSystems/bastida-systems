@@ -175,6 +175,42 @@
       text-transform: uppercase;
     }
 
+    .product-panel--estrattiva {
+      background:
+        radial-gradient(circle at 74% 12%, rgba(205, 163, 90, 0.2), transparent 32%),
+        radial-gradient(circle at 18% 0%, rgba(13, 32, 61, 0.3), transparent 34%),
+        linear-gradient(145deg, rgba(12, 18, 29, 0.96), rgba(5, 7, 12, 0.94));
+    }
+
+    .product-panel--estrattiva:hover {
+      border-color: rgba(205, 163, 90, 0.62);
+    }
+
+    .product-panel--estrattiva .product-tag {
+      border-color: rgba(205, 163, 90, 0.38);
+    }
+
+    .product-panel--estrattiva .product-points li::before {
+      background: #cda35a;
+      box-shadow: 0 0 16px rgba(205, 163, 90, 0.72);
+    }
+
+    .product-panel--estrattiva .preview-caption span:last-child {
+      color: #d9b66f;
+    }
+
+    .product-mark {
+      width: 2.75rem;
+      height: 2.75rem;
+      border-radius: 8px;
+      object-fit: cover;
+      background: #101827;
+    }
+
+    .product-preview--center img {
+      object-position: center;
+    }
+
     .preview-caption {
       position: absolute;
       left: 1.25rem;
@@ -203,7 +239,7 @@
     }
 
     .hero-actions {
-      width: min(100%, 22rem);
+      width: min(100%, 44rem);
     }
 
     .language-picker {
@@ -329,17 +365,21 @@
     const siteTranslations = {
       en: {
         'meta.title': 'Bastida Systems',
-        'nav.products': 'Products',
+        'nav.products': 'Work',
+        'nav.websites': 'Websites',
+        'nav.systems': 'Systems',
         'nav.about': 'About',
         'nav.privacy': 'Privacy',
         'nav.contact': 'Contact',
         'nav.language': 'Language',
         'nav.languageSelector': 'Language selector',
         'hero.heading': 'Engineering Intelligent Systems',
-        'hero.body': 'Bastida Systems develops intelligent software platforms that enable operations to monitor critical infrastructure, reduce operational risk, and maintain compliance through real-time data and automation.',
-        'hero.explore': 'Explore Products',
-        'products.heading': 'Products',
-        'products.intro': 'Focused tools that support, extend, and simplify real operational systems without forcing teams to abandon what already works.',
+        'hero.body': 'Bastida Systems develops intelligent software platforms and business websites that help operations present their work, monitor critical infrastructure, reduce risk, and move with better data.',
+        'hero.explore': 'Explore Work',
+        'hero.websites': 'Website Packages',
+        'hero.systems': 'System Packages',
+        'products.heading': 'Products & Web Projects',
+        'products.intro': 'Software products and client websites built to support real operations, service businesses, and growing brands.',
         'products.beoflow.tag': 'Kitchen operations',
         'products.filtracore.body': 'Filtration operations platform for casinos, restaurants, and service teams. Track PSI, filter lifespan, maintenance, and stock readiness in real time.',
         'products.beoflow.body': 'Kitchen operations platform for menus, inventory, production, staff, service planning, and daily execution.',
@@ -352,26 +392,39 @@
         'products.filtracore.point2': 'Filter lifecycle and due dates',
         'products.filtracore.point3': 'Maintenance records and stock readiness',
         'products.filtracore.preview': 'Filter operations view',
+        'products.estrattiva.tag': 'Client website',
+        'products.estrattiva.body': 'Informational website for professional consulting and advisory services, with responsive layout, branded welcome screen, contact cards, email, phone, and WhatsApp.',
+        'products.estrattiva.point1': 'Responsive business landing page',
+        'products.estrattiva.point2': 'Branded welcome experience',
+        'products.estrattiva.point3': 'Direct contact through phone, email, and WhatsApp',
+        'products.estrattiva.preview': 'Consulting website',
+        'products.publishedStatus': 'Published site',
         'products.previewStatus': 'Live workflow',
         'products.learnMore': 'Learn More',
         'products.openLogin': 'Open Login',
+        'products.visitSite': 'Visit Site',
+        'products.viewCode': 'View Code',
         'contact.heading': 'Contact',
-        'contact.body': 'Interested in FiltraCore, Beoflow, or custom intelligent systems for your operation? Let’s connect.',
+        'contact.body': 'Interested in a product, a client website, or a custom intelligent system for your operation? Let’s connect.',
         'footer.rights': '© 2026 Bastida Systems. All rights reserved.'
       },
       es: {
         'meta.title': 'Bastida Systems',
-        'nav.products': 'Productos',
+        'nav.products': 'Proyectos',
+        'nav.websites': 'Sitios Web',
+        'nav.systems': 'Sistemas',
         'nav.about': 'Acerca de',
         'nav.privacy': 'Privacidad',
         'nav.contact': 'Contacto',
         'nav.language': 'Idioma',
         'nav.languageSelector': 'Selector de idioma',
         'hero.heading': 'Ingeniería de Sistemas Inteligentes',
-        'hero.body': 'Bastida Systems desarrolla plataformas de software inteligentes que ayudan a las operaciones a monitorear infraestructura crítica, reducir riesgos operativos y mantener cumplimiento con datos en tiempo real y automatización.',
-        'hero.explore': 'Ver Productos',
-        'products.heading': 'Productos',
-        'products.intro': 'Herramientas enfocadas que apoyan, extienden y simplifican sistemas operativos reales sin obligar a los equipos a abandonar lo que ya funciona.',
+        'hero.body': 'Bastida Systems desarrolla plataformas de software inteligentes y sitios web de negocio que ayudan a presentar servicios, monitorear infraestructura crítica, reducir riesgos y trabajar con mejores datos.',
+        'hero.explore': 'Ver Proyectos',
+        'hero.websites': 'Precios Web',
+        'hero.systems': 'Precios Sistemas',
+        'products.heading': 'Productos y Sitios Web',
+        'products.intro': 'Productos de software y sitios web para apoyar operaciones reales, negocios de servicio y marcas en crecimiento.',
         'products.beoflow.tag': 'Operación de cocina',
         'products.filtracore.body': 'Plataforma de operación para filtración en casinos, restaurantes y equipos de servicio. Controla PSI, vida útil de filtros, mantenimiento y stock listo en tiempo real.',
         'products.beoflow.body': 'Plataforma de operación de cocina para menús, inventario, producción, personal, planeación de servicio y ejecución diaria.',
@@ -384,11 +437,20 @@
         'products.filtracore.point2': 'Ciclo de vida de filtros y fechas de cambio',
         'products.filtracore.point3': 'Mantenimiento y stock listo',
         'products.filtracore.preview': 'Vista de operación de filtros',
+        'products.estrattiva.tag': 'Sitio de cliente',
+        'products.estrattiva.body': 'Sitio informativo para consultoría y asesoría profesional, con diseño responsivo, pantalla de bienvenida, tarjetas de contacto, correo, teléfonos y WhatsApp.',
+        'products.estrattiva.point1': 'Página de negocio responsiva',
+        'products.estrattiva.point2': 'Experiencia de bienvenida con marca',
+        'products.estrattiva.point3': 'Contacto directo por teléfono, correo y WhatsApp',
+        'products.estrattiva.preview': 'Sitio de consultoría',
+        'products.publishedStatus': 'Sitio publicado',
         'products.previewStatus': 'Flujo activo',
         'products.learnMore': 'Ver Más',
         'products.openLogin': 'Abrir Login',
+        'products.visitSite': 'Ver Sitio',
+        'products.viewCode': 'Ver Código',
         'contact.heading': 'Contacto',
-        'contact.body': '¿Te interesa FiltraCore, Beoflow o un sistema inteligente personalizado para tu operación? Conversemos.',
+        'contact.body': '¿Te interesa un producto, un sitio web para tu negocio o un sistema personalizado para tu operación? Conversemos.',
         'footer.rights': '© 2026 Bastida Systems. Todos los derechos reservados.'
       }
     };
@@ -446,7 +508,9 @@
         </div>
 
         <div class="flex items-center gap-4 md:gap-8 text-sm font-medium text-gray-600">
-          <a href="index.html#products" class="hover:text-black transition">Products</a>
+          <a href="index.html#products" class="hover:text-black transition">Work</a>
+          <a href="websites.html" class="hover:text-black transition">Websites</a>
+          <a href="systems.html" class="hover:text-black transition">Systems</a>
           <a href="about.html" class="hover:text-black transition">About</a>
           <a href="index.html#contact" class="hover:text-black transition">Contact</a>
         </div>
@@ -463,6 +527,8 @@
 
       const navMap = {
         'index.html#products': 'nav.products',
+        'websites.html': 'nav.websites',
+        'systems.html': 'nav.systems',
         'about.html': 'nav.about',
         'index.html#contact': 'nav.contact'
       };
@@ -521,15 +587,21 @@
     </h1>
 
     <p class="hero-body text-lg text-gray-400 mb-8 relative z-20" data-i18n="hero.body">
-      Bastida Systems develops intelligent software platforms that enable operations to monitor critical infrastructure, reduce operational risk, and maintain compliance through real-time data and automation.
+      Bastida Systems develops intelligent software platforms and business websites that help operations present their work, monitor critical infrastructure, reduce risk, and move with better data.
     </p>
 
     <div class="hero-actions flex flex-wrap justify-center gap-4 relative z-20">
       <a href="#products" class="px-6 py-3 bg-white text-black rounded-full font-medium hover:opacity-80 transition duration-300 hover:scale-105 inline-block" data-i18n="hero.explore">
-        Explore Products
+        Explore Work
       </a>
       <a href="#contact" class="px-6 py-3 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105 inline-block" data-i18n="nav.contact">
         Contact
+      </a>
+      <a href="websites.html" class="px-6 py-3 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105 inline-block" data-i18n="hero.websites">
+        Website Packages
+      </a>
+      <a href="systems.html" class="px-6 py-3 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105 inline-block" data-i18n="hero.systems">
+        System Packages
       </a>
     </div>
 
@@ -539,13 +611,13 @@
   <section id="products" class="px-6 md:px-8 py-24 border-t border-gray-800 fade-in">
     <div class="max-w-7xl mx-auto">
       <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-12">
-        <h2 class="text-3xl md:text-4xl font-semibold" data-i18n="products.heading">Products</h2>
+        <h2 class="text-3xl md:text-4xl font-semibold" data-i18n="products.heading">Products & Web Projects</h2>
         <p class="text-gray-400 max-w-2xl leading-7" data-i18n="products.intro">
-          Focused tools that support, extend, and simplify real operational systems without forcing teams to abandon what already works.
+          Software products and client websites built to support real operations, service businesses, and growing brands.
         </p>
       </div>
 
-      <div class="grid gap-6 lg:grid-cols-2">
+      <div class="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
         <article class="product-panel">
           <div class="relative z-10 p-6 md:p-8">
             <div class="flex flex-wrap items-start justify-between gap-4 mb-7">
@@ -627,6 +699,47 @@
             </div>
           </div>
         </article>
+
+        <article class="product-panel product-panel--estrattiva">
+          <div class="relative z-10 p-6 md:p-8">
+            <div class="flex flex-wrap items-start justify-between gap-4 mb-7">
+              <div class="flex items-center gap-4">
+                <img src="img/estrattiva-mark.png" alt="Estrattiva Logo" class="product-mark">
+                <div>
+                  <h3 class="text-2xl md:text-3xl font-semibold">Estrattiva</h3>
+                </div>
+              </div>
+              <span class="product-tag" data-i18n="products.estrattiva.tag">Client website</span>
+            </div>
+
+            <p class="text-gray-300 leading-7" data-i18n="products.estrattiva.body">
+              Informational website for professional consulting and advisory services, with responsive layout, branded welcome screen, contact cards, email, phone, and WhatsApp.
+            </p>
+
+            <ul class="product-points" aria-label="Estrattiva features">
+              <li data-i18n="products.estrattiva.point1">Responsive business landing page</li>
+              <li data-i18n="products.estrattiva.point2">Branded welcome experience</li>
+              <li data-i18n="products.estrattiva.point3">Direct contact through phone, email, and WhatsApp</li>
+            </ul>
+
+            <div class="flex flex-wrap gap-3">
+              <a href="https://bastidadavid.github.io/ESTRATIVA/" target="_blank" rel="noopener" class="px-5 py-2 bg-white text-black rounded-full font-medium hover:opacity-80 transition duration-300 hover:scale-105 inline-block" data-i18n="products.visitSite">
+                Visit Site
+              </a>
+              <a href="https://github.com/BastidaDavid/ESTRATIVA" target="_blank" rel="noopener" class="px-5 py-2 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105 inline-block" data-i18n="products.viewCode">
+                View Code
+              </a>
+            </div>
+          </div>
+
+          <div class="product-preview product-preview--center">
+            <img src="img/estrattiva-preview.png" alt="Estrattiva website preview">
+            <div class="preview-caption">
+              <span data-i18n="products.estrattiva.preview">Consulting website</span>
+              <span data-i18n="products.publishedStatus">Published site</span>
+            </div>
+          </div>
+        </article>
       </div>
     </div>
   </section>
@@ -635,7 +748,7 @@
   <section id="contact" class="px-8 py-20 border-t border-gray-800 fade-in">
     <h2 class="text-3xl font-semibold mb-8" data-i18n="contact.heading">Contact</h2>
     <p class="text-gray-400 max-w-2xl leading-8 mb-6" data-i18n="contact.body">
-      Interested in FiltraCore, Beoflow, or custom intelligent systems for your operation? Let’s connect.
+      Interested in a product, a client website, or a custom intelligent system for your operation? Let’s connect.
     </p>
     <div class="flex flex-col items-start gap-4">
       <a href="mailto:bastidasystems@gmail.com" class="inline-block px-6 py-3 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105">
@@ -652,7 +765,9 @@
   <footer class="px-8 py-10 border-t border-gray-800 text-gray-500 text-sm text-center">
 
     <div class="flex justify-center gap-6 mb-4 text-gray-400">
-      <a href="index.html#products" class="hover:text-white transition" data-i18n="nav.products">Products</a>
+      <a href="index.html#products" class="hover:text-white transition" data-i18n="nav.products">Work</a>
+      <a href="websites.html" class="hover:text-white transition" data-i18n="nav.websites">Websites</a>
+      <a href="systems.html" class="hover:text-white transition" data-i18n="nav.systems">Systems</a>
       <a href="about.html" class="hover:text-white transition" data-i18n="nav.about">About</a>
       <a href="index.html#contact" class="hover:text-white transition" data-i18n="nav.contact">Contact</a>
       <a href="privacy.html" class="hover:text-white transition" data-i18n="nav.privacy">Privacy</a>

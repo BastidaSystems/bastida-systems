@@ -46,7 +46,9 @@
         </div>
 
         <div class="flex items-center gap-4 md:gap-8 text-sm font-medium text-gray-600">
-          <a href="index.html#products" class="hover:text-black transition">Products</a>
+          <a href="index.html#products" class="hover:text-black transition">Work</a>
+          <a href="websites.html" class="hover:text-black transition">Websites</a>
+          <a href="systems.html" class="hover:text-black transition">Systems</a>
           <a href="about.html" class="hover:text-black transition">About</a>
           <a href="index.html#contact" class="hover:text-black transition">Contact</a>
         </div>
@@ -660,7 +662,9 @@
         'meta.title': 'FiltraCore | Bastida Systems',
         'nav.language': 'Language',
         'nav.languageSelector': 'Language selector',
-        'nav.products': 'Products',
+        'nav.products': 'Work',
+        'nav.websites': 'Websites',
+        'nav.systems': 'Systems',
         'nav.about': 'About',
         'nav.contact': 'Contact',
         'nav.privacy': 'Privacy',
@@ -766,7 +770,9 @@
         'meta.title': 'FiltraCore | Bastida Systems',
         'nav.language': 'Idioma',
         'nav.languageSelector': 'Selector de idioma',
-        'nav.products': 'Productos',
+        'nav.products': 'Proyectos',
+        'nav.websites': 'Sitios Web',
+        'nav.systems': 'Sistemas',
         'nav.about': 'Acerca',
         'nav.contact': 'Contacto',
         'nav.privacy': 'Privacidad',
@@ -882,30 +888,41 @@
 
     const setupLanguagePicker = () => {
       const nav = document.querySelector('#site-header nav');
-      if (!nav || document.getElementById('filtracore-language-select')) return Boolean(nav);
+      if (!nav) return false;
+      if (nav.dataset.filtracoreLanguageReady === 'true') return true;
 
       nav.querySelector('a[href="index.html#products"]')?.setAttribute('data-i18n', 'nav.products');
+      nav.querySelector('a[href="websites.html"]')?.setAttribute('data-i18n', 'nav.websites');
+      nav.querySelector('a[href="systems.html"]')?.setAttribute('data-i18n', 'nav.systems');
       nav.querySelector('a[href="about.html"]')?.setAttribute('data-i18n', 'nav.about');
       nav.querySelector('a[href="index.html#contact"]')?.setAttribute('data-i18n', 'nav.contact');
 
       const links = nav.querySelector('div:last-child');
       if (!links) return false;
 
-      links.insertAdjacentHTML('beforeend', `
-        <label class="fc-language-picker">
-          <span data-i18n="nav.language">Language</span>
-          <select id="filtracore-language-select" aria-label="Language selector" data-i18n-aria-label="nav.languageSelector">
-            <option value="en">EN</option>
-            <option value="es">ES</option>
-          </select>
-        </label>
-      `);
+      let select = document.getElementById('filtracore-language-select') || document.getElementById('language-select');
 
-      const select = document.getElementById('filtracore-language-select');
+      if (!select) {
+        links.insertAdjacentHTML('beforeend', `
+          <label class="fc-language-picker">
+            <span data-i18n="nav.language">Language</span>
+            <select id="filtracore-language-select" aria-label="Language selector" data-i18n-aria-label="nav.languageSelector">
+              <option value="en">EN</option>
+              <option value="es">ES</option>
+            </select>
+          </label>
+        `);
+        select = document.getElementById('filtracore-language-select');
+      } else {
+        select.id = 'filtracore-language-select';
+        select.closest('label')?.classList.add('fc-language-picker');
+      }
+
       select.value = activeLanguage;
       select.addEventListener('change', event => {
         applyLanguage(event.target.value);
       });
+      nav.dataset.filtracoreLanguageReady = 'true';
 
       return true;
     };
@@ -961,7 +978,9 @@
 
   <footer class="fc-footer">
     <div class="fc-footer-links">
-      <a href="index.html#products" data-i18n="nav.products">Products</a>
+      <a href="index.html#products" data-i18n="nav.products">Work</a>
+      <a href="websites.html" data-i18n="nav.websites">Websites</a>
+      <a href="systems.html" data-i18n="nav.systems">Systems</a>
       <a href="about.html" data-i18n="nav.about">About</a>
       <a href="index.html#contact" data-i18n="nav.contact">Contact</a>
       <a href="privacy.html" data-i18n="nav.privacy">Privacy</a>

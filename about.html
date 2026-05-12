@@ -38,7 +38,7 @@
 
   <script>
     const sharedHeader = `
-      <nav class="flex justify-between items-center px-4 md:px-8 py-5 border-b border-gray-200 bg-white sticky top-0 z-50">
+      <nav class="flex flex-wrap justify-between items-center gap-4 px-4 md:px-8 py-5 border-b border-gray-200 bg-white sticky top-0 z-50">
         <div class="flex items-center gap-3">
           <a href="index.html" class="flex items-center gap-3">
             <img src="img/logo_bastida_sys.png" alt="Bastida Systems Logo" class="h-8 w-auto object-contain">
@@ -46,10 +46,19 @@
           </a>
         </div>
 
-        <div class="flex items-center gap-4 md:gap-8 text-sm font-medium text-gray-600">
-          <a href="index.html#products" class="hover:text-black transition">Products</a>
-          <a href="about.html" class="hover:text-black transition">About</a>
-          <a href="index.html#contact" class="hover:text-black transition">Contact</a>
+        <div class="flex flex-wrap items-center justify-end gap-4 md:gap-8 text-sm font-medium text-gray-600">
+          <a href="index.html#products" class="hover:text-black transition" data-i18n="nav.products">Work</a>
+          <a href="websites.html" class="hover:text-black transition" data-i18n="nav.websites">Websites</a>
+          <a href="systems.html" class="hover:text-black transition" data-i18n="nav.systems">Systems</a>
+          <a href="about.html" class="hover:text-black transition" data-i18n="nav.about">About</a>
+          <a href="index.html#contact" class="hover:text-black transition" data-i18n="nav.contact">Contact</a>
+          <label class="language-picker inline-flex min-h-9 items-center gap-2 rounded-lg border border-gray-300 bg-white px-2 py-1 text-xs font-bold uppercase text-gray-500">
+            <span data-i18n="nav.language">Language</span>
+            <select id="language-select" class="rounded-md border-0 bg-gray-900 px-2 py-1 text-xs font-extrabold text-white" aria-label="Language selector" data-i18n-aria-label="nav.languageSelector">
+              <option value="en">EN</option>
+              <option value="es">ES</option>
+            </select>
+          </label>
         </div>
       </nav>
     `;
@@ -68,6 +77,7 @@
         headerTarget.innerHTML = sharedHeader;
       });
   </script>
+  <script src="site-language.js"></script>
 
   <!-- HERO -->
   <section class="px-8 py-24 text-center border-b border-gray-800">
@@ -142,13 +152,15 @@
   <footer class="px-8 py-10 border-t border-gray-800 text-gray-500 text-sm text-center">
 
     <div class="flex justify-center gap-6 mb-4 text-gray-400">
-      <a href="index.html#products" class="hover:text-white transition">Products</a>
-      <a href="about.html" class="hover:text-white transition">About</a>
-      <a href="index.html#contact" class="hover:text-white transition">Contact</a>
-      <a href="privacy.html" class="hover:text-white transition">Privacy</a>
+      <a href="index.html#products" class="hover:text-white transition" data-i18n="nav.products">Work</a>
+      <a href="websites.html" class="hover:text-white transition" data-i18n="nav.websites">Websites</a>
+      <a href="systems.html" class="hover:text-white transition" data-i18n="nav.systems">Systems</a>
+      <a href="about.html" class="hover:text-white transition" data-i18n="nav.about">About</a>
+      <a href="index.html#contact" class="hover:text-white transition" data-i18n="nav.contact">Contact</a>
+      <a href="privacy.html" class="hover:text-white transition" data-i18n="nav.privacy">Privacy</a>
     </div>
 
-    <p>© 2026 Bastida Systems. All rights reserved.</p>
+    <p data-i18n="footer.rights">© 2026 Bastida Systems. All rights reserved.</p>
 
   </footer>
 
