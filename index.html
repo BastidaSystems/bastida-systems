@@ -428,56 +428,54 @@
       display: none;
     }
 
-    .lineops-download-card {
+    .lineops-store-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.62rem;
       width: fit-content;
       max-width: 100%;
-      min-height: 5.4rem;
-      padding: 0.5rem 0.85rem 0.5rem 0.5rem;
-      border: 1px solid rgba(255, 255, 255, 0.18);
+      min-height: 3.35rem;
+      padding: 0.48rem 0.9rem 0.5rem 0.72rem;
+      border: 1px solid rgba(255, 255, 255, 0.42);
       border-radius: 8px;
-      background: rgba(255, 255, 255, 0.94);
-      color: #07110d;
+      background: #050607;
+      color: #ffffff;
       text-align: left;
       text-decoration: none;
-      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.28);
+      box-shadow: 0 18px 42px rgba(0, 0, 0, 0.32);
       transition: transform 220ms ease, box-shadow 220ms ease;
     }
 
-    .lineops-download-card:hover {
+    .lineops-store-badge:hover {
       transform: translateY(-2px);
-      box-shadow: 0 24px 56px rgba(0, 0, 0, 0.34);
+      box-shadow: 0 24px 54px rgba(0, 0, 0, 0.38);
     }
 
-    .lineops-download-card img {
-      width: 4.4rem;
-      height: 4.4rem;
-      border-radius: 6px;
-      background: #ffffff;
+    .lineops-store-badge svg {
+      width: 1.78rem;
+      height: 1.78rem;
       flex: 0 0 auto;
+      fill: currentColor;
     }
 
-    .lineops-download-card strong,
-    .lineops-download-card small {
+    .lineops-store-badge strong,
+    .lineops-store-badge small {
       display: block;
       letter-spacing: 0;
     }
 
-    .lineops-download-card strong {
-      font-size: 0.93rem;
+    .lineops-store-badge strong {
+      font-size: 1.08rem;
       font-weight: 800;
-      line-height: 1.2;
+      line-height: 1.02;
     }
 
-    .lineops-download-card small {
-      margin-top: 0.22rem;
-      color: #4b5563;
-      font-size: 0.76rem;
+    .lineops-store-badge small {
+      margin-bottom: 0.08rem;
+      color: rgba(255, 255, 255, 0.78);
+      font-size: 0.58rem;
       font-weight: 800;
-      line-height: 1.25;
-      text-transform: uppercase;
+      line-height: 1;
     }
 
     .language-picker {
@@ -553,14 +551,14 @@
         filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.34));
       }
 
-      .lineops-download-card {
-        min-height: 4.9rem;
-        padding-right: 0.7rem;
+      .lineops-store-badge {
+        min-height: 3.05rem;
+        padding: 0.44rem 0.78rem 0.46rem 0.66rem;
       }
 
-      .lineops-download-card img {
-        width: 3.95rem;
-        height: 3.95rem;
+      .lineops-store-badge svg {
+        width: 1.62rem;
+        height: 1.62rem;
       }
 
       #site-header nav {
@@ -696,9 +694,9 @@
         'hero.point3': 'Mobile schedule access for active teams',
         'hero.previewTitle': 'LineOps ShiftRotation',
         'hero.previewMeta': 'New scheduling system',
-        'hero.qrTitle': 'Scan or tap to download',
-        'hero.qrBody': 'LineOps on the App Store',
-        'hero.qrAria': 'Download LineOps ShiftRotation on the App Store',
+        'hero.storeKicker': 'Download on the',
+        'hero.storeName': 'App Store',
+        'hero.storeAria': 'Download LineOps ShiftRotation on the App Store',
         'hero.explore': 'Explore Work',
         'hero.websites': 'Website Packages',
         'hero.systems': 'System Packages',
@@ -757,9 +755,9 @@
         'hero.point3': 'Horarios móviles para equipos activos',
         'hero.previewTitle': 'LineOps ShiftRotation',
         'hero.previewMeta': 'Nuevo sistema de horarios',
-        'hero.qrTitle': 'Escanea o toca para descargar',
-        'hero.qrBody': 'LineOps en App Store',
-        'hero.qrAria': 'Descargar LineOps ShiftRotation en App Store',
+        'hero.storeKicker': 'Descargar en',
+        'hero.storeName': 'App Store',
+        'hero.storeAria': 'Descargar LineOps ShiftRotation en App Store',
         'hero.explore': 'Ver Proyectos',
         'hero.websites': 'Precios Web',
         'hero.systems': 'Precios Sistemas',
@@ -971,11 +969,13 @@
         <div class="lineops-frame">
           <img src="img/lineops-devices.png" alt="LineOps ShiftRotation schedule preview on phone and tablet" fetchpriority="high">
         </div>
-        <a class="lineops-download-card" href="https://apps.apple.com/us/app/lineops-shiftrotation/id6767958380?l=es-MX" target="_blank" rel="noopener" aria-label="Download LineOps ShiftRotation on the App Store" data-i18n-aria-label="hero.qrAria">
-          <img src="img/lineops-app-qr.png" alt="" aria-hidden="true">
+        <a class="lineops-store-badge" href="https://apps.apple.com/us/app/lineops-shiftrotation/id6767958380?l=es-MX" target="_blank" rel="noopener" aria-label="Download LineOps ShiftRotation on the App Store" data-i18n-aria-label="hero.storeAria">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M16.6 13.05c-.02-2.2 1.8-3.25 1.88-3.3-1.03-1.5-2.63-1.71-3.19-1.73-1.35-.14-2.64.8-3.32.8-.69 0-1.74-.78-2.86-.76-1.47.02-2.83.86-3.59 2.18-1.53 2.65-.39 6.58 1.1 8.74.73 1.05 1.6 2.23 2.74 2.19 1.1-.04 1.51-.71 2.84-.71 1.32 0 1.7.71 2.86.69 1.18-.02 1.93-1.07 2.65-2.12.84-1.22 1.18-2.4 1.2-2.46-.03-.01-2.29-.88-2.31-3.52ZM14.4 6.6c.6-.72 1-1.72.89-2.72-.86.03-1.9.57-2.52 1.29-.55.64-1.03 1.66-.9 2.64.96.07 1.94-.49 2.53-1.21Z"/>
+          </svg>
           <span>
-            <strong data-i18n="hero.qrTitle">Scan or tap to download</strong>
-            <small data-i18n="hero.qrBody">LineOps on the App Store</small>
+            <small data-i18n="hero.storeKicker">Download on the</small>
+            <strong data-i18n="hero.storeName">App Store</strong>
           </span>
         </a>
       </figure>
