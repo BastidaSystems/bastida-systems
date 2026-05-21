@@ -403,7 +403,10 @@
 
     .lineops-showcase {
       display: flex;
+      flex-direction: column;
+      align-items: flex-end;
       justify-content: flex-end;
+      gap: 0.8rem;
       margin: 0;
     }
 
@@ -423,6 +426,58 @@
 
     .lineops-caption {
       display: none;
+    }
+
+    .lineops-download-card {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      width: fit-content;
+      max-width: 100%;
+      min-height: 5.4rem;
+      padding: 0.5rem 0.85rem 0.5rem 0.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.94);
+      color: #07110d;
+      text-align: left;
+      text-decoration: none;
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.28);
+      transition: transform 220ms ease, box-shadow 220ms ease;
+    }
+
+    .lineops-download-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 24px 56px rgba(0, 0, 0, 0.34);
+    }
+
+    .lineops-download-card img {
+      width: 4.4rem;
+      height: 4.4rem;
+      border-radius: 6px;
+      background: #ffffff;
+      flex: 0 0 auto;
+    }
+
+    .lineops-download-card strong,
+    .lineops-download-card small {
+      display: block;
+      letter-spacing: 0;
+    }
+
+    .lineops-download-card strong {
+      font-size: 0.93rem;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .lineops-download-card small {
+      margin-top: 0.22rem;
+      color: #4b5563;
+      font-size: 0.76rem;
+      font-weight: 800;
+      line-height: 1.25;
+      text-transform: uppercase;
     }
 
     .language-picker {
@@ -489,12 +544,23 @@
 
       .hero-grid .lineops-showcase {
         order: -1;
+        align-items: center;
         justify-content: center;
         width: min(100%, 22rem);
       }
 
       .lineops-frame {
         filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.34));
+      }
+
+      .lineops-download-card {
+        min-height: 4.9rem;
+        padding-right: 0.7rem;
+      }
+
+      .lineops-download-card img {
+        width: 3.95rem;
+        height: 3.95rem;
       }
 
       #site-header nav {
@@ -586,6 +652,7 @@
       .lineops-showcase {
         width: min(100%, 48rem);
         margin: 0 auto;
+        align-items: center;
         justify-content: center;
       }
     }
@@ -629,6 +696,9 @@
         'hero.point3': 'Mobile schedule access for active teams',
         'hero.previewTitle': 'LineOps ShiftRotation',
         'hero.previewMeta': 'New scheduling system',
+        'hero.qrTitle': 'Scan or tap to download',
+        'hero.qrBody': 'LineOps on the App Store',
+        'hero.qrAria': 'Download LineOps ShiftRotation on the App Store',
         'hero.explore': 'Explore Work',
         'hero.websites': 'Website Packages',
         'hero.systems': 'System Packages',
@@ -687,6 +757,9 @@
         'hero.point3': 'Horarios móviles para equipos activos',
         'hero.previewTitle': 'LineOps ShiftRotation',
         'hero.previewMeta': 'Nuevo sistema de horarios',
+        'hero.qrTitle': 'Escanea o toca para descargar',
+        'hero.qrBody': 'LineOps en App Store',
+        'hero.qrAria': 'Descargar LineOps ShiftRotation en App Store',
         'hero.explore': 'Ver Proyectos',
         'hero.websites': 'Precios Web',
         'hero.systems': 'Precios Sistemas',
@@ -898,6 +971,13 @@
         <div class="lineops-frame">
           <img src="img/lineops-devices.png" alt="LineOps ShiftRotation schedule preview on phone and tablet" fetchpriority="high">
         </div>
+        <a class="lineops-download-card" href="https://apps.apple.com/us/app/lineops-shiftrotation/id6767958380?l=es-MX" target="_blank" rel="noopener" aria-label="Download LineOps ShiftRotation on the App Store" data-i18n-aria-label="hero.qrAria">
+          <img src="img/lineops-app-qr.png" alt="" aria-hidden="true">
+          <span>
+            <strong data-i18n="hero.qrTitle">Scan or tap to download</strong>
+            <small data-i18n="hero.qrBody">LineOps on the App Store</small>
+          </span>
+        </a>
       </figure>
     </div>
 
