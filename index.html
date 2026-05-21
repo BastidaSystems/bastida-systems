@@ -272,8 +272,8 @@
     .hero-spotlight {
       position: relative;
       overflow: hidden;
-      min-height: calc(100svh - 4.75rem);
-      padding: clamp(4.25rem, 7vw, 6.75rem) 1.5rem clamp(3.5rem, 6vw, 5.5rem);
+      min-height: auto;
+      padding: clamp(2.75rem, 5vw, 4.5rem) 1.5rem clamp(2.75rem, 4vw, 4rem);
       background:
         linear-gradient(128deg, #050607 0%, #0a0f16 46%, #062019 78%, #020304 100%);
     }
@@ -296,8 +296,8 @@
       display: grid;
       width: min(1240px, 100%);
       margin: 0 auto;
-      grid-template-columns: minmax(0, 0.92fr) minmax(26rem, 1.08fr);
-      gap: clamp(2.25rem, 5vw, 5rem);
+      grid-template-columns: minmax(0, 0.9fr) minmax(24rem, 1fr);
+      gap: clamp(2rem, 4vw, 4rem);
       align-items: center;
     }
 
@@ -309,7 +309,7 @@
       display: inline-flex;
       align-items: center;
       gap: 0.9rem;
-      margin-bottom: 1.65rem;
+      margin-bottom: 1.25rem;
       color: #ffffff;
       letter-spacing: 0;
     }
@@ -346,7 +346,7 @@
       max-width: 46rem;
       margin: 0 0 1.55rem;
       padding: 0;
-      font-size: clamp(2.75rem, 5.7vw, 5.1rem);
+      font-size: clamp(2.5rem, 4.25vw, 4rem);
       font-weight: 800;
       line-height: 1.05;
       letter-spacing: 0;
@@ -402,42 +402,27 @@
     }
 
     .lineops-showcase {
+      display: flex;
+      justify-content: flex-end;
       margin: 0;
     }
 
     .lineops-frame {
       overflow: hidden;
-      border: 1px solid rgba(148, 163, 184, 0.28);
-      border-radius: 8px;
-      background: #05070c;
-      box-shadow: 0 34px 110px rgba(0, 0, 0, 0.48);
+      width: min(100%, 36rem);
+      background: transparent;
+      filter: drop-shadow(0 30px 46px rgba(0, 0, 0, 0.42));
     }
 
     .lineops-frame img {
       width: 100%;
-      aspect-ratio: 3 / 2;
-      object-fit: cover;
-      object-position: center;
+      height: auto;
+      object-fit: contain;
       filter: saturate(1.04) contrast(1.03);
     }
 
     .lineops-caption {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      margin-top: 1rem;
-      color: #f9fafb;
-      font-size: 0.94rem;
-      font-weight: 800;
-      letter-spacing: 0;
-    }
-
-    .lineops-caption span:last-child {
-      color: #00ff9c;
-      font-size: 0.78rem;
-      text-align: right;
-      text-transform: uppercase;
+      display: none;
     }
 
     .language-picker {
@@ -472,7 +457,6 @@
       }
 
       .hero-spotlight {
-        min-height: auto;
         padding: 2rem 1rem 3rem;
       }
 
@@ -505,21 +489,12 @@
 
       .hero-grid .lineops-showcase {
         order: -1;
-        width: min(100%, 22.5rem);
+        justify-content: center;
+        width: min(100%, 22rem);
       }
 
-      .lineops-frame img {
-        aspect-ratio: 16 / 11;
-      }
-
-      .lineops-caption {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 0.28rem;
-      }
-
-      .lineops-caption span:last-child {
-        text-align: left;
+      .lineops-frame {
+        filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.34));
       }
 
       #site-header nav {
@@ -611,6 +586,7 @@
       .lineops-showcase {
         width: min(100%, 48rem);
         margin: 0 auto;
+        justify-content: center;
       }
     }
 
@@ -920,12 +896,8 @@
 
       <figure class="lineops-showcase">
         <div class="lineops-frame">
-          <img src="img/linopsmark.png" alt="LineOps ShiftRotation schedule preview on phone and tablet" fetchpriority="high">
+          <img src="img/lineops-devices.png" alt="LineOps ShiftRotation schedule preview on phone and tablet" fetchpriority="high">
         </div>
-        <figcaption class="lineops-caption">
-          <span data-i18n="hero.previewTitle">LineOps ShiftRotation</span>
-          <span data-i18n="hero.previewMeta">New scheduling system</span>
-        </figcaption>
       </figure>
     </div>
 
