@@ -269,12 +269,175 @@
       white-space: nowrap;
     }
 
+    .hero-spotlight {
+      position: relative;
+      overflow: hidden;
+      min-height: calc(100svh - 4.75rem);
+      padding: clamp(4.25rem, 7vw, 6.75rem) 1.5rem clamp(3.5rem, 6vw, 5.5rem);
+      background:
+        linear-gradient(128deg, #050607 0%, #0a0f16 46%, #062019 78%, #020304 100%);
+    }
+
+    .hero-watermark {
+      position: absolute;
+      left: 50%;
+      top: 48%;
+      width: min(32rem, 74vw);
+      opacity: 0.07;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      user-select: none;
+      z-index: 0;
+    }
+
+    .hero-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      width: min(1240px, 100%);
+      margin: 0 auto;
+      grid-template-columns: minmax(0, 0.92fr) minmax(26rem, 1.08fr);
+      gap: clamp(2.25rem, 5vw, 5rem);
+      align-items: center;
+    }
+
+    .hero-copy {
+      text-align: left;
+    }
+
+    .hero-brand-lockup {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.9rem;
+      margin-bottom: 1.65rem;
+      color: #ffffff;
+      letter-spacing: 0;
+    }
+
+    .hero-brand-lockup img {
+      width: 3rem;
+      height: 3rem;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      object-fit: contain;
+      background: rgba(255, 255, 255, 0.04);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+    }
+
+    .hero-brand-lockup strong,
+    .hero-brand-lockup small {
+      display: block;
+      letter-spacing: 0;
+    }
+
+    .hero-brand-lockup strong {
+      font-size: 0.95rem;
+      font-weight: 800;
+    }
+
+    .hero-brand-lockup small {
+      margin-top: 0.18rem;
+      color: #9ca3af;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .hero-title {
+      max-width: 46rem;
+      margin: 0 0 1.55rem;
+      padding: 0;
+      font-size: clamp(2.75rem, 5.7vw, 5.1rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .hero-copy .gradient-text {
+      width: min(100%, 46rem);
+      margin-left: 0;
+      margin-right: 0;
+    }
+
     .hero-body {
       width: min(100%, 42rem);
     }
 
     .hero-actions {
       width: min(100%, 44rem);
+    }
+
+    .hero-copy .hero-actions {
+      justify-content: flex-start;
+      margin-top: 2rem;
+    }
+
+    .hero-system-points {
+      display: grid;
+      gap: 0.7rem;
+      width: min(100%, 41rem);
+      margin: 1.35rem 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .hero-system-points li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.7rem;
+      color: #d1d5db;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      letter-spacing: 0;
+    }
+
+    .hero-system-points li::before {
+      content: "";
+      flex: 0 0 auto;
+      width: 0.5rem;
+      height: 0.5rem;
+      margin-top: 0.52rem;
+      border-radius: 999px;
+      background: #00ff9c;
+      box-shadow: 0 0 18px rgba(0, 255, 156, 0.82);
+    }
+
+    .lineops-showcase {
+      margin: 0;
+    }
+
+    .lineops-frame {
+      overflow: hidden;
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      border-radius: 8px;
+      background: #05070c;
+      box-shadow: 0 34px 110px rgba(0, 0, 0, 0.48);
+    }
+
+    .lineops-frame img {
+      width: 100%;
+      aspect-ratio: 3 / 2;
+      object-fit: cover;
+      object-position: center;
+      filter: saturate(1.04) contrast(1.03);
+    }
+
+    .lineops-caption {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 1rem;
+      color: #f9fafb;
+      font-size: 0.94rem;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .lineops-caption span:last-child {
+      color: #00ff9c;
+      font-size: 0.78rem;
+      text-align: right;
+      text-transform: uppercase;
     }
 
     .language-picker {
@@ -308,6 +471,24 @@
         width: min(100%, 21rem);
       }
 
+      .hero-spotlight {
+        min-height: auto;
+        padding: 2rem 1rem 3rem;
+      }
+
+      .hero-grid {
+        gap: 1.65rem;
+      }
+
+      .hero-title {
+        font-size: clamp(2.15rem, 11vw, 3rem);
+        line-height: 1.08;
+      }
+
+      .hero-brand-lockup {
+        margin-bottom: 1rem;
+      }
+
       .hero-body {
         width: min(100%, 20.5rem);
         font-size: 1rem;
@@ -316,6 +497,29 @@
 
       .hero-actions {
         width: min(100%, 20.5rem);
+      }
+
+      .hero-system-points {
+        width: min(100%, 20.5rem);
+      }
+
+      .hero-grid .lineops-showcase {
+        order: -1;
+        width: min(100%, 22.5rem);
+      }
+
+      .lineops-frame img {
+        aspect-ratio: 16 / 11;
+      }
+
+      .lineops-caption {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.28rem;
+      }
+
+      .lineops-caption span:last-child {
+        text-align: left;
       }
 
       #site-header nav {
@@ -378,6 +582,38 @@
       }
     }
 
+    @media (max-width: 1024px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-copy {
+        max-width: 48rem;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      .hero-copy .gradient-text {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .hero-brand-lockup,
+      .hero-copy .hero-actions {
+        justify-content: center;
+      }
+
+      .hero-system-points {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .lineops-showcase {
+        width: min(100%, 48rem);
+        margin: 0 auto;
+      }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       .gradient-text {
         animation: none;
@@ -408,8 +644,15 @@
         'nav.contact': 'Contact',
         'nav.language': 'Language',
         'nav.languageSelector': 'Language selector',
-        'hero.heading': 'Engineering Intelligent Systems',
-        'hero.body': 'Bastida Systems develops intelligent software platforms and business websites that help operations present their work, monitor critical infrastructure, reduce risk, and move with better data.',
+        'hero.brand': 'Bastida Systems',
+        'hero.brandMeta': 'Intelligent operations software',
+        'hero.heading': 'Bastida Systems Introduces LineOps ShiftRotation',
+        'hero.body': 'LineOps ShiftRotation is our new scheduling system for restaurants and service teams that need smarter weekly rotations, station coverage, and schedule control across mobile and desktop.',
+        'hero.point1': 'Smart rotation planning by station and shift',
+        'hero.point2': 'Saved weeks, templates, and quick adjustments',
+        'hero.point3': 'Mobile schedule access for active teams',
+        'hero.previewTitle': 'LineOps ShiftRotation',
+        'hero.previewMeta': 'New scheduling system',
         'hero.explore': 'Explore Work',
         'hero.websites': 'Website Packages',
         'hero.systems': 'System Packages',
@@ -459,8 +702,15 @@
         'nav.contact': 'Contacto',
         'nav.language': 'Idioma',
         'nav.languageSelector': 'Selector de idioma',
-        'hero.heading': 'Ingeniería de Sistemas Inteligentes',
-        'hero.body': 'Bastida Systems desarrolla plataformas de software inteligentes y sitios web de negocio que ayudan a presentar servicios, monitorear infraestructura crítica, reducir riesgos y trabajar con mejores datos.',
+        'hero.brand': 'Bastida Systems',
+        'hero.brandMeta': 'Software inteligente para operaciones',
+        'hero.heading': 'Bastida Systems presenta LineOps ShiftRotation',
+        'hero.body': 'LineOps ShiftRotation es nuestro nuevo sistema de horarios para restaurantes y equipos de servicio que necesitan rotaciones semanales, cobertura por estación y control de turnos en móvil y escritorio.',
+        'hero.point1': 'Rotaciones inteligentes por estación y turno',
+        'hero.point2': 'Semanas guardadas, plantillas y ajustes rápidos',
+        'hero.point3': 'Horarios móviles para equipos activos',
+        'hero.previewTitle': 'LineOps ShiftRotation',
+        'hero.previewMeta': 'Nuevo sistema de horarios',
         'hero.explore': 'Ver Proyectos',
         'hero.websites': 'Precios Web',
         'hero.systems': 'Precios Sistemas',
@@ -625,31 +875,58 @@
   </script>
 
   <!-- HERO -->
-  <section class="h-screen flex flex-col justify-center items-center text-center px-6 relative overflow-hidden fade-in">
-    <div class="absolute inset-0 bg-gradient-to-br from-transparent via-gray-900/40 to-black z-0"></div>
-    <img src="img/logo_bastida_sys.png" alt="Background Logo" class="absolute inset-0 m-auto -translate-y-10 w-96 opacity-10 pointer-events-none select-none z-0">
-    
-    <h1 class="max-w-5xl px-2 text-4xl sm:text-5xl md:text-7xl font-bold mb-10 relative z-20 gradient-text leading-[1.22] tracking-normal" data-i18n="hero.heading">
-      Engineering Intelligent Systems
-    </h1>
+  <section class="hero-spotlight fade-in">
+    <img src="img/logo_bastida_sys.png" alt="" class="hero-watermark" aria-hidden="true">
 
-    <p class="hero-body text-lg text-gray-400 mb-8 relative z-20" data-i18n="hero.body">
-      Bastida Systems develops intelligent software platforms and business websites that help operations present their work, monitor critical infrastructure, reduce risk, and move with better data.
-    </p>
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <div class="hero-brand-lockup">
+          <img src="img/logo_bastida_sys.png" alt="" aria-hidden="true">
+          <span>
+            <strong data-i18n="hero.brand">Bastida Systems</strong>
+            <small data-i18n="hero.brandMeta">Intelligent operations software</small>
+          </span>
+        </div>
 
-    <div class="hero-actions flex flex-wrap justify-center gap-4 relative z-20">
-      <a href="#products" class="px-6 py-3 bg-white text-black rounded-full font-medium hover:opacity-80 transition duration-300 hover:scale-105 inline-block" data-i18n="hero.explore">
-        Explore Work
-      </a>
-      <a href="#contact" class="px-6 py-3 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105 inline-block" data-i18n="nav.contact">
-        Contact
-      </a>
-      <a href="websites.html" class="px-6 py-3 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105 inline-block" data-i18n="hero.websites">
-        Website Packages
-      </a>
-      <a href="systems.html" class="px-6 py-3 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105 inline-block" data-i18n="hero.systems">
-        System Packages
-      </a>
+        <h1 class="hero-title gradient-text" data-i18n="hero.heading">
+          Bastida Systems Introduces LineOps ShiftRotation
+        </h1>
+
+        <p class="hero-body text-lg text-gray-400 relative z-20" data-i18n="hero.body">
+          LineOps ShiftRotation is our new scheduling system for restaurants and service teams that need smarter weekly rotations, station coverage, and schedule control across mobile and desktop.
+        </p>
+
+        <ul class="hero-system-points" aria-label="LineOps ShiftRotation features">
+          <li data-i18n="hero.point1">Smart rotation planning by station and shift</li>
+          <li data-i18n="hero.point2">Saved weeks, templates, and quick adjustments</li>
+          <li data-i18n="hero.point3">Mobile schedule access for active teams</li>
+        </ul>
+
+        <div class="hero-actions flex flex-wrap justify-center gap-4 relative z-20">
+          <a href="#products" class="px-6 py-3 bg-white text-black rounded-full font-medium hover:opacity-80 transition duration-300 hover:scale-105 inline-block" data-i18n="hero.explore">
+            Explore Work
+          </a>
+          <a href="#contact" class="px-6 py-3 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105 inline-block" data-i18n="nav.contact">
+            Contact
+          </a>
+          <a href="websites.html" class="px-6 py-3 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105 inline-block" data-i18n="hero.websites">
+            Website Packages
+          </a>
+          <a href="systems.html" class="px-6 py-3 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105 inline-block" data-i18n="hero.systems">
+            System Packages
+          </a>
+        </div>
+      </div>
+
+      <figure class="lineops-showcase">
+        <div class="lineops-frame">
+          <img src="img/linopsmark.png" alt="LineOps ShiftRotation schedule preview on phone and tablet" fetchpriority="high">
+        </div>
+        <figcaption class="lineops-caption">
+          <span data-i18n="hero.previewTitle">LineOps ShiftRotation</span>
+          <span data-i18n="hero.previewMeta">New scheduling system</span>
+        </figcaption>
+      </figure>
     </div>
 
   </section>
