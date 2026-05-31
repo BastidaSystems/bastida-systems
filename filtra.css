@@ -715,6 +715,19 @@ p {
   font-size: 1.04rem;
 }
 
+.fc-industries-highlight {
+  margin-top: 18px;
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(69, 183, 90, 0.10);
+  border: 1px solid rgba(69, 183, 90, 0.22);
+  color: var(--fc-green-dark);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
 .fc-industry-accordion {
   display: grid;
   gap: 10px;
