@@ -1684,8 +1684,6 @@
         people: 'People',
         projects: 'Projects',
         organization: 'Organization Tree',
-        tasks: 'Tasks',
-        timeTracker: 'Time Tracker',
         documents: 'Documents',
         deliverables: 'Deliverables',
         workLogs: 'Work Logs',
@@ -2055,12 +2053,7 @@
               <section class="view ${state.activeView === 'organization' ? 'is-active' : ''}" data-view="organization">
                 ${renderOrganization()}
               </section>
-              <section class="view ${state.activeView === 'tasks' ? 'is-active' : ''}" data-view="tasks">
-                ${renderTasks()}
-              </section>
-              <section class="view ${state.activeView === 'timeTracker' ? 'is-active' : ''}" data-view="timeTracker">
-                ${renderTimeTracker()}
-              </section>
+              
               <section class="view ${state.activeView === 'documents' ? 'is-active' : ''}" data-view="documents">
                 ${renderDocuments()}
               </section>
