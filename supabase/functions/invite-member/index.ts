@@ -25,7 +25,7 @@ Deno.serve(async (req) => {
   try {
     const supabaseUrl = requiredEnv('SUPABASE_URL');
     const anonKey = requiredEnv('SUPABASE_ANON_KEY');
-    const serviceRoleKey = requiredEnv('SUPABASE_SERVICE_ROLE_KEY');
+    const serviceRoleKey = requiredEnv('BASTIDA_SERVICE_ROLE_KEY');
     const authorization = req.headers.get('Authorization');
 
     if (!authorization) {
