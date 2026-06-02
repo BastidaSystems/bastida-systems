@@ -222,6 +222,56 @@
       min-width: 0;
     }
 
+    .workspace-switcher {
+      display: grid;
+      grid-template-columns: minmax(170px, 240px);
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .workspace-label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    .workspace-select {
+      width: 100%;
+      min-height: 38px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      padding: 0 10px;
+      box-shadow: var(--shadow-soft);
+      font-size: 13px;
+      font-weight: 750;
+      outline: none;
+    }
+
+    .workspace-select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1);
+    }
+
+    .workspace-static {
+      display: inline-flex;
+      align-items: center;
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface-muted);
+      color: var(--text-soft);
+      padding: 0 11px;
+      box-shadow: var(--shadow-soft);
+      font-size: 13px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
     .profile-meta {
       min-width: 0;
       text-align: right;
@@ -1534,7 +1584,15 @@
 
       .profile {
         width: 100%;
+        align-items: stretch;
+        flex-wrap: wrap;
         justify-content: space-between;
+      }
+
+      .workspace-switcher {
+        grid-template-columns: 1fr;
+        order: 2;
+        width: 100%;
       }
 
       .profile-meta {
@@ -1602,6 +1660,9 @@
         people: 'People',
         projects: 'Projects',
         organization: 'Organization Tree',
+        tasks: 'Tasks',
+        timeTracker: 'Time Tracker',
+        documents: 'Documents',
         deliverables: 'Deliverables',
         workLogs: 'Work Logs',
         payments: 'Payments'
@@ -1620,6 +1681,9 @@
         activeView: 'dashboard',
         projects: [],
         projectRoles: [],
+        tasks: [],
+        timeEntries: [],
+        documents: [],
         deliverables: [],
         workLogs: [],
         payments: [],
@@ -1647,6 +1711,26 @@
           isOpen: false,
           isSubmitting: false,
           message: '',
+          type: '',
+          prefill: null
+        },
+        taskEditor: {
+          isOpen: false,
+          taskId: null,
+          isSubmitting: false,
+          message: '',
+          type: ''
+        },
+        documentEditor: {
+          isOpen: false,
+          documentId: null,
+          isSubmitting: false,
+          message: '',
+          type: ''
+        },
+        timeTracker: {
+          isSubmitting: false,
+          message: '',
           type: ''
         },
         approval: {
@@ -1668,12 +1752,17 @@
           kind: '',
           id: ''
         },
+        workspace: {
+          projectId: 'all'
+        },
         organization: {
           zoom: 1,
           collapsedNodeIds: []
         },
         tables: {
           people: { filter: '', sort: 'name', page: 1 },
+          tasks: { filter: '', sort: 'due_date', page: 1 },
+          documents: { filter: '', sort: 'created_desc', page: 1 },
           deliverables: { filter: '', sort: 'created_desc', page: 1 },
           workLogs: { filter: '', sort: 'date_desc', page: 1 },
           payments: { filter: '', sort: 'total_desc', page: 1 }
@@ -1762,7 +1851,7 @@
         state.profile = profileResult.data;
         await acceptPendingInvites();
 
-        const [projects, roles, deliverables, workLogs, payments, paymentHistory] = await Promise.all([
+        const [projects, roles, tasks, timeEntries, documents, deliverables, workLogs, payments, paymentHistory] = await Promise.all([
           state.client
             .from('projects')
             .select('id, company_id, slug, name, description, status, created_at, updated_at')
@@ -1771,6 +1860,18 @@
             .from('project_roles')
             .select('id, project_id, user_id, role, hourly_rate_usd, active, invite_email, invited_name, invited_at, invitation_status, last_invite_error, accepted_at, joined_at, member:users!project_roles_user_id_fkey(id, full_name, email, platform_role), project:projects!project_roles_project_id_fkey(id, name, status)')
             .order('joined_at', { ascending: false }),
+          state.client
+            .from('project_tasks')
+            .select('id, project_id, title, description, assigned_to, priority, status, due_date, completed_at, completed_by, created_by, created_at, updated_at, project:projects!project_tasks_project_id_fkey(id, name), assignee:users!project_tasks_assigned_to_fkey(id, full_name, email), creator:users!project_tasks_created_by_fkey(id, full_name, email), completer:users!project_tasks_completed_by_fkey(id, full_name, email)')
+            .order('created_at', { ascending: false }),
+          state.client
+            .from('time_entries')
+            .select('id, project_id, user_id, task_id, description, started_at, ended_at, duration_minutes, status, converted_at, created_by, created_at, updated_at, project:projects!time_entries_project_id_fkey(id, name), worker:users!time_entries_user_id_fkey(id, full_name, email), task:project_tasks!time_entries_task_id_fkey(id, title)')
+            .order('started_at', { ascending: false }),
+          state.client
+            .from('project_documents')
+            .select('id, project_id, name, category, document_url, storage_path, status, uploaded_by, archived_by, archived_at, created_at, updated_at, project:projects!project_documents_project_id_fkey(id, name), uploader:users!project_documents_uploaded_by_fkey(id, full_name, email), archiver:users!project_documents_archived_by_fkey(id, full_name, email)')
+            .order('created_at', { ascending: false }),
           state.client
             .from('deliverables')
             .select('id, project_id, title, description, storage_path, status, due_date, delivered_at, responsible_user_id, figma_url, google_drive_url, document_url, evidence_url, approved_by, approved_at, created_by, created_at, updated_at, project:projects!deliverables_project_id_fkey(id, name), responsible:users!deliverables_responsible_user_id_fkey(id, full_name, email), creator:users!deliverables_created_by_fkey(id, full_name, email), approver:users!deliverables_approved_by_fkey(id, full_name, email)')
@@ -1791,6 +1892,9 @@
 
         assertQuery('projects', projects);
         assertQuery('project_roles', roles);
+        assertQuery('project_tasks', tasks);
+        assertQuery('time_entries', timeEntries);
+        assertQuery('project_documents', documents);
         assertQuery('deliverables', deliverables);
         assertQuery('work_logs', workLogs);
         assertQuery('collaborator_payments', payments);
@@ -1798,10 +1902,14 @@
 
         state.projects = projects.data || [];
         state.projectRoles = roles.data || [];
+        state.tasks = tasks.data || [];
+        state.timeEntries = timeEntries.data || [];
+        state.documents = documents.data || [];
         state.deliverables = deliverables.data || [];
         state.workLogs = workLogs.data || [];
         state.payments = payments.data || [];
         state.paymentHistory = paymentHistory.data || [];
+        normalizeActiveWorkspace();
         state.isLoading = false;
       }
 
@@ -1863,7 +1971,7 @@
       function formatOperationalError(error) {
         const message = error?.message || 'Unknown Supabase error.';
 
-        if (/projects|project_roles|deliverables|collaborator_payments|collaborator_payment_history|work_logs/i.test(message)) {
+        if (/projects|project_roles|project_tasks|time_entries|project_documents|deliverables|collaborator_payments|collaborator_payment_history|work_logs/i.test(message)) {
           return `${message}. Run supabase/bastida_operating_system_schema.sql in Supabase SQL Editor, then refresh.`;
         }
 
@@ -1902,8 +2010,9 @@
                 <div class="profile">
                   <div class="profile-meta">
                     <p class="profile-name">${escapeHtml(profileName())}</p>
-                    <p class="profile-role">${escapeHtml(profileRole())}</p>
+                    <p class="profile-role">${escapeHtml(activeWorkspaceRoleLine())}</p>
                   </div>
+                  ${renderWorkspaceSwitcher()}
                   <button class="button" type="button" data-refresh>Refresh</button>
                   <button class="button" type="button" data-sign-out>Logout</button>
                 </div>
@@ -1920,6 +2029,15 @@
               <section class="view ${state.activeView === 'organization' ? 'is-active' : ''}" data-view="organization">
                 ${renderOrganization()}
               </section>
+              <section class="view ${state.activeView === 'tasks' ? 'is-active' : ''}" data-view="tasks">
+                ${renderTasks()}
+              </section>
+              <section class="view ${state.activeView === 'timeTracker' ? 'is-active' : ''}" data-view="timeTracker">
+                ${renderTimeTracker()}
+              </section>
+              <section class="view ${state.activeView === 'documents' ? 'is-active' : ''}" data-view="documents">
+                ${renderDocuments()}
+              </section>
               <section class="view ${state.activeView === 'deliverables' ? 'is-active' : ''}" data-view="deliverables">
                 ${renderDeliverables()}
               </section>
@@ -1934,6 +2052,8 @@
             ${state.createProject.isOpen ? renderCreateProjectModal() : ''}
             ${state.deliverableEditor.isOpen ? renderDeliverableModal() : ''}
             ${state.workLog.isOpen ? renderWorkLogModal() : ''}
+            ${state.taskEditor.isOpen ? renderTaskModal() : ''}
+            ${state.documentEditor.isOpen ? renderDocumentModal() : ''}
             ${state.approval.isOpen ? renderApproveLogModal() : ''}
             ${state.rejection.isOpen ? renderRejectModal() : ''}
             ${state.detail.isOpen ? renderDetailsModal() : ''}
@@ -1953,6 +2073,228 @@
         `;
       }
 
+      function renderWorkspaceSwitcher() {
+        const projectOptions = workspaceProjectOptions();
+        const options = workspaceOptions();
+        const active = activeWorkspaceOption();
+
+        if (!options.length) {
+          return '';
+        }
+
+        if (projectOptions.length <= 1) {
+          return `
+            <div class="workspace-switcher" aria-label="Active workspace">
+              <span class="workspace-label">Workspace</span>
+              <span class="workspace-static">${escapeHtml(activeWorkspaceRoleLine())}</span>
+            </div>
+          `;
+        }
+
+        return `
+          <label class="workspace-switcher">
+            <span class="workspace-label">Workspace</span>
+            <select class="workspace-select" data-workspace-switcher aria-label="Select workspace">
+              ${options.map((option) => `<option value="${escapeAttr(option.id)}" ${option.id === state.workspace.projectId ? 'selected' : ''}>${escapeHtml(option.label)}</option>`).join('')}
+            </select>
+          </label>
+        `;
+      }
+
+      function workspaceOptions() {
+        const projectOptions = workspaceProjectOptions();
+        const options = [];
+
+        if (canUseAllWorkspace() && projectOptions.length > 1) {
+          options.push({
+            id: 'all',
+            label: 'All Bastida Systems',
+            role: 'Founder',
+            projectName: 'All Bastida Systems'
+          });
+        }
+
+        return options.concat(projectOptions);
+      }
+
+      function workspaceProjectOptions() {
+        const projectMap = new Map(state.projects.map((project) => [project.id, project]));
+        const optionsByProject = new Map();
+        const assignments = currentUserProjectAssignments();
+
+        assignments.forEach((assignment) => {
+          const project = projectMap.get(assignment.project_id) || assignment.project;
+          if (!project?.id) {
+            return;
+          }
+
+          if (!optionsByProject.has(project.id)) {
+            optionsByProject.set(project.id, {
+              id: project.id,
+              label: `${project.name} - ${workspaceRoleForProject(project.id)}`,
+              role: workspaceRoleForProject(project.id),
+              projectName: project.name
+            });
+          }
+        });
+
+        if (isGlobalFounderOrAdmin()) {
+          state.projects.forEach((project) => {
+            if (!optionsByProject.has(project.id)) {
+              optionsByProject.set(project.id, {
+                id: project.id,
+                label: `${project.name} - Founder`,
+                role: 'Founder',
+                projectName: project.name
+              });
+            }
+          });
+        }
+
+        return Array.from(optionsByProject.values())
+          .sort((a, b) => compareText(a.projectName, b.projectName));
+      }
+
+      function currentUserProjectAssignments() {
+        return state.projectRoles.filter((assignment) => (
+          assignment.user_id === state.profile?.id
+          && assignment.active === true
+        ));
+      }
+
+      function canUseAllWorkspace() {
+        return isGlobalFounderOrAdmin()
+          || currentUserProjectAssignments().some((assignment) => assignment.role === 'founder');
+      }
+
+      function activeWorkspaceOption() {
+        return workspaceOptions().find((option) => option.id === state.workspace.projectId)
+          || workspaceOptions()[0]
+          || null;
+      }
+
+      function normalizeActiveWorkspace() {
+        const options = workspaceOptions();
+
+        if (!options.length) {
+          state.workspace.projectId = 'all';
+          return;
+        }
+
+        if (!options.some((option) => option.id === state.workspace.projectId)) {
+          const allOption = options.find((option) => option.id === 'all');
+          state.workspace.projectId = allOption?.id || options[0].id;
+        }
+      }
+
+      function resetWorkspaceScopedUi() {
+        Object.values(state.tables).forEach((table) => {
+          table.page = 1;
+        });
+        state.organization.collapsedNodeIds = [];
+        state.detail.isOpen = false;
+        state.detail.kind = '';
+        state.detail.id = '';
+      }
+
+      function isAllWorkspaceActive() {
+        return state.workspace.projectId === 'all' && canUseAllWorkspace();
+      }
+
+      function activeWorkspaceProjectId() {
+        return isAllWorkspaceActive() ? null : state.workspace.projectId;
+      }
+
+      function activeWorkspaceProjectIds() {
+        const projectId = activeWorkspaceProjectId();
+        if (projectId) {
+          return new Set([projectId]);
+        }
+
+        return new Set(visibleWorkspaceProjectIdsForAll());
+      }
+
+      function visibleWorkspaceProjectIdsForAll() {
+        if (canUseAllWorkspace()) {
+          return state.projects.map((project) => project.id);
+        }
+
+        return workspaceProjectOptions().map((option) => option.id);
+      }
+
+      function visibleProjects() {
+        const projectIds = activeWorkspaceProjectIds();
+        return state.projects.filter((project) => projectIds.has(project.id));
+      }
+
+      function visibleProjectRoles() {
+        const projectIds = activeWorkspaceProjectIds();
+        return state.projectRoles.filter((assignment) => projectIds.has(assignment.project_id));
+      }
+
+      function visibleDeliverables() {
+        const projectIds = activeWorkspaceProjectIds();
+        return state.deliverables.filter((deliverable) => projectIds.has(deliverable.project_id));
+      }
+
+      function visibleTasks() {
+        const projectIds = activeWorkspaceProjectIds();
+        return state.tasks.filter((task) => projectIds.has(task.project_id));
+      }
+
+      function visibleTimeEntries() {
+        const projectIds = activeWorkspaceProjectIds();
+        return state.timeEntries.filter((entry) => projectIds.has(entry.project_id));
+      }
+
+      function visibleDocuments() {
+        const projectIds = activeWorkspaceProjectIds();
+        return state.documents.filter((document) => projectIds.has(document.project_id));
+      }
+
+      function visibleWorkLogs() {
+        const projectIds = activeWorkspaceProjectIds();
+        return state.workLogs.filter((log) => projectIds.has(log.project_id));
+      }
+
+      function visiblePayments() {
+        const projectIds = activeWorkspaceProjectIds();
+        return state.payments.filter((payment) => projectIds.has(payment.project_id));
+      }
+
+      function visiblePaymentHistory() {
+        const projectIds = activeWorkspaceProjectIds();
+        return state.paymentHistory.filter((history) => (
+          history.payment?.project_id
+            ? projectIds.has(history.payment.project_id)
+            : true
+        ));
+      }
+
+      function activeWorkspaceRoleLine() {
+        const active = activeWorkspaceOption();
+        if (!active) {
+          return profileRole();
+        }
+
+        return `${active.role} • ${active.projectName}`;
+      }
+
+      function workspaceRoleForProject(projectId) {
+        if (isGlobalFounderOrAdmin()) {
+          const assignmentRole = topRoleForAssignments(currentUserProjectAssignments().filter((assignment) => assignment.project_id === projectId));
+          return assignmentRole ? roleLabel(assignmentRole) : 'Founder';
+        }
+
+        const role = topRoleForAssignments(currentUserProjectAssignments().filter((assignment) => assignment.project_id === projectId));
+        return role ? roleLabel(role) : 'Member';
+      }
+
+      function topRoleForAssignments(assignments) {
+        const priority = ['founder', 'owner', 'core_collaborator', 'contractor'];
+        return priority.find((role) => assignments.some((assignment) => assignment.role === role)) || null;
+      }
+
       function bindAppEvents() {
         app.querySelectorAll('[data-nav]').forEach((button) => {
           button.addEventListener('click', () => setActiveView(button.dataset.nav));
@@ -1960,6 +2302,12 @@
 
         app.querySelector('[data-mobile-nav]')?.addEventListener('change', (event) => {
           setActiveView(event.target.value);
+        });
+
+        app.querySelector('[data-workspace-switcher]')?.addEventListener('change', (event) => {
+          state.workspace.projectId = event.target.value || 'all';
+          resetWorkspaceScopedUi();
+          renderApp();
         });
 
         app.querySelectorAll('[data-open-invite]').forEach((button) => {
@@ -1986,6 +2334,27 @@
             state.workLog.isOpen = true;
             state.workLog.message = '';
             state.workLog.type = '';
+            state.workLog.prefill = null;
+            renderApp();
+          });
+        });
+
+        app.querySelectorAll('[data-open-task]').forEach((button) => {
+          button.addEventListener('click', () => {
+            state.taskEditor.isOpen = true;
+            state.taskEditor.taskId = button.dataset.openTask || null;
+            state.taskEditor.message = '';
+            state.taskEditor.type = '';
+            renderApp();
+          });
+        });
+
+        app.querySelectorAll('[data-open-document]').forEach((button) => {
+          button.addEventListener('click', () => {
+            state.documentEditor.isOpen = true;
+            state.documentEditor.documentId = button.dataset.openDocument || null;
+            state.documentEditor.message = '';
+            state.documentEditor.type = '';
             renderApp();
           });
         });
@@ -2020,6 +2389,25 @@
           button.addEventListener('click', () => {
             state.workLog.isOpen = false;
             state.workLog.isSubmitting = false;
+            state.workLog.prefill = null;
+            renderApp();
+          });
+        });
+
+        app.querySelectorAll('[data-close-task]').forEach((button) => {
+          button.addEventListener('click', () => {
+            state.taskEditor.isOpen = false;
+            state.taskEditor.taskId = null;
+            state.taskEditor.isSubmitting = false;
+            renderApp();
+          });
+        });
+
+        app.querySelectorAll('[data-close-document]').forEach((button) => {
+          button.addEventListener('click', () => {
+            state.documentEditor.isOpen = false;
+            state.documentEditor.documentId = null;
+            state.documentEditor.isSubmitting = false;
             renderApp();
           });
         });
@@ -2055,6 +2443,9 @@
         app.querySelector('[data-create-project-form]')?.addEventListener('submit', handleCreateProjectSubmit);
         app.querySelector('[data-deliverable-form]')?.addEventListener('submit', handleDeliverableSubmit);
         app.querySelector('[data-work-log-form]')?.addEventListener('submit', handleWorkLogSubmit);
+        app.querySelector('[data-task-form]')?.addEventListener('submit', handleTaskSubmit);
+        app.querySelector('[data-document-form]')?.addEventListener('submit', handleDocumentSubmit);
+        app.querySelector('[data-start-timer-form]')?.addEventListener('submit', handleStartTimerSubmit);
         app.querySelector('[data-approve-log-form]')?.addEventListener('submit', handleApproveWorkLogSubmit);
         app.querySelector('[data-reject-form]')?.addEventListener('submit', handleRejectSubmit);
 
@@ -2074,6 +2465,22 @@
 
         app.querySelectorAll('[data-mark-paid]').forEach((button) => {
           button.addEventListener('click', () => handleMarkPaymentPaid(button.dataset.markPaid));
+        });
+
+        app.querySelectorAll('[data-complete-task]').forEach((button) => {
+          button.addEventListener('click', () => handleCompleteTask(button.dataset.completeTask));
+        });
+
+        app.querySelectorAll('[data-stop-timer]').forEach((button) => {
+          button.addEventListener('click', () => handleStopTimer(button.dataset.stopTimer));
+        });
+
+        app.querySelectorAll('[data-convert-time-entry]').forEach((button) => {
+          button.addEventListener('click', () => openWorkLogFromTimeEntry(button.dataset.convertTimeEntry));
+        });
+
+        app.querySelectorAll('[data-archive-document]').forEach((button) => {
+          button.addEventListener('click', () => handleArchiveDocument(button.dataset.archiveDocument));
         });
 
         app.querySelectorAll('[data-detail-kind]').forEach((button) => {
@@ -2169,7 +2576,7 @@
 
         app.querySelectorAll('[data-org-toggle-all]').forEach((button) => {
           button.addEventListener('click', () => {
-            const activeProjects = state.projects.filter((project) => project.status !== 'archived');
+            const activeProjects = visibleProjects().filter((project) => project.status !== 'archived');
             const hierarchy = buildOrganizationHierarchy(activeProjects);
             state.organization.collapsedNodeIds = button.dataset.orgToggleAll === 'collapse'
               ? collectCollapsibleOrgNodeIds(hierarchy.root).filter((nodeId) => nodeId !== 'org-root')
@@ -2345,12 +2752,27 @@
             throw error;
           }
 
+          if (state.workLog.prefill?.timeEntryId) {
+            const { error: timeEntryError } = await state.client
+              .from('time_entries')
+              .update({
+                status: 'converted',
+                converted_at: new Date().toISOString()
+              })
+              .eq('id', state.workLog.prefill.timeEntryId);
+
+            if (timeEntryError) {
+              throw timeEntryError;
+            }
+          }
+
           await loadPortalData();
           state.activeView = 'workLogs';
           state.workLog.isOpen = true;
           state.workLog.isSubmitting = false;
           state.workLog.type = 'success';
           state.workLog.message = 'Work log submitted for approval.';
+          state.workLog.prefill = null;
           renderApp();
         } catch (error) {
           state.workLog.isOpen = true;
@@ -2359,6 +2781,283 @@
           state.workLog.message = error instanceof Error ? error.message : 'Error creating work log';
           renderApp();
         }
+      }
+
+      async function handleTaskSubmit(event) {
+        event.preventDefault();
+        const form = event.currentTarget;
+        const formData = new FormData(form);
+        const taskId = state.taskEditor.taskId;
+        const projectId = String(formData.get('project_id') || '').trim();
+        const title = String(formData.get('title') || '').trim();
+        const status = String(formData.get('status') || 'backlog').trim();
+
+        state.taskEditor.isSubmitting = true;
+        state.taskEditor.message = '';
+        state.taskEditor.type = '';
+        renderApp();
+
+        try {
+          if (!projectId || !state.projects.some((project) => project.id === projectId)) {
+            throw new Error('Project is required.');
+          }
+
+          if (!title) {
+            throw new Error('Task title is required.');
+          }
+
+          if (!canManageProject(projectId)) {
+            throw new Error('Only a Founder or Owner can manage tasks for this project.');
+          }
+
+          const payload = {
+            project_id: projectId,
+            title,
+            description: String(formData.get('description') || '').trim() || null,
+            assigned_to: String(formData.get('assigned_to') || '').trim() || null,
+            priority: String(formData.get('priority') || 'medium').trim(),
+            status,
+            due_date: String(formData.get('due_date') || '').trim() || null,
+            completed_at: status === 'done' ? new Date().toISOString() : null,
+            completed_by: status === 'done' ? state.profile.id : null
+          };
+
+          const query = taskId
+            ? state.client.from('project_tasks').update(payload).eq('id', taskId)
+            : state.client.from('project_tasks').insert({ ...payload, created_by: state.profile.id });
+          const { error } = await query;
+
+          if (error) {
+            throw error;
+          }
+
+          await loadPortalData();
+          state.activeView = 'tasks';
+          state.taskEditor.isOpen = false;
+          state.taskEditor.taskId = null;
+          state.taskEditor.isSubmitting = false;
+          renderApp();
+        } catch (error) {
+          state.taskEditor.isOpen = true;
+          state.taskEditor.isSubmitting = false;
+          state.taskEditor.type = 'error';
+          state.taskEditor.message = error instanceof Error ? error.message : 'Error saving task';
+          renderApp();
+        }
+      }
+
+      async function handleCompleteTask(taskId) {
+        const task = state.tasks.find((item) => item.id === taskId);
+        if (!task || !canUpdateTask(task)) {
+          return;
+        }
+
+        const { error } = await state.client
+          .from('project_tasks')
+          .update({
+            status: 'done',
+            completed_at: new Date().toISOString(),
+            completed_by: state.profile.id
+          })
+          .eq('id', task.id);
+
+        if (error) {
+          state.detail.isOpen = true;
+          state.detail.kind = 'task-error';
+          state.detail.id = error.message;
+          renderApp();
+          return;
+        }
+
+        await loadPortalData();
+        renderApp();
+      }
+
+      async function handleStartTimerSubmit(event) {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        const projectId = String(formData.get('project_id') || '').trim();
+
+        state.timeTracker.isSubmitting = true;
+        state.timeTracker.message = '';
+        state.timeTracker.type = '';
+        renderApp();
+
+        try {
+          if (!projectId || !workLogProjects().some((project) => project.id === projectId)) {
+            throw new Error('Project is required.');
+          }
+
+          if (runningTimeEntry()) {
+            throw new Error('Stop the active timer before starting another one.');
+          }
+
+          const { error } = await state.client
+            .from('time_entries')
+            .insert({
+              project_id: projectId,
+              user_id: state.profile.id,
+              task_id: String(formData.get('task_id') || '').trim() || null,
+              description: String(formData.get('description') || '').trim() || null,
+              started_at: new Date().toISOString(),
+              status: 'running',
+              created_by: state.profile.id
+            });
+
+          if (error) {
+            throw error;
+          }
+
+          await loadPortalData();
+          state.timeTracker.isSubmitting = false;
+          state.timeTracker.type = 'success';
+          state.timeTracker.message = 'Timer started.';
+          renderApp();
+        } catch (error) {
+          state.timeTracker.isSubmitting = false;
+          state.timeTracker.type = 'error';
+          state.timeTracker.message = error instanceof Error ? error.message : 'Error starting timer';
+          renderApp();
+        }
+      }
+
+      async function handleStopTimer(timeEntryId) {
+        const entry = state.timeEntries.find((item) => item.id === timeEntryId);
+        if (!entry || entry.user_id !== state.profile?.id || entry.status !== 'running') {
+          return;
+        }
+
+        const { error } = await state.client
+          .from('time_entries')
+          .update({
+            ended_at: new Date().toISOString(),
+            status: 'stopped'
+          })
+          .eq('id', entry.id);
+
+        if (error) {
+          state.timeTracker.type = 'error';
+          state.timeTracker.message = error.message;
+          renderApp();
+          return;
+        }
+
+        await loadPortalData();
+        state.timeTracker.type = 'success';
+        state.timeTracker.message = 'Timer stopped. You can convert it to a Work Log.';
+        renderApp();
+      }
+
+      function openWorkLogFromTimeEntry(timeEntryId) {
+        const entry = state.timeEntries.find((item) => item.id === timeEntryId);
+        if (!entry || entry.user_id !== state.profile?.id || !['stopped', 'converted'].includes(entry.status)) {
+          return;
+        }
+
+        const durationMinutes = timeEntryDurationMinutes(entry);
+        state.workLog.isOpen = true;
+        state.workLog.message = '';
+        state.workLog.type = '';
+        state.workLog.prefill = {
+          timeEntryId: entry.id,
+          project_id: entry.project_id,
+          work_type: 'Other',
+          work_date: entry.started_at ? new Date(entry.started_at).toISOString().slice(0, 10) : todayISO(),
+          hours_used: Math.max(0.01, durationMinutes / 60).toFixed(2),
+          title: entry.task?.title || 'Tracked work',
+          description: entry.description || entry.task?.title || 'Tracked work from Bastida OS timer.',
+          evidence_url: '',
+          commit_hash: ''
+        };
+        renderApp();
+      }
+
+      async function handleDocumentSubmit(event) {
+        event.preventDefault();
+        const form = event.currentTarget;
+        const formData = new FormData(form);
+        const documentId = state.documentEditor.documentId;
+        const projectId = String(formData.get('project_id') || '').trim();
+        const name = String(formData.get('name') || '').trim();
+        const documentUrl = String(formData.get('document_url') || '').trim() || null;
+        const storagePath = String(formData.get('storage_path') || '').trim() || null;
+
+        state.documentEditor.isSubmitting = true;
+        state.documentEditor.message = '';
+        state.documentEditor.type = '';
+        renderApp();
+
+        try {
+          if (!projectId || !state.projects.some((project) => project.id === projectId)) {
+            throw new Error('Project is required.');
+          }
+
+          if (!name) {
+            throw new Error('Document name is required.');
+          }
+
+          if (!documentUrl && !storagePath) {
+            throw new Error('Document URL or storage path is required.');
+          }
+
+          const payload = {
+            project_id: projectId,
+            name,
+            category: String(formData.get('category') || 'contracts').trim(),
+            document_url: documentUrl,
+            storage_path: storagePath,
+            status: 'active',
+            uploaded_by: state.profile.id
+          };
+          const query = documentId
+            ? state.client.from('project_documents').update(payload).eq('id', documentId)
+            : state.client.from('project_documents').insert(payload);
+          const { error } = await query;
+
+          if (error) {
+            throw error;
+          }
+
+          await loadPortalData();
+          state.activeView = 'documents';
+          state.documentEditor.isOpen = false;
+          state.documentEditor.documentId = null;
+          state.documentEditor.isSubmitting = false;
+          renderApp();
+        } catch (error) {
+          state.documentEditor.isOpen = true;
+          state.documentEditor.isSubmitting = false;
+          state.documentEditor.type = 'error';
+          state.documentEditor.message = error instanceof Error ? error.message : 'Error saving document';
+          renderApp();
+        }
+      }
+
+      async function handleArchiveDocument(documentId) {
+        const document = state.documents.find((item) => item.id === documentId);
+        if (!document || !canArchiveDocument(document)) {
+          return;
+        }
+
+        const { error } = await state.client
+          .from('project_documents')
+          .update({
+            status: 'archived',
+            archived_by: state.profile.id,
+            archived_at: new Date().toISOString()
+          })
+          .eq('id', document.id);
+
+        if (error) {
+          state.detail.isOpen = true;
+          state.detail.kind = 'document-error';
+          state.detail.id = error.message;
+          renderApp();
+          return;
+        }
+
+        await loadPortalData();
+        renderApp();
       }
 
       async function handleDeliverableSubmit(event) {
@@ -2601,31 +3300,46 @@
       }
 
       function renderDashboard() {
+        const projects = visibleProjects();
+        const tasks = visibleTasks();
+        const deliverables = visibleDeliverables();
+        const workLogs = visibleWorkLogs();
         const people = buildPeople();
         const payableRows = buildPayableRows();
         const activity = buildActivityItems().slice(0, 10);
-        const pendingDeliverables = state.deliverables.filter((deliverable) => (
+        const pendingDeliverables = deliverables.filter((deliverable) => (
           !['approved', 'archived'].includes(deliverable.status)
         )).length;
-        const approvedDeliverables = state.deliverables.filter((deliverable) => deliverable.status === 'approved').length;
-        const approvedHours = state.workLogs
+        const approvedDeliverables = deliverables.filter((deliverable) => deliverable.status === 'approved').length;
+        const approvedHours = workLogs
           .filter((log) => log.status === 'approved')
           .reduce((total, log) => total + toNumber(log.approved_hours), 0);
         const payable = payableRows.reduce((total, payment) => total + toNumber(payment.total_usd), 0);
-        const recentInvites = state.projectRoles
+        const openTasks = tasks.filter((task) => task.status !== 'done').length;
+        const completedTasks = tasks.filter((task) => task.status === 'done').length;
+        const paymentsPaid = payableRows
+          .filter((payment) => normalizePaymentStatus(payment.payment_status || payment.status) === 'paid')
+          .reduce((total, payment) => total + toNumber(payment.total_usd), 0);
+        const paymentsPending = Math.max(0, payable - paymentsPaid);
+        const recentInvites = visibleProjectRoles()
           .filter((assignment) => isInvitationRecord(assignment))
           .sort((a, b) => new Date(b.invited_at || b.accepted_at || b.joined_at || 0) - new Date(a.invited_at || a.accepted_at || a.joined_at || 0))
           .slice(0, 5);
+        const workspace = activeWorkspaceOption();
 
         return `
-          <p class="page-copy">${isGlobalFounderOrAdmin() ? 'Founder-level operating view across all visible projects, collaborators, approved hours, deliverables, and payment obligations.' : 'A live operating view of your projects, collaborators, approved hours, deliverables, and payment obligations.'}</p>
+          <p class="page-copy">${workspace?.id === 'all' ? 'Founder-level operating view across all visible projects, collaborators, approved hours, deliverables, and payment obligations.' : `Operating view filtered to ${escapeHtml(workspace?.projectName || 'the active workspace')}.`}</p>
           <div class="metrics">
-            ${metricCard('Projects', state.projects.length, 'Projects visible through real project roles.')}
-            ${metricCard('Collaborators', people.length, 'Active people assigned to visible projects.')}
+            ${metricCard('Total Organizations', projects.length, 'Visible operating organizations/projects.')}
+            ${metricCard('Total Projects', projects.length, 'Projects visible in the active workspace.')}
+            ${metricCard('Active Collaborators', people.length, 'Active people assigned to visible projects.')}
             ${metricCard('Approved Hours', formatHours(approvedHours), 'Payable hours approved by owners or founders.')}
-            ${metricCard('Payable Amount', formatMoney(payable), 'Approved hours multiplied by hourly rates.')}
-            ${metricCard('Deliverables Pending', pendingDeliverables, 'Planned, in progress, or delivered records.')}
-            ${metricCard('Deliverables Approved', approvedDeliverables, 'Deliverables approved by owners or founders.')}
+            ${metricCard('Open Tasks', openTasks, 'Backlog, to do, in progress, or review.')}
+            ${metricCard('Completed Tasks', completedTasks, 'Tasks marked done.')}
+            ${metricCard('Pending Deliverables', pendingDeliverables, 'Planned, in progress, or delivered records.')}
+            ${metricCard('Revenue Tracked', formatMoney(payable), 'Approved hours multiplied by hourly rates.')}
+            ${metricCard('Payments Pending', formatMoney(paymentsPending), 'Payable amount not marked paid.')}
+            ${metricCard('Payments Paid', formatMoney(paymentsPaid), 'Payable amount marked paid.')}
           </div>
           <div class="dashboard-grid">
             <div class="dashboard-stack">
@@ -2636,7 +3350,7 @@
                     <p class="panel-subtitle">Latest time entries with Submitted Hours and Approved Hours.</p>
                   </div>
                 </div>
-                ${state.workLogs.length ? renderWorkLogTable(state.workLogs.slice(0, 6), true) : emptyState('No work logs yet', 'Approved work history will appear here after records exist in Supabase.', true)}
+                ${workLogs.length ? renderWorkLogTable(workLogs.slice(0, 6), true) : emptyState('No work logs yet', 'Approved work history will appear here after records exist in Supabase.', true)}
               </section>
               <div class="dashboard-split">
                 <section class="panel">
@@ -2647,7 +3361,7 @@
                     </div>
                     ${canCreateDeliverables() ? '<button class="button button-small button-primary" type="button" data-open-deliverable>+ Create Deliverable</button>' : ''}
                   </div>
-                  ${state.deliverables.length ? renderDashboardDeliverables(state.deliverables.slice(0, 5)) : emptyState('No deliverables yet', 'Deliverables will appear here after records exist in Supabase.', true)}
+                  ${deliverables.length ? renderDashboardDeliverables(deliverables.slice(0, 5)) : emptyState('No deliverables yet', 'Deliverables will appear here after records exist in Supabase.', true)}
                 </section>
                 <section class="panel">
                   <div class="panel-header">
@@ -2707,6 +3421,7 @@
       }
 
       function renderProjects() {
+        const projects = visibleProjects();
         const emptyCopy = canCreateProjects()
           ? 'Create your first project from Bastida OS. You will be assigned as Founder automatically.'
           : 'Projects visible to you will appear here after you are assigned to one.';
@@ -2722,19 +3437,19 @@
             </div>
           </div>
           <section class="panel">
-            ${state.projects.length ? renderProjectTable() : emptyState('No projects yet', emptyCopy)}
+            ${projects.length ? renderProjectTable(projects) : emptyState('No projects yet', emptyCopy)}
           </section>
         `;
       }
 
       function renderOrganization() {
-        const activeProjects = state.projects.filter((project) => project.status !== 'archived');
+        const activeProjects = visibleProjects().filter((project) => project.status !== 'archived');
 
         return `
           <div class="toolbar">
             <div>
               <h2 class="toolbar-title">Organization Tree</h2>
-              <p class="toolbar-copy">Horizontal hierarchy from real project_roles with clickable collaborator profiles.</p>
+              <p class="toolbar-copy">Vertical people hierarchy from real project_roles with multi-project context and clickable collaborator profiles.</p>
             </div>
           </div>
           <section class="panel">
@@ -2743,7 +3458,81 @@
         `;
       }
 
+      function renderTasks() {
+        const tasks = visibleTasks();
+
+        return `
+          <div class="toolbar">
+            <div>
+              <h2 class="toolbar-title">Tasks</h2>
+              <p class="toolbar-copy">Project tasks with assignee, priority, due date, and execution status.</p>
+            </div>
+            <div class="section-actions">
+              ${canCreateTasks() ? '<button class="button button-primary" type="button" data-open-task>+ Create Task</button>' : ''}
+            </div>
+          </div>
+          <section class="panel">
+            ${tasks.length ? renderTaskTable(tasks) : emptyState('No tasks yet', 'Tasks will appear here after real project task records exist in Supabase.')}
+          </section>
+        `;
+      }
+
+      function renderTimeTracker() {
+        const entries = visibleTimeEntries();
+        const running = runningTimeEntry();
+
+        return `
+          <div class="toolbar">
+            <div>
+              <h2 class="toolbar-title">Time Tracker</h2>
+              <p class="toolbar-copy">Start and stop timers, then convert stopped time into a Work Log for approval.</p>
+            </div>
+          </div>
+          <div class="content-grid">
+            <section class="panel">
+              <div class="panel-header">
+                <div>
+                  <h2 class="panel-title">${running ? 'Active Timer' : 'Start Timer'}</h2>
+                  <p class="panel-subtitle">${running ? 'Stop the current timer before starting another one.' : 'Track real work against a project and optional task.'}</p>
+                </div>
+              </div>
+              ${renderTimerPanel(running)}
+            </section>
+            <section class="panel">
+              <div class="panel-header">
+                <div>
+                  <h2 class="panel-title">Recent Time Entries</h2>
+                  <p class="panel-subtitle">Stopped entries can be converted into Work Logs.</p>
+                </div>
+              </div>
+              ${entries.length ? renderTimeEntryTable(entries.slice(0, 8)) : emptyState('No tracked time yet', 'Start a timer to create your first real time entry.', true)}
+            </section>
+          </div>
+        `;
+      }
+
+      function renderDocuments() {
+        const documents = visibleDocuments();
+
+        return `
+          <div class="toolbar">
+            <div>
+              <h2 class="toolbar-title">Documents</h2>
+              <p class="toolbar-copy">Contracts, NDAs, invoices, proposals, pitch decks, design files, and legal documents.</p>
+            </div>
+            <div class="section-actions">
+              <button class="button button-primary" type="button" data-open-document>+ Upload Document</button>
+            </div>
+          </div>
+          <section class="panel">
+            ${documents.length ? renderDocumentTable(documents) : emptyState('No documents yet', 'Documents will appear after real document records are uploaded or linked.', false)}
+          </section>
+        `;
+      }
+
       function renderDeliverables() {
+        const deliverables = visibleDeliverables();
+
         return `
           <div class="toolbar">
             <div>
@@ -2755,12 +3544,14 @@
             </div>
           </div>
           <section class="panel">
-            ${state.deliverables.length ? renderDeliverableTable(state.deliverables) : emptyState('No deliverables yet', 'Deliverables will appear here after records exist in Supabase.')}
+            ${deliverables.length ? renderDeliverableTable(deliverables) : emptyState('No deliverables yet', 'Deliverables will appear here after records exist in Supabase.')}
           </section>
         `;
       }
 
       function renderWorkLogs() {
+        const workLogs = visibleWorkLogs();
+
         return `
           <div class="toolbar">
             <div>
@@ -2772,7 +3563,7 @@
             </div>
           </div>
           <section class="panel">
-            ${state.workLogs.length ? renderWorkLogTable(state.workLogs) : emptyState('No work logs yet', 'Work logs will appear here after records exist in Supabase.')}
+            ${workLogs.length ? renderWorkLogTable(workLogs) : emptyState('No work logs yet', 'Work logs will appear here after records exist in Supabase.')}
           </section>
         `;
       }
@@ -2791,6 +3582,158 @@
           <section class="panel">
             ${payableRows.length ? renderPaymentTable(payableRows) : emptyState('No payments yet', 'Approved payable work will appear here after owners approve submitted hours.')}
           </section>
+        `;
+      }
+
+      function renderTaskTable(tasks, compact = false) {
+        const table = compact
+          ? { rows: tasks, total: tasks.length, page: 1, pageCount: 1, start: 0 }
+          : prepareTableRows('tasks', tasks, taskSearchText, {
+            due_date: (a, b) => compareDateAsc(a.due_date, b.due_date),
+            priority: (a, b) => taskPriorityValue(b.priority) - taskPriorityValue(a.priority),
+            status: (a, b) => compareText(statusLabel(a.status), statusLabel(b.status)),
+            project: (a, b) => compareText(a.project?.name, b.project?.name),
+            assignee: (a, b) => compareText(a.assignee?.full_name || a.assignee?.email, b.assignee?.full_name || b.assignee?.email)
+          });
+
+        return `
+          ${compact ? '' : renderTableControls('tasks', [
+            ['due_date', 'Due Date'],
+            ['priority', 'Priority'],
+            ['status', 'Status'],
+            ['project', 'Project'],
+            ['assignee', 'Assigned To']
+          ], table)}
+          ${!table.rows.length ? emptyState('No matching tasks', 'Adjust the filter or clear the search field.', true) : `
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Task</th>
+                  <th>Project</th>
+                  <th>Assigned To</th>
+                  <th>Priority</th>
+                  <th>Status</th>
+                  <th>Due Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${table.rows.map((task) => `
+                  <tr>
+                    <td>
+                      <span class="cell-title" title="${escapeAttr(task.title)}">${escapeHtml(task.title)}</span>
+                      <span class="cell-subtitle truncate" title="${escapeAttr(task.description || '')}">${escapeHtml(task.description || '')}</span>
+                    </td>
+                    <td title="${escapeAttr(task.project?.name || 'Unassigned')}">${escapeHtml(task.project?.name || 'Unassigned')}</td>
+                    <td>
+                      <span class="cell-title" title="${escapeAttr(task.assignee?.full_name || task.assignee?.email || '-')}">${escapeHtml(task.assignee?.full_name || task.assignee?.email || '-')}</span>
+                      <span class="cell-subtitle truncate" title="${escapeAttr(task.assignee?.email || '')}">${escapeHtml(task.assignee?.email || '')}</span>
+                    </td>
+                    <td>${statusPill(task.priority)}</td>
+                    <td>${statusPill(task.status)}</td>
+                    <td>${formatDate(task.due_date)}</td>
+                    <td>${renderTaskActions(task)}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+          `}
+        `;
+      }
+
+      function renderTimeEntryTable(entries) {
+        return `
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Project</th>
+                  <th>Description</th>
+                  <th>Start</th>
+                  <th>End</th>
+                  <th>Duration</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${entries.map((entry) => `
+                  <tr>
+                    <td>${escapeHtml(entry.project?.name || 'Unassigned')}</td>
+                    <td>
+                      <span class="cell-title" title="${escapeAttr(entry.task?.title || entry.description || 'Tracked time')}">${escapeHtml(entry.task?.title || 'Tracked time')}</span>
+                      <span class="cell-subtitle truncate" title="${escapeAttr(entry.description || '')}">${escapeHtml(entry.description || '')}</span>
+                    </td>
+                    <td>${formatDateTime(entry.started_at)}</td>
+                    <td>${formatDateTime(entry.ended_at)}</td>
+                    <td>${formatDurationMinutes(timeEntryDurationMinutes(entry))}</td>
+                    <td>${statusPill(entry.status)}</td>
+                    <td>${renderTimeEntryActions(entry)}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
+
+      function renderDocumentTable(documents, compact = false) {
+        const table = compact
+          ? { rows: documents, total: documents.length, page: 1, pageCount: 1, start: 0 }
+          : prepareTableRows('documents', documents, documentSearchText, {
+            created_desc: (a, b) => compareDateDesc(a.created_at, b.created_at),
+            category: (a, b) => compareText(statusLabel(a.category), statusLabel(b.category)),
+            project: (a, b) => compareText(a.project?.name, b.project?.name),
+            name: (a, b) => compareText(a.name, b.name)
+          });
+
+        return `
+          ${compact ? '' : renderTableControls('documents', [
+            ['created_desc', 'Newest'],
+            ['category', 'Category'],
+            ['project', 'Project'],
+            ['name', 'Name']
+          ], table)}
+          ${!table.rows.length ? emptyState('No matching documents', 'Adjust the filter or clear the search field.', true) : `
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Document Name</th>
+                  <th>Project</th>
+                  <th>Organization</th>
+                  <th>Category</th>
+                  <th>Uploaded By</th>
+                  <th>Created Date</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${table.rows.map((document) => `
+                  <tr>
+                    <td>
+                      <span class="cell-title" title="${escapeAttr(document.name)}">${escapeHtml(document.name)}</span>
+                      <span class="cell-subtitle truncate" title="${escapeAttr(document.document_url || document.storage_path || '')}">${escapeHtml(document.document_url || document.storage_path || '')}</span>
+                    </td>
+                    <td>${escapeHtml(document.project?.name || 'Unassigned')}</td>
+                    <td>Bastida Systems</td>
+                    <td>${statusPill(document.category)}</td>
+                    <td>
+                      <span class="cell-title">${escapeHtml(document.uploader?.full_name || document.uploader?.email || '-')}</span>
+                      <span class="cell-subtitle truncate">${escapeHtml(document.uploader?.email || '')}</span>
+                    </td>
+                    <td>${formatDate(document.created_at)}</td>
+                    <td>${statusPill(document.status)}</td>
+                    <td>${renderDocumentActions(document)}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+          `}
         `;
       }
 
@@ -2852,7 +3795,7 @@
         `;
       }
 
-      function renderProjectTable() {
+      function renderProjectTable(projects = visibleProjects()) {
         return `
           <div class="table-wrap">
             <table>
@@ -2868,12 +3811,12 @@
                 </tr>
               </thead>
               <tbody>
-                ${state.projects.map((project) => {
-                  const roles = state.projectRoles.filter((role) => role.project_id === project.id);
-                  const hours = state.workLogs
+                ${projects.map((project) => {
+                  const roles = visibleProjectRoles().filter((role) => role.project_id === project.id);
+                  const hours = visibleWorkLogs()
                     .filter((log) => log.project_id === project.id && log.status === 'approved')
                     .reduce((total, log) => total + toNumber(log.approved_hours), 0);
-                  const deliverables = state.deliverables.filter((deliverable) => deliverable.project_id === project.id);
+                  const deliverables = visibleDeliverables().filter((deliverable) => deliverable.project_id === project.id);
 
                   return `
                     <tr>
@@ -3114,6 +4057,36 @@
         `;
       }
 
+      function renderTaskActions(task) {
+        return `
+          <div class="section-actions">
+            ${canManageProject(task.project_id) ? `<button class="button button-small" type="button" data-open-task="${escapeAttr(task.id)}">Edit</button>` : ''}
+            ${canUpdateTask(task) && task.status !== 'done' ? `<button class="button button-small button-primary" type="button" data-complete-task="${escapeAttr(task.id)}">Complete</button>` : ''}
+          </div>
+        `;
+      }
+
+      function renderTimeEntryActions(entry) {
+        return `
+          <div class="section-actions">
+            ${entry.status === 'running' && entry.user_id === state.profile?.id ? `<button class="button button-small button-primary" type="button" data-stop-timer="${escapeAttr(entry.id)}">Stop Timer</button>` : ''}
+            ${entry.status === 'stopped' && entry.user_id === state.profile?.id ? `<button class="button button-small" type="button" data-convert-time-entry="${escapeAttr(entry.id)}">Convert to Work Log</button>` : ''}
+          </div>
+        `;
+      }
+
+      function renderDocumentActions(document) {
+        const url = document.document_url || document.storage_path || '';
+        return `
+          <div class="section-actions">
+            ${url ? `<a class="button button-small" href="${escapeAttr(url)}" target="_blank" rel="noopener noreferrer">View</a>` : ''}
+            ${url ? `<a class="button button-small" href="${escapeAttr(url)}" download>Download</a>` : ''}
+            ${canArchiveDocument(document) && document.status !== 'archived' ? `<button class="button button-small" type="button" data-open-document="${escapeAttr(document.id)}">Edit</button>` : ''}
+            ${canArchiveDocument(document) && document.status !== 'archived' ? `<button class="button button-small button-danger" type="button" data-archive-document="${escapeAttr(document.id)}">Archive</button>` : ''}
+          </div>
+        `;
+      }
+
       function renderEvidenceLinks(record) {
         const links = [
           ['Figma', record.figma_url],
@@ -3348,7 +4321,7 @@
 
         const activities = [];
 
-        state.workLogs
+        visibleWorkLogs()
           .filter((log) => log.worker_user_id === person.userId)
           .forEach((log) => {
             activities.push({
@@ -3368,7 +4341,7 @@
             }
           });
 
-        state.deliverables
+        visibleDeliverables()
           .filter((deliverable) => deliverable.responsible_user_id === person.userId)
           .forEach((deliverable) => {
             activities.push({
@@ -3414,6 +4387,31 @@
           deliverable.responsible?.full_name,
           deliverable.responsible?.email,
           statusLabel(deliverable.status)
+        ].join(' ');
+      }
+
+      function taskSearchText(task) {
+        return [
+          task.title,
+          task.description,
+          task.project?.name,
+          task.assignee?.full_name,
+          task.assignee?.email,
+          statusLabel(task.priority),
+          statusLabel(task.status)
+        ].join(' ');
+      }
+
+      function documentSearchText(document) {
+        return [
+          document.name,
+          document.project?.name,
+          document.uploader?.full_name,
+          document.uploader?.email,
+          statusLabel(document.category),
+          statusLabel(document.status),
+          document.document_url,
+          document.storage_path
         ].join(' ');
       }
 
@@ -3552,7 +4550,7 @@
 
       function buildOrganizationHierarchy(projects) {
         const projectMap = new Map(projects.map((project) => [project.id, project]));
-        const assignments = state.projectRoles
+        const assignments = visibleProjectRoles()
           .filter((assignment) => assignment.active === true)
           .filter((assignment) => projectMap.has(assignment.project_id))
           .filter((assignment) => assignment.user_id || assignment.member || assignment.invited_name || assignment.invite_email);
@@ -3853,7 +4851,7 @@
       function buildPeople() {
         const people = new Map();
 
-        state.projectRoles.forEach((assignment) => {
+        visibleProjectRoles().forEach((assignment) => {
           const member = assignment.member;
           const identity = member?.id || assignment.invite_email || assignment.id;
           if (!identity) {
@@ -4014,8 +5012,214 @@
         `;
       }
 
+      function renderTaskModal() {
+        const task = state.taskEditor.taskId
+          ? state.tasks.find((item) => item.id === state.taskEditor.taskId)
+          : null;
+        const projects = manageableProjects();
+        const selectedProjectId = task?.project_id || projects[0]?.id || '';
+        const people = projectPeople(selectedProjectId);
+        const notice = state.taskEditor.message
+          ? `<div class="notice notice-${state.taskEditor.type === 'error' ? 'error' : 'success'}">${escapeHtml(state.taskEditor.message)}</div>`
+          : '';
+
+        return `
+          <div class="modal-backdrop" role="presentation">
+            <section class="modal modal-wide" role="dialog" aria-modal="true" aria-labelledby="task-title">
+              <form data-task-form>
+                <div class="modal-header">
+                  <div>
+                    <h2 class="modal-title" id="task-title">${task ? 'Edit Task' : 'Create Task'}</h2>
+                    <p class="modal-copy">Assign real project work with priority, status, and due date.</p>
+                  </div>
+                  <button class="button" type="button" data-close-task>Close</button>
+                </div>
+                <div class="modal-body">
+                  ${notice}
+                  <div class="form-grid">
+                    <div class="field">
+                      <label for="task-project">Project</label>
+                      <select id="task-project" name="project_id" required>
+                        ${projects.length
+                          ? projects.map((project) => `<option value="${escapeAttr(project.id)}" ${project.id === selectedProjectId ? 'selected' : ''}>${escapeHtml(project.name)}</option>`).join('')
+                          : '<option value="">No projects available</option>'}
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label for="task-title-input">Task</label>
+                      <input id="task-title-input" name="title" type="text" autocomplete="off" value="${escapeAttr(task?.title || '')}" required>
+                    </div>
+                    <div class="field">
+                      <label for="task-description">Description</label>
+                      <textarea id="task-description" name="description" autocomplete="off">${escapeHtml(task?.description || '')}</textarea>
+                    </div>
+                    <div class="field">
+                      <label for="task-assignee">Assigned To</label>
+                      <select id="task-assignee" name="assigned_to">
+                        <option value="">Unassigned</option>
+                        ${people.map((person) => `<option value="${escapeAttr(person.userId)}" ${person.userId === task?.assigned_to ? 'selected' : ''}>${escapeHtml(person.name)} - ${escapeHtml(person.headline)}</option>`).join('')}
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label for="task-priority">Priority</label>
+                      <select id="task-priority" name="priority" required>
+                        ${taskPriorityOptions().map((priority) => `<option value="${escapeAttr(priority)}" ${priority === (task?.priority || 'medium') ? 'selected' : ''}>${escapeHtml(statusLabel(priority))}</option>`).join('')}
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label for="task-status">Status</label>
+                      <select id="task-status" name="status" required>
+                        ${taskStatusOptions().map((status) => `<option value="${escapeAttr(status)}" ${status === (task?.status || 'backlog') ? 'selected' : ''}>${escapeHtml(statusLabel(status))}</option>`).join('')}
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label for="task-due-date">Due Date</label>
+                      <input id="task-due-date" name="due_date" type="date" value="${escapeAttr(task?.due_date || '')}">
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button class="button" type="button" data-close-task>Cancel</button>
+                  <button class="button button-primary" type="submit" ${state.taskEditor.isSubmitting || !projects.length ? 'disabled' : ''}>
+                    ${state.taskEditor.isSubmitting ? 'Saving' : 'Save Task'}
+                  </button>
+                </div>
+              </form>
+            </section>
+          </div>
+        `;
+      }
+
+      function renderTimerPanel(running) {
+        const projects = workLogProjects();
+        const tasks = visibleTasks().filter((task) => task.status !== 'done');
+        const notice = state.timeTracker.message
+          ? `<div class="notice notice-${state.timeTracker.type === 'error' ? 'error' : 'success'}">${escapeHtml(state.timeTracker.message)}</div>`
+          : '';
+
+        if (running) {
+          return `
+            <div class="modal-body">
+              ${notice}
+              <div class="detail-grid">
+                ${detailCard('Project', running.project?.name || 'Unassigned')}
+                ${detailCard('Started', formatDateTime(running.started_at))}
+                ${detailCard('Elapsed', formatDurationMinutes(timeEntryDurationMinutes(running, true)))}
+                ${detailCard('Task', running.task?.title || '-')}
+              </div>
+              <div class="detail-card detail-card-spaced">
+                <p class="detail-label">Description</p>
+                <p class="detail-value">${escapeHtml(running.description || '-')}</p>
+              </div>
+              <div class="modal-footer">
+                <button class="button button-primary" type="button" data-stop-timer="${escapeAttr(running.id)}">Stop Timer</button>
+              </div>
+            </div>
+          `;
+        }
+
+        return `
+          <form data-start-timer-form>
+            <div class="modal-body">
+              ${notice}
+              <div class="form-grid">
+                <div class="field">
+                  <label for="timer-project">Project</label>
+                  <select id="timer-project" name="project_id" required>
+                    ${projects.length
+                      ? projects.map((project) => `<option value="${escapeAttr(project.id)}">${escapeHtml(project.name)}</option>`).join('')
+                      : '<option value="">No projects available</option>'}
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="timer-task">Task optional</label>
+                  <select id="timer-task" name="task_id">
+                    <option value="">No task</option>
+                    ${tasks.map((task) => `<option value="${escapeAttr(task.id)}">${escapeHtml(task.title)} - ${escapeHtml(task.project?.name || 'Project')}</option>`).join('')}
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="timer-description">Description optional</label>
+                  <textarea id="timer-description" name="description" autocomplete="off"></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="button button-primary" type="submit" ${state.timeTracker.isSubmitting || !projects.length ? 'disabled' : ''}>
+                ${state.timeTracker.isSubmitting ? 'Starting' : 'Start Timer'}
+              </button>
+            </div>
+          </form>
+        `;
+      }
+
+      function renderDocumentModal() {
+        const document = state.documentEditor.documentId
+          ? state.documents.find((item) => item.id === state.documentEditor.documentId)
+          : null;
+        const projects = workLogProjects();
+        const selectedProjectId = document?.project_id || projects[0]?.id || '';
+        const notice = state.documentEditor.message
+          ? `<div class="notice notice-${state.documentEditor.type === 'error' ? 'error' : 'success'}">${escapeHtml(state.documentEditor.message)}</div>`
+          : '';
+
+        return `
+          <div class="modal-backdrop" role="presentation">
+            <section class="modal modal-wide" role="dialog" aria-modal="true" aria-labelledby="document-title">
+              <form data-document-form>
+                <div class="modal-header">
+                  <div>
+                    <h2 class="modal-title" id="document-title">${document ? 'Edit Document' : 'Upload Document'}</h2>
+                    <p class="modal-copy">Register a real document URL or storage path with project context.</p>
+                  </div>
+                  <button class="button" type="button" data-close-document>Close</button>
+                </div>
+                <div class="modal-body">
+                  ${notice}
+                  <div class="form-grid">
+                    <div class="field">
+                      <label for="document-project">Project</label>
+                      <select id="document-project" name="project_id" required>
+                        ${projects.length
+                          ? projects.map((project) => `<option value="${escapeAttr(project.id)}" ${project.id === selectedProjectId ? 'selected' : ''}>${escapeHtml(project.name)}</option>`).join('')
+                          : '<option value="">No projects available</option>'}
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label for="document-name">Document Name</label>
+                      <input id="document-name" name="name" type="text" autocomplete="off" value="${escapeAttr(document?.name || '')}" required>
+                    </div>
+                    <div class="field">
+                      <label for="document-category">Category</label>
+                      <select id="document-category" name="category" required>
+                        ${documentCategoryOptions().map((category) => `<option value="${escapeAttr(category)}" ${category === (document?.category || 'contracts') ? 'selected' : ''}>${escapeHtml(statusLabel(category))}</option>`).join('')}
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label for="document-url">Document URL</label>
+                      <input id="document-url" name="document_url" type="url" autocomplete="off" placeholder="https://" value="${escapeAttr(document?.document_url || '')}">
+                    </div>
+                    <div class="field">
+                      <label for="document-storage-path">Storage Path optional</label>
+                      <input id="document-storage-path" name="storage_path" type="text" autocomplete="off" value="${escapeAttr(document?.storage_path || '')}">
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button class="button" type="button" data-close-document>Cancel</button>
+                  <button class="button button-primary" type="submit" ${state.documentEditor.isSubmitting || !projects.length ? 'disabled' : ''}>
+                    ${state.documentEditor.isSubmitting ? 'Saving' : 'Save Document'}
+                  </button>
+                </div>
+              </form>
+            </section>
+          </div>
+        `;
+      }
+
       function renderWorkLogModal() {
         const projects = workLogProjects();
+        const prefill = state.workLog.prefill || {};
         const notice = state.workLog.message
           ? `<div class="notice notice-${state.workLog.type === 'error' ? 'error' : 'success'}">${escapeHtml(state.workLog.message)}</div>`
           : '';
@@ -4042,39 +5246,39 @@
                       <label for="work-log-project">Project</label>
                       <select id="work-log-project" name="project_id" required>
                         ${projects.length
-                          ? projects.map((project) => `<option value="${escapeAttr(project.id)}">${escapeHtml(project.name)}</option>`).join('')
+                          ? projects.map((project) => `<option value="${escapeAttr(project.id)}" ${project.id === prefill.project_id ? 'selected' : ''}>${escapeHtml(project.name)}</option>`).join('')
                           : '<option value="">No projects available</option>'}
                       </select>
                     </div>
                     <div class="field">
                       <label for="work-log-type">Work Type</label>
                       <select id="work-log-type" name="work_type" required>
-                        ${workTypeOptions().map((type) => `<option value="${escapeAttr(type)}">${escapeHtml(type)}</option>`).join('')}
+                        ${workTypeOptions().map((type) => `<option value="${escapeAttr(type)}" ${type === prefill.work_type ? 'selected' : ''}>${escapeHtml(type)}</option>`).join('')}
                       </select>
                     </div>
                     <div class="field">
                       <label for="work-log-date">Work Date</label>
-                      <input id="work-log-date" name="work_date" type="date" value="${escapeAttr(todayISO())}" required>
+                      <input id="work-log-date" name="work_date" type="date" value="${escapeAttr(prefill.work_date || todayISO())}" required>
                     </div>
                     <div class="field">
                       <label for="work-log-hours">Submitted Hours</label>
-                      <input id="work-log-hours" name="hours_used" type="number" inputmode="decimal" min="0.01" max="24" step="0.01" required>
+                      <input id="work-log-hours" name="hours_used" type="number" inputmode="decimal" min="0.01" max="24" step="0.01" value="${escapeAttr(prefill.hours_used || '')}" required>
                     </div>
                     <div class="field">
                       <label for="work-log-title-input">Title</label>
-                      <input id="work-log-title-input" name="title" type="text" autocomplete="off" required>
+                      <input id="work-log-title-input" name="title" type="text" autocomplete="off" value="${escapeAttr(prefill.title || '')}" required>
                     </div>
                     <div class="field">
                       <label for="work-log-description">Description</label>
-                      <textarea id="work-log-description" name="description" autocomplete="off" required></textarea>
+                      <textarea id="work-log-description" name="description" autocomplete="off" required>${escapeHtml(prefill.description || '')}</textarea>
                     </div>
                     <div class="field">
                       <label for="work-log-evidence">Evidence Link optional</label>
-                      <input id="work-log-evidence" name="evidence_url" type="url" autocomplete="off" placeholder="https://">
+                      <input id="work-log-evidence" name="evidence_url" type="url" autocomplete="off" placeholder="https://" value="${escapeAttr(prefill.evidence_url || '')}">
                     </div>
                     <div class="field">
                       <label for="work-log-commit">Commit Hash optional</label>
-                      <input id="work-log-commit" name="commit_hash" type="text" autocomplete="off">
+                      <input id="work-log-commit" name="commit_hash" type="text" autocomplete="off" value="${escapeAttr(prefill.commit_hash || '')}">
                     </div>
                   </div>
                 </div>
@@ -4338,7 +5542,7 @@
         }
 
         const recentActivity = buildCollaboratorActivity(person).slice(0, 6);
-        const recentLogs = state.workLogs
+        const recentLogs = visibleWorkLogs()
           .filter((log) => log.worker_user_id === person.userId)
           .sort((a, b) => compareDateDesc(a.submitted_at || a.work_date, b.submitted_at || b.work_date))
           .slice(0, 4);
@@ -4630,6 +5834,25 @@
           active_member: 'Active Member',
           error_sending_invite: 'Invite Error',
           in_progress: 'In Progress',
+          to_do: 'To Do',
+          done: 'Done',
+          backlog: 'Backlog',
+          review: 'Review',
+          low: 'Low',
+          medium: 'Medium',
+          high: 'High',
+          critical: 'Critical',
+          running: 'Running',
+          stopped: 'Stopped',
+          converted: 'Converted',
+          contracts: 'Contracts',
+          nda: 'NDA',
+          invoices: 'Invoices',
+          proposals: 'Proposals',
+          business_plans: 'Business Plans',
+          pitch_decks: 'Pitch Decks',
+          design_files: 'Design Files',
+          legal: 'Legal',
           google_drive_url: 'Google Drive',
           pending: 'Pending',
           approved: 'Approved',
@@ -4644,16 +5867,25 @@
           return buildPeople().length;
         }
         if (view === 'projects') {
-          return state.projects.length;
+          return visibleProjects().length;
         }
         if (view === 'organization') {
-          return state.projectRoles.filter((assignment) => assignment.active === true).length;
+          return visibleProjectRoles().filter((assignment) => assignment.active === true).length;
+        }
+        if (view === 'tasks') {
+          return visibleTasks().length;
+        }
+        if (view === 'timeTracker') {
+          return visibleTimeEntries().length;
+        }
+        if (view === 'documents') {
+          return visibleDocuments().length;
         }
         if (view === 'deliverables') {
-          return state.deliverables.length;
+          return visibleDeliverables().length;
         }
         if (view === 'workLogs') {
-          return state.workLogs.length;
+          return visibleWorkLogs().length;
         }
         if (view === 'payments') {
           return buildPayableRows().length;
@@ -4682,7 +5914,7 @@
           return true;
         }
 
-        return state.projectRoles.some((assignment) => (
+        return visibleProjectRoles().some((assignment) => (
           assignment.user_id === state.profile?.id
           && assignment.active === true
           && ['founder', 'owner'].includes(assignment.role)
@@ -4695,7 +5927,7 @@
 
       function invitableProjects() {
         if (isGlobalFounderOrAdmin()) {
-          return state.projects;
+          return visibleProjects();
         }
 
         const projectIds = new Set(
@@ -4706,7 +5938,7 @@
             .map((assignment) => assignment.project_id)
         );
 
-        return state.projects.filter((project) => projectIds.has(project.id));
+        return visibleProjects().filter((project) => projectIds.has(project.id));
       }
 
       function canCreateWorkLogs() {
@@ -4714,7 +5946,7 @@
           return true;
         }
 
-        return state.projectRoles.some((assignment) => (
+        return visibleProjectRoles().some((assignment) => (
           assignment.user_id === state.profile?.id
           && assignment.active === true
           && ['founder', 'owner', 'core_collaborator', 'contractor'].includes(assignment.role)
@@ -4723,7 +5955,7 @@
 
       function workLogProjects() {
         if (isGlobalFounderOrAdmin()) {
-          return state.projects;
+          return visibleProjects();
         }
 
         const projectIds = new Set(
@@ -4733,16 +5965,20 @@
             .map((assignment) => assignment.project_id)
         );
 
-        return state.projects.filter((project) => projectIds.has(project.id));
+        return visibleProjects().filter((project) => projectIds.has(project.id));
       }
 
       function canCreateDeliverables() {
         return manageableProjects().length > 0;
       }
 
+      function canCreateTasks() {
+        return manageableProjects().length > 0;
+      }
+
       function manageableProjects() {
         if (isGlobalFounderOrAdmin()) {
-          return state.projects;
+          return visibleProjects();
         }
 
         const projectIds = new Set(
@@ -4753,7 +5989,7 @@
             .map((assignment) => assignment.project_id)
         );
 
-        return state.projects.filter((project) => projectIds.has(project.id));
+        return visibleProjects().filter((project) => projectIds.has(project.id));
       }
 
       function canManageProject(projectId) {
@@ -4797,6 +6033,52 @@
           && canManageProject(payment.project_id);
       }
 
+      function canUpdateTask(task) {
+        return Boolean(task)
+          && (
+            canManageProject(task.project_id)
+            || task.assigned_to === state.profile?.id
+          );
+      }
+
+      function canArchiveDocument(document) {
+        return Boolean(document)
+          && (
+            canManageProject(document.project_id)
+            || document.uploaded_by === state.profile?.id
+          );
+      }
+
+      function runningTimeEntry() {
+        return visibleTimeEntries().find((entry) => (
+          entry.user_id === state.profile?.id
+          && entry.status === 'running'
+        )) || null;
+      }
+
+      function projectPeople(projectId) {
+        const projectAssignments = visibleProjectRoles()
+          .filter((assignment) => assignment.project_id === projectId)
+          .filter((assignment) => assignment.active === true)
+          .filter((assignment) => assignment.user_id || assignment.member);
+        const people = new Map();
+
+        projectAssignments.forEach((assignment) => {
+          const userId = assignment.member?.id || assignment.user_id;
+          if (!userId || people.has(userId)) {
+            return;
+          }
+
+          people.set(userId, {
+            userId,
+            name: memberName(assignment),
+            headline: roleSummaryForAssignments([assignment], assignment.member || {})
+          });
+        });
+
+        return Array.from(people.values()).sort((a, b) => compareText(a.name, b.name));
+      }
+
       function buildCollaboratorStats(userId) {
         if (!userId) {
           return {
@@ -4807,7 +6089,7 @@
           };
         }
 
-        const approvedLogs = state.workLogs.filter((log) => (
+        const approvedLogs = visibleWorkLogs().filter((log) => (
           log.worker_user_id === userId
           && log.status === 'approved'
         ));
@@ -4816,15 +6098,15 @@
           const rate = findHourlyRate(log.project_id, log.worker_user_id);
           return total + (toNumber(log.approved_hours) * rate);
         }, 0);
-        const completedDeliverables = state.deliverables.filter((deliverable) => (
+        const completedDeliverables = visibleDeliverables().filter((deliverable) => (
           deliverable.responsible_user_id === userId
           && ['delivered', 'approved'].includes(deliverable.status)
         )).length;
         const dates = [
-          ...state.workLogs
+          ...visibleWorkLogs()
             .filter((log) => log.worker_user_id === userId)
             .map((log) => log.approved_at || log.submitted_at || log.work_date),
-          ...state.deliverables
+          ...visibleDeliverables()
             .filter((deliverable) => deliverable.responsible_user_id === userId)
             .map((deliverable) => deliverable.approved_at || deliverable.delivered_at || deliverable.updated_at || deliverable.created_at)
         ].filter(Boolean);
@@ -4840,7 +6122,7 @@
       function buildActivityItems() {
         const activities = [];
 
-        state.workLogs.forEach((log) => {
+        visibleWorkLogs().forEach((log) => {
           activities.push({
             date: log.submitted_at || log.work_date,
             title: `${personDisplayName(log.worker)} created Work Log`,
@@ -4856,7 +6138,7 @@
           }
         });
 
-        state.deliverables.forEach((deliverable) => {
+        visibleDeliverables().forEach((deliverable) => {
           activities.push({
             date: deliverable.created_at,
             title: `${personDisplayName(deliverable.creator) || 'Founder'} created Deliverable`,
@@ -4872,7 +6154,7 @@
           }
         });
 
-        state.paymentHistory.forEach((history) => {
+        visiblePaymentHistory().forEach((history) => {
           if (normalizePaymentStatus(history.new_status) === 'paid') {
             activities.push({
               date: history.changed_at,
@@ -4882,7 +6164,7 @@
           }
         });
 
-        state.projectRoles.forEach((assignment) => {
+        visibleProjectRoles().forEach((assignment) => {
           const inviteDate = assignment.invited_at || assignment.accepted_at || assignment.joined_at;
           if (!inviteDate || !isInvitationRecord(assignment)) {
             return;
@@ -4907,7 +6189,7 @@
       function buildPayableRows() {
         const rows = new Map();
 
-        state.workLogs
+        visibleWorkLogs()
           .filter((log) => log.status === 'approved')
           .forEach((log) => {
             const approvedHours = toNumber(log.approved_hours);
@@ -4972,7 +6254,7 @@
       }
 
       function findPaymentRecord(projectId, userId, hourlyRate) {
-        return state.payments
+        return visiblePayments()
           .filter((payment) => (
             payment.project_id === projectId
             && payment.user_id === userId
@@ -5024,6 +6306,38 @@
           'delivered',
           'approved',
           'archived'
+        ];
+      }
+
+      function taskStatusOptions() {
+        return [
+          'backlog',
+          'to_do',
+          'in_progress',
+          'review',
+          'done'
+        ];
+      }
+
+      function taskPriorityOptions() {
+        return [
+          'low',
+          'medium',
+          'high',
+          'critical'
+        ];
+      }
+
+      function documentCategoryOptions() {
+        return [
+          'contracts',
+          'nda',
+          'invoices',
+          'proposals',
+          'business_plans',
+          'pitch_decks',
+          'design_files',
+          'legal'
         ];
       }
 
@@ -5152,6 +6466,17 @@
         return first - second;
       }
 
+      function taskPriorityValue(priority) {
+        const values = {
+          critical: 4,
+          high: 3,
+          medium: 2,
+          low: 1
+        };
+
+        return values[String(priority || '').toLowerCase()] || 0;
+      }
+
       function dateTime(value) {
         if (!value) {
           return 0;
@@ -5180,6 +6505,53 @@
         }
 
         return dateFormatter.format(date);
+      }
+
+      function formatDateTime(value) {
+        if (!value) {
+          return '-';
+        }
+
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) {
+          return '-';
+        }
+
+        return `${dateFormatter.format(date)} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+      }
+
+      function timeEntryDurationMinutes(entry, includeRunning = false) {
+        if (!entry) {
+          return 0;
+        }
+
+        if (entry.duration_minutes !== null && typeof entry.duration_minutes !== 'undefined') {
+          return toNumber(entry.duration_minutes);
+        }
+
+        if (!entry.started_at || (!entry.ended_at && !includeRunning)) {
+          return 0;
+        }
+
+        const start = new Date(entry.started_at);
+        const end = entry.ended_at ? new Date(entry.ended_at) : new Date();
+        if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+          return 0;
+        }
+
+        return Math.max(0, Math.floor((end - start) / 60000));
+      }
+
+      function formatDurationMinutes(minutes) {
+        const totalMinutes = Math.max(0, Math.round(toNumber(minutes)));
+        const hours = Math.floor(totalMinutes / 60);
+        const remaining = totalMinutes % 60;
+
+        if (!hours) {
+          return `${remaining}m`;
+        }
+
+        return `${hours}h ${remaining}m`;
       }
 
       function latestDateValue(values) {
