@@ -359,6 +359,10 @@
       gap: 14px;
     }
 
+    .form-grid-spaced {
+      margin-top: 14px;
+    }
+
     .field {
       display: grid;
       gap: 7px;
@@ -983,6 +987,18 @@
       white-space: nowrap;
     }
 
+    .assignment-stack {
+      display: grid;
+      gap: 8px;
+      min-width: 220px;
+    }
+
+    .assignment-item {
+      display: grid;
+      gap: 2px;
+      min-width: 0;
+    }
+
     .empty-state,
     .loading-state,
     .error-state {
@@ -1165,7 +1181,7 @@
     .org-node {
       position: absolute;
       width: 292px;
-      min-height: 112px;
+      min-height: 128px;
       border: 1px solid rgba(203, 213, 225, 0.9);
       border-radius: var(--radius);
       background: rgba(255, 255, 255, 0.94);
@@ -1176,7 +1192,7 @@
 
     .org-person-node {
       width: 292px;
-      min-height: 112px;
+      min-height: 128px;
       border-color: rgba(148, 163, 184, 0.5);
       background: #ffffff;
       transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
@@ -1198,7 +1214,7 @@
       align-items: flex-start;
       gap: 11px;
       width: 100%;
-      min-height: 112px;
+      min-height: 128px;
       border: 0;
       border-radius: inherit;
       background: transparent;
@@ -1251,7 +1267,8 @@
 
     .org-node-title,
     .org-node-role,
-    .org-node-project {
+    .org-node-project,
+    .org-node-position {
       overflow: hidden;
       margin: 0;
       text-overflow: ellipsis;
@@ -1277,6 +1294,14 @@
       margin-top: 2px;
       color: var(--muted);
       font-size: 12px;
+      line-height: 1.25;
+    }
+
+    .org-node-position {
+      margin-top: 4px;
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 800;
       line-height: 1.25;
     }
 
@@ -1718,6 +1743,13 @@
           message: '',
           type: ''
         },
+        addProject: {
+          isOpen: false,
+          userId: null,
+          isSubmitting: false,
+          message: '',
+          type: ''
+        },
         createProject: {
           isOpen: false,
           isSubmitting: false,
@@ -1882,7 +1914,7 @@
             .order('created_at', { ascending: false }),
           state.client
             .from('project_roles')
-            .select('id, project_id, user_id, role, hourly_rate_usd, active, invite_email, invited_name, invited_at, invitation_status, last_invite_error, accepted_at, joined_at, member:users!project_roles_user_id_fkey(id, full_name, email, platform_role), project:projects!project_roles_project_id_fkey(id, name, status)')
+            .select('id, project_id, user_id, role, project_title, hourly_rate_usd, active, invite_email, invited_name, invited_at, invitation_status, last_invite_error, accepted_at, joined_at, member:users!project_roles_user_id_fkey(id, full_name, email, platform_role), project:projects!project_roles_project_id_fkey(id, name, status)')
             .order('joined_at', { ascending: false }),
           state.client
             .from('project_tasks')
@@ -2068,6 +2100,7 @@
               </section>
             </main>
             ${state.invite.isOpen ? renderInviteModal() : ''}
+            ${state.addProject.isOpen ? renderAddToProjectModal() : ''}
             ${state.createProject.isOpen ? renderCreateProjectModal() : ''}
             ${state.deliverableEditor.isOpen ? renderDeliverableModal() : ''}
             ${state.workLog.isOpen ? renderWorkLogModal() : ''}
@@ -2338,6 +2371,19 @@
           });
         });
 
+        app.querySelectorAll('[data-open-add-project]').forEach((button) => {
+          button.addEventListener('click', () => {
+            state.addProject.isOpen = true;
+            state.addProject.userId = button.dataset.openAddProject || null;
+            state.addProject.message = '';
+            state.addProject.type = '';
+            state.detail.isOpen = false;
+            state.detail.kind = '';
+            state.detail.id = '';
+            renderApp();
+          });
+        });
+
         app.querySelectorAll('[data-open-create-project]').forEach((button) => {
           button.addEventListener('click', () => {
             state.invite.isOpen = false;
@@ -2392,6 +2438,15 @@
           button.addEventListener('click', () => {
             state.invite.isOpen = false;
             state.invite.isSubmitting = false;
+            renderApp();
+          });
+        });
+
+        app.querySelectorAll('[data-close-add-project]').forEach((button) => {
+          button.addEventListener('click', () => {
+            state.addProject.isOpen = false;
+            state.addProject.userId = null;
+            state.addProject.isSubmitting = false;
             renderApp();
           });
         });
@@ -2459,6 +2514,7 @@
         });
 
         app.querySelector('[data-invite-form]')?.addEventListener('submit', handleInviteSubmit);
+        app.querySelector('[data-add-project-form]')?.addEventListener('submit', handleAddToProjectSubmit);
         app.querySelector('[data-create-project-form]')?.addEventListener('submit', handleCreateProjectSubmit);
         app.querySelector('[data-deliverable-form]')?.addEventListener('submit', handleDeliverableSubmit);
         app.querySelector('[data-work-log-form]')?.addEventListener('submit', handleWorkLogSubmit);
@@ -2681,17 +2737,35 @@
 
         try {
           const hourlyRateValue = String(formData.get('hourly_rate_usd') || '').trim();
+          const projectTitle = String(formData.get('project_title') || '').trim();
+          const requestedRole = String(formData.get('role') || '').trim();
+          const edgeRole = edgeInviteRole(requestedRole);
           const body = {
             name: String(formData.get('name') || '').trim(),
             email: String(formData.get('email') || '').trim(),
             project_id: String(formData.get('project_id') || '').trim(),
-            role: String(formData.get('role') || '').trim(),
+            role: edgeRole,
+            project_title: projectTitle || null,
             hourly_rate_usd: hourlyRateValue ? Number(hourlyRateValue) : null
           };
 
           const { data, error } = await state.client.functions.invoke('invite-member', { body });
           if (error) {
             throw new Error(data?.error || data?.message || error.message || 'Error sending invite.');
+          }
+
+          if (projectTitle || requestedRole !== edgeRole) {
+            const { error: titleError } = await state.client.rpc('set_project_role_details', {
+              p_project_id: body.project_id,
+              p_email: body.email,
+              p_role: requestedRole || null,
+              p_project_title: projectTitle || null,
+              p_hourly_rate_usd: body.hourly_rate_usd
+            });
+
+            if (titleError) {
+              throw titleError;
+            }
           }
 
           await loadPortalData();
@@ -2710,6 +2784,63 @@
           state.invite.isSubmitting = false;
           state.invite.type = 'error';
           state.invite.message = error instanceof Error ? error.message : 'Error sending invite';
+          renderApp();
+        }
+      }
+
+      async function handleAddToProjectSubmit(event) {
+        event.preventDefault();
+        const form = event.currentTarget;
+        const formData = new FormData(form);
+        const person = buildPeople().find((item) => item.userId === state.addProject.userId);
+        const projectId = String(formData.get('project_id') || '').trim();
+        const hourlyRateValue = String(formData.get('hourly_rate_usd') || '').trim();
+
+        state.addProject.isSubmitting = true;
+        state.addProject.message = '';
+        state.addProject.type = '';
+        renderApp();
+
+        try {
+          if (!person?.userId) {
+            throw new Error('Collaborator is required.');
+          }
+
+          if (!projectId) {
+            throw new Error('Project is required.');
+          }
+
+          const alreadyAssigned = state.projectRoles.some((assignment) => (
+            assignment.project_id === projectId
+            && (assignment.member?.id || assignment.user_id) === person.userId
+          ));
+
+          if (alreadyAssigned) {
+            throw new Error('This collaborator is already assigned to this project.');
+          }
+
+          const { error } = await state.client.rpc('assign_existing_project_collaborator', {
+            p_project_id: projectId,
+            p_user_id: person.userId,
+            p_role: String(formData.get('role') || '').trim(),
+            p_project_title: String(formData.get('project_title') || '').trim() || null,
+            p_hourly_rate_usd: hourlyRateValue ? Number(hourlyRateValue) : null
+          });
+
+          if (error) {
+            throw error;
+          }
+
+          await loadPortalData();
+          state.addProject.isOpen = false;
+          state.addProject.userId = null;
+          state.addProject.isSubmitting = false;
+          renderApp();
+        } catch (error) {
+          state.addProject.isOpen = true;
+          state.addProject.isSubmitting = false;
+          state.addProject.type = 'error';
+          state.addProject.message = error instanceof Error ? error.message : 'Error assigning collaborator';
           renderApp();
         }
       }
@@ -3793,8 +3924,8 @@
               <thead>
                 <tr>
                   <th>Collaborator</th>
-                  <th>Visible Role</th>
-                  <th>Projects</th>
+                  <th>Roles / Projects</th>
+                  <th>Projects count</th>
                   <th>Approved Hours</th>
                   <th>Total Earned</th>
                   <th>Completed</th>
@@ -3809,7 +3940,7 @@
                       <span class="cell-title" title="${escapeAttr(person.name)}">${escapeHtml(person.name)}</span>
                       <span class="cell-subtitle truncate" title="${escapeAttr(person.email)}">${escapeHtml(person.email)}</span>
                     </td>
-                    <td><span class="role-pill">${escapeHtml(person.headline)}</span></td>
+                    <td>${renderAssignmentStack(person.assignments, person)}</td>
                     <td>
                       <span class="cell-title">${person.projects.length}</span>
                       <span class="cell-subtitle truncate" title="${escapeAttr(person.projectNames.join(', ') || '-')}">${escapeHtml(person.projectNames.join(', ') || '-')}</span>
@@ -3821,13 +3952,62 @@
                       <span class="cell-subtitle">${person.completedTasks} tasks</span>
                     </td>
                     <td>${statusPill(person.status)}</td>
-                    <td>${person.userId ? `<button class="button button-small" type="button" data-detail-kind="collaborator" data-detail-id="${escapeAttr(person.userId)}">View Details</button>` : '-'}</td>
+                    <td>${renderPeopleRowActions(person)}</td>
                   </tr>
                 `).join('')}
               </tbody>
             </table>
           </div>
           `}
+        `;
+      }
+
+      function renderPeopleRowActions(person) {
+        if (!person.userId) {
+          return '-';
+        }
+
+        const canAddToProject = addableProjectsForPerson(person).length > 0;
+
+        return `
+          <div class="section-actions">
+            <button class="button button-small" type="button" data-detail-kind="collaborator" data-detail-id="${escapeAttr(person.userId)}">View Details</button>
+            ${canAddToProject ? `<button class="button button-small button-primary" type="button" data-open-add-project="${escapeAttr(person.userId)}">Add to Project</button>` : ''}
+          </div>
+        `;
+      }
+
+      function renderAssignmentStack(assignments, person = null) {
+        const activeAssignments = (assignments || [])
+          .filter((assignment) => assignment.active !== false)
+          .sort(compareAssignmentsByHierarchy);
+
+        if (!activeAssignments.length) {
+          if (person?.projectNames?.length) {
+            return `
+              <div class="assignment-stack">
+                ${person.projectNames.map((projectName) => `
+                  <div class="assignment-item">
+                    <span class="cell-title">${escapeHtml(projectName)}</span>
+                    <span class="cell-subtitle">${escapeHtml(roleSummaryForAssignments([], person))}</span>
+                  </div>
+                `).join('')}
+              </div>
+            `;
+          }
+
+          return '<span class="cell-subtitle">No active project assignments.</span>';
+        }
+
+        return `
+          <div class="assignment-stack">
+            ${activeAssignments.map((assignment) => `
+              <div class="assignment-item">
+                <span class="cell-title">${escapeHtml(roleLabel(assignment.role))} • ${escapeHtml(assignment.project?.name || 'Project')}</span>
+                ${assignment.project_title ? `<span class="cell-subtitle">${escapeHtml(assignment.project_title)}</span>` : ''}
+              </div>
+            `).join('')}
+          </div>
         `;
       }
 
@@ -4446,6 +4626,7 @@
           person.email,
           person.headline,
           person.projectNames.join(' '),
+          person.assignments.map((assignment) => assignment.project_title).filter(Boolean).join(' '),
           person.status
         ].join(' ');
       }
@@ -4547,7 +4728,7 @@
         const hierarchy = buildOrganizationHierarchy(projects);
         const collapsed = new Set(state.organization.collapsedNodeIds);
         const nodeWidth = 292;
-        const nodeHeight = 112;
+        const nodeHeight = 128;
         const margin = 52;
         const levelGap = 104;
         const columnGap = 44;
@@ -4721,6 +4902,7 @@
                 <p class="org-node-title" title="${escapeAttr(node.name)}">${escapeHtml(node.name)}</p>
                 <p class="org-node-role">${escapeHtml(node.roleText)}</p>
                 <p class="org-node-project" title="${escapeAttr(node.projectLabel || '')}">${escapeHtml(node.projectLabel || '')}</p>
+                ${node.projectTitle ? `<p class="org-node-position" title="${escapeAttr(node.projectTitle)}">${escapeHtml(node.projectTitle)}</p>` : ''}
                 ${renderOrgNodeMetrics(node)}
               </div>
             </${mainTag}>
@@ -4816,6 +4998,7 @@
           projectLabel: projectNames.length > 1
             ? `${projectNames.length} Projects`
             : (projectNames[0] || 'Bastida Systems'),
+          projectTitle: assignments.length === 1 ? (assignments[0].project_title || '') : '',
           approvedHours: stats.approvedHours,
           totalEarned: stats.totalEarned,
           assignments,
@@ -4862,6 +5045,7 @@
           avatar: initials(memberName(assignment) || memberEmail(assignment)),
           roleText: roleLabel(assignment.role),
           projectLabel: project?.name || assignment.project?.name || 'Project',
+          projectTitle: assignment.project_title || '',
           approvedHours: stats.approvedHours,
           totalEarned: stats.totalEarned,
           assignment,
@@ -5613,15 +5797,15 @@
                       </select>
                     </div>
                     <div class="field">
-                      <label for="invite-role">Role</label>
+                      <label for="invite-role">System Role</label>
                       <select id="invite-role" name="role" required>
-                        <option value="core_collaborator">Core Collaborator</option>
-                        <option value="designer">Designer</option>
-                        <option value="developer">Developer</option>
-                        <option value="contractor">Contractor</option>
-                        <option value="owner">Owner</option>
-                        <option value="founder">Founder</option>
+                        ${renderSystemRoleOptions('core_collaborator')}
                       </select>
+                    </div>
+                    <div class="field">
+                      <label for="invite-project-title">Project Title / Position optional</label>
+                      <input id="invite-project-title" name="project_title" type="text" autocomplete="organization-title" placeholder="Marketing Specialist, Lead Artist, Creative Director">
+                      <p class="field-hint">Shown in the portal only. Permissions still use the System Role.</p>
                     </div>
                     <div class="field">
                       <label for="invite-hourly-rate">Hourly rate optional</label>
@@ -5634,6 +5818,72 @@
                   <button class="button" type="button" data-close-invite>Cancel</button>
                   <button class="button button-primary" type="submit" ${state.invite.isSubmitting || !projects.length ? 'disabled' : ''}>
                     ${state.invite.isSubmitting ? 'Sending invite' : 'Send invitation'}
+                  </button>
+                </div>
+              </form>
+            </section>
+          </div>
+        `;
+      }
+
+      function renderAddToProjectModal() {
+        const person = buildPeople().find((item) => item.userId === state.addProject.userId);
+        const projects = person ? addableProjectsForPerson(person) : [];
+        const notice = state.addProject.message
+          ? `<div class="notice notice-${state.addProject.type === 'error' ? 'error' : 'success'}">${escapeHtml(state.addProject.message)}</div>`
+          : '';
+        const noProjectsNotice = projects.length
+          ? ''
+          : '<div class="notice">This collaborator is already assigned to every project you can manage.</div>';
+
+        return `
+          <div class="modal-backdrop" role="presentation">
+            <section class="modal" role="dialog" aria-modal="true" aria-labelledby="add-project-title">
+              <form data-add-project-form>
+                <div class="modal-header">
+                  <div>
+                    <h2 class="modal-title" id="add-project-title">Add Collaborator to Project</h2>
+                    <p class="modal-copy">Assign an existing portal collaborator without creating a new user.</p>
+                  </div>
+                  <button class="button" type="button" data-close-add-project>Close</button>
+                </div>
+                <div class="modal-body">
+                  ${notice}
+                  ${noProjectsNotice}
+                  <div class="detail-grid">
+                    ${detailCard('Collaborator', person?.name || '-')}
+                    ${detailCard('Email', person?.email || '-')}
+                  </div>
+                  <div class="form-grid form-grid-spaced">
+                    <div class="field">
+                      <label for="add-project-project">Project</label>
+                      <select id="add-project-project" name="project_id" required>
+                        ${projects.length
+                          ? projects.map((project) => `<option value="${escapeAttr(project.id)}">${escapeHtml(project.name)}</option>`).join('')
+                          : '<option value="">No available projects</option>'}
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label for="add-project-role">System Role</label>
+                      <select id="add-project-role" name="role" required>
+                        ${renderSystemRoleOptions('contractor')}
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label for="add-project-title-input">Project Title / Position optional</label>
+                      <input id="add-project-title-input" name="project_title" type="text" autocomplete="organization-title" placeholder="Marketing Specialist, Lead Artist, Creative Director">
+                      <p class="field-hint">Shown visually per project. Permissions still use the System Role.</p>
+                    </div>
+                    <div class="field">
+                      <label for="add-project-rate">Hourly rate optional</label>
+                      <input id="add-project-rate" name="hourly_rate_usd" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00">
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button class="button" type="button" data-close-add-project>Cancel</button>
+                  <button class="button button-primary" type="submit" ${state.addProject.isSubmitting || !person?.userId || !projects.length ? 'disabled' : ''}>
+                    ${state.addProject.isSubmitting ? 'Adding collaborator' : 'Add to Project'}
                   </button>
                 </div>
               </form>
@@ -5689,9 +5939,12 @@
         }
 
         const activeAssignments = allActiveAssignmentsForPerson(person);
-        const activeRoles = uniqueValues(
-          activeAssignments.map((assignment) => assignment.role).filter(Boolean).concat(person.roles || [])
-        );
+        const canAddToProject = addableProjectsForPerson(person).length > 0;
+        const projectBreakdown = buildCollaboratorProjectBreakdown(person.userId);
+        const recentDocuments = visibleDocuments()
+          .filter((document) => document.uploaded_by === person.userId)
+          .sort((a, b) => compareDateDesc(a.created_at, b.created_at))
+          .slice(0, 4);
         const recentActivity = buildCollaboratorActivity(person).slice(0, 6);
         const recentLogs = visibleWorkLogs()
           .filter((log) => log.worker_user_id === person.userId)
@@ -5710,7 +5963,10 @@
                     <p class="modal-copy">${escapeHtml(roleSummaryForAssignments(activeAssignments, person))}</p>
                   </div>
                 </div>
-                <button class="button" type="button" data-close-detail>Close</button>
+                <div class="section-actions">
+                  ${canAddToProject ? `<button class="button button-primary" type="button" data-open-add-project="${escapeAttr(person.userId)}">+ Add to Project</button>` : ''}
+                  <button class="button" type="button" data-close-detail>Close</button>
+                </div>
               </div>
               <div class="drawer-body">
                 <div class="detail-grid">
@@ -5722,19 +5978,22 @@
                 </div>
                 <section class="drawer-section">
                   <p class="drawer-section-title">Active Roles</p>
-                  <div class="role-list">
-                    ${activeRoles.map((role) => `<span class="role-pill">${escapeHtml(roleLabel(role))}</span>`).join('') || '<p class="empty-copy empty-copy-flush">No active roles.</p>'}
-                  </div>
+                  ${renderAssignmentStack(activeAssignments, person)}
                 </section>
                 <section class="drawer-section">
-                  <p class="drawer-section-title">Projects</p>
-                  <div class="role-list">
-                    ${activeAssignments.length ? activeAssignments.map((assignment) => `
-                      <span class="role-pill" title="${escapeAttr(`${roleLabel(assignment.role)} - ${assignment.project?.name || 'Project'}`)}">${escapeHtml(roleLabel(assignment.role))} • ${escapeHtml(assignment.project?.name || 'Project')}</span>
-                    `).join('') : person.projectNames.map((projectName) => `
-                      <span class="role-pill">${escapeHtml(projectName)}</span>
-                    `).join('') || '<p class="empty-copy empty-copy-flush">No active project assignments.</p>'}
-                  </div>
+                  <p class="drawer-section-title">Approved Hours / Earned by Project</p>
+                  ${projectBreakdown.length ? renderMiniList(projectBreakdown.map((item) => ({
+                    title: item.projectName,
+                    meta: `${formatHours(item.approvedHours)} approved hours - ${formatMoney(item.totalEarned)} earned`
+                  }))) : '<p class="empty-copy empty-copy-flush">No approved hours by project yet.</p>'}
+                </section>
+                <section class="drawer-section">
+                  <p class="drawer-section-title">Documents</p>
+                  ${recentDocuments.length ? renderMiniList(recentDocuments.map((document) => ({
+                    title: document.name,
+                    meta: `${formatDate(document.created_at)} - ${document.project?.name || 'Unassigned'} - ${statusLabel(document.category)}`,
+                    status: document.status
+                  }))) : '<p class="empty-copy empty-copy-flush">No documents uploaded by this collaborator.</p>'}
                 </section>
                 <section class="drawer-section">
                   <p class="drawer-section-title">Recent Activity</p>
@@ -6321,6 +6580,20 @@
         return Array.from(people.values()).sort((a, b) => compareText(a.name, b.name));
       }
 
+      function addableProjectsForPerson(person) {
+        if (!person?.userId) {
+          return [];
+        }
+
+        const assignedProjectIds = new Set(
+          state.projectRoles
+            .filter((assignment) => (assignment.member?.id || assignment.user_id) === person.userId)
+            .map((assignment) => assignment.project_id)
+        );
+
+        return manageableProjects().filter((project) => !assignedProjectIds.has(project.id));
+      }
+
       function buildCollaboratorStats(userId) {
         if (!userId) {
           return {
@@ -6374,6 +6647,50 @@
           completedTasks,
           lastActivity: latestDateValue(dates)
         };
+      }
+
+      function buildCollaboratorProjectBreakdown(userId) {
+        if (!userId) {
+          return [];
+        }
+
+        const rows = new Map();
+
+        visibleProjectRoles()
+          .filter((assignment) => (assignment.member?.id || assignment.user_id) === userId)
+          .forEach((assignment) => {
+            if (!rows.has(assignment.project_id)) {
+              rows.set(assignment.project_id, {
+                projectId: assignment.project_id,
+                projectName: assignment.project?.name || 'Project',
+                approvedHours: 0,
+                totalEarned: 0
+              });
+            }
+          });
+
+        visibleWorkLogs()
+          .filter((log) => log.worker_user_id === userId && log.status === 'approved')
+          .forEach((log) => {
+            const key = log.project_id || 'unassigned';
+            if (!rows.has(key)) {
+              rows.set(key, {
+                projectId: key,
+                projectName: log.project?.name || 'Unassigned',
+                approvedHours: 0,
+                totalEarned: 0
+              });
+            }
+
+            const row = rows.get(key);
+            const approvedHours = toNumber(log.approved_hours);
+            row.approvedHours += approvedHours;
+            row.totalEarned += approvedHours * findHourlyRate(log.project_id, log.worker_user_id);
+          });
+
+        return Array.from(rows.values())
+          .filter((row) => row.approvedHours > 0 || row.totalEarned > 0)
+          .sort((a, b) => compareText(a.projectName, b.projectName));
       }
 
       function buildActivityItems() {
@@ -6622,6 +6939,28 @@
           'review',
           'done'
         ];
+      }
+
+      function systemRoleOptions() {
+        return [
+          'founder',
+          'owner',
+          'core_collaborator',
+          'designer',
+          'developer',
+          'contractor'
+        ];
+      }
+
+      function renderSystemRoleOptions(selectedRole = 'contractor') {
+        return systemRoleOptions()
+          .map((role) => `<option value="${escapeAttr(role)}" ${role === selectedRole ? 'selected' : ''}>${escapeHtml(roleLabel(role))}</option>`)
+          .join('');
+      }
+
+      function edgeInviteRole(role) {
+        const allowedByCurrentEdgeFunction = new Set(['founder', 'owner', 'core_collaborator', 'contractor']);
+        return allowedByCurrentEdgeFunction.has(role) ? role : 'core_collaborator';
       }
 
       function taskPriorityOptions() {

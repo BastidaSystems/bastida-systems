@@ -122,6 +122,7 @@ create table if not exists public.project_roles (
   project_id uuid not null references public.projects(id) on delete cascade,
   user_id uuid references public.users(id) on delete cascade,
   role public.project_member_role not null,
+  project_title text,
   hourly_rate_usd numeric(12, 2) check (hourly_rate_usd is null or hourly_rate_usd >= 0),
   active boolean not null default true,
   invite_email citext,
@@ -294,6 +295,7 @@ end $$;
 
 alter table public.project_roles
   alter column user_id drop not null,
+  add column if not exists project_title text,
   add column if not exists invite_email citext,
   add column if not exists invited_name text,
   add column if not exists invited_by uuid references public.users(id) on delete set null,
@@ -305,6 +307,7 @@ alter table public.project_roles
 comment on table public.projects is 'Real Bastida Systems projects. Empty until created from real business records.';
 comment on table public.project_roles is 'Project-specific user roles. One user can have different roles across different projects.';
 comment on column public.project_roles.invitation_status is 'Invitation lifecycle for dashboard-invited project members.';
+comment on column public.project_roles.project_title is 'Optional project-specific professional title shown in UI without changing permission role.';
 comment on table public.deliverables is 'Real project deliverables and their delivery status.';
 comment on column public.deliverables.responsible_user_id is 'Project collaborator responsible for the deliverable.';
 comment on column public.deliverables.figma_url is 'Optional Figma evidence URL.';
@@ -751,6 +754,215 @@ begin
 end;
 $$;
 
+create or replace function public.assign_existing_project_collaborator(
+  p_project_id uuid,
+  p_user_id uuid,
+  p_role public.project_member_role,
+  p_project_title text default null,
+  p_hourly_rate_usd numeric default null
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_actor_id uuid;
+  v_project_role_id uuid;
+begin
+  select private.current_user_id() into v_actor_id;
+
+  if v_actor_id is null then
+    raise exception 'Authenticated portal profile not found.';
+  end if;
+
+  if p_project_id is null then
+    raise exception 'Project is required.';
+  end if;
+
+  if p_user_id is null then
+    raise exception 'Collaborator is required.';
+  end if;
+
+  if p_hourly_rate_usd is not null and p_hourly_rate_usd < 0 then
+    raise exception 'Hourly rate must be zero or greater.';
+  end if;
+
+  if not private.can_manage_project(p_project_id) then
+    raise exception 'Only a Founder or Owner can assign collaborators for this project.';
+  end if;
+
+  if not exists (
+    select 1
+    from public.users u
+    where u.id = p_user_id
+      and u.active = true
+  ) then
+    raise exception 'Collaborator profile not found or inactive.';
+  end if;
+
+  if exists (
+    select 1
+    from public.project_roles pr
+    where pr.project_id = p_project_id
+      and pr.user_id = p_user_id
+  ) then
+    raise exception 'This collaborator is already assigned to this project.';
+  end if;
+
+  insert into public.project_roles (
+    project_id,
+    user_id,
+    role,
+    project_title,
+    hourly_rate_usd,
+    active,
+    invitation_status,
+    accepted_at,
+    joined_at,
+    created_by
+  )
+  values (
+    p_project_id,
+    p_user_id,
+    p_role,
+    nullif(trim(coalesce(p_project_title, '')), ''),
+    p_hourly_rate_usd,
+    true,
+    'active_member',
+    now(),
+    now(),
+    v_actor_id
+  )
+  returning id into v_project_role_id;
+
+  return v_project_role_id;
+end;
+$$;
+
+create or replace function public.set_project_role_title(
+  p_project_id uuid,
+  p_email text,
+  p_project_title text default null
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_actor_id uuid;
+  v_project_role_id uuid;
+begin
+  select private.current_user_id() into v_actor_id;
+
+  if v_actor_id is null then
+    raise exception 'Authenticated portal profile not found.';
+  end if;
+
+  if p_project_id is null then
+    raise exception 'Project is required.';
+  end if;
+
+  if nullif(trim(coalesce(p_email, '')), '') is null then
+    raise exception 'Email is required.';
+  end if;
+
+  if not private.can_manage_project(p_project_id) then
+    raise exception 'Only a Founder or Owner can update project titles for this project.';
+  end if;
+
+  select pr.id
+    into v_project_role_id
+  from public.project_roles pr
+  left join public.users u on u.id = pr.user_id
+  where pr.project_id = p_project_id
+    and (
+      lower(pr.invite_email::text) = lower(trim(p_email))
+      or lower(u.email::text) = lower(trim(p_email))
+    )
+  order by pr.updated_at desc, pr.created_at desc
+  limit 1;
+
+  if v_project_role_id is null then
+    raise exception 'Project role not found for this collaborator.';
+  end if;
+
+  update public.project_roles
+  set project_title = nullif(trim(coalesce(p_project_title, '')), '')
+  where id = v_project_role_id;
+
+  return v_project_role_id;
+end;
+$$;
+
+create or replace function public.set_project_role_details(
+  p_project_id uuid,
+  p_email text,
+  p_role public.project_member_role default null,
+  p_project_title text default null,
+  p_hourly_rate_usd numeric default null
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_actor_id uuid;
+  v_project_role_id uuid;
+begin
+  select private.current_user_id() into v_actor_id;
+
+  if v_actor_id is null then
+    raise exception 'Authenticated portal profile not found.';
+  end if;
+
+  if p_project_id is null then
+    raise exception 'Project is required.';
+  end if;
+
+  if nullif(trim(coalesce(p_email, '')), '') is null then
+    raise exception 'Email is required.';
+  end if;
+
+  if p_hourly_rate_usd is not null and p_hourly_rate_usd < 0 then
+    raise exception 'Hourly rate must be zero or greater.';
+  end if;
+
+  if not private.can_manage_project(p_project_id) then
+    raise exception 'Only a Founder or Owner can update project role details for this project.';
+  end if;
+
+  select pr.id
+    into v_project_role_id
+  from public.project_roles pr
+  left join public.users u on u.id = pr.user_id
+  where pr.project_id = p_project_id
+    and (
+      lower(pr.invite_email::text) = lower(trim(p_email))
+      or lower(u.email::text) = lower(trim(p_email))
+    )
+  order by pr.updated_at desc, pr.created_at desc
+  limit 1;
+
+  if v_project_role_id is null then
+    raise exception 'Project role not found for this collaborator.';
+  end if;
+
+  update public.project_roles
+  set role = coalesce(p_role, role),
+      project_title = case
+        when p_project_title is null then project_title
+        else nullif(trim(p_project_title), '')
+      end,
+      hourly_rate_usd = coalesce(p_hourly_rate_usd, hourly_rate_usd)
+  where id = v_project_role_id;
+
+  return v_project_role_id;
+end;
+$$;
+
 create or replace view public.project_operating_summary
 with (security_invoker = true)
 as
@@ -1147,6 +1359,9 @@ grant execute on function public.upsert_project_deliverable(
 grant execute on function public.approve_project_deliverable(uuid) to authenticated;
 grant execute on function public.mark_collaborator_payment_paid(uuid, uuid, numeric, numeric, text) to authenticated;
 grant execute on function public.accept_my_project_invites() to authenticated;
+grant execute on function public.assign_existing_project_collaborator(uuid, uuid, public.project_member_role, text, numeric) to authenticated;
+grant execute on function public.set_project_role_title(uuid, text, text) to authenticated;
+grant execute on function public.set_project_role_details(uuid, text, public.project_member_role, text, numeric) to authenticated;
 
 grant select, insert, update, delete on
   public.projects,
