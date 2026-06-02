@@ -21,6 +21,10 @@ begin
   if not exists (select 1 from pg_type where typname = 'collaborator_payment_status') then
     create type public.collaborator_payment_status as enum ('draft', 'pending_approval', 'approved', 'paid', 'void');
   end if;
+
+  if not exists (select 1 from pg_type where typname = 'member_invitation_status') then
+    create type public.member_invitation_status as enum ('invite_sent', 'pending_acceptance', 'active_member', 'error_sending_invite');
+  end if;
 end $$;
 
 create table if not exists public.projects (
@@ -38,10 +42,17 @@ create table if not exists public.projects (
 create table if not exists public.project_roles (
   id uuid primary key default gen_random_uuid(),
   project_id uuid not null references public.projects(id) on delete cascade,
-  user_id uuid not null references public.users(id) on delete cascade,
+  user_id uuid references public.users(id) on delete cascade,
   role public.project_member_role not null,
   hourly_rate_usd numeric(12, 2) check (hourly_rate_usd is null or hourly_rate_usd >= 0),
   active boolean not null default true,
+  invite_email citext,
+  invited_name text,
+  invited_by uuid references public.users(id) on delete set null,
+  invited_at timestamptz,
+  invitation_status public.member_invitation_status not null default 'active_member',
+  last_invite_error text,
+  accepted_at timestamptz,
   joined_at timestamptz not null default now(),
   created_by uuid references public.users(id) on delete set null,
   created_at timestamptz not null default now(),
@@ -82,8 +93,19 @@ alter table public.work_logs
   add column if not exists project_id uuid references public.projects(id) on delete set null,
   add column if not exists commit_hash text;
 
+alter table public.project_roles
+  alter column user_id drop not null,
+  add column if not exists invite_email citext,
+  add column if not exists invited_name text,
+  add column if not exists invited_by uuid references public.users(id) on delete set null,
+  add column if not exists invited_at timestamptz,
+  add column if not exists invitation_status public.member_invitation_status not null default 'active_member',
+  add column if not exists last_invite_error text,
+  add column if not exists accepted_at timestamptz;
+
 comment on table public.projects is 'Real Bastida Systems projects. Empty until created from real business records.';
 comment on table public.project_roles is 'Project-specific user roles. One user can have different roles across different projects.';
+comment on column public.project_roles.invitation_status is 'Invitation lifecycle for dashboard-invited project members.';
 comment on table public.deliverables is 'Real project deliverables and their delivery status.';
 comment on table public.collaborator_payments is 'Real collaborator payment calculations from approved hours and rates.';
 comment on column public.work_logs.project_id is 'Optional link from legacy work logs to the operating project model.';
@@ -93,6 +115,10 @@ create index if not exists idx_projects_company_status on public.projects(compan
 create index if not exists idx_projects_status_updated_at on public.projects(status, updated_at desc);
 create index if not exists idx_project_roles_project_active on public.project_roles(project_id, active);
 create index if not exists idx_project_roles_user_active on public.project_roles(user_id, active);
+create index if not exists idx_project_roles_invitation_status on public.project_roles(project_id, invitation_status);
+create unique index if not exists idx_project_roles_project_invite_email_unique
+  on public.project_roles(project_id, invite_email)
+  where invite_email is not null;
 create index if not exists idx_deliverables_project_status on public.deliverables(project_id, status);
 create index if not exists idx_deliverables_due_date on public.deliverables(due_date);
 create index if not exists idx_collaborator_payments_project_status on public.collaborator_payments(project_id, status);
@@ -136,6 +162,35 @@ as $$
         and u.active = true
         and u.auth_user_id = (select auth.uid())
     );
+$$;
+
+create or replace function public.accept_my_project_invites()
+returns integer
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_user_id uuid;
+  v_updated_count integer;
+begin
+  select private.current_user_id() into v_user_id;
+
+  if v_user_id is null then
+    raise exception 'Authenticated portal profile not found.';
+  end if;
+
+  update public.project_roles pr
+  set invitation_status = 'active_member',
+      accepted_at = coalesce(pr.accepted_at, now()),
+      active = true,
+      updated_at = now()
+  where pr.user_id = v_user_id
+    and pr.invitation_status in ('invite_sent', 'pending_acceptance');
+
+  get diagnostics v_updated_count = row_count;
+  return v_updated_count;
+end;
 $$;
 
 create or replace view public.project_operating_summary
@@ -315,6 +370,7 @@ using (
 grant usage on schema public to authenticated;
 grant usage on schema private to authenticated;
 grant execute on function private.has_project_access(uuid) to authenticated;
+grant execute on function public.accept_my_project_invites() to authenticated;
 
 grant select, insert, update, delete on
   public.projects,

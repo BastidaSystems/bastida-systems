@@ -2,7 +2,7 @@
   Bastida Systems public Supabase configuration.
 
   Use the Project URL and anon/publishable key only.
-  Never place the service_role key in this file or any frontend file.
+  Never place private server keys in this file or any frontend file.
 */
 
 window.BASTIDA_SUPABASE_CONFIG = {

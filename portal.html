@@ -265,6 +265,138 @@
       color: #ffffff;
     }
 
+    .button:disabled {
+      cursor: not-allowed;
+      opacity: 0.62;
+    }
+
+    .section-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+    }
+
+    .field label {
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      padding: 0 12px;
+      outline: none;
+    }
+
+    .field input:focus,
+    .field select:focus {
+      border-color: #111827;
+      box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.08);
+    }
+
+    .field-hint {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .notice {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface-muted);
+      color: var(--text-soft);
+      padding: 10px 12px;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .notice-success {
+      border-color: rgba(15, 118, 110, 0.18);
+      background: rgba(15, 118, 110, 0.07);
+      color: var(--success);
+    }
+
+    .notice-error {
+      border-color: rgba(185, 28, 28, 0.18);
+      background: rgba(185, 28, 28, 0.06);
+      color: var(--danger);
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: grid;
+      place-items: center;
+      background: rgba(17, 24, 39, 0.32);
+      padding: 18px;
+    }
+
+    .modal {
+      width: min(100%, 520px);
+      max-height: min(760px, calc(100vh - 36px));
+      overflow-y: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.2);
+    }
+
+    .modal-header,
+    .modal-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 16px;
+    }
+
+    .modal-header {
+      border-bottom: 1px solid var(--line);
+    }
+
+    .modal-footer {
+      border-top: 1px solid var(--line);
+    }
+
+    .modal-body {
+      display: grid;
+      gap: 14px;
+      padding: 16px;
+    }
+
+    .modal-title {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.35;
+    }
+
+    .modal-copy {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
     .toolbar {
       display: flex;
       flex-wrap: wrap;
@@ -438,7 +570,8 @@
     .status-active,
     .status-approved,
     .status-paid,
-    .status-completed {
+    .status-completed,
+    .status-active_member {
       border-color: rgba(15, 118, 110, 0.18);
       background: rgba(15, 118, 110, 0.07);
       color: var(--success);
@@ -447,14 +580,17 @@
     .status-paused,
     .status-pending,
     .status-pending_approval,
-    .status-in_progress {
+    .status-in_progress,
+    .status-invite_sent,
+    .status-pending_acceptance {
       border-color: rgba(146, 64, 14, 0.18);
       background: rgba(146, 64, 14, 0.07);
       color: var(--warning);
     }
 
     .status-archived,
-    .status-void {
+    .status-void,
+    .status-error_sending_invite {
       border-color: rgba(185, 28, 28, 0.16);
       background: rgba(185, 28, 28, 0.06);
       color: var(--danger);
@@ -680,6 +816,12 @@
         deliverables: [],
         workLogs: [],
         payments: [],
+        invite: {
+          isOpen: false,
+          isSubmitting: false,
+          message: '',
+          type: ''
+        },
         isLoading: true,
         error: null
       };
@@ -761,6 +903,7 @@
         }
 
         state.profile = profileResult.data;
+        await acceptPendingInvites();
 
         const [projects, roles, deliverables, workLogs, payments] = await Promise.all([
           state.client
@@ -769,8 +912,7 @@
             .order('created_at', { ascending: false }),
           state.client
             .from('project_roles')
-            .select('id, project_id, user_id, role, hourly_rate_usd, active, joined_at, member:users!project_roles_user_id_fkey(id, full_name, email, platform_role), project:projects!project_roles_project_id_fkey(id, name, status)')
-            .eq('active', true)
+            .select('id, project_id, user_id, role, hourly_rate_usd, active, invite_email, invited_name, invited_at, invitation_status, last_invite_error, accepted_at, joined_at, member:users!project_roles_user_id_fkey(id, full_name, email, platform_role), project:projects!project_roles_project_id_fkey(id, name, status)')
             .order('joined_at', { ascending: false }),
           state.client
             .from('deliverables')
@@ -798,6 +940,17 @@
         state.workLogs = workLogs.data || [];
         state.payments = payments.data || [];
         state.isLoading = false;
+      }
+
+      async function acceptPendingInvites() {
+        if (!state.profile?.id) {
+          return;
+        }
+
+        const { error } = await state.client.rpc('accept_my_project_invites');
+        if (error) {
+          throw error;
+        }
       }
 
       function assertQuery(tableName, result) {
@@ -888,6 +1041,7 @@
                     <p class="profile-name">${escapeHtml(profileName())}</p>
                     <p class="profile-role">${escapeHtml(profileRole())}</p>
                   </div>
+                  ${canInviteMembers() ? '<button class="button button-primary" type="button" data-open-invite>Invite Member</button>' : ''}
                   <button class="button" type="button" data-refresh>Refresh</button>
                   <button class="button" type="button" data-sign-out>Logout</button>
                 </div>
@@ -911,6 +1065,7 @@
                 ${renderPayments()}
               </section>
             </main>
+            ${state.invite.isOpen ? renderInviteModal() : ''}
           </div>
         `;
 
@@ -936,6 +1091,25 @@
           setActiveView(event.target.value);
         });
 
+        app.querySelectorAll('[data-open-invite]').forEach((button) => {
+          button.addEventListener('click', () => {
+            state.invite.isOpen = true;
+            state.invite.message = '';
+            state.invite.type = '';
+            renderApp();
+          });
+        });
+
+        app.querySelectorAll('[data-close-invite]').forEach((button) => {
+          button.addEventListener('click', () => {
+            state.invite.isOpen = false;
+            state.invite.isSubmitting = false;
+            renderApp();
+          });
+        });
+
+        app.querySelector('[data-invite-form]')?.addEventListener('submit', handleInviteSubmit);
+
         app.querySelector('[data-refresh]')?.addEventListener('click', async (event) => {
           event.currentTarget.textContent = 'Refreshing';
           event.currentTarget.disabled = true;
@@ -951,6 +1125,51 @@
           await state.client.auth.signOut();
           window.location.href = authRedirects.login || 'login.html';
         });
+      }
+
+      async function handleInviteSubmit(event) {
+        event.preventDefault();
+        const form = event.currentTarget;
+        const formData = new FormData(form);
+
+        state.invite.isSubmitting = true;
+        state.invite.message = '';
+        state.invite.type = '';
+        renderApp();
+
+        try {
+          const hourlyRateValue = String(formData.get('hourly_rate_usd') || '').trim();
+          const body = {
+            name: String(formData.get('name') || '').trim(),
+            email: String(formData.get('email') || '').trim(),
+            project_id: String(formData.get('project_id') || '').trim(),
+            role: String(formData.get('role') || '').trim(),
+            hourly_rate_usd: hourlyRateValue ? Number(hourlyRateValue) : null
+          };
+
+          const { data, error } = await state.client.functions.invoke('invite-member', { body });
+          if (error) {
+            throw new Error(data?.error || data?.message || error.message || 'Error sending invite.');
+          }
+
+          await loadPortalData();
+          state.invite.isOpen = true;
+          state.invite.isSubmitting = false;
+          state.invite.type = 'success';
+          state.invite.message = data?.message || 'Invite sent';
+          renderApp();
+        } catch (error) {
+          try {
+            await loadPortalData();
+          } catch (_) {
+            // Keep the original invite error visible if refresh fails.
+          }
+          state.invite.isOpen = true;
+          state.invite.isSubmitting = false;
+          state.invite.type = 'error';
+          state.invite.message = error instanceof Error ? error.message : 'Error sending invite';
+          renderApp();
+        }
       }
 
       function setActiveView(view) {
@@ -1032,7 +1251,10 @@
           <div class="toolbar">
             <div>
               <h2 class="toolbar-title">Collaborators</h2>
-              <p class="toolbar-copy">People are shown only when they have real active project role records.</p>
+              <p class="toolbar-copy">People and invitations are shown only when real project role records exist.</p>
+            </div>
+            <div class="section-actions">
+              ${canInviteMembers() ? '<button class="button button-primary" type="button" data-open-invite>Invite Member</button>' : ''}
             </div>
           </div>
           <section class="panel">
@@ -1106,6 +1328,7 @@
                   <th>Collaborator</th>
                   <th>Project roles</th>
                   <th>Projects</th>
+                  <th>Status</th>
                   <th>Default role</th>
                 </tr>
               </thead>
@@ -1122,6 +1345,7 @@
                       </div>
                     </td>
                     <td>${person.projects.length}</td>
+                    <td>${statusPill(person.status)}</td>
                     <td>${escapeHtml(roleLabel(person.defaultRole))}</td>
                   </tr>
                 `).join('')}
@@ -1278,31 +1502,96 @@
 
         state.projectRoles.forEach((assignment) => {
           const member = assignment.member;
-          if (!member?.id) {
+          const identity = member?.id || assignment.invite_email || assignment.id;
+          if (!identity) {
             return;
           }
 
-          if (!people.has(member.id)) {
-            people.set(member.id, {
-              id: member.id,
-              name: member.full_name || member.email || 'Unnamed user',
-              email: member.email || '',
+          if (!people.has(identity)) {
+            people.set(identity, {
+              id: identity,
+              name: member?.full_name || assignment.invited_name || member?.email || assignment.invite_email || 'Invited member',
+              email: member?.email || assignment.invite_email || '',
               defaultRole: assignment.role,
               roles: [],
-              projects: []
+              projects: [],
+              status: normalizeInvitationStatus(assignment)
             });
           }
 
-          const person = people.get(member.id);
+          const person = people.get(identity);
           if (assignment.role && !person.roles.includes(assignment.role)) {
             person.roles.push(assignment.role);
           }
           if (assignment.project?.id && !person.projects.includes(assignment.project.id)) {
             person.projects.push(assignment.project.id);
           }
+          person.status = mergeInvitationStatus(person.status, normalizeInvitationStatus(assignment));
         });
 
         return Array.from(people.values()).sort((a, b) => a.name.localeCompare(b.name));
+      }
+
+      function renderInviteModal() {
+        const projects = invitableProjects();
+        const notice = state.invite.message
+          ? `<div class="notice notice-${state.invite.type === 'error' ? 'error' : 'success'}">${escapeHtml(state.invite.message)}</div>`
+          : '';
+
+        return `
+          <div class="modal-backdrop" role="presentation">
+            <section class="modal" role="dialog" aria-modal="true" aria-labelledby="invite-title">
+              <form data-invite-form>
+                <div class="modal-header">
+                  <div>
+                    <h2 class="modal-title" id="invite-title">Invite Member</h2>
+                    <p class="modal-copy">Send a real Supabase Auth invitation for a real project role.</p>
+                  </div>
+                  <button class="button" type="button" data-close-invite>Close</button>
+                </div>
+                <div class="modal-body">
+                  ${notice}
+                  <div class="form-grid">
+                    <div class="field">
+                      <label for="invite-name">Name</label>
+                      <input id="invite-name" name="name" type="text" autocomplete="name" required>
+                    </div>
+                    <div class="field">
+                      <label for="invite-email">Email</label>
+                      <input id="invite-email" name="email" type="email" autocomplete="email" required>
+                    </div>
+                    <div class="field">
+                      <label for="invite-project">Project</label>
+                      <select id="invite-project" name="project_id" required>
+                        ${projects.map((project) => `<option value="${escapeAttr(project.id)}">${escapeHtml(project.name)}</option>`).join('')}
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label for="invite-role">Role</label>
+                      <select id="invite-role" name="role" required>
+                        <option value="core_collaborator">Core Collaborator</option>
+                        <option value="contractor">Contractor</option>
+                        <option value="owner">Owner</option>
+                        <option value="founder">Founder</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label for="invite-hourly-rate">Hourly rate optional</label>
+                      <input id="invite-hourly-rate" name="hourly_rate_usd" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00">
+                      <p class="field-hint">Stored on the project role. Leave empty if this member does not have a fixed hourly rate yet.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button class="button" type="button" data-close-invite>Cancel</button>
+                  <button class="button button-primary" type="submit" ${state.invite.isSubmitting || !projects.length ? 'disabled' : ''}>
+                    ${state.invite.isSubmitting ? 'Sending invite' : 'Send invite'}
+                  </button>
+                </div>
+              </form>
+            </section>
+          </div>
+        `;
       }
 
       function metricCard(label, value, caption) {
@@ -1348,6 +1637,45 @@
           return state.payments.length;
         }
         return '';
+      }
+
+      function canInviteMembers() {
+        return invitableProjects().length > 0;
+      }
+
+      function invitableProjects() {
+        if (state.profile?.platform_role === 'platform_admin') {
+          return state.projects;
+        }
+
+        const projectIds = new Set(
+          state.projectRoles
+            .filter((assignment) => assignment.user_id === state.profile?.id)
+            .filter((assignment) => assignment.active === true)
+            .filter((assignment) => ['founder', 'owner'].includes(assignment.role))
+            .map((assignment) => assignment.project_id)
+        );
+
+        return state.projects.filter((project) => projectIds.has(project.id));
+      }
+
+      function normalizeInvitationStatus(assignment) {
+        if (assignment.invitation_status) {
+          return assignment.invitation_status;
+        }
+
+        return assignment.active ? 'active_member' : 'pending_acceptance';
+      }
+
+      function mergeInvitationStatus(currentStatus, nextStatus) {
+        const priority = {
+          error_sending_invite: 4,
+          pending_acceptance: 3,
+          invite_sent: 2,
+          active_member: 1
+        };
+
+        return (priority[nextStatus] || 0) > (priority[currentStatus] || 0) ? nextStatus : currentStatus;
       }
 
       function profileName() {
