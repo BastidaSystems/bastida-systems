@@ -105,6 +105,13 @@ create table if not exists public.deliverables (
   status public.deliverable_status not null default 'planned',
   due_date date,
   delivered_at timestamptz,
+  responsible_user_id uuid references public.users(id) on delete set null,
+  figma_url text,
+  google_drive_url text,
+  document_url text,
+  evidence_url text,
+  approved_by uuid references public.users(id) on delete set null,
+  approved_at timestamptz,
   created_by uuid references public.users(id) on delete set null,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -119,11 +126,34 @@ create table if not exists public.collaborator_payments (
   total_usd numeric(12, 2) generated always as (round(hourly_rate_usd * approved_hours, 2)) stored,
   status public.collaborator_payment_status not null default 'draft',
   paid_at timestamptz,
+  paid_by uuid references public.users(id) on delete set null,
   notes text,
   created_by uuid references public.users(id) on delete set null,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+create table if not exists public.collaborator_payment_history (
+  id uuid primary key default gen_random_uuid(),
+  payment_id uuid not null references public.collaborator_payments(id) on delete cascade,
+  previous_status public.collaborator_payment_status,
+  new_status public.collaborator_payment_status not null,
+  changed_by uuid references public.users(id) on delete set null,
+  changed_at timestamptz not null default now(),
+  note text
+);
+
+alter table public.deliverables
+  add column if not exists responsible_user_id uuid references public.users(id) on delete set null,
+  add column if not exists figma_url text,
+  add column if not exists google_drive_url text,
+  add column if not exists document_url text,
+  add column if not exists evidence_url text,
+  add column if not exists approved_by uuid references public.users(id) on delete set null,
+  add column if not exists approved_at timestamptz;
+
+alter table public.collaborator_payments
+  add column if not exists paid_by uuid references public.users(id) on delete set null;
 
 alter table public.work_logs
   add column if not exists project_id uuid references public.projects(id) on delete set null,
@@ -180,7 +210,14 @@ comment on table public.projects is 'Real Bastida Systems projects. Empty until 
 comment on table public.project_roles is 'Project-specific user roles. One user can have different roles across different projects.';
 comment on column public.project_roles.invitation_status is 'Invitation lifecycle for dashboard-invited project members.';
 comment on table public.deliverables is 'Real project deliverables and their delivery status.';
+comment on column public.deliverables.responsible_user_id is 'Project collaborator responsible for the deliverable.';
+comment on column public.deliverables.figma_url is 'Optional Figma evidence URL.';
+comment on column public.deliverables.google_drive_url is 'Optional Google Drive evidence URL.';
+comment on column public.deliverables.document_url is 'Optional document URL.';
+comment on column public.deliverables.evidence_url is 'Optional general evidence URL.';
 comment on table public.collaborator_payments is 'Real collaborator payment calculations from approved hours and rates.';
+comment on table public.collaborator_payment_history is 'Payment status change history for operational auditability.';
+comment on column public.collaborator_payments.paid_by is 'Portal user who marked the payment as paid.';
 comment on column public.work_logs.project_id is 'Optional link from legacy work logs to the operating project model.';
 comment on column public.work_logs.commit_hash is 'Optional source-control commit hash for technical work logs.';
 comment on column public.work_logs.work_type is 'Work category selected by the collaborator when submitting hours.';
@@ -197,8 +234,10 @@ create unique index if not exists idx_project_roles_project_invite_email_unique
   where invite_email is not null;
 create index if not exists idx_deliverables_project_status on public.deliverables(project_id, status);
 create index if not exists idx_deliverables_due_date on public.deliverables(due_date);
+create index if not exists idx_deliverables_responsible_status on public.deliverables(responsible_user_id, status);
 create index if not exists idx_collaborator_payments_project_status on public.collaborator_payments(project_id, status);
 create index if not exists idx_collaborator_payments_user_status on public.collaborator_payments(user_id, status);
+create index if not exists idx_collaborator_payment_history_payment_changed_at on public.collaborator_payment_history(payment_id, changed_at desc);
 create index if not exists idx_work_logs_project_date on public.work_logs(project_id, work_date desc);
 create index if not exists idx_work_logs_worker_status on public.work_logs(worker_user_id, status);
 create index if not exists idx_work_logs_project_status on public.work_logs(project_id, status);
@@ -280,6 +319,286 @@ as $$
     );
 $$;
 
+create or replace function public.upsert_project_deliverable(
+  p_project_id uuid,
+  p_title text,
+  p_description text default null,
+  p_responsible_user_id uuid default null,
+  p_due_date date default null,
+  p_status public.deliverable_status default 'planned',
+  p_figma_url text default null,
+  p_google_drive_url text default null,
+  p_document_url text default null,
+  p_evidence_url text default null,
+  p_deliverable_id uuid default null
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_actor_id uuid;
+  v_existing_project_id uuid;
+  v_deliverable_id uuid;
+begin
+  select private.current_user_id() into v_actor_id;
+
+  if v_actor_id is null then
+    raise exception 'Authenticated portal profile not found.';
+  end if;
+
+  if p_project_id is null then
+    raise exception 'Project is required.';
+  end if;
+
+  if nullif(trim(p_title), '') is null then
+    raise exception 'Deliverable title is required.';
+  end if;
+
+  if not private.can_manage_project(p_project_id) then
+    raise exception 'Only a Founder or Owner can manage deliverables for this project.';
+  end if;
+
+  if p_responsible_user_id is not null and not exists (
+    select 1
+    from public.project_roles pr
+    where pr.project_id = p_project_id
+      and pr.user_id = p_responsible_user_id
+      and pr.active = true
+  ) then
+    raise exception 'Responsible user must be an active project collaborator.';
+  end if;
+
+  if p_deliverable_id is not null then
+    select d.project_id
+      into v_existing_project_id
+    from public.deliverables d
+    where d.id = p_deliverable_id;
+
+    if v_existing_project_id is null then
+      raise exception 'Deliverable not found.';
+    end if;
+
+    if not private.can_manage_project(v_existing_project_id) then
+      raise exception 'Only a Founder or Owner can manage this deliverable.';
+    end if;
+
+    update public.deliverables as d
+    set project_id = p_project_id,
+        title = trim(p_title),
+        description = nullif(trim(coalesce(p_description, '')), ''),
+        responsible_user_id = p_responsible_user_id,
+        due_date = p_due_date,
+        status = p_status,
+        figma_url = nullif(trim(coalesce(p_figma_url, '')), ''),
+        google_drive_url = nullif(trim(coalesce(p_google_drive_url, '')), ''),
+        document_url = nullif(trim(coalesce(p_document_url, '')), ''),
+        evidence_url = nullif(trim(coalesce(p_evidence_url, '')), ''),
+        delivered_at = case
+          when p_status in ('delivered', 'approved') then coalesce(d.delivered_at, now())
+          when p_status = 'planned' then null
+          else d.delivered_at
+        end,
+        approved_by = case
+          when p_status = 'approved' then v_actor_id
+          when d.status = 'approved' and p_status <> 'approved' then null
+          else d.approved_by
+        end,
+        approved_at = case
+          when p_status = 'approved' then coalesce(d.approved_at, now())
+          when d.status = 'approved' and p_status <> 'approved' then null
+          else d.approved_at
+        end
+    where d.id = p_deliverable_id
+    returning id into v_deliverable_id;
+
+    return v_deliverable_id;
+  end if;
+
+  insert into public.deliverables (
+    project_id,
+    title,
+    description,
+    responsible_user_id,
+    due_date,
+    status,
+    figma_url,
+    google_drive_url,
+    document_url,
+    evidence_url,
+    delivered_at,
+    approved_by,
+    approved_at,
+    created_by
+  )
+  values (
+    p_project_id,
+    trim(p_title),
+    nullif(trim(coalesce(p_description, '')), ''),
+    p_responsible_user_id,
+    p_due_date,
+    p_status,
+    nullif(trim(coalesce(p_figma_url, '')), ''),
+    nullif(trim(coalesce(p_google_drive_url, '')), ''),
+    nullif(trim(coalesce(p_document_url, '')), ''),
+    nullif(trim(coalesce(p_evidence_url, '')), ''),
+    case when p_status in ('delivered', 'approved') then now() else null end,
+    case when p_status = 'approved' then v_actor_id else null end,
+    case when p_status = 'approved' then now() else null end,
+    v_actor_id
+  )
+  returning id into v_deliverable_id;
+
+  return v_deliverable_id;
+end;
+$$;
+
+create or replace function public.approve_project_deliverable(p_deliverable_id uuid)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_actor_id uuid;
+  v_project_id uuid;
+begin
+  select private.current_user_id() into v_actor_id;
+
+  if v_actor_id is null then
+    raise exception 'Authenticated portal profile not found.';
+  end if;
+
+  select d.project_id
+    into v_project_id
+  from public.deliverables d
+  where d.id = p_deliverable_id;
+
+  if v_project_id is null then
+    raise exception 'Deliverable not found.';
+  end if;
+
+  if not private.can_manage_project(v_project_id) then
+    raise exception 'Only a Founder or Owner can approve this deliverable.';
+  end if;
+
+  update public.deliverables
+  set status = 'approved',
+      delivered_at = coalesce(delivered_at, now()),
+      approved_by = v_actor_id,
+      approved_at = now()
+  where id = p_deliverable_id;
+
+  return p_deliverable_id;
+end;
+$$;
+
+create or replace function public.mark_collaborator_payment_paid(
+  p_project_id uuid,
+  p_user_id uuid,
+  p_hourly_rate_usd numeric,
+  p_approved_hours numeric,
+  p_note text default null
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_actor_id uuid;
+  v_payment_id uuid;
+  v_previous_status public.collaborator_payment_status;
+begin
+  select private.current_user_id() into v_actor_id;
+
+  if v_actor_id is null then
+    raise exception 'Authenticated portal profile not found.';
+  end if;
+
+  if p_project_id is null then
+    raise exception 'Project is required.';
+  end if;
+
+  if p_user_id is null then
+    raise exception 'Collaborator is required.';
+  end if;
+
+  if p_hourly_rate_usd is null or p_hourly_rate_usd < 0 then
+    raise exception 'Hourly rate must be zero or greater.';
+  end if;
+
+  if p_approved_hours is null or p_approved_hours < 0 then
+    raise exception 'Approved hours must be zero or greater.';
+  end if;
+
+  if not private.can_manage_project(p_project_id) then
+    raise exception 'Only a Founder or Owner can mark payments for this project.';
+  end if;
+
+  select cp.id, cp.status
+    into v_payment_id, v_previous_status
+  from public.collaborator_payments cp
+  where cp.project_id = p_project_id
+    and cp.user_id = p_user_id
+    and cp.hourly_rate_usd = p_hourly_rate_usd
+  order by cp.created_at desc
+  limit 1;
+
+  if v_payment_id is null then
+    insert into public.collaborator_payments (
+      project_id,
+      user_id,
+      hourly_rate_usd,
+      approved_hours,
+      status,
+      paid_at,
+      paid_by,
+      notes,
+      created_by
+    )
+    values (
+      p_project_id,
+      p_user_id,
+      p_hourly_rate_usd,
+      p_approved_hours,
+      'paid',
+      now(),
+      v_actor_id,
+      nullif(trim(coalesce(p_note, '')), ''),
+      v_actor_id
+    )
+    returning id into v_payment_id;
+  else
+    update public.collaborator_payments
+    set approved_hours = p_approved_hours,
+        status = 'paid',
+        paid_at = now(),
+        paid_by = v_actor_id,
+        notes = coalesce(nullif(trim(coalesce(p_note, '')), ''), notes)
+    where id = v_payment_id;
+  end if;
+
+  insert into public.collaborator_payment_history (
+    payment_id,
+    previous_status,
+    new_status,
+    changed_by,
+    note
+  )
+  values (
+    v_payment_id,
+    v_previous_status,
+    'paid',
+    v_actor_id,
+    nullif(trim(coalesce(p_note, '')), '')
+  );
+
+  return v_payment_id;
+end;
+$$;
+
 create or replace function public.accept_my_project_invites()
 returns integer
 language plpgsql
@@ -357,6 +676,7 @@ alter table public.projects enable row level security;
 alter table public.project_roles enable row level security;
 alter table public.deliverables enable row level security;
 alter table public.collaborator_payments enable row level security;
+alter table public.collaborator_payment_history enable row level security;
 
 drop policy if exists users_select_project_peers on public.users;
 create policy users_select_project_peers
@@ -502,6 +822,25 @@ for delete
 to authenticated
 using (private.is_platform_admin());
 
+drop policy if exists collaborator_payment_history_select_project_access on public.collaborator_payment_history;
+create policy collaborator_payment_history_select_project_access
+on public.collaborator_payment_history
+for select
+to authenticated
+using (
+  exists (
+    select 1
+    from public.collaborator_payments cp
+    where cp.id = collaborator_payment_history.payment_id
+      and (
+        private.is_platform_admin()
+        or private.is_global_founder()
+        or cp.user_id = (select private.current_user_id())
+        or (cp.project_id is not null and private.has_project_access(cp.project_id))
+      )
+  )
+);
+
 drop policy if exists work_logs_select_company_access on public.work_logs;
 drop policy if exists work_logs_select_company_or_project_access on public.work_logs;
 drop policy if exists work_logs_select_operating_access on public.work_logs;
@@ -552,6 +891,21 @@ grant usage on schema private to authenticated;
 grant execute on function private.is_global_founder() to authenticated;
 grant execute on function private.has_project_access(uuid) to authenticated;
 grant execute on function private.can_manage_project(uuid) to authenticated;
+grant execute on function public.upsert_project_deliverable(
+  uuid,
+  text,
+  text,
+  uuid,
+  date,
+  public.deliverable_status,
+  text,
+  text,
+  text,
+  text,
+  uuid
+) to authenticated;
+grant execute on function public.approve_project_deliverable(uuid) to authenticated;
+grant execute on function public.mark_collaborator_payment_paid(uuid, uuid, numeric, numeric, text) to authenticated;
 grant execute on function public.accept_my_project_invites() to authenticated;
 
 grant select, insert, update, delete on
@@ -560,6 +914,8 @@ grant select, insert, update, delete on
   public.deliverables,
   public.collaborator_payments
 to authenticated;
+
+grant select on public.collaborator_payment_history to authenticated;
 
 grant select on public.project_operating_summary to authenticated;
 
@@ -583,6 +939,11 @@ begin
 
     begin
       alter publication supabase_realtime add table public.collaborator_payments;
+    exception when duplicate_object then null;
+    end;
+
+    begin
+      alter publication supabase_realtime add table public.collaborator_payment_history;
     exception when duplicate_object then null;
     end;
   end if;

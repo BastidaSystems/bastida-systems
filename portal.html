@@ -11,20 +11,24 @@
   <style>
     :root {
       color-scheme: light;
-      --bg: #f7f8fb;
+      --bg: #f5f7fb;
       --surface: #ffffff;
-      --surface-muted: #f4f5f7;
-      --text: #111827;
-      --text-soft: #4b5563;
-      --muted: #6b7280;
-      --line: #e5e7eb;
-      --line-strong: #d1d5db;
-      --accent: #111827;
-      --success: #0f766e;
-      --warning: #92400e;
-      --danger: #b91c1c;
+      --surface-muted: #f8fafc;
+      --surface-strong: #f1f5f9;
+      --text: #0f172a;
+      --text-soft: #334155;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --line-strong: #cbd5e1;
+      --accent: #1d4ed8;
+      --accent-strong: #172554;
+      --success: #047857;
+      --warning: #b45309;
+      --danger: #dc2626;
+      --info: #2563eb;
       --radius: 8px;
-      --shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+      --shadow-soft: 0 1px 2px rgba(15, 23, 42, 0.08);
     }
 
     * {
@@ -58,7 +62,7 @@
 
     .app-shell {
       display: grid;
-      grid-template-columns: 248px minmax(0, 1fr);
+      grid-template-columns: 260px minmax(0, 1fr);
       min-height: 100vh;
     }
 
@@ -67,12 +71,12 @@
       top: 0;
       height: 100vh;
       border-right: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.88);
+      background: rgba(255, 255, 255, 0.9);
       backdrop-filter: blur(18px);
-      padding: 22px 16px;
+      padding: 24px 16px;
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 26px;
     }
 
     .brand {
@@ -88,10 +92,11 @@
       place-items: center;
       width: 34px;
       height: 34px;
-      border: 1px solid var(--line);
+      border: 1px solid rgba(29, 78, 216, 0.18);
       border-radius: var(--radius);
-      background: var(--surface);
-      box-shadow: var(--shadow);
+      background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+      color: var(--accent-strong);
+      box-shadow: var(--shadow-soft);
       font-weight: 700;
       font-size: 13px;
     }
@@ -128,20 +133,22 @@
       border-radius: var(--radius);
       background: transparent;
       color: var(--text-soft);
-      padding: 9px 10px;
+      padding: 10px 11px;
       text-align: left;
       font-size: 14px;
       font-weight: 600;
+      transition: background 160ms ease, color 160ms ease, transform 160ms ease;
     }
 
     .nav-button:hover {
-      background: var(--surface-muted);
+      background: #eef4ff;
       color: var(--text);
     }
 
     .nav-button.is-active {
-      background: #111827;
+      background: #0f172a;
       color: #ffffff;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.18);
     }
 
     .nav-count {
@@ -171,7 +178,7 @@
 
     .main {
       min-width: 0;
-      padding: 24px 28px 42px;
+      padding: 26px 30px 46px;
     }
 
     .topbar {
@@ -180,7 +187,7 @@
       justify-content: space-between;
       gap: 16px;
       min-height: 44px;
-      margin-bottom: 28px;
+      margin-bottom: 26px;
     }
 
     .page-kicker {
@@ -196,7 +203,7 @@
       margin: 3px 0 0;
       font-size: clamp(26px, 4vw, 38px);
       line-height: 1.08;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.01em;
     }
 
     .page-copy {
@@ -204,7 +211,7 @@
       margin: 10px 0 0;
       color: var(--text-soft);
       font-size: 15px;
-      line-height: 1.65;
+      line-height: 1.6;
     }
 
     .profile {
@@ -252,17 +259,36 @@
       text-decoration: none;
       font-size: 14px;
       font-weight: 700;
-      box-shadow: var(--shadow);
+      box-shadow: var(--shadow-soft);
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, color 160ms ease;
     }
 
     .button:hover {
       border-color: #9ca3af;
+      transform: translateY(-1px);
     }
 
     .button-primary {
       border-color: var(--accent);
       background: var(--accent);
       color: #ffffff;
+    }
+
+    .button-ghost {
+      border-color: transparent;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .button-small {
+      min-height: 32px;
+      padding: 0 10px;
+      font-size: 12px;
+    }
+
+    .button-danger {
+      border-color: rgba(220, 38, 38, 0.2);
+      color: var(--danger);
     }
 
     .button:disabled {
@@ -295,7 +321,8 @@
     }
 
     .field input,
-    .field select {
+    .field select,
+    .field textarea {
       width: 100%;
       min-height: 42px;
       border: 1px solid var(--line-strong);
@@ -306,10 +333,18 @@
       outline: none;
     }
 
+    .field textarea {
+      min-height: 86px;
+      padding: 10px 12px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
     .field input:focus,
-    .field select:focus {
-      border-color: #111827;
-      box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.08);
+    .field select:focus,
+    .field textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1);
     }
 
     .field-hint {
@@ -359,6 +394,10 @@
       border-radius: var(--radius);
       background: var(--surface);
       box-shadow: 0 24px 70px rgba(15, 23, 42, 0.2);
+    }
+
+    .modal-wide {
+      width: min(100%, 760px);
     }
 
     .modal-header,
@@ -422,17 +461,27 @@
     .metrics {
       display: grid;
       grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 12px;
+      gap: 14px;
       margin-top: 26px;
     }
 
     .metric {
-      border: 1px solid var(--line);
+      position: relative;
+      border: 1px solid rgba(226, 232, 240, 0.9);
       border-radius: var(--radius);
       background: var(--surface);
-      padding: 17px;
+      padding: 18px;
       box-shadow: var(--shadow);
       min-width: 0;
+      overflow: hidden;
+    }
+
+    .metric::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), rgba(29, 78, 216, 0));
     }
 
     .metric-label {
@@ -447,8 +496,8 @@
     .metric-value {
       margin: 12px 0 0;
       color: var(--text);
-      font-size: 28px;
-      font-weight: 750;
+      font-size: 30px;
+      font-weight: 760;
       letter-spacing: -0.02em;
       line-height: 1;
     }
@@ -465,10 +514,19 @@
       grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
       gap: 16px;
       margin-top: 16px;
+      align-items: start;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(300px, 380px);
+      gap: 16px;
+      margin-top: 16px;
+      align-items: start;
     }
 
     .panel {
-      border: 1px solid var(--line);
+      border: 1px solid rgba(226, 232, 240, 0.95);
       border-radius: var(--radius);
       background: var(--surface);
       box-shadow: var(--shadow);
@@ -485,7 +543,8 @@
       justify-content: space-between;
       gap: 16px;
       border-bottom: 1px solid var(--line);
-      padding: 15px 16px;
+      padding: 16px 18px;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
     }
 
     .panel-title {
@@ -509,20 +568,52 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 720px;
+      min-width: 780px;
+    }
+
+    .table-compact {
+      min-width: 0;
+      table-layout: fixed;
+    }
+
+    .table-compact th:nth-child(1),
+    .table-compact td:nth-child(1) {
+      width: 74px;
+    }
+
+    .table-compact th:nth-child(2),
+    .table-compact td:nth-child(2) {
+      width: 110px;
+    }
+
+    .table-compact th:nth-child(4),
+    .table-compact td:nth-child(4),
+    .table-compact th:nth-child(5),
+    .table-compact td:nth-child(5) {
+      width: 86px;
+    }
+
+    .table-compact th:nth-child(6),
+    .table-compact td:nth-child(6) {
+      width: 132px;
+    }
+
+    .table-compact th:nth-child(7),
+    .table-compact td:nth-child(7) {
+      width: 136px;
     }
 
     th,
     td {
       border-bottom: 1px solid var(--line);
-      padding: 13px 16px;
+      padding: 14px 18px;
       text-align: left;
-      vertical-align: top;
+      vertical-align: middle;
     }
 
     th {
       color: var(--muted);
-      background: #fbfbfc;
+      background: #f8fafc;
       font-size: 11px;
       font-weight: 800;
       letter-spacing: 0.08em;
@@ -533,6 +624,14 @@
       color: var(--text-soft);
       font-size: 14px;
       line-height: 1.45;
+    }
+
+    tbody tr {
+      transition: background 140ms ease;
+    }
+
+    tbody tr:hover {
+      background: #f8fbff;
     }
 
     tr:last-child td {
@@ -554,6 +653,22 @@
       line-height: 1.4;
     }
 
+    .truncate {
+      max-width: 340px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .cell-subtitle.truncate {
+      display: block;
+    }
+
+    .cell-muted {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
     .status {
       display: inline-flex;
       align-items: center;
@@ -561,7 +676,7 @@
       border-radius: 999px;
       background: #fafafa;
       color: var(--text-soft);
-      padding: 3px 9px;
+      padding: 4px 10px;
       font-size: 12px;
       font-weight: 700;
       white-space: nowrap;
@@ -577,6 +692,7 @@
       color: var(--success);
     }
 
+    .status-delivered,
     .status-paused,
     .status-pending,
     .status-pending_approval,
@@ -586,6 +702,13 @@
       border-color: rgba(146, 64, 14, 0.18);
       background: rgba(146, 64, 14, 0.07);
       color: var(--warning);
+    }
+
+    .status-planned,
+    .status-draft {
+      border-color: rgba(37, 99, 235, 0.18);
+      background: rgba(37, 99, 235, 0.07);
+      color: var(--info);
     }
 
     .status-archived,
@@ -621,7 +744,7 @@
       display: grid;
       place-items: center;
       min-height: 240px;
-      padding: 38px 20px;
+      padding: 42px 20px;
       text-align: center;
     }
 
@@ -643,6 +766,200 @@
       color: var(--muted);
       font-size: 13px;
       line-height: 1.55;
+    }
+
+    .empty-copy-flush {
+      margin: 0;
+    }
+
+    .empty-icon {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      margin: 0 auto 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface-muted);
+      color: var(--accent);
+      font-weight: 800;
+    }
+
+    .link-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .link-chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--accent);
+      padding: 0 9px;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .activity-feed {
+      display: grid;
+      gap: 0;
+    }
+
+    .activity-item {
+      display: grid;
+      grid-template-columns: 10px minmax(0, 1fr);
+      gap: 12px;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .activity-item:last-child {
+      border-bottom: 0;
+    }
+
+    .activity-dot {
+      width: 9px;
+      height: 9px;
+      margin-top: 5px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 4px rgba(29, 78, 216, 0.1);
+    }
+
+    .activity-title {
+      margin: 0;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 750;
+      line-height: 1.35;
+    }
+
+    .activity-meta {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .organization-tree {
+      display: grid;
+      gap: 14px;
+      padding: 18px;
+    }
+
+    .org-root {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      border: 1px solid rgba(29, 78, 216, 0.18);
+      border-radius: var(--radius);
+      background: #eff6ff;
+      color: var(--accent-strong);
+      padding: 9px 12px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .org-project {
+      border-left: 2px solid var(--line);
+      padding-left: 16px;
+    }
+
+    .org-project-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
+    }
+
+    .org-project-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface-muted);
+    }
+
+    .org-project-title {
+      margin: 0;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .org-role-row {
+      display: grid;
+      grid-template-columns: 170px minmax(0, 1fr);
+      gap: 14px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .org-role-row:last-child {
+      border-bottom: 0;
+    }
+
+    .person-stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .person-chip {
+      display: inline-flex;
+      flex-direction: column;
+      gap: 1px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      padding: 7px 9px;
+      min-width: 150px;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .detail-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface-muted);
+      padding: 12px;
+    }
+
+    .detail-label {
+      margin: 0;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    .detail-value {
+      margin: 6px 0 0;
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 750;
+      line-height: 1.35;
+    }
+
+    .detail-card-spaced {
+      margin-top: 12px;
+    }
+
+    .detail-card-body {
+      margin-top: 8px;
     }
 
     .error-state {
@@ -727,7 +1044,8 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
-      .content-grid {
+      .content-grid,
+      .dashboard-grid {
         grid-template-columns: 1fr;
       }
     }
@@ -771,6 +1089,11 @@
         flex-direction: column;
       }
 
+      .detail-grid,
+      .org-role-row {
+        grid-template-columns: 1fr;
+      }
+
       table {
         min-width: 640px;
       }
@@ -796,6 +1119,7 @@
         dashboard: 'Dashboard',
         people: 'People',
         projects: 'Projects',
+        organization: 'Organization',
         deliverables: 'Deliverables',
         workLogs: 'Work Logs',
         payments: 'Payments'
@@ -817,6 +1141,7 @@
         deliverables: [],
         workLogs: [],
         payments: [],
+        paymentHistory: [],
         invite: {
           isOpen: false,
           isSubmitting: false,
@@ -829,8 +1154,22 @@
           message: '',
           type: ''
         },
+        deliverableEditor: {
+          isOpen: false,
+          deliverableId: null,
+          isSubmitting: false,
+          message: '',
+          type: ''
+        },
         workLog: {
           isOpen: false,
+          isSubmitting: false,
+          message: '',
+          type: ''
+        },
+        approval: {
+          isOpen: false,
+          logId: null,
           isSubmitting: false,
           message: '',
           type: ''
@@ -841,6 +1180,11 @@
           isSubmitting: false,
           message: '',
           type: ''
+        },
+        detail: {
+          isOpen: false,
+          kind: '',
+          id: ''
         },
         isLoading: true,
         error: null
@@ -925,7 +1269,7 @@
         state.profile = profileResult.data;
         await acceptPendingInvites();
 
-        const [projects, roles, deliverables, workLogs, payments] = await Promise.all([
+        const [projects, roles, deliverables, workLogs, payments, paymentHistory] = await Promise.all([
           state.client
             .from('projects')
             .select('id, company_id, slug, name, description, status, created_at, updated_at')
@@ -936,16 +1280,20 @@
             .order('joined_at', { ascending: false }),
           state.client
             .from('deliverables')
-            .select('id, project_id, title, description, status, due_date, delivered_at, created_at, project:projects!deliverables_project_id_fkey(id, name)')
+            .select('id, project_id, title, description, storage_path, status, due_date, delivered_at, responsible_user_id, figma_url, google_drive_url, document_url, evidence_url, approved_by, approved_at, created_by, created_at, updated_at, project:projects!deliverables_project_id_fkey(id, name), responsible:users!deliverables_responsible_user_id_fkey(id, full_name, email), creator:users!deliverables_created_by_fkey(id, full_name, email), approver:users!deliverables_approved_by_fkey(id, full_name, email)')
             .order('created_at', { ascending: false }),
           state.client
             .from('work_logs')
-            .select('id, company_id, project_id, title, description, category, work_type, work_date, hours_used, approved_hours, evidence_url, commit_hash, status, is_billable, submitted_at, approved_by, approved_at, rejected_by, rejected_at, rejection_reason, worker_user_id, worker:users!work_logs_worker_user_id_fkey(id, full_name, email), project:projects!work_logs_project_id_fkey(id, name, status, company_id)')
+            .select('id, company_id, project_id, title, description, category, work_type, work_date, hours_used, approved_hours, evidence_url, commit_hash, status, is_billable, submitted_at, approved_by, approved_at, rejected_by, rejected_at, rejection_reason, worker_user_id, worker:users!work_logs_worker_user_id_fkey(id, full_name, email), approver:users!work_logs_approved_by_fkey(id, full_name, email), rejecter:users!work_logs_rejected_by_fkey(id, full_name, email), project:projects!work_logs_project_id_fkey(id, name, status, company_id)')
             .order('work_date', { ascending: false }),
           state.client
             .from('collaborator_payments')
-            .select('id, project_id, user_id, hourly_rate_usd, approved_hours, total_usd, status, paid_at, created_at, collaborator:users!collaborator_payments_user_id_fkey(id, full_name, email), project:projects!collaborator_payments_project_id_fkey(id, name)')
-            .order('created_at', { ascending: false })
+            .select('id, project_id, user_id, hourly_rate_usd, approved_hours, total_usd, status, paid_at, paid_by, notes, created_at, updated_at, collaborator:users!collaborator_payments_user_id_fkey(id, full_name, email), payer:users!collaborator_payments_paid_by_fkey(id, full_name, email), project:projects!collaborator_payments_project_id_fkey(id, name)')
+            .order('created_at', { ascending: false }),
+          state.client
+            .from('collaborator_payment_history')
+            .select('id, payment_id, previous_status, new_status, changed_by, changed_at, note, actor:users!collaborator_payment_history_changed_by_fkey(id, full_name, email), payment:collaborator_payments!collaborator_payment_history_payment_id_fkey(id, project_id, user_id, total_usd, project:projects!collaborator_payments_project_id_fkey(id, name), collaborator:users!collaborator_payments_user_id_fkey(id, full_name, email))')
+            .order('changed_at', { ascending: false })
         ]);
 
         assertQuery('projects', projects);
@@ -953,12 +1301,14 @@
         assertQuery('deliverables', deliverables);
         assertQuery('work_logs', workLogs);
         assertQuery('collaborator_payments', payments);
+        assertQuery('collaborator_payment_history', paymentHistory);
 
         state.projects = projects.data || [];
         state.projectRoles = roles.data || [];
         state.deliverables = deliverables.data || [];
         state.workLogs = workLogs.data || [];
         state.payments = payments.data || [];
+        state.paymentHistory = paymentHistory.data || [];
         state.isLoading = false;
       }
 
@@ -1020,7 +1370,7 @@
       function formatOperationalError(error) {
         const message = error?.message || 'Unknown Supabase error.';
 
-        if (/projects|project_roles|deliverables|collaborator_payments|work_logs/i.test(message)) {
+        if (/projects|project_roles|deliverables|collaborator_payments|collaborator_payment_history|work_logs/i.test(message)) {
           return `${message}. Run supabase/bastida_operating_system_schema.sql in Supabase SQL Editor, then refresh.`;
         }
 
@@ -1074,6 +1424,9 @@
               <section class="view ${state.activeView === 'projects' ? 'is-active' : ''}" data-view="projects">
                 ${renderProjects()}
               </section>
+              <section class="view ${state.activeView === 'organization' ? 'is-active' : ''}" data-view="organization">
+                ${renderOrganization()}
+              </section>
               <section class="view ${state.activeView === 'deliverables' ? 'is-active' : ''}" data-view="deliverables">
                 ${renderDeliverables()}
               </section>
@@ -1086,8 +1439,11 @@
             </main>
             ${state.invite.isOpen ? renderInviteModal() : ''}
             ${state.createProject.isOpen ? renderCreateProjectModal() : ''}
+            ${state.deliverableEditor.isOpen ? renderDeliverableModal() : ''}
             ${state.workLog.isOpen ? renderWorkLogModal() : ''}
+            ${state.approval.isOpen ? renderApproveLogModal() : ''}
             ${state.rejection.isOpen ? renderRejectModal() : ''}
+            ${state.detail.isOpen ? renderDetailsModal() : ''}
           </div>
         `;
 
@@ -1141,6 +1497,16 @@
           });
         });
 
+        app.querySelectorAll('[data-open-deliverable]').forEach((button) => {
+          button.addEventListener('click', () => {
+            state.deliverableEditor.isOpen = true;
+            state.deliverableEditor.deliverableId = button.dataset.openDeliverable || null;
+            state.deliverableEditor.message = '';
+            state.deliverableEditor.type = '';
+            renderApp();
+          });
+        });
+
         app.querySelectorAll('[data-close-invite]').forEach((button) => {
           button.addEventListener('click', () => {
             state.invite.isOpen = false;
@@ -1165,6 +1531,24 @@
           });
         });
 
+        app.querySelectorAll('[data-close-deliverable]').forEach((button) => {
+          button.addEventListener('click', () => {
+            state.deliverableEditor.isOpen = false;
+            state.deliverableEditor.deliverableId = null;
+            state.deliverableEditor.isSubmitting = false;
+            renderApp();
+          });
+        });
+
+        app.querySelectorAll('[data-close-approval]').forEach((button) => {
+          button.addEventListener('click', () => {
+            state.approval.isOpen = false;
+            state.approval.logId = null;
+            state.approval.isSubmitting = false;
+            renderApp();
+          });
+        });
+
         app.querySelectorAll('[data-close-reject]').forEach((button) => {
           button.addEventListener('click', () => {
             state.rejection.isOpen = false;
@@ -1176,11 +1560,45 @@
 
         app.querySelector('[data-invite-form]')?.addEventListener('submit', handleInviteSubmit);
         app.querySelector('[data-create-project-form]')?.addEventListener('submit', handleCreateProjectSubmit);
+        app.querySelector('[data-deliverable-form]')?.addEventListener('submit', handleDeliverableSubmit);
         app.querySelector('[data-work-log-form]')?.addEventListener('submit', handleWorkLogSubmit);
+        app.querySelector('[data-approve-log-form]')?.addEventListener('submit', handleApproveWorkLogSubmit);
         app.querySelector('[data-reject-form]')?.addEventListener('submit', handleRejectSubmit);
 
-        app.querySelectorAll('[data-approve-log]').forEach((button) => {
-          button.addEventListener('click', () => handleApproveWorkLog(button.dataset.approveLog));
+        app.querySelectorAll('[data-open-approve-log]').forEach((button) => {
+          button.addEventListener('click', () => {
+            state.approval.isOpen = true;
+            state.approval.logId = button.dataset.openApproveLog;
+            state.approval.message = '';
+            state.approval.type = '';
+            renderApp();
+          });
+        });
+
+        app.querySelectorAll('[data-approve-deliverable]').forEach((button) => {
+          button.addEventListener('click', () => handleApproveDeliverable(button.dataset.approveDeliverable));
+        });
+
+        app.querySelectorAll('[data-mark-paid]').forEach((button) => {
+          button.addEventListener('click', () => handleMarkPaymentPaid(button.dataset.markPaid));
+        });
+
+        app.querySelectorAll('[data-detail-kind]').forEach((button) => {
+          button.addEventListener('click', () => {
+            state.detail.isOpen = true;
+            state.detail.kind = button.dataset.detailKind;
+            state.detail.id = button.dataset.detailId;
+            renderApp();
+          });
+        });
+
+        app.querySelectorAll('[data-close-detail]').forEach((button) => {
+          button.addEventListener('click', () => {
+            state.detail.isOpen = false;
+            state.detail.kind = '';
+            state.detail.id = '';
+            renderApp();
+          });
         });
 
         app.querySelectorAll('[data-reject-log]').forEach((button) => {
@@ -1366,7 +1784,89 @@
         }
       }
 
-      async function handleApproveWorkLog(logId) {
+      async function handleDeliverableSubmit(event) {
+        event.preventDefault();
+        const form = event.currentTarget;
+        const formData = new FormData(form);
+        const deliverableId = state.deliverableEditor.deliverableId;
+        const projectId = String(formData.get('project_id') || '').trim();
+        const title = String(formData.get('title') || '').trim();
+        const status = String(formData.get('status') || 'planned').trim();
+        const responsibleUserId = String(formData.get('responsible_user_id') || '').trim() || null;
+
+        state.deliverableEditor.isSubmitting = true;
+        state.deliverableEditor.message = '';
+        state.deliverableEditor.type = '';
+        renderApp();
+
+        try {
+          if (!projectId) {
+            throw new Error('Project is required.');
+          }
+
+          if (!title) {
+            throw new Error('Title is required.');
+          }
+
+          const { error } = await state.client.rpc('upsert_project_deliverable', {
+            p_project_id: projectId,
+            p_title: title,
+            p_description: String(formData.get('description') || '').trim() || null,
+            p_responsible_user_id: responsibleUserId,
+            p_due_date: String(formData.get('due_date') || '').trim() || null,
+            p_status: status,
+            p_figma_url: String(formData.get('figma_url') || '').trim() || null,
+            p_google_drive_url: String(formData.get('google_drive_url') || '').trim() || null,
+            p_document_url: String(formData.get('document_url') || '').trim() || null,
+            p_evidence_url: String(formData.get('evidence_url') || '').trim() || null,
+            p_deliverable_id: deliverableId || null
+          });
+
+          if (error) {
+            throw error;
+          }
+
+          await loadPortalData();
+          state.activeView = 'deliverables';
+          state.deliverableEditor.isOpen = false;
+          state.deliverableEditor.deliverableId = null;
+          state.deliverableEditor.isSubmitting = false;
+          renderApp();
+        } catch (error) {
+          state.deliverableEditor.isOpen = true;
+          state.deliverableEditor.isSubmitting = false;
+          state.deliverableEditor.type = 'error';
+          state.deliverableEditor.message = error instanceof Error ? error.message : 'Error saving deliverable';
+          renderApp();
+        }
+      }
+
+      async function handleApproveWorkLogSubmit(event) {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        const log = state.workLogs.find((item) => item.id === state.approval.logId);
+        const approvedHours = Number(formData.get('approved_hours'));
+
+        if (!log || !canReviewWorkLog(log)) {
+          return;
+        }
+
+        if (!Number.isFinite(approvedHours) || approvedHours < 0 || approvedHours > toNumber(log.hours_used)) {
+          state.approval.message = `Approved hours must be between 0 and ${formatHours(log.hours_used)}.`;
+          state.approval.type = 'error';
+          renderApp();
+          return;
+        }
+
+        state.approval.isSubmitting = true;
+        state.approval.message = '';
+        state.approval.type = '';
+        renderApp();
+
+        await handleApproveWorkLog(log.id, approvedHours);
+      }
+
+      async function handleApproveWorkLog(logId, approvedHours) {
         const log = state.workLogs.find((item) => item.id === logId);
         if (!log || !canReviewWorkLog(log)) {
           return;
@@ -1378,7 +1878,7 @@
             status: 'approved',
             approved_by: state.profile.id,
             approved_at: new Date().toISOString(),
-            approved_hours: toNumber(log.hours_used),
+            approved_hours: approvedHours,
             rejected_by: null,
             rejected_at: null,
             rejection_reason: null
@@ -1386,10 +1886,63 @@
           .eq('id', log.id);
 
         if (error) {
-          state.rejection.isOpen = true;
-          state.rejection.logId = log.id;
-          state.rejection.type = 'error';
-          state.rejection.message = error.message;
+          state.approval.isOpen = true;
+          state.approval.logId = log.id;
+          state.approval.isSubmitting = false;
+          state.approval.type = 'error';
+          state.approval.message = error.message;
+          renderApp();
+          return;
+        }
+
+        await loadPortalData();
+        state.approval.isOpen = false;
+        state.approval.logId = null;
+        state.approval.isSubmitting = false;
+        renderApp();
+      }
+
+      async function handleApproveDeliverable(deliverableId) {
+        const deliverable = state.deliverables.find((item) => item.id === deliverableId);
+        if (!deliverable || !canManageProject(deliverable.project_id)) {
+          return;
+        }
+
+        const { error } = await state.client.rpc('approve_project_deliverable', {
+          p_deliverable_id: deliverable.id
+        });
+
+        if (error) {
+          state.deliverableEditor.isOpen = true;
+          state.deliverableEditor.deliverableId = deliverable.id;
+          state.deliverableEditor.type = 'error';
+          state.deliverableEditor.message = error.message;
+          renderApp();
+          return;
+        }
+
+        await loadPortalData();
+        renderApp();
+      }
+
+      async function handleMarkPaymentPaid(paymentKey) {
+        const payment = findPayableRow(paymentKey);
+        if (!payment || !canMarkPaymentPaid(payment)) {
+          return;
+        }
+
+        const { error } = await state.client.rpc('mark_collaborator_payment_paid', {
+          p_project_id: payment.project_id,
+          p_user_id: payment.user_id,
+          p_hourly_rate_usd: toNumber(payment.hourly_rate_usd),
+          p_approved_hours: toNumber(payment.approved_hours),
+          p_note: 'Marked as paid from Bastida OS'
+        });
+
+        if (error) {
+          state.detail.isOpen = true;
+          state.detail.kind = 'payment-error';
+          state.detail.id = error.message;
           renderApp();
           return;
         }
@@ -1473,26 +2026,27 @@
       function renderDashboard() {
         const people = buildPeople();
         const payableRows = buildPayableRows();
+        const activity = buildActivityItems().slice(0, 8);
         const approvedHours = state.workLogs
           .filter((log) => log.status === 'approved')
           .reduce((total, log) => total + toNumber(log.approved_hours), 0);
         const payable = payableRows.reduce((total, payment) => total + toNumber(payment.total_usd), 0);
 
         return `
-          <p class="page-copy">A live operating view of collaborators, project assignments, approved hours, and payment obligations from Supabase.</p>
+          <p class="page-copy">${isGlobalFounderOrAdmin() ? 'Founder-level operating view across all visible projects, collaborators, approved hours, deliverables, and payment obligations.' : 'A live operating view of your projects, collaborators, approved hours, deliverables, and payment obligations.'}</p>
           <div class="metrics">
-            ${metricCard('Projects', state.projects.length, 'Real project records visible to this user.')}
-            ${metricCard('Collaborators', people.length, 'Active people assigned to at least one project.')}
-            ${metricCard('Deliverables', state.deliverables.length, 'Real deliverable records visible to this user.')}
-            ${metricCard('Approved hours', formatHours(approvedHours), 'Approved hours from approved work logs.')}
-            ${metricCard('Payable total', formatMoney(payable), 'Approved hours multiplied by USD hourly rates.')}
+            ${metricCard('Total projects', state.projects.length, 'Projects visible through real project roles.')}
+            ${metricCard('Total collaborators', people.length, 'Active people assigned to visible projects.')}
+            ${metricCard('Total deliverables', state.deliverables.length, 'Live deliverable records from Supabase.')}
+            ${metricCard('Approved hours', formatHours(approvedHours), 'Payable hours approved by owners or founders.')}
+            ${metricCard('Total payments', formatMoney(payable), 'Approved hours multiplied by hourly rates.')}
           </div>
-          <div class="content-grid">
+          <div class="dashboard-grid">
             <section class="panel">
               <div class="panel-header">
                 <div>
                   <h2 class="panel-title">Recent work logs</h2>
-                  <p class="panel-subtitle">Latest time entries from real records.</p>
+                  <p class="panel-subtitle">Latest time entries with reported and approved hours.</p>
                 </div>
               </div>
               ${state.workLogs.length ? renderWorkLogTable(state.workLogs.slice(0, 6), true) : emptyState('No work logs yet', 'Approved work history will appear here after records exist in Supabase.', true)}
@@ -1500,17 +2054,27 @@
             <section class="panel">
               <div class="panel-header">
                 <div>
-                  <h2 class="panel-title">Deliverables</h2>
-                  <p class="panel-subtitle">Project delivery records from Supabase.</p>
+                  <h2 class="panel-title">Activity Feed</h2>
+                  <p class="panel-subtitle">Chronological operating activity from real records.</p>
                 </div>
+              </div>
+              ${activity.length ? renderActivityFeed(activity) : emptyState('No activity yet', 'Activity will appear after work logs, deliverables, and payments are created.', true)}
+            </section>
+            <section class="panel panel-wide">
+              <div class="panel-header">
+                <div>
+                  <h2 class="panel-title">Deliverables</h2>
+                  <p class="panel-subtitle">Project delivery records with evidence links.</p>
+                </div>
+                ${canCreateDeliverables() ? '<button class="button button-small button-primary" type="button" data-open-deliverable>+ Create Deliverable</button>' : ''}
               </div>
               ${state.deliverables.length ? renderDeliverableTable(state.deliverables.slice(0, 6), true) : emptyState('No deliverables yet', 'Deliverables will appear here after records exist in Supabase.', true)}
             </section>
             <section class="panel panel-wide">
               <div class="panel-header">
                 <div>
-                  <h2 class="panel-title">Open payments</h2>
-                  <p class="panel-subtitle">Approved payable work by collaborator and project.</p>
+                  <h2 class="panel-title">Payments</h2>
+                  <p class="panel-subtitle">Calculated from approved hours and enriched with payment status.</p>
                 </div>
               </div>
               ${payableRows.length ? renderPaymentTable(payableRows.slice(0, 6), true) : emptyState('No payments yet', 'Approved payable work will appear here after owners approve submitted hours.', true)}
@@ -1562,12 +2126,31 @@
         `;
       }
 
+      function renderOrganization() {
+        const activeProjects = state.projects.filter((project) => project.status !== 'archived');
+
+        return `
+          <div class="toolbar">
+            <div>
+              <h2 class="toolbar-title">Organization</h2>
+              <p class="toolbar-copy">Live hierarchy from project_roles. No project or role names are hardcoded.</p>
+            </div>
+          </div>
+          <section class="panel">
+            ${activeProjects.length ? renderOrganizationTree(activeProjects) : emptyState('No organization yet', 'Projects and project roles will appear here after real records exist in Supabase.')}
+          </section>
+        `;
+      }
+
       function renderDeliverables() {
         return `
           <div class="toolbar">
             <div>
               <h2 class="toolbar-title">Deliverables</h2>
-              <p class="toolbar-copy">Project deliverables are listed only when real records exist in Supabase.</p>
+              <p class="toolbar-copy">Create, edit, approve, and review evidence links for real project deliverables.</p>
+            </div>
+            <div class="section-actions">
+              ${canCreateDeliverables() ? '<button class="button button-primary" type="button" data-open-deliverable>+ Create Deliverable</button>' : ''}
             </div>
           </div>
           <section class="panel">
@@ -1616,10 +2199,13 @@
               <thead>
                 <tr>
                   <th>Collaborator</th>
-                  <th>Project roles</th>
+                  <th>Visible Role</th>
                   <th>Projects</th>
+                  <th>Approved Hours</th>
+                  <th>Total Earned</th>
+                  <th>Completed</th>
                   <th>Status</th>
-                  <th>Default role</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -1629,14 +2215,16 @@
                       <span class="cell-title">${escapeHtml(person.name)}</span>
                       <span class="cell-subtitle">${escapeHtml(person.email)}</span>
                     </td>
+                    <td><span class="role-pill">${escapeHtml(person.headline)}</span></td>
                     <td>
-                      <div class="role-list">
-                        ${person.roles.map((role) => `<span class="role-pill">${escapeHtml(roleLabel(role))}</span>`).join('')}
-                      </div>
+                      <span class="cell-title">${person.projects.length}</span>
+                      <span class="cell-subtitle truncate">${escapeHtml(person.projectNames.join(', ') || '-')}</span>
                     </td>
-                    <td>${person.projects.length}</td>
+                    <td>${formatHours(person.approvedHours)}</td>
+                    <td>${formatMoney(person.totalEarned)}</td>
+                    <td>${person.completedDeliverables}</td>
                     <td>${statusPill(person.status)}</td>
-                    <td>${escapeHtml(roleLabel(person.defaultRole))}</td>
+                    <td>${person.userId ? `<button class="button button-small" type="button" data-detail-kind="collaborator" data-detail-id="${escapeAttr(person.userId)}">View Details</button>` : '-'}</td>
                   </tr>
                 `).join('')}
               </tbody>
@@ -1654,27 +2242,32 @@
                   <th>Project</th>
                   <th>Status</th>
                   <th>Collaborators</th>
-                  <th>Logged hours</th>
+                  <th>Approved hours</th>
+                  <th>Deliverables</th>
                   <th>Updated</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 ${state.projects.map((project) => {
                   const roles = state.projectRoles.filter((role) => role.project_id === project.id);
                   const hours = state.workLogs
-                    .filter((log) => log.project_id === project.id)
-                    .reduce((total, log) => total + toNumber(log.hours_used), 0);
+                    .filter((log) => log.project_id === project.id && log.status === 'approved')
+                    .reduce((total, log) => total + toNumber(log.approved_hours), 0);
+                  const deliverables = state.deliverables.filter((deliverable) => deliverable.project_id === project.id);
 
                   return `
                     <tr>
                       <td>
                         <span class="cell-title">${escapeHtml(project.name)}</span>
-                        <span class="cell-subtitle">${escapeHtml(project.description || project.slug || '')}</span>
+                        <span class="cell-subtitle truncate">${escapeHtml(project.description || project.slug || '')}</span>
                       </td>
                       <td>${statusPill(project.status)}</td>
                       <td>${roles.length}</td>
                       <td>${formatHours(hours)}</td>
+                      <td>${deliverables.length}</td>
                       <td>${formatDate(project.updated_at || project.created_at)}</td>
+                      <td><button class="button button-small" type="button" data-detail-kind="project" data-detail-id="${escapeAttr(project.id)}">View Details</button></td>
                     </tr>
                   `;
                 }).join('')}
@@ -1692,9 +2285,11 @@
                 <tr>
                   <th>Deliverable</th>
                   <th>Project</th>
+                  <th>Responsible</th>
                   <th>Due date</th>
-                  <th>Delivered</th>
                   <th>Status</th>
+                  <th>Evidence</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -1702,12 +2297,17 @@
                   <tr>
                     <td>
                       <span class="cell-title">${escapeHtml(deliverable.title)}</span>
-                      <span class="cell-subtitle">${escapeHtml(deliverable.description || '')}</span>
+                      <span class="cell-subtitle truncate">${escapeHtml(deliverable.description || '')}</span>
                     </td>
                     <td>${escapeHtml(deliverable.project?.name || 'Unassigned')}</td>
+                    <td>
+                      <span class="cell-title">${escapeHtml(deliverable.responsible?.full_name || deliverable.responsible?.email || '-')}</span>
+                      <span class="cell-subtitle truncate">${escapeHtml(deliverable.responsible?.email || '')}</span>
+                    </td>
                     <td>${formatDate(deliverable.due_date)}</td>
-                    <td>${formatDate(deliverable.delivered_at)}</td>
                     <td>${statusPill(deliverable.status)}</td>
+                    <td>${renderEvidenceLinks(deliverable)}</td>
+                    <td>${renderDeliverableActions(deliverable, compact)}</td>
                   </tr>
                 `).join('')}
               </tbody>
@@ -1719,19 +2319,17 @@
       function renderWorkLogTable(logs, compact = false) {
         return `
           <div class="table-wrap">
-            <table>
+            <table class="${compact ? 'table-compact' : ''}">
               <thead>
                 <tr>
                   <th>Date</th>
                   <th>Project</th>
-                  <th>Worker</th>
-                  <th>Work Type</th>
+                  ${compact ? '' : '<th>Worker</th>'}
                   <th>Title</th>
-                  <th>Hours</th>
-                  <th>Approved Hours</th>
+                  <th>Reported</th>
+                  <th>Approved</th>
                   <th>Status</th>
-                  <th>Evidence</th>
-                  <th>Commit</th>
+                  ${compact ? '' : '<th>Evidence</th>'}
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -1742,20 +2340,22 @@
                     <td>
                       <span class="cell-title">${escapeHtml(log.project?.name || 'Unassigned')}</span>
                     </td>
+                    ${compact ? '' : `
                     <td>
                       <span class="cell-title">${escapeHtml(log.worker?.full_name || log.worker?.email || 'Unknown')}</span>
                       <span class="cell-subtitle">${escapeHtml(log.worker?.email || '')}</span>
                     </td>
-                    <td>${escapeHtml(log.work_type || log.category || '-')}</td>
+                    `}
                     <td>
                       <span class="cell-title">${escapeHtml(log.title || 'Work log')}</span>
-                      <span class="cell-subtitle">${escapeHtml(log.description || '')}</span>
+                      <span class="cell-subtitle truncate">${escapeHtml(log.description || log.work_type || log.category || '')}</span>
                     </td>
                     <td>${formatHours(log.hours_used)}</td>
                     <td>${log.status === 'approved' ? formatHours(log.approved_hours) : '-'}</td>
                     <td>${statusPill(log.status)}</td>
+                    ${compact ? '' : `
                     <td>${log.evidence_url ? `<a href="${escapeAttr(log.evidence_url)}" target="_blank" rel="noopener noreferrer">Open</a>` : '-'}</td>
-                    <td>${escapeHtml(log.commit_hash || '-')}</td>
+                    `}
                     <td>${renderWorkLogActions(log)}</td>
                   </tr>
                 `).join('')}
@@ -1766,14 +2366,13 @@
       }
 
       function renderWorkLogActions(log) {
-        if (!canReviewWorkLog(log) || log.status !== 'pending_approval') {
-          return '-';
-        }
-
         return `
           <div class="section-actions">
-            <button class="button" type="button" data-approve-log="${escapeAttr(log.id)}">Approve</button>
-            <button class="button" type="button" data-reject-log="${escapeAttr(log.id)}">Reject</button>
+            <button class="button button-small" type="button" data-detail-kind="work-log" data-detail-id="${escapeAttr(log.id)}">View Details</button>
+            ${canReviewWorkLog(log) && log.status === 'pending_approval' ? `
+              <button class="button button-small button-primary" type="button" data-open-approve-log="${escapeAttr(log.id)}">Approve</button>
+              <button class="button button-small button-danger" type="button" data-reject-log="${escapeAttr(log.id)}">Reject</button>
+            ` : ''}
           </div>
         `;
       }
@@ -1786,10 +2385,12 @@
                 <tr>
                   <th>Collaborator</th>
                   <th>Project</th>
-                  <th>Rate</th>
                   <th>Approved hours</th>
+                  <th>Rate</th>
                   <th>Total</th>
-                  <th>Status</th>
+                  <th>Payment Status</th>
+                  <th>Paid Date</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -1800,14 +2401,118 @@
                       <span class="cell-subtitle">${escapeHtml(payment.collaborator?.email || '')}</span>
                     </td>
                     <td>${escapeHtml(payment.project?.name || 'Unassigned')}</td>
-                    <td>${formatMoney(payment.hourly_rate_usd)}</td>
                     <td>${formatHours(payment.approved_hours)}</td>
+                    <td>${formatMoney(payment.hourly_rate_usd)}</td>
                     <td>${formatMoney(payment.total_usd)}</td>
-                    <td>${statusPill(payment.status)}</td>
+                    <td>${statusPill(payment.payment_status || payment.status)}</td>
+                    <td>${formatDate(payment.paid_at)}</td>
+                    <td>${renderPaymentActions(payment, compact)}</td>
                   </tr>
                 `).join('')}
               </tbody>
             </table>
+          </div>
+        `;
+      }
+
+      function renderDeliverableActions(deliverable, compact = false) {
+        const canManage = canManageProject(deliverable.project_id);
+
+        return `
+          <div class="section-actions">
+            <button class="button button-small" type="button" data-detail-kind="deliverable" data-detail-id="${escapeAttr(deliverable.id)}">View Details</button>
+            ${canManage ? `<button class="button button-small" type="button" data-open-deliverable="${escapeAttr(deliverable.id)}">Edit</button>` : ''}
+            ${canManage && deliverable.status !== 'approved' && deliverable.status !== 'archived' ? `<button class="button button-small button-primary" type="button" data-approve-deliverable="${escapeAttr(deliverable.id)}">Approve</button>` : ''}
+          </div>
+        `;
+      }
+
+      function renderPaymentActions(payment, compact = false) {
+        return `
+          <div class="section-actions">
+            <button class="button button-small" type="button" data-detail-kind="payment" data-detail-id="${escapeAttr(payment.key)}">View Details</button>
+            ${canMarkPaymentPaid(payment) ? `<button class="button button-small button-primary" type="button" data-mark-paid="${escapeAttr(payment.key)}">Mark as Paid</button>` : ''}
+          </div>
+        `;
+      }
+
+      function renderEvidenceLinks(record) {
+        const links = [
+          ['Figma', record.figma_url],
+          ['Drive', record.google_drive_url],
+          ['Document', record.document_url],
+          ['Evidence', record.evidence_url]
+        ].filter(([, url]) => Boolean(url));
+
+        if (!links.length) {
+          return '-';
+        }
+
+        return `
+          <div class="link-list">
+            ${links.map(([label, url]) => `<a class="link-chip" href="${escapeAttr(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>`).join('')}
+          </div>
+        `;
+      }
+
+      function renderActivityFeed(items) {
+        return `
+          <div class="activity-feed">
+            ${items.map((item) => `
+              <article class="activity-item">
+                <span class="activity-dot" aria-hidden="true"></span>
+                <div>
+                  <p class="activity-title">${escapeHtml(item.title)}</p>
+                  <p class="activity-meta">${escapeHtml(item.meta)}</p>
+                </div>
+              </article>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      function renderOrganizationTree(projects) {
+        return `
+          <div class="organization-tree">
+            <div class="org-root">Bastida Systems</div>
+            ${projects.map((project) => {
+              const roles = ['founder', 'owner', 'core_collaborator', 'contractor'];
+              const assignments = state.projectRoles.filter((assignment) => (
+                assignment.project_id === project.id
+                && assignment.active === true
+              ));
+
+              return `
+                <div class="org-project">
+                  <section class="org-project-card">
+                    <div class="org-project-header">
+                      <p class="org-project-title">${escapeHtml(project.name)}</p>
+                      ${statusPill(project.status)}
+                    </div>
+                    ${roles.map((role) => {
+                      const roleAssignments = assignments.filter((assignment) => assignment.role === role);
+                      if (!roleAssignments.length) {
+                        return '';
+                      }
+
+                      return `
+                        <div class="org-role-row">
+                          <div><span class="role-pill">${escapeHtml(roleLabel(role))}</span></div>
+                          <div class="person-stack">
+                            ${roleAssignments.map((assignment) => `
+                              <span class="person-chip">
+                                <span class="cell-title">${escapeHtml(memberName(assignment))}</span>
+                                <span class="cell-subtitle truncate">${escapeHtml(memberEmail(assignment))}</span>
+                              </span>
+                            `).join('')}
+                          </div>
+                        </div>
+                      `;
+                    }).join('')}
+                  </section>
+                </div>
+              `;
+            }).join('')}
           </div>
         `;
       }
@@ -1825,26 +2530,46 @@
           if (!people.has(identity)) {
             people.set(identity, {
               id: identity,
+              userId: member?.id || assignment.user_id || null,
               name: member?.full_name || assignment.invited_name || member?.email || assignment.invite_email || 'Invited member',
               email: member?.email || assignment.invite_email || '',
+              platformRole: member?.platform_role || null,
               defaultRole: assignment.role,
               roles: [],
               projects: [],
+              projectNames: [],
+              assignments: [],
               status: normalizeInvitationStatus(assignment)
             });
           }
 
           const person = people.get(identity);
+          person.assignments.push(assignment);
           if (assignment.role && !person.roles.includes(assignment.role)) {
             person.roles.push(assignment.role);
           }
           if (assignment.project?.id && !person.projects.includes(assignment.project.id)) {
             person.projects.push(assignment.project.id);
           }
+          if (assignment.project?.name && !person.projectNames.includes(assignment.project.name)) {
+            person.projectNames.push(assignment.project.name);
+          }
           person.status = mergeInvitationStatus(person.status, normalizeInvitationStatus(assignment));
         });
 
-        return Array.from(people.values()).sort((a, b) => a.name.localeCompare(b.name));
+        return Array.from(people.values())
+          .map((person) => {
+            const stats = buildCollaboratorStats(person.userId);
+            return {
+              ...person,
+              headline: roleSummaryForAssignments(person.assignments, person),
+              approvedHours: stats.approvedHours,
+              totalEarned: stats.totalEarned,
+              completedDeliverables: stats.completedDeliverables,
+              lastActivity: stats.lastActivity
+            };
+          })
+          .sort((a, b) => a.name.localeCompare(b.name));
       }
 
       function renderProjectActions() {
@@ -1861,6 +2586,99 @@
         }
 
         return '<button class="button button-primary" type="button" data-open-invite>+ Invite Collaborator</button>';
+      }
+
+      function renderDeliverableModal() {
+        const deliverable = state.deliverableEditor.deliverableId
+          ? state.deliverables.find((item) => item.id === state.deliverableEditor.deliverableId)
+          : null;
+        const projects = manageableProjects();
+        const people = buildPeople().filter((person) => person.userId);
+        const selectedProjectId = deliverable?.project_id || projects[0]?.id || '';
+        const notice = state.deliverableEditor.message
+          ? `<div class="notice notice-${state.deliverableEditor.type === 'error' ? 'error' : 'success'}">${escapeHtml(state.deliverableEditor.message)}</div>`
+          : '';
+        const noProjectsNotice = projects.length
+          ? ''
+          : '<div class="notice">No manageable projects are available for deliverables yet.</div>';
+
+        return `
+          <div class="modal-backdrop" role="presentation">
+            <section class="modal modal-wide" role="dialog" aria-modal="true" aria-labelledby="deliverable-title">
+              <form data-deliverable-form>
+                <div class="modal-header">
+                  <div>
+                    <h2 class="modal-title" id="deliverable-title">${deliverable ? 'Edit Deliverable' : 'Create Deliverable'}</h2>
+                    <p class="modal-copy">Manage real project deliverables, responsible collaborator, deadline, status, and evidence links.</p>
+                  </div>
+                  <button class="button" type="button" data-close-deliverable>Close</button>
+                </div>
+                <div class="modal-body">
+                  ${notice}
+                  ${noProjectsNotice}
+                  <div class="form-grid">
+                    <div class="field">
+                      <label for="deliverable-project">Project</label>
+                      <select id="deliverable-project" name="project_id" required>
+                        ${projects.length
+                          ? projects.map((project) => `<option value="${escapeAttr(project.id)}" ${project.id === selectedProjectId ? 'selected' : ''}>${escapeHtml(project.name)}</option>`).join('')
+                          : '<option value="">No projects available</option>'}
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label for="deliverable-title-input">Title</label>
+                      <input id="deliverable-title-input" name="title" type="text" autocomplete="off" value="${escapeAttr(deliverable?.title || '')}" required>
+                    </div>
+                    <div class="field">
+                      <label for="deliverable-description">Description</label>
+                      <textarea id="deliverable-description" name="description" autocomplete="off">${escapeHtml(deliverable?.description || '')}</textarea>
+                    </div>
+                    <div class="field">
+                      <label for="deliverable-responsible">Responsible</label>
+                      <select id="deliverable-responsible" name="responsible_user_id">
+                        <option value="">Unassigned</option>
+                        ${people.map((person) => `<option value="${escapeAttr(person.userId)}" ${person.userId === deliverable?.responsible_user_id ? 'selected' : ''}>${escapeHtml(person.name)}${person.projectNames.length ? ` - ${escapeHtml(person.projectNames.join(', '))}` : ''}</option>`).join('')}
+                      </select>
+                      <p class="field-hint">The selected collaborator must belong to the selected project.</p>
+                    </div>
+                    <div class="field">
+                      <label for="deliverable-due-date">Due date</label>
+                      <input id="deliverable-due-date" name="due_date" type="date" value="${escapeAttr(deliverable?.due_date || '')}">
+                    </div>
+                    <div class="field">
+                      <label for="deliverable-status">Status</label>
+                      <select id="deliverable-status" name="status" required>
+                        ${deliverableStatusOptions().map((status) => `<option value="${escapeAttr(status)}" ${status === (deliverable?.status || 'planned') ? 'selected' : ''}>${escapeHtml(statusLabel(status))}</option>`).join('')}
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label for="deliverable-figma">Figma URL</label>
+                      <input id="deliverable-figma" name="figma_url" type="url" autocomplete="off" placeholder="https://" value="${escapeAttr(deliverable?.figma_url || '')}">
+                    </div>
+                    <div class="field">
+                      <label for="deliverable-drive">Google Drive URL</label>
+                      <input id="deliverable-drive" name="google_drive_url" type="url" autocomplete="off" placeholder="https://" value="${escapeAttr(deliverable?.google_drive_url || '')}">
+                    </div>
+                    <div class="field">
+                      <label for="deliverable-document">Document URL</label>
+                      <input id="deliverable-document" name="document_url" type="url" autocomplete="off" placeholder="https://" value="${escapeAttr(deliverable?.document_url || '')}">
+                    </div>
+                    <div class="field">
+                      <label for="deliverable-evidence">Evidence URL</label>
+                      <input id="deliverable-evidence" name="evidence_url" type="url" autocomplete="off" placeholder="https://" value="${escapeAttr(deliverable?.evidence_url || '')}">
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button class="button" type="button" data-close-deliverable>Cancel</button>
+                  <button class="button button-primary" type="submit" ${state.deliverableEditor.isSubmitting || !projects.length ? 'disabled' : ''}>
+                    ${state.deliverableEditor.isSubmitting ? 'Saving' : 'Save Deliverable'}
+                  </button>
+                </div>
+              </form>
+            </section>
+          </div>
+        `;
       }
 
       function renderWorkLogModal() {
@@ -1906,7 +2724,7 @@
                       <input id="work-log-date" name="work_date" type="date" value="${escapeAttr(todayISO())}" required>
                     </div>
                     <div class="field">
-                      <label for="work-log-hours">Hours</label>
+                      <label for="work-log-hours">Reported Hours</label>
                       <input id="work-log-hours" name="hours_used" type="number" inputmode="decimal" min="0.01" max="24" step="0.01" required>
                     </div>
                     <div class="field">
@@ -1915,7 +2733,7 @@
                     </div>
                     <div class="field">
                       <label for="work-log-description">Description</label>
-                      <input id="work-log-description" name="description" type="text" autocomplete="off" required>
+                      <textarea id="work-log-description" name="description" autocomplete="off" required></textarea>
                     </div>
                     <div class="field">
                       <label for="work-log-evidence">Evidence Link optional</label>
@@ -1967,6 +2785,57 @@
                   <button class="button" type="button" data-close-reject>Cancel</button>
                   <button class="button button-primary" type="submit" ${state.rejection.isSubmitting ? 'disabled' : ''}>
                     ${state.rejection.isSubmitting ? 'Rejecting' : 'Reject work log'}
+                  </button>
+                </div>
+              </form>
+            </section>
+          </div>
+        `;
+      }
+
+      function renderApproveLogModal() {
+        const log = state.workLogs.find((item) => item.id === state.approval.logId);
+        const notice = state.approval.message
+          ? `<div class="notice notice-${state.approval.type === 'error' ? 'error' : 'success'}">${escapeHtml(state.approval.message)}</div>`
+          : '';
+        const reportedHours = toNumber(log?.hours_used);
+        const defaultApprovedHours = log?.approved_hours !== null && typeof log?.approved_hours !== 'undefined'
+          ? toNumber(log.approved_hours)
+          : reportedHours;
+
+        return `
+          <div class="modal-backdrop" role="presentation">
+            <section class="modal" role="dialog" aria-modal="true" aria-labelledby="approve-log-title">
+              <form data-approve-log-form>
+                <div class="modal-header">
+                  <div>
+                    <h2 class="modal-title" id="approve-log-title">Approve Work Log</h2>
+                    <p class="modal-copy">${escapeHtml(log?.title || 'Set approved payable hours for this work log.')}</p>
+                  </div>
+                  <button class="button" type="button" data-close-approval>Close</button>
+                </div>
+                <div class="modal-body">
+                  ${notice}
+                  <div class="detail-grid">
+                    <div class="detail-card">
+                      <p class="detail-label">Reported Hours</p>
+                      <p class="detail-value">${formatHours(reportedHours)}</p>
+                    </div>
+                    <div class="detail-card">
+                      <p class="detail-label">Project</p>
+                      <p class="detail-value">${escapeHtml(log?.project?.name || 'Unassigned')}</p>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label for="approved-hours">Approved Hours</label>
+                    <input id="approved-hours" name="approved_hours" type="number" inputmode="decimal" min="0" max="${escapeAttr(reportedHours)}" step="0.01" value="${escapeAttr(defaultApprovedHours)}" required>
+                    <p class="field-hint">Payments are calculated from Approved Hours, not from the originally reported hours.</p>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button class="button" type="button" data-close-approval>Cancel</button>
+                  <button class="button button-primary" type="submit" ${state.approval.isSubmitting ? 'disabled' : ''}>
+                    ${state.approval.isSubmitting ? 'Approving' : 'Approve hours'}
                   </button>
                 </div>
               </form>
@@ -2089,6 +2958,231 @@
         `;
       }
 
+      function renderDetailsModal() {
+        const detail = buildDetailContent();
+
+        return `
+          <div class="modal-backdrop" role="presentation">
+            <section class="modal modal-wide" role="dialog" aria-modal="true" aria-labelledby="details-title">
+              <div class="modal-header">
+                <div>
+                  <h2 class="modal-title" id="details-title">${escapeHtml(detail.title)}</h2>
+                  <p class="modal-copy">${escapeHtml(detail.copy)}</p>
+                </div>
+                <button class="button" type="button" data-close-detail>Close</button>
+              </div>
+              <div class="modal-body">
+                ${detail.body}
+              </div>
+              <div class="modal-footer">
+                <button class="button button-primary" type="button" data-close-detail>Done</button>
+              </div>
+            </section>
+          </div>
+        `;
+      }
+
+      function buildDetailContent() {
+        if (state.detail.kind === 'payment-error') {
+          return {
+            title: 'Payment action failed',
+            copy: 'Supabase returned an error while updating payment status.',
+            body: `<div class="notice notice-error">${escapeHtml(state.detail.id || 'Unknown payment error.')}</div>`
+          };
+        }
+
+        if (state.detail.kind === 'collaborator') {
+          const person = buildPeople().find((item) => item.userId === state.detail.id);
+          if (!person) {
+            return emptyDetail();
+          }
+
+          return {
+            title: person.name,
+            copy: roleSummaryForAssignments(person.assignments, person),
+            body: renderCollaboratorDetail(person)
+          };
+        }
+
+        if (state.detail.kind === 'project') {
+          const project = state.projects.find((item) => item.id === state.detail.id);
+          if (!project) {
+            return emptyDetail();
+          }
+
+          return {
+            title: project.name,
+            copy: project.description || project.slug || 'Project operating details.',
+            body: renderProjectDetail(project)
+          };
+        }
+
+        if (state.detail.kind === 'work-log') {
+          const log = state.workLogs.find((item) => item.id === state.detail.id);
+          if (!log) {
+            return emptyDetail();
+          }
+
+          return {
+            title: log.title || 'Work Log',
+            copy: `${formatDate(log.work_date)} - ${log.project?.name || 'Unassigned'}`,
+            body: renderWorkLogDetail(log)
+          };
+        }
+
+        if (state.detail.kind === 'deliverable') {
+          const deliverable = state.deliverables.find((item) => item.id === state.detail.id);
+          if (!deliverable) {
+            return emptyDetail();
+          }
+
+          return {
+            title: deliverable.title,
+            copy: `${deliverable.project?.name || 'Unassigned'} - ${statusLabel(deliverable.status)}`,
+            body: renderDeliverableDetail(deliverable)
+          };
+        }
+
+        if (state.detail.kind === 'payment') {
+          const payment = findPayableRow(state.detail.id);
+          if (!payment) {
+            return emptyDetail();
+          }
+
+          return {
+            title: `${payment.collaborator?.full_name || payment.collaborator?.email || 'Collaborator'} payment`,
+            copy: `${payment.project?.name || 'Unassigned'} - ${statusLabel(payment.payment_status || payment.status)}`,
+            body: renderPaymentDetail(payment)
+          };
+        }
+
+        return emptyDetail();
+      }
+
+      function emptyDetail() {
+        return {
+          title: 'Details unavailable',
+          copy: 'The selected record is no longer available in the current Supabase result set.',
+          body: emptyState('Record not found', 'Refresh the portal and try again.', true)
+        };
+      }
+
+      function renderCollaboratorDetail(person) {
+        return `
+          <div class="detail-grid">
+            ${detailCard('Name', person.name)}
+            ${detailCard('Email', person.email || '-')}
+            ${detailCard('Role', person.headline)}
+            ${detailCard('Projects', person.projectNames.join(', ') || '-')}
+            ${detailCard('Approved Hours', formatHours(person.approvedHours))}
+            ${detailCard('Total Earned', formatMoney(person.totalEarned))}
+            ${detailCard('Deliverables Completed', person.completedDeliverables)}
+            ${detailCard('Last Activity', formatDate(person.lastActivity))}
+          </div>
+        `;
+      }
+
+      function renderProjectDetail(project) {
+        const assignments = state.projectRoles.filter((assignment) => assignment.project_id === project.id);
+        const logs = state.workLogs.filter((log) => log.project_id === project.id);
+        const deliverables = state.deliverables.filter((deliverable) => deliverable.project_id === project.id);
+        const approvedHours = logs
+          .filter((log) => log.status === 'approved')
+          .reduce((total, log) => total + toNumber(log.approved_hours), 0);
+
+        return `
+          <div class="detail-grid">
+            ${detailCard('Status', statusLabel(project.status))}
+            ${detailCard('Collaborators', assignments.length)}
+            ${detailCard('Approved Hours', formatHours(approvedHours))}
+            ${detailCard('Deliverables', deliverables.length)}
+            ${detailCard('Slug', project.slug || '-')}
+            ${detailCard('Updated', formatDate(project.updated_at || project.created_at))}
+          </div>
+        `;
+      }
+
+      function renderWorkLogDetail(log) {
+        return `
+          <div class="detail-grid">
+            ${detailCard('Project', log.project?.name || 'Unassigned')}
+            ${detailCard('Worker', log.worker?.full_name || log.worker?.email || 'Unknown')}
+            ${detailCard('Work Type', log.work_type || log.category || '-')}
+            ${detailCard('Date', formatDate(log.work_date))}
+            ${detailCard('Reported Hours', formatHours(log.hours_used))}
+            ${detailCard('Approved Hours', log.status === 'approved' ? formatHours(log.approved_hours) : '-')}
+            ${detailCard('Status', statusLabel(log.status))}
+            ${detailCard('Commit', log.commit_hash || '-')}
+          </div>
+          <div class="detail-card detail-card-spaced">
+            <p class="detail-label">Description</p>
+            <p class="detail-value">${escapeHtml(log.description || '-')}</p>
+          </div>
+          <div class="detail-card detail-card-spaced">
+            <p class="detail-label">Evidence</p>
+            <p class="detail-value">${log.evidence_url ? `<a href="${escapeAttr(log.evidence_url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(log.evidence_url)}</a>` : '-'}</p>
+          </div>
+        `;
+      }
+
+      function renderDeliverableDetail(deliverable) {
+        return `
+          <div class="detail-grid">
+            ${detailCard('Project', deliverable.project?.name || 'Unassigned')}
+            ${detailCard('Responsible', deliverable.responsible?.full_name || deliverable.responsible?.email || '-')}
+            ${detailCard('Due Date', formatDate(deliverable.due_date))}
+            ${detailCard('Status', statusLabel(deliverable.status))}
+            ${detailCard('Delivered', formatDate(deliverable.delivered_at))}
+            ${detailCard('Approved', formatDate(deliverable.approved_at))}
+          </div>
+          <div class="detail-card detail-card-spaced">
+            <p class="detail-label">Description</p>
+            <p class="detail-value">${escapeHtml(deliverable.description || '-')}</p>
+          </div>
+          <div class="detail-card detail-card-spaced">
+            <p class="detail-label">Evidence Links</p>
+            <div class="detail-card-body">${renderEvidenceLinks(deliverable)}</div>
+          </div>
+        `;
+      }
+
+      function renderPaymentDetail(payment) {
+        const history = payment.payment_id
+          ? state.paymentHistory.filter((item) => item.payment_id === payment.payment_id)
+          : [];
+
+        return `
+          <div class="detail-grid">
+            ${detailCard('Collaborator', payment.collaborator?.full_name || payment.collaborator?.email || 'Unassigned')}
+            ${detailCard('Project', payment.project?.name || 'Unassigned')}
+            ${detailCard('Approved Hours', formatHours(payment.approved_hours))}
+            ${detailCard('Rate', formatMoney(payment.hourly_rate_usd))}
+            ${detailCard('Total', formatMoney(payment.total_usd))}
+            ${detailCard('Payment Status', statusLabel(payment.payment_status || payment.status))}
+            ${detailCard('Paid Date', formatDate(payment.paid_at))}
+            ${detailCard('Paid By', payment.payer?.full_name || payment.payer?.email || '-')}
+          </div>
+          <div class="detail-card detail-card-spaced">
+            <p class="detail-label">History</p>
+            <div class="detail-card-body">
+              ${history.length ? renderActivityFeed(history.map((item) => ({
+                title: `${personDisplayName(item.actor) || 'Founder'} marked payment ${statusLabel(item.new_status)}`,
+                meta: `${formatDate(item.changed_at)} - ${item.note || 'Payment status changed'}`
+              }))) : '<p class="empty-copy empty-copy-flush">No payment history yet.</p>'}
+            </div>
+          </div>
+        `;
+      }
+
+      function detailCard(label, value) {
+        return `
+          <div class="detail-card">
+            <p class="detail-label">${escapeHtml(label)}</p>
+            <p class="detail-value">${escapeHtml(String(value ?? '-'))}</p>
+          </div>
+        `;
+      }
+
       function metricCard(label, value, caption) {
         return `
           <section class="metric">
@@ -2103,6 +3197,7 @@
         return `
           <div class="empty-state ${compact ? 'compact' : ''}">
             <div>
+              <div class="empty-icon" aria-hidden="true">BS</div>
               <p class="empty-title">${escapeHtml(title)}</p>
               <p class="empty-copy">${escapeHtml(copy)}</p>
             </div>
@@ -2112,7 +3207,25 @@
 
       function statusPill(status) {
         const normalized = String(status || 'unknown').toLowerCase();
-        return `<span class="status status-${escapeAttr(normalized)}">${escapeHtml(labelize(normalized))}</span>`;
+        return `<span class="status status-${escapeAttr(normalized)}">${escapeHtml(statusLabel(normalized))}</span>`;
+      }
+
+      function statusLabel(status) {
+        const normalized = String(status || 'unknown').toLowerCase();
+        const labels = {
+          pending_approval: 'Pending Approval',
+          pending_acceptance: 'Pending Acceptance',
+          invite_sent: 'Invite Sent',
+          active_member: 'Active Member',
+          error_sending_invite: 'Invite Error',
+          in_progress: 'In Progress',
+          google_drive_url: 'Google Drive',
+          pending: 'Pending',
+          approved: 'Approved',
+          paid: 'Paid'
+        };
+
+        return labels[normalized] || labelize(normalized);
       }
 
       function getViewCount(view) {
@@ -2121,6 +3234,9 @@
         }
         if (view === 'projects') {
           return state.projects.length;
+        }
+        if (view === 'organization') {
+          return state.projectRoles.filter((assignment) => assignment.active === true).length;
         }
         if (view === 'deliverables') {
           return state.deliverables.length;
@@ -2209,6 +3325,43 @@
         return state.projects.filter((project) => projectIds.has(project.id));
       }
 
+      function canCreateDeliverables() {
+        return manageableProjects().length > 0;
+      }
+
+      function manageableProjects() {
+        if (isGlobalFounderOrAdmin()) {
+          return state.projects;
+        }
+
+        const projectIds = new Set(
+          state.projectRoles
+            .filter((assignment) => assignment.user_id === state.profile?.id)
+            .filter((assignment) => assignment.active === true)
+            .filter((assignment) => ['founder', 'owner'].includes(assignment.role))
+            .map((assignment) => assignment.project_id)
+        );
+
+        return state.projects.filter((project) => projectIds.has(project.id));
+      }
+
+      function canManageProject(projectId) {
+        if (!projectId) {
+          return false;
+        }
+
+        if (isGlobalFounderOrAdmin()) {
+          return true;
+        }
+
+        return state.projectRoles.some((assignment) => (
+          assignment.project_id === projectId
+          && assignment.user_id === state.profile?.id
+          && assignment.active === true
+          && ['founder', 'owner'].includes(assignment.role)
+        ));
+      }
+
       function canReviewWorkLog(log) {
         if (!log || log.status !== 'pending_approval') {
           return false;
@@ -2224,6 +3377,107 @@
           && assignment.active === true
           && ['founder', 'owner'].includes(assignment.role)
         ));
+      }
+
+      function canMarkPaymentPaid(payment) {
+        return Boolean(payment)
+          && Boolean(payment.user_id)
+          && payment.payment_status !== 'paid'
+          && canManageProject(payment.project_id);
+      }
+
+      function buildCollaboratorStats(userId) {
+        if (!userId) {
+          return {
+            approvedHours: 0,
+            totalEarned: 0,
+            completedDeliverables: 0,
+            lastActivity: null
+          };
+        }
+
+        const approvedLogs = state.workLogs.filter((log) => (
+          log.worker_user_id === userId
+          && log.status === 'approved'
+        ));
+        const approvedHours = approvedLogs.reduce((total, log) => total + toNumber(log.approved_hours), 0);
+        const totalEarned = approvedLogs.reduce((total, log) => {
+          const rate = findHourlyRate(log.project_id, log.worker_user_id);
+          return total + (toNumber(log.approved_hours) * rate);
+        }, 0);
+        const completedDeliverables = state.deliverables.filter((deliverable) => (
+          deliverable.responsible_user_id === userId
+          && ['delivered', 'approved'].includes(deliverable.status)
+        )).length;
+        const dates = [
+          ...state.workLogs
+            .filter((log) => log.worker_user_id === userId)
+            .map((log) => log.approved_at || log.submitted_at || log.work_date),
+          ...state.deliverables
+            .filter((deliverable) => deliverable.responsible_user_id === userId)
+            .map((deliverable) => deliverable.approved_at || deliverable.delivered_at || deliverable.updated_at || deliverable.created_at)
+        ].filter(Boolean);
+
+        return {
+          approvedHours,
+          totalEarned,
+          completedDeliverables,
+          lastActivity: latestDateValue(dates)
+        };
+      }
+
+      function buildActivityItems() {
+        const activities = [];
+
+        state.workLogs.forEach((log) => {
+          activities.push({
+            date: log.submitted_at || log.work_date,
+            title: `${personDisplayName(log.worker)} created Work Log`,
+            meta: `${log.project?.name || 'Unassigned'} - ${log.title || 'Work log'}`
+          });
+
+          if (log.approved_at) {
+            activities.push({
+              date: log.approved_at,
+              title: `${personDisplayName(log.approver) || 'Owner'} approved Work Log`,
+              meta: `${log.project?.name || 'Unassigned'} - Approved ${formatHours(log.approved_hours)} of ${formatHours(log.hours_used)} hours`
+            });
+          }
+        });
+
+        state.deliverables.forEach((deliverable) => {
+          activities.push({
+            date: deliverable.created_at,
+            title: `${personDisplayName(deliverable.creator) || 'Founder'} created Deliverable`,
+            meta: `${deliverable.project?.name || 'Unassigned'} - ${deliverable.title}`
+          });
+
+          if (deliverable.approved_at) {
+            activities.push({
+              date: deliverable.approved_at,
+              title: `${personDisplayName(deliverable.approver) || 'Owner'} approved Deliverable`,
+              meta: `${deliverable.project?.name || 'Unassigned'} - ${deliverable.title}`
+            });
+          }
+        });
+
+        state.paymentHistory.forEach((history) => {
+          if (normalizePaymentStatus(history.new_status) === 'paid') {
+            activities.push({
+              date: history.changed_at,
+              title: `${personDisplayName(history.actor) || 'Founder'} marked payment as Paid`,
+              meta: `${history.payment?.project?.name || 'Unassigned'} - ${history.payment?.collaborator?.full_name || history.payment?.collaborator?.email || 'Collaborator'}`
+            });
+          }
+        });
+
+        return activities
+          .filter((activity) => activity.date)
+          .sort((a, b) => new Date(b.date) - new Date(a.date))
+          .map((activity) => ({
+            ...activity,
+            meta: `${formatDate(activity.date)} - ${activity.meta}`
+          }));
       }
 
       function buildPayableRows() {
@@ -2242,12 +3496,19 @@
 
             if (!rows.has(key)) {
               rows.set(key, {
+                key,
+                project_id: log.project_id,
+                user_id: log.worker_user_id,
                 collaborator: log.worker || { full_name: 'Unknown', email: '' },
                 project: log.project || { name: 'Unassigned' },
                 hourly_rate_usd: rate,
                 approved_hours: 0,
                 total_usd: 0,
-                status: 'approved'
+                status: 'pending',
+                payment_status: 'pending',
+                paid_at: null,
+                payer: null,
+                payment_id: null
               });
             }
 
@@ -2256,7 +3517,55 @@
             row.total_usd = row.approved_hours * rate;
           });
 
-        return Array.from(rows.values());
+        rows.forEach((row) => {
+          const record = findPaymentRecord(row.project_id, row.user_id, row.hourly_rate_usd);
+          if (!record) {
+            return;
+          }
+
+          const recordHours = toNumber(record.approved_hours);
+          const hasNewApprovedHours = Math.abs(recordHours - toNumber(row.approved_hours)) > 0.009;
+          const recordStatus = normalizePaymentStatus(record.status);
+
+          row.payment_id = record.id;
+          row.paid_at = record.paid_at;
+          row.payer = record.payer;
+          row.status = recordStatus;
+          row.payment_status = recordStatus === 'paid' && hasNewApprovedHours ? 'pending' : recordStatus;
+        });
+
+        return Array.from(rows.values()).sort((a, b) => {
+          const projectCompare = String(a.project?.name || '').localeCompare(String(b.project?.name || ''));
+          if (projectCompare !== 0) {
+            return projectCompare;
+          }
+          return String(a.collaborator?.full_name || a.collaborator?.email || '').localeCompare(String(b.collaborator?.full_name || b.collaborator?.email || ''));
+        });
+      }
+
+      function findPayableRow(paymentKey) {
+        return buildPayableRows().find((payment) => payment.key === paymentKey);
+      }
+
+      function findPaymentRecord(projectId, userId, hourlyRate) {
+        return state.payments
+          .filter((payment) => (
+            payment.project_id === projectId
+            && payment.user_id === userId
+            && toNumber(payment.hourly_rate_usd) === toNumber(hourlyRate)
+          ))
+          .sort((a, b) => new Date(b.updated_at || b.created_at || 0) - new Date(a.updated_at || a.created_at || 0))[0] || null;
+      }
+
+      function normalizePaymentStatus(status) {
+        const normalized = String(status || 'pending').toLowerCase();
+        if (normalized === 'paid') {
+          return 'paid';
+        }
+        if (normalized === 'approved') {
+          return 'approved';
+        }
+        return 'pending';
       }
 
       function findHourlyRate(projectId, userId) {
@@ -2284,6 +3593,16 @@
         ];
       }
 
+      function deliverableStatusOptions() {
+        return [
+          'planned',
+          'in_progress',
+          'delivered',
+          'approved',
+          'archived'
+        ];
+      }
+
       function normalizeInvitationStatus(assignment) {
         if (assignment.invitation_status) {
           return assignment.invitation_status;
@@ -2308,11 +3627,54 @@
       }
 
       function profileRole() {
-        return labelize(state.profile?.platform_role || 'authenticated');
+        if (isGlobalFounderOrAdmin()) {
+          return 'Founder';
+        }
+
+        const assignments = state.projectRoles.filter((assignment) => (
+          assignment.user_id === state.profile?.id
+          && assignment.active === true
+        ));
+
+        return roleSummaryForAssignments(assignments, state.profile) || 'Member';
       }
 
       function roleLabel(role) {
         return roleLabels[role] || labelize(role || 'collaborator');
+      }
+
+      function roleSummaryForAssignments(assignments, profile = null) {
+        const activeAssignments = (assignments || []).filter((assignment) => assignment.active !== false);
+
+        const platformRole = profile?.platform_role || profile?.platformRole;
+
+        if (['founder', 'platform_admin'].includes(platformRole) || activeAssignments.some((assignment) => assignment.role === 'founder')) {
+          return 'Founder';
+        }
+
+        const priority = ['owner', 'core_collaborator', 'contractor'];
+        const topRole = priority.find((role) => activeAssignments.some((assignment) => assignment.role === role));
+
+        if (!topRole) {
+          if (platformRole && platformRole !== 'client_user') {
+            return labelize(platformRole);
+          }
+
+          return 'Member';
+        }
+
+        const projectNames = uniqueValues(
+          activeAssignments
+            .filter((assignment) => assignment.role === topRole)
+            .map((assignment) => assignment.project?.name)
+            .filter(Boolean)
+        );
+
+        if (projectNames.length === 1) {
+          return `${roleLabel(topRole)} • ${projectNames[0]}`;
+        }
+
+        return `${roleLabel(topRole)} • ${projectNames.length || activeAssignments.length} Projects`;
       }
 
       function labelize(value) {
@@ -2342,6 +3704,15 @@
         return dateFormatter.format(date);
       }
 
+      function latestDateValue(values) {
+        const sorted = values
+          .map((value) => new Date(value))
+          .filter((date) => !Number.isNaN(date.getTime()))
+          .sort((a, b) => b - a);
+
+        return sorted[0]?.toISOString() || null;
+      }
+
       function todayISO() {
         return new Date().toISOString().slice(0, 10);
       }
@@ -2349,6 +3720,26 @@
       function toNumber(value) {
         const parsed = Number(value);
         return Number.isFinite(parsed) ? parsed : 0;
+      }
+
+      function uniqueValues(values) {
+        return Array.from(new Set(values));
+      }
+
+      function memberName(assignment) {
+        return assignment?.member?.full_name
+          || assignment?.invited_name
+          || assignment?.member?.email
+          || assignment?.invite_email
+          || 'Project member';
+      }
+
+      function memberEmail(assignment) {
+        return assignment?.member?.email || assignment?.invite_email || '';
+      }
+
+      function personDisplayName(person) {
+        return person?.full_name || person?.email || '';
       }
 
       function escapeHtml(value) {
