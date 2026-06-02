@@ -460,7 +460,7 @@
 
     .metrics {
       display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+      grid-template-columns: repeat(6, minmax(0, 1fr));
       gap: 14px;
       margin-top: 26px;
     }
@@ -519,10 +519,24 @@
 
     .dashboard-grid {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(300px, 380px);
+      grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.65fr);
       gap: 16px;
       margin-top: 16px;
       align-items: start;
+    }
+
+    .dashboard-stack,
+    .dashboard-side {
+      display: grid;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .dashboard-split {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      min-width: 0;
     }
 
     .panel {
@@ -563,6 +577,86 @@
     .table-wrap {
       width: 100%;
       overflow-x: auto;
+    }
+
+    .table-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfdff;
+      padding: 12px 18px;
+    }
+
+    .table-control-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .table-filter,
+    .table-sort {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .table-filter input,
+    .table-sort select {
+      min-height: 34px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      padding: 0 10px;
+      outline: none;
+    }
+
+    .table-filter input {
+      width: min(260px, 58vw);
+    }
+
+    .table-filter input:focus,
+    .table-sort select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1);
+    }
+
+    .table-pagination {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .page-button {
+      display: inline-grid;
+      place-items: center;
+      min-width: 32px;
+      height: 32px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 800;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .page-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.48;
     }
 
     table {
@@ -667,6 +761,96 @@
     .cell-muted {
       color: var(--muted);
       font-size: 12px;
+    }
+
+    .dashboard-list {
+      display: grid;
+    }
+
+    .dashboard-list-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 13px 18px;
+      border-bottom: 1px solid var(--line);
+      min-width: 0;
+    }
+
+    .dashboard-list-item:last-child {
+      border-bottom: 0;
+    }
+
+    .dashboard-list-main {
+      min-width: 0;
+    }
+
+    .dashboard-list-side {
+      display: grid;
+      justify-items: end;
+      gap: 5px;
+      flex: 0 0 auto;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .progress-wrap {
+      display: grid;
+      gap: 6px;
+      min-width: 112px;
+    }
+
+    .progress-track {
+      height: 7px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e5e7eb;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #1d4ed8, #10b981);
+    }
+
+    .progress-label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .payment-metrics {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin: 0 0 16px;
+    }
+
+    .payment-timeline {
+      display: grid;
+      gap: 0;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .payment-timeline-item {
+      display: grid;
+      grid-template-columns: 10px minmax(0, 1fr);
+      gap: 12px;
+      border-bottom: 1px solid var(--line);
+      padding: 10px 0;
+    }
+
+    .payment-timeline-item:first-child {
+      padding-top: 0;
+    }
+
+    .payment-timeline-item:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
     }
 
     .status {
@@ -847,81 +1031,259 @@
       line-height: 1.4;
     }
 
-    .organization-tree {
-      display: grid;
-      gap: 14px;
-      padding: 18px;
-    }
-
-    .org-root {
-      display: inline-flex;
-      align-items: center;
-      width: fit-content;
-      border: 1px solid rgba(29, 78, 216, 0.18);
-      border-radius: var(--radius);
-      background: #eff6ff;
-      color: var(--accent-strong);
-      padding: 9px 12px;
-      font-size: 13px;
-      font-weight: 800;
-    }
-
-    .org-project {
-      border-left: 2px solid var(--line);
-      padding-left: 16px;
-    }
-
-    .org-project-card {
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: #fff;
-      box-shadow: var(--shadow-soft);
+    .org-board {
       overflow: hidden;
+      background:
+        radial-gradient(circle at 1px 1px, rgba(148, 163, 184, 0.26) 1px, transparent 0) 0 0 / 20px 20px,
+        linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
     }
 
-    .org-project-header {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 13px 14px;
-      border-bottom: 1px solid var(--line);
-      background: var(--surface-muted);
-    }
-
-    .org-project-title {
-      margin: 0;
-      color: var(--text);
-      font-size: 14px;
-      font-weight: 800;
-    }
-
-    .org-role-row {
-      display: grid;
-      grid-template-columns: 170px minmax(0, 1fr);
-      gap: 14px;
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .org-role-row:last-child {
-      border-bottom: 0;
-    }
-
-    .person-stack {
+    .org-toolbar {
       display: flex;
       flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.9);
+      padding: 12px 14px;
+    }
+
+    .org-toolbar-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
       gap: 8px;
     }
 
-    .person-chip {
+    .org-zoom-label {
       display: inline-flex;
-      flex-direction: column;
-      gap: 1px;
+      align-items: center;
+      min-height: 32px;
       border: 1px solid var(--line);
       border-radius: var(--radius);
+      background: #fff;
+      color: var(--muted);
+      padding: 0 10px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .org-canvas {
+      min-height: 540px;
+      overflow: auto;
+      padding: 28px;
+    }
+
+    .org-scale-shell {
+      position: relative;
+      min-width: 940px;
+    }
+
+    .org-canvas-inner {
+      position: relative;
+      transform-origin: 0 0;
+    }
+
+    .org-connector-layer {
+      position: absolute;
+      inset: 0;
+      overflow: visible;
+      pointer-events: none;
+    }
+
+    .org-connector {
+      fill: none;
+      stroke: #94a3b8;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .org-node {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 238px;
+      min-height: 74px;
+      border: 1px solid rgba(203, 213, 225, 0.9);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 16px 34px rgba(15, 23, 42, 0.08);
+      padding: 12px;
+      color: var(--text);
+      text-align: left;
+    }
+
+    .org-person-node {
+      width: 252px;
+      min-height: 72px;
+      border-color: rgba(148, 163, 184, 0.5);
+      background: #ffffff;
+      transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+    }
+
+    button.org-person-node:hover {
+      border-color: rgba(29, 78, 216, 0.46);
+      box-shadow: 0 18px 38px rgba(29, 78, 216, 0.13);
+      transform: translateY(-2px);
+    }
+
+    .org-root-node {
+      border-color: rgba(29, 78, 216, 0.2);
+      background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+    }
+
+    .org-node-avatar,
+    .avatar {
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      width: 38px;
+      height: 38px;
+      border: 1px solid rgba(29, 78, 216, 0.18);
+      border-radius: 999px;
+      background: #eff6ff;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .org-avatar-project {
+      border-radius: var(--radius);
+      background: #ecfeff;
+      color: #0e7490;
+    }
+
+    .org-avatar-brand {
+      border-radius: var(--radius);
+      background: #dbeafe;
+      color: var(--accent-strong);
+    }
+
+    .org-node-body {
+      min-width: 0;
+    }
+
+    .org-node-title,
+    .org-node-role,
+    .org-node-project {
+      overflow: hidden;
+      margin: 0;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .org-node-title {
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 850;
+      line-height: 1.25;
+    }
+
+    .org-node-role {
+      margin-top: 3px;
+      color: var(--text-soft);
+      font-size: 12px;
+      font-weight: 750;
+      line-height: 1.25;
+    }
+
+    .org-node-project {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.25;
+    }
+
+    .org-node-toggle {
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      display: grid;
+      place-items: center;
+      width: 26px;
+      height: 26px;
+      border: 1px solid var(--line-strong);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--text);
+      box-shadow: var(--shadow-soft);
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 24;
+      display: flex;
+      justify-content: flex-end;
+      background: rgba(15, 23, 42, 0.24);
+    }
+
+    .profile-drawer {
+      width: min(100%, 440px);
+      height: 100vh;
+      overflow-y: auto;
+      border-left: 1px solid var(--line);
       background: var(--surface);
-      padding: 7px 9px;
-      min-width: 150px;
+      box-shadow: -24px 0 70px rgba(15, 23, 42, 0.2);
+    }
+
+    .drawer-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      border-bottom: 1px solid var(--line);
+      padding: 20px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    }
+
+    .drawer-identity {
+      display: flex;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .drawer-body {
+      display: grid;
+      gap: 14px;
+      padding: 18px 20px 24px;
+    }
+
+    .drawer-section {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface-muted);
+      padding: 13px;
+    }
+
+    .drawer-section-title {
+      margin: 0 0 10px;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .mini-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .mini-item {
+      display: grid;
+      gap: 2px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 8px;
+    }
+
+    .mini-item:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
     }
 
     .detail-grid {
@@ -1045,7 +1407,8 @@
       }
 
       .content-grid,
-      .dashboard-grid {
+      .dashboard-grid,
+      .dashboard-split {
         grid-template-columns: 1fr;
       }
     }
@@ -1089,13 +1452,35 @@
         flex-direction: column;
       }
 
-      .detail-grid,
-      .org-role-row {
+      .detail-grid {
         grid-template-columns: 1fr;
       }
 
       table {
         min-width: 640px;
+      }
+
+      .table-controls {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .table-control-group,
+      .table-pagination {
+        justify-content: flex-start;
+      }
+
+      .org-canvas {
+        min-height: 460px;
+        padding: 18px;
+      }
+
+      .org-scale-shell {
+        min-width: 850px;
+      }
+
+      .profile-drawer {
+        width: 100%;
       }
     }
   </style>
@@ -1119,7 +1504,7 @@
         dashboard: 'Dashboard',
         people: 'People',
         projects: 'Projects',
-        organization: 'Organization',
+        organization: 'Organization Tree',
         deliverables: 'Deliverables',
         workLogs: 'Work Logs',
         payments: 'Payments'
@@ -1186,6 +1571,16 @@
           kind: '',
           id: ''
         },
+        organization: {
+          zoom: 1,
+          collapsedProjectIds: []
+        },
+        tables: {
+          people: { filter: '', sort: 'name', page: 1 },
+          deliverables: { filter: '', sort: 'created_desc', page: 1 },
+          workLogs: { filter: '', sort: 'date_desc', page: 1 },
+          payments: { filter: '', sort: 'total_desc', page: 1 }
+        },
         isLoading: true,
         error: null
       };
@@ -1203,6 +1598,7 @@
         month: 'short',
         day: 'numeric'
       });
+      const TABLE_PAGE_SIZE = 8;
 
       init();
 
@@ -1597,6 +1993,89 @@
             state.detail.isOpen = false;
             state.detail.kind = '';
             state.detail.id = '';
+            renderApp();
+          });
+        });
+
+        app.querySelectorAll('[data-table-filter]').forEach((input) => {
+          const updateFilter = () => {
+            const key = input.dataset.tableFilter;
+            if (!state.tables[key]) {
+              return;
+            }
+            state.tables[key].filter = input.value;
+            state.tables[key].page = 1;
+            renderApp();
+          };
+
+          input.addEventListener('change', updateFilter);
+          input.addEventListener('search', updateFilter);
+          input.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+              event.preventDefault();
+              updateFilter();
+            }
+          });
+        });
+
+        app.querySelectorAll('[data-table-sort]').forEach((select) => {
+          select.addEventListener('change', () => {
+            const key = select.dataset.tableSort;
+            if (!state.tables[key]) {
+              return;
+            }
+            state.tables[key].sort = select.value;
+            state.tables[key].page = 1;
+            renderApp();
+          });
+        });
+
+        app.querySelectorAll('[data-table-page]').forEach((button) => {
+          button.addEventListener('click', () => {
+            const key = button.dataset.tablePage;
+            if (!state.tables[key]) {
+              return;
+            }
+            state.tables[key].page = Number(button.dataset.pageValue) || 1;
+            renderApp();
+          });
+        });
+
+        app.querySelectorAll('[data-org-zoom]').forEach((button) => {
+          button.addEventListener('click', () => {
+            const delta = button.dataset.orgZoom === 'in' ? 0.1 : -0.1;
+            state.organization.zoom = Math.min(1.4, Math.max(0.65, state.organization.zoom + delta));
+            renderApp();
+          });
+        });
+
+        app.querySelectorAll('[data-org-fit]').forEach((button) => {
+          button.addEventListener('click', () => {
+            state.organization.zoom = button.dataset.orgFit === 'reset' ? 1 : 0.82;
+            renderApp();
+          });
+        });
+
+        app.querySelectorAll('[data-org-toggle-project]').forEach((button) => {
+          button.addEventListener('click', () => {
+            const projectId = button.dataset.orgToggleProject;
+            const collapsed = new Set(state.organization.collapsedProjectIds);
+            if (collapsed.has(projectId)) {
+              collapsed.delete(projectId);
+            } else {
+              collapsed.add(projectId);
+            }
+            state.organization.collapsedProjectIds = Array.from(collapsed);
+            renderApp();
+          });
+        });
+
+        app.querySelectorAll('[data-org-toggle-all]').forEach((button) => {
+          button.addEventListener('click', () => {
+            const activeProjects = state.projects.filter((project) => project.status !== 'archived');
+            state.organization.collapsedProjectIds = button.dataset.orgToggleAll === 'collapse'
+              ? activeProjects.map((project) => project.id)
+              : [];
             renderApp();
           });
         });
@@ -2026,59 +2505,83 @@
       function renderDashboard() {
         const people = buildPeople();
         const payableRows = buildPayableRows();
-        const activity = buildActivityItems().slice(0, 8);
+        const activity = buildActivityItems().slice(0, 10);
+        const pendingDeliverables = state.deliverables.filter((deliverable) => (
+          !['approved', 'archived'].includes(deliverable.status)
+        )).length;
+        const approvedDeliverables = state.deliverables.filter((deliverable) => deliverable.status === 'approved').length;
         const approvedHours = state.workLogs
           .filter((log) => log.status === 'approved')
           .reduce((total, log) => total + toNumber(log.approved_hours), 0);
         const payable = payableRows.reduce((total, payment) => total + toNumber(payment.total_usd), 0);
+        const recentInvites = state.projectRoles
+          .filter((assignment) => isInvitationRecord(assignment))
+          .sort((a, b) => new Date(b.invited_at || b.accepted_at || b.joined_at || 0) - new Date(a.invited_at || a.accepted_at || a.joined_at || 0))
+          .slice(0, 5);
 
         return `
           <p class="page-copy">${isGlobalFounderOrAdmin() ? 'Founder-level operating view across all visible projects, collaborators, approved hours, deliverables, and payment obligations.' : 'A live operating view of your projects, collaborators, approved hours, deliverables, and payment obligations.'}</p>
           <div class="metrics">
-            ${metricCard('Total projects', state.projects.length, 'Projects visible through real project roles.')}
-            ${metricCard('Total collaborators', people.length, 'Active people assigned to visible projects.')}
-            ${metricCard('Total deliverables', state.deliverables.length, 'Live deliverable records from Supabase.')}
-            ${metricCard('Approved hours', formatHours(approvedHours), 'Payable hours approved by owners or founders.')}
-            ${metricCard('Total payments', formatMoney(payable), 'Approved hours multiplied by hourly rates.')}
+            ${metricCard('Projects', state.projects.length, 'Projects visible through real project roles.')}
+            ${metricCard('Collaborators', people.length, 'Active people assigned to visible projects.')}
+            ${metricCard('Approved Hours', formatHours(approvedHours), 'Payable hours approved by owners or founders.')}
+            ${metricCard('Payable Amount', formatMoney(payable), 'Approved hours multiplied by hourly rates.')}
+            ${metricCard('Deliverables Pending', pendingDeliverables, 'Planned, in progress, or delivered records.')}
+            ${metricCard('Deliverables Approved', approvedDeliverables, 'Deliverables approved by owners or founders.')}
           </div>
           <div class="dashboard-grid">
-            <section class="panel">
-              <div class="panel-header">
-                <div>
-                  <h2 class="panel-title">Recent work logs</h2>
-                  <p class="panel-subtitle">Latest time entries with reported and approved hours.</p>
+            <div class="dashboard-stack">
+              <section class="panel">
+                <div class="panel-header">
+                  <div>
+                    <h2 class="panel-title">Recent Work Logs</h2>
+                    <p class="panel-subtitle">Latest time entries with Submitted Hours and Approved Hours.</p>
+                  </div>
                 </div>
+                ${state.workLogs.length ? renderWorkLogTable(state.workLogs.slice(0, 6), true) : emptyState('No work logs yet', 'Approved work history will appear here after records exist in Supabase.', true)}
+              </section>
+              <div class="dashboard-split">
+                <section class="panel">
+                  <div class="panel-header">
+                    <div>
+                      <h2 class="panel-title">Recent Deliverables</h2>
+                      <p class="panel-subtitle">Delivery progress, owner review, and evidence state.</p>
+                    </div>
+                    ${canCreateDeliverables() ? '<button class="button button-small button-primary" type="button" data-open-deliverable>+ Create Deliverable</button>' : ''}
+                  </div>
+                  ${state.deliverables.length ? renderDashboardDeliverables(state.deliverables.slice(0, 5)) : emptyState('No deliverables yet', 'Deliverables will appear here after records exist in Supabase.', true)}
+                </section>
+                <section class="panel">
+                  <div class="panel-header">
+                    <div>
+                      <h2 class="panel-title">Recent Payments</h2>
+                      <p class="panel-subtitle">Calculated from approved hours and payment status.</p>
+                    </div>
+                  </div>
+                  ${payableRows.length ? renderDashboardPayments(payableRows.slice(0, 5)) : emptyState('No payments yet', 'Approved payable work will appear here after owners approve submitted hours.', true)}
+                </section>
               </div>
-              ${state.workLogs.length ? renderWorkLogTable(state.workLogs.slice(0, 6), true) : emptyState('No work logs yet', 'Approved work history will appear here after records exist in Supabase.', true)}
-            </section>
-            <section class="panel">
-              <div class="panel-header">
-                <div>
-                  <h2 class="panel-title">Activity Feed</h2>
-                  <p class="panel-subtitle">Chronological operating activity from real records.</p>
+            </div>
+            <aside class="dashboard-side">
+              <section class="panel">
+                <div class="panel-header">
+                  <div>
+                    <h2 class="panel-title">Activity Feed</h2>
+                    <p class="panel-subtitle">Work logs, deliverables, payments, and invitations in chronological order.</p>
+                  </div>
                 </div>
-              </div>
-              ${activity.length ? renderActivityFeed(activity) : emptyState('No activity yet', 'Activity will appear after work logs, deliverables, and payments are created.', true)}
-            </section>
-            <section class="panel panel-wide">
-              <div class="panel-header">
-                <div>
-                  <h2 class="panel-title">Deliverables</h2>
-                  <p class="panel-subtitle">Project delivery records with evidence links.</p>
+                ${activity.length ? renderActivityFeed(activity) : emptyState('No activity yet', 'Activity will appear after real operating records exist.', true)}
+              </section>
+              <section class="panel">
+                <div class="panel-header">
+                  <div>
+                    <h2 class="panel-title">Recent Invitations</h2>
+                    <p class="panel-subtitle">Invitation lifecycle from project_roles.</p>
+                  </div>
                 </div>
-                ${canCreateDeliverables() ? '<button class="button button-small button-primary" type="button" data-open-deliverable>+ Create Deliverable</button>' : ''}
-              </div>
-              ${state.deliverables.length ? renderDeliverableTable(state.deliverables.slice(0, 6), true) : emptyState('No deliverables yet', 'Deliverables will appear here after records exist in Supabase.', true)}
-            </section>
-            <section class="panel panel-wide">
-              <div class="panel-header">
-                <div>
-                  <h2 class="panel-title">Payments</h2>
-                  <p class="panel-subtitle">Calculated from approved hours and enriched with payment status.</p>
-                </div>
-              </div>
-              ${payableRows.length ? renderPaymentTable(payableRows.slice(0, 6), true) : emptyState('No payments yet', 'Approved payable work will appear here after owners approve submitted hours.', true)}
-            </section>
+                ${recentInvites.length ? renderDashboardInvitations(recentInvites) : emptyState('No invitations yet', 'Invited collaborators will appear here after real invitation records exist.', true)}
+              </section>
+            </aside>
           </div>
         `;
       }
@@ -2132,8 +2635,8 @@
         return `
           <div class="toolbar">
             <div>
-              <h2 class="toolbar-title">Organization</h2>
-              <p class="toolbar-copy">Live hierarchy from project_roles. No project or role names are hardcoded.</p>
+              <h2 class="toolbar-title">Organization Tree</h2>
+              <p class="toolbar-copy">Horizontal hierarchy from real project_roles with clickable collaborator profiles.</p>
             </div>
           </div>
           <section class="panel">
@@ -2186,14 +2689,31 @@
               <p class="toolbar-copy">Calculated from approved work logs only: approved hours multiplied by USD hourly rates.</p>
             </div>
           </div>
+          ${renderPaymentSummary(payableRows)}
           <section class="panel">
             ${payableRows.length ? renderPaymentTable(payableRows) : emptyState('No payments yet', 'Approved payable work will appear here after owners approve submitted hours.')}
           </section>
         `;
       }
 
-      function renderPeopleTable(people) {
+      function renderPeopleTable(people, compact = false) {
+        const table = compact
+          ? { rows: people, total: people.length, page: 1, pageCount: 1, start: 0 }
+          : prepareTableRows('people', people, personSearchText, {
+            name: (a, b) => compareText(a.name, b.name),
+            role: (a, b) => compareText(a.headline, b.headline),
+            approved_hours: (a, b) => toNumber(b.approvedHours) - toNumber(a.approvedHours),
+            earned: (a, b) => toNumber(b.totalEarned) - toNumber(a.totalEarned)
+          });
+
         return `
+          ${compact ? '' : renderTableControls('people', [
+            ['name', 'Name'],
+            ['role', 'Role'],
+            ['approved_hours', 'Approved Hours'],
+            ['earned', 'Total Earned']
+          ], table)}
+          ${!table.rows.length ? emptyState('No matching collaborators', 'Adjust the filter or clear the search field.', true) : `
           <div class="table-wrap">
             <table>
               <thead>
@@ -2209,16 +2729,16 @@
                 </tr>
               </thead>
               <tbody>
-                ${people.map((person) => `
+                ${table.rows.map((person) => `
                   <tr>
                     <td>
-                      <span class="cell-title">${escapeHtml(person.name)}</span>
-                      <span class="cell-subtitle">${escapeHtml(person.email)}</span>
+                      <span class="cell-title" title="${escapeAttr(person.name)}">${escapeHtml(person.name)}</span>
+                      <span class="cell-subtitle truncate" title="${escapeAttr(person.email)}">${escapeHtml(person.email)}</span>
                     </td>
                     <td><span class="role-pill">${escapeHtml(person.headline)}</span></td>
                     <td>
                       <span class="cell-title">${person.projects.length}</span>
-                      <span class="cell-subtitle truncate">${escapeHtml(person.projectNames.join(', ') || '-')}</span>
+                      <span class="cell-subtitle truncate" title="${escapeAttr(person.projectNames.join(', ') || '-')}">${escapeHtml(person.projectNames.join(', ') || '-')}</span>
                     </td>
                     <td>${formatHours(person.approvedHours)}</td>
                     <td>${formatMoney(person.totalEarned)}</td>
@@ -2230,6 +2750,7 @@
               </tbody>
             </table>
           </div>
+          `}
         `;
       }
 
@@ -2278,7 +2799,25 @@
       }
 
       function renderDeliverableTable(deliverables, compact = false) {
+        const table = compact
+          ? { rows: deliverables, total: deliverables.length, page: 1, pageCount: 1, start: 0 }
+          : prepareTableRows('deliverables', deliverables, deliverableSearchText, {
+            created_desc: (a, b) => compareDateDesc(a.created_at, b.created_at),
+            due_date: (a, b) => compareDateAsc(a.due_date, b.due_date),
+            status: (a, b) => compareText(statusLabel(a.status), statusLabel(b.status)),
+            project: (a, b) => compareText(a.project?.name, b.project?.name),
+            title: (a, b) => compareText(a.title, b.title)
+          });
+
         return `
+          ${compact ? '' : renderTableControls('deliverables', [
+            ['created_desc', 'Newest'],
+            ['due_date', 'Due Date'],
+            ['status', 'Status'],
+            ['project', 'Project'],
+            ['title', 'Title']
+          ], table)}
+          ${!table.rows.length ? emptyState('No matching deliverables', 'Adjust the filter or clear the search field.', true) : `
           <div class="table-wrap">
             <table>
               <thead>
@@ -2288,24 +2827,26 @@
                   <th>Responsible</th>
                   <th>Due date</th>
                   <th>Status</th>
+                  <th>Progress</th>
                   <th>Evidence</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                ${deliverables.map((deliverable) => `
+                ${table.rows.map((deliverable) => `
                   <tr>
                     <td>
-                      <span class="cell-title">${escapeHtml(deliverable.title)}</span>
-                      <span class="cell-subtitle truncate">${escapeHtml(deliverable.description || '')}</span>
+                      <span class="cell-title" title="${escapeAttr(deliverable.title)}">${escapeHtml(deliverable.title)}</span>
+                      <span class="cell-subtitle truncate" title="${escapeAttr(deliverable.description || '')}">${escapeHtml(deliverable.description || '')}</span>
                     </td>
-                    <td>${escapeHtml(deliverable.project?.name || 'Unassigned')}</td>
+                    <td title="${escapeAttr(deliverable.project?.name || 'Unassigned')}">${escapeHtml(deliverable.project?.name || 'Unassigned')}</td>
                     <td>
-                      <span class="cell-title">${escapeHtml(deliverable.responsible?.full_name || deliverable.responsible?.email || '-')}</span>
-                      <span class="cell-subtitle truncate">${escapeHtml(deliverable.responsible?.email || '')}</span>
+                      <span class="cell-title" title="${escapeAttr(deliverable.responsible?.full_name || deliverable.responsible?.email || '-')}">${escapeHtml(deliverable.responsible?.full_name || deliverable.responsible?.email || '-')}</span>
+                      <span class="cell-subtitle truncate" title="${escapeAttr(deliverable.responsible?.email || '')}">${escapeHtml(deliverable.responsible?.email || '')}</span>
                     </td>
                     <td>${formatDate(deliverable.due_date)}</td>
                     <td>${statusPill(deliverable.status)}</td>
+                    <td>${renderProgressBar(deliverableProgress(deliverable.status))}</td>
                     <td>${renderEvidenceLinks(deliverable)}</td>
                     <td>${renderDeliverableActions(deliverable, compact)}</td>
                   </tr>
@@ -2313,11 +2854,30 @@
               </tbody>
             </table>
           </div>
+          `}
         `;
       }
 
       function renderWorkLogTable(logs, compact = false) {
+        const table = compact
+          ? { rows: logs, total: logs.length, page: 1, pageCount: 1, start: 0 }
+          : prepareTableRows('workLogs', logs, workLogSearchText, {
+            date_desc: (a, b) => compareDateDesc(a.work_date, b.work_date),
+            status: (a, b) => compareText(statusLabel(a.status), statusLabel(b.status)),
+            approved_hours: (a, b) => toNumber(b.approved_hours) - toNumber(a.approved_hours),
+            submitted_hours: (a, b) => toNumber(b.hours_used) - toNumber(a.hours_used),
+            project: (a, b) => compareText(a.project?.name, b.project?.name)
+          });
+
         return `
+          ${compact ? '' : renderTableControls('workLogs', [
+            ['date_desc', 'Newest'],
+            ['status', 'Status'],
+            ['approved_hours', 'Approved Hours'],
+            ['submitted_hours', 'Submitted Hours'],
+            ['project', 'Project']
+          ], table)}
+          ${!table.rows.length ? emptyState('No matching work logs', 'Adjust the filter or clear the search field.', true) : `
           <div class="table-wrap">
             <table class="${compact ? 'table-compact' : ''}">
               <thead>
@@ -2326,29 +2886,29 @@
                   <th>Project</th>
                   ${compact ? '' : '<th>Worker</th>'}
                   <th>Title</th>
-                  <th>Reported</th>
-                  <th>Approved</th>
+                  <th>Submitted Hours</th>
+                  <th>Approved Hours</th>
                   <th>Status</th>
                   ${compact ? '' : '<th>Evidence</th>'}
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                ${logs.map((log) => `
+                ${table.rows.map((log) => `
                   <tr>
                     <td>${formatDate(log.work_date)}</td>
                     <td>
-                      <span class="cell-title">${escapeHtml(log.project?.name || 'Unassigned')}</span>
+                      <span class="cell-title" title="${escapeAttr(log.project?.name || 'Unassigned')}">${escapeHtml(log.project?.name || 'Unassigned')}</span>
                     </td>
                     ${compact ? '' : `
                     <td>
-                      <span class="cell-title">${escapeHtml(log.worker?.full_name || log.worker?.email || 'Unknown')}</span>
-                      <span class="cell-subtitle">${escapeHtml(log.worker?.email || '')}</span>
+                      <span class="cell-title" title="${escapeAttr(log.worker?.full_name || log.worker?.email || 'Unknown')}">${escapeHtml(log.worker?.full_name || log.worker?.email || 'Unknown')}</span>
+                      <span class="cell-subtitle truncate" title="${escapeAttr(log.worker?.email || '')}">${escapeHtml(log.worker?.email || '')}</span>
                     </td>
                     `}
                     <td>
-                      <span class="cell-title">${escapeHtml(log.title || 'Work log')}</span>
-                      <span class="cell-subtitle truncate">${escapeHtml(log.description || log.work_type || log.category || '')}</span>
+                      <span class="cell-title" title="${escapeAttr(log.title || 'Work log')}">${escapeHtml(log.title || 'Work log')}</span>
+                      <span class="cell-subtitle truncate" title="${escapeAttr(log.description || log.work_type || log.category || '')}">${escapeHtml(log.description || log.work_type || log.category || '')}</span>
                     </td>
                     <td>${formatHours(log.hours_used)}</td>
                     <td>${log.status === 'approved' ? formatHours(log.approved_hours) : '-'}</td>
@@ -2362,6 +2922,7 @@
               </tbody>
             </table>
           </div>
+          `}
         `;
       }
 
@@ -2378,7 +2939,25 @@
       }
 
       function renderPaymentTable(payments, compact = false) {
+        const table = compact
+          ? { rows: payments, total: payments.length, page: 1, pageCount: 1, start: 0 }
+          : prepareTableRows('payments', payments, paymentSearchText, {
+            total_desc: (a, b) => toNumber(b.total_usd) - toNumber(a.total_usd),
+            status: (a, b) => compareText(statusLabel(a.payment_status || a.status), statusLabel(b.payment_status || b.status)),
+            collaborator: (a, b) => compareText(a.collaborator?.full_name || a.collaborator?.email, b.collaborator?.full_name || b.collaborator?.email),
+            project: (a, b) => compareText(a.project?.name, b.project?.name),
+            hours: (a, b) => toNumber(b.approved_hours) - toNumber(a.approved_hours)
+          });
+
         return `
+          ${compact ? '' : renderTableControls('payments', [
+            ['total_desc', 'Total'],
+            ['status', 'Status'],
+            ['collaborator', 'Collaborator'],
+            ['project', 'Project'],
+            ['hours', 'Approved Hours']
+          ], table)}
+          ${!table.rows.length ? emptyState('No matching payments', 'Adjust the filter or clear the search field.', true) : `
           <div class="table-wrap">
             <table>
               <thead>
@@ -2394,13 +2973,13 @@
                 </tr>
               </thead>
               <tbody>
-                ${payments.map((payment) => `
+                ${table.rows.map((payment) => `
                   <tr>
                     <td>
-                      <span class="cell-title">${escapeHtml(payment.collaborator?.full_name || payment.collaborator?.email || 'Unassigned')}</span>
-                      <span class="cell-subtitle">${escapeHtml(payment.collaborator?.email || '')}</span>
+                      <span class="cell-title" title="${escapeAttr(payment.collaborator?.full_name || payment.collaborator?.email || 'Unassigned')}">${escapeHtml(payment.collaborator?.full_name || payment.collaborator?.email || 'Unassigned')}</span>
+                      <span class="cell-subtitle truncate" title="${escapeAttr(payment.collaborator?.email || '')}">${escapeHtml(payment.collaborator?.email || '')}</span>
                     </td>
-                    <td>${escapeHtml(payment.project?.name || 'Unassigned')}</td>
+                    <td title="${escapeAttr(payment.project?.name || 'Unassigned')}">${escapeHtml(payment.project?.name || 'Unassigned')}</td>
                     <td>${formatHours(payment.approved_hours)}</td>
                     <td>${formatMoney(payment.hourly_rate_usd)}</td>
                     <td>${formatMoney(payment.total_usd)}</td>
@@ -2412,6 +2991,7 @@
               </tbody>
             </table>
           </div>
+          `}
         `;
       }
 
@@ -2471,50 +3051,453 @@
         `;
       }
 
-      function renderOrganizationTree(projects) {
+      function renderDashboardDeliverables(deliverables) {
         return `
-          <div class="organization-tree">
-            <div class="org-root">Bastida Systems</div>
-            ${projects.map((project) => {
-              const roles = ['founder', 'owner', 'core_collaborator', 'contractor'];
-              const assignments = state.projectRoles.filter((assignment) => (
-                assignment.project_id === project.id
-                && assignment.active === true
-              ));
-
-              return `
-                <div class="org-project">
-                  <section class="org-project-card">
-                    <div class="org-project-header">
-                      <p class="org-project-title">${escapeHtml(project.name)}</p>
-                      ${statusPill(project.status)}
-                    </div>
-                    ${roles.map((role) => {
-                      const roleAssignments = assignments.filter((assignment) => assignment.role === role);
-                      if (!roleAssignments.length) {
-                        return '';
-                      }
-
-                      return `
-                        <div class="org-role-row">
-                          <div><span class="role-pill">${escapeHtml(roleLabel(role))}</span></div>
-                          <div class="person-stack">
-                            ${roleAssignments.map((assignment) => `
-                              <span class="person-chip">
-                                <span class="cell-title">${escapeHtml(memberName(assignment))}</span>
-                                <span class="cell-subtitle truncate">${escapeHtml(memberEmail(assignment))}</span>
-                              </span>
-                            `).join('')}
-                          </div>
-                        </div>
-                      `;
-                    }).join('')}
-                  </section>
+          <div class="dashboard-list">
+            ${deliverables.map((deliverable) => `
+              <article class="dashboard-list-item">
+                <div class="dashboard-list-main">
+                  <span class="cell-title truncate" title="${escapeAttr(deliverable.title)}">${escapeHtml(deliverable.title)}</span>
+                  <span class="cell-subtitle truncate" title="${escapeAttr(deliverable.description || deliverable.project?.name || '')}">${escapeHtml(deliverable.project?.name || 'Unassigned')} • ${escapeHtml(deliverable.responsible?.full_name || deliverable.responsible?.email || 'Unassigned')}</span>
                 </div>
-              `;
-            }).join('')}
+                <div class="dashboard-list-side">
+                  ${statusPill(deliverable.status)}
+                  ${renderProgressBar(deliverableProgress(deliverable.status))}
+                </div>
+              </article>
+            `).join('')}
           </div>
         `;
+      }
+
+      function renderDashboardPayments(payments) {
+        return `
+          <div class="dashboard-list">
+            ${payments.map((payment) => `
+              <article class="dashboard-list-item">
+                <div class="dashboard-list-main">
+                  <span class="cell-title truncate" title="${escapeAttr(payment.collaborator?.full_name || payment.collaborator?.email || 'Collaborator')}">${escapeHtml(payment.collaborator?.full_name || payment.collaborator?.email || 'Collaborator')}</span>
+                  <span class="cell-subtitle truncate" title="${escapeAttr(payment.project?.name || 'Unassigned')}">${escapeHtml(payment.project?.name || 'Unassigned')} • ${formatHours(payment.approved_hours)} approved hours</span>
+                </div>
+                <div class="dashboard-list-side">
+                  <span>${formatMoney(payment.total_usd)}</span>
+                  ${statusPill(payment.payment_status || payment.status)}
+                </div>
+              </article>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      function renderDashboardInvitations(invites) {
+        return `
+          <div class="dashboard-list">
+            ${invites.map((assignment) => `
+              <article class="dashboard-list-item">
+                <div class="dashboard-list-main">
+                  <span class="cell-title truncate" title="${escapeAttr(memberName(assignment))}">${escapeHtml(memberName(assignment))}</span>
+                  <span class="cell-subtitle truncate" title="${escapeAttr(memberEmail(assignment))}">${escapeHtml(memberEmail(assignment) || 'No email')} • ${escapeHtml(assignment.project?.name || 'Project')}</span>
+                </div>
+                <div class="dashboard-list-side">
+                  <span>${escapeHtml(roleLabel(assignment.role))}</span>
+                  ${statusPill(normalizeInvitationStatus(assignment))}
+                </div>
+              </article>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      function renderMiniList(items) {
+        return `
+          <div class="mini-list">
+            ${items.map((item) => `
+              <article class="mini-item">
+                <span class="cell-title truncate" title="${escapeAttr(item.title)}">${escapeHtml(item.title)}</span>
+                <span class="cell-subtitle truncate" title="${escapeAttr(item.meta)}">${escapeHtml(item.meta)}</span>
+                ${item.status ? `<span>${statusPill(item.status)}</span>` : ''}
+              </article>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      function renderPaymentSummary(payableRows) {
+        const totalEarned = payableRows.reduce((total, payment) => total + toNumber(payment.total_usd), 0);
+        const paidAmount = payableRows
+          .filter((payment) => normalizePaymentStatus(payment.payment_status || payment.status) === 'paid')
+          .reduce((total, payment) => total + toNumber(payment.total_usd), 0);
+        const pendingAmount = Math.max(0, totalEarned - paidAmount);
+
+        return `
+          <div class="metrics payment-metrics">
+            ${metricCard('Total Earned', formatMoney(totalEarned), 'Approved payable work across visible projects.')}
+            ${metricCard('Pending Payment', formatMoney(pendingAmount), 'Approved work not marked as paid yet.')}
+            ${metricCard('Paid Amount', formatMoney(paidAmount), 'Payments already marked as paid.')}
+          </div>
+        `;
+      }
+
+      function renderTableControls(tableKey, sortOptions, table) {
+        const control = state.tables[tableKey];
+        const from = table.total ? table.start + 1 : 0;
+        const to = table.total ? table.start + table.rows.length : 0;
+
+        return `
+          <div class="table-controls">
+            <div class="table-control-group">
+              <label class="table-filter">
+                <span>Filter</span>
+                <input type="search" value="${escapeAttr(control.filter)}" placeholder="Search ${escapeAttr(labelize(tableKey))}" data-table-filter="${escapeAttr(tableKey)}">
+              </label>
+              <label class="table-sort">
+                <span>Sort</span>
+                <select data-table-sort="${escapeAttr(tableKey)}">
+                  ${sortOptions.map(([value, label]) => `<option value="${escapeAttr(value)}" ${control.sort === value ? 'selected' : ''}>${escapeHtml(label)}</option>`).join('')}
+                </select>
+              </label>
+            </div>
+            <div class="table-pagination">
+              <span>Showing ${from}-${to} of ${table.total}</span>
+              <button class="page-button" type="button" data-table-page="${escapeAttr(tableKey)}" data-page-value="${table.page - 1}" ${table.page <= 1 ? 'disabled' : ''} title="Previous page">‹</button>
+              <span>Page ${table.page} / ${table.pageCount}</span>
+              <button class="page-button" type="button" data-table-page="${escapeAttr(tableKey)}" data-page-value="${table.page + 1}" ${table.page >= table.pageCount ? 'disabled' : ''} title="Next page">›</button>
+            </div>
+          </div>
+        `;
+      }
+
+      function prepareTableRows(tableKey, rows, getSearchText, sorters) {
+        const control = state.tables[tableKey];
+        const filter = String(control.filter || '').trim().toLowerCase();
+        const sorter = sorters[control.sort] || Object.values(sorters)[0];
+        const filteredRows = filter
+          ? rows.filter((row) => getSearchText(row).toLowerCase().includes(filter))
+          : rows.slice();
+
+        filteredRows.sort(sorter);
+
+        const pageCount = Math.max(1, Math.ceil(filteredRows.length / TABLE_PAGE_SIZE));
+        control.page = Math.min(Math.max(1, Number(control.page) || 1), pageCount);
+
+        const start = (control.page - 1) * TABLE_PAGE_SIZE;
+        return {
+          rows: filteredRows.slice(start, start + TABLE_PAGE_SIZE),
+          total: filteredRows.length,
+          page: control.page,
+          pageCount,
+          start
+        };
+      }
+
+      function renderProgressBar(value) {
+        const progress = Math.min(100, Math.max(0, Number(value) || 0));
+        return `
+          <div class="progress-wrap" title="${progress}%">
+            <div class="progress-track" aria-hidden="true">
+              <div class="progress-fill" style="width:${progress}%"></div>
+            </div>
+            <span class="progress-label">${progress}%</span>
+          </div>
+        `;
+      }
+
+      function deliverableProgress(status) {
+        const values = {
+          planned: 15,
+          in_progress: 50,
+          delivered: 75,
+          approved: 100,
+          archived: 100
+        };
+
+        return values[String(status || '').toLowerCase()] ?? 0;
+      }
+
+      function renderPaymentTimeline(payment, history) {
+        const items = history.length
+          ? history
+            .slice()
+            .sort((a, b) => compareDateAsc(a.changed_at, b.changed_at))
+            .map((item) => ({
+              title: statusLabel(item.new_status),
+              meta: `${formatDate(item.changed_at)} - ${personDisplayName(item.actor) || 'Founder'}${item.note ? ` - ${item.note}` : ''}`
+            }))
+          : [{
+            title: statusLabel(payment.payment_status || payment.status),
+            meta: payment.paid_at ? `Paid ${formatDate(payment.paid_at)}` : 'No payment history has been recorded yet.'
+          }];
+
+        return `
+          <ol class="payment-timeline">
+            ${items.map((item) => `
+              <li class="payment-timeline-item">
+                <span class="activity-dot" aria-hidden="true"></span>
+                <div>
+                  <p class="activity-title">${escapeHtml(item.title)}</p>
+                  <p class="activity-meta">${escapeHtml(item.meta)}</p>
+                </div>
+              </li>
+            `).join('')}
+          </ol>
+        `;
+      }
+
+      function buildCollaboratorActivity(person) {
+        if (!person.userId) {
+          return [];
+        }
+
+        const activities = [];
+
+        state.workLogs
+          .filter((log) => log.worker_user_id === person.userId)
+          .forEach((log) => {
+            activities.push({
+              date: log.submitted_at || log.work_date,
+              title: 'Created Work Log',
+              meta: `${formatDate(log.submitted_at || log.work_date)} - ${log.project?.name || 'Unassigned'} - ${log.title || 'Work log'}`,
+              status: log.status
+            });
+
+            if (log.approved_at) {
+              activities.push({
+                date: log.approved_at,
+                title: 'Work Log Approved',
+                meta: `${formatDate(log.approved_at)} - ${formatHours(log.approved_hours)} approved hours`,
+                status: log.status
+              });
+            }
+          });
+
+        state.deliverables
+          .filter((deliverable) => deliverable.responsible_user_id === person.userId)
+          .forEach((deliverable) => {
+            activities.push({
+              date: deliverable.updated_at || deliverable.created_at,
+              title: 'Deliverable Activity',
+              meta: `${formatDate(deliverable.updated_at || deliverable.created_at)} - ${deliverable.project?.name || 'Unassigned'} - ${deliverable.title}`,
+              status: deliverable.status
+            });
+          });
+
+        buildPayableRows()
+          .filter((payment) => payment.user_id === person.userId)
+          .forEach((payment) => {
+            activities.push({
+              date: payment.paid_at,
+              title: 'Payment Status',
+              meta: `${payment.project?.name || 'Unassigned'} - ${formatMoney(payment.total_usd)}`,
+              status: payment.payment_status || payment.status
+            });
+          });
+
+        return activities
+          .filter((activity) => activity.date)
+          .sort((a, b) => compareDateDesc(a.date, b.date))
+          .map(({ date, ...activity }) => activity);
+      }
+
+      function personSearchText(person) {
+        return [
+          person.name,
+          person.email,
+          person.headline,
+          person.projectNames.join(' '),
+          person.status
+        ].join(' ');
+      }
+
+      function deliverableSearchText(deliverable) {
+        return [
+          deliverable.title,
+          deliverable.description,
+          deliverable.project?.name,
+          deliverable.responsible?.full_name,
+          deliverable.responsible?.email,
+          statusLabel(deliverable.status)
+        ].join(' ');
+      }
+
+      function workLogSearchText(log) {
+        return [
+          log.title,
+          log.description,
+          log.project?.name,
+          log.worker?.full_name,
+          log.worker?.email,
+          log.work_type,
+          log.category,
+          log.commit_hash,
+          statusLabel(log.status)
+        ].join(' ');
+      }
+
+      function paymentSearchText(payment) {
+        return [
+          payment.collaborator?.full_name,
+          payment.collaborator?.email,
+          payment.project?.name,
+          statusLabel(payment.payment_status || payment.status)
+        ].join(' ');
+      }
+
+      function renderOrganizationTree(projects) {
+        const zoom = state.organization.zoom || 1;
+        const layout = buildOrganizationTreeLayout(projects);
+        const zoomLabel = `${Math.round(zoom * 100)}%`;
+
+        return `
+          <div class="org-board">
+            <div class="org-toolbar">
+              <div class="org-toolbar-group" aria-label="Organization tree controls">
+                <button class="button button-small" type="button" data-org-zoom="out" title="Zoom Out">-</button>
+                <span class="org-zoom-label">${escapeHtml(zoomLabel)}</span>
+                <button class="button button-small" type="button" data-org-zoom="in" title="Zoom In">+</button>
+                <button class="button button-small" type="button" data-org-fit="screen">Fit to Screen</button>
+                <button class="button button-small" type="button" data-org-fit="reset">Reset</button>
+              </div>
+              <div class="org-toolbar-group">
+                <button class="button button-small" type="button" data-org-toggle-all="expand">Expand All</button>
+                <button class="button button-small" type="button" data-org-toggle-all="collapse">Collapse All</button>
+              </div>
+            </div>
+            <div class="org-canvas" aria-label="Bastida Systems organization tree">
+              <div class="org-scale-shell" style="width:${layout.width * zoom}px; height:${layout.height * zoom}px;">
+                <div class="org-canvas-inner" style="width:${layout.width}px; height:${layout.height}px; transform: scale(${zoom});">
+                  <svg class="org-connector-layer" width="${layout.width}" height="${layout.height}" viewBox="0 0 ${layout.width} ${layout.height}" aria-hidden="true">
+                    ${layout.paths.map((path) => `<path class="org-connector" d="${escapeAttr(path)}"></path>`).join('')}
+                  </svg>
+                  <article class="org-node org-root-node" style="left:${layout.root.x}px; top:${layout.root.y}px;">
+                    <span class="org-node-avatar org-avatar-brand">BS</span>
+                    <div class="org-node-body">
+                      <p class="org-node-title">Bastida Systems</p>
+                      <p class="org-node-role">Organization</p>
+                      <p class="org-node-project">${projects.length} ${projects.length === 1 ? 'Project' : 'Projects'}</p>
+                    </div>
+                  </article>
+                  ${layout.projects.map((item) => `
+                    <article class="org-node org-project-node" style="left:${item.x}px; top:${item.y}px;">
+                      <button class="org-node-toggle" type="button" data-org-toggle-project="${escapeAttr(item.project.id)}" title="${item.collapsed ? 'Expand project' : 'Collapse project'}">${item.collapsed ? '+' : '-'}</button>
+                      <span class="org-node-avatar org-avatar-project">${escapeHtml(initials(item.project.name))}</span>
+                      <div class="org-node-body">
+                        <p class="org-node-title" title="${escapeAttr(item.project.name)}">${escapeHtml(item.project.name)}</p>
+                        <p class="org-node-role">Project</p>
+                        <p class="org-node-project">${item.memberCount} ${item.memberCount === 1 ? 'Collaborator' : 'Collaborators'} • ${escapeHtml(statusLabel(item.project.status))}</p>
+                      </div>
+                    </article>
+                    ${item.people.map((personNode) => renderOrgPersonNode(personNode)).join('')}
+                  `).join('')}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function buildOrganizationTreeLayout(projects) {
+        const collapsed = new Set(state.organization.collapsedProjectIds);
+        const root = { x: 36, y: 220 };
+        const projectX = 330;
+        const personX = 678;
+        const projectWidth = 238;
+        const personWidth = 252;
+        const nodeHeight = 74;
+        const personGap = 88;
+        const blockGap = 48;
+        const paths = [];
+        const projectLayouts = [];
+        let cursorY = 52;
+
+        projects.forEach((project) => {
+          const assignments = state.projectRoles
+            .filter((assignment) => assignment.project_id === project.id && assignment.active === true)
+            .sort(compareAssignmentsByHierarchy);
+          const isCollapsed = collapsed.has(project.id);
+          const visibleAssignments = isCollapsed ? [] : assignments;
+          const blockHeight = isCollapsed
+            ? 118
+            : Math.max(134, Math.max(visibleAssignments.length, 1) * personGap);
+          const projectY = cursorY + Math.max(0, (blockHeight - nodeHeight) / 2);
+          const people = visibleAssignments.map((assignment, index) => ({
+            assignment,
+            project,
+            x: personX,
+            y: cursorY + (index * personGap),
+            width: personWidth
+          }));
+
+          projectLayouts.push({
+            project,
+            x: projectX,
+            y: projectY,
+            collapsed: isCollapsed,
+            memberCount: assignments.length,
+            people
+          });
+
+          cursorY += blockHeight + blockGap;
+        });
+
+        const height = Math.max(520, cursorY + 26);
+        root.y = Math.max(52, Math.round((height / 2) - (nodeHeight / 2)));
+
+        projectLayouts.forEach((item) => {
+          paths.push(curvePath(root.x + projectWidth, root.y + nodeHeight / 2, item.x, item.y + nodeHeight / 2));
+          item.people.forEach((person) => {
+            paths.push(curvePath(item.x + projectWidth, item.y + nodeHeight / 2, person.x, person.y + nodeHeight / 2));
+          });
+        });
+
+        return {
+          width: personX + personWidth + 52,
+          height,
+          root,
+          projects: projectLayouts,
+          paths
+        };
+      }
+
+      function renderOrgPersonNode(personNode) {
+        const assignment = personNode.assignment;
+        const name = memberName(assignment);
+        const email = memberEmail(assignment);
+        const userId = assignment.member?.id || assignment.user_id || '';
+        const attrs = userId
+          ? `type="button" data-detail-kind="collaborator" data-detail-id="${escapeAttr(userId)}"`
+          : 'aria-disabled="true"';
+        const tag = userId ? 'button' : 'article';
+
+        return `
+          <${tag} class="org-node org-person-node" ${attrs} style="left:${personNode.x}px; top:${personNode.y}px;">
+            <span class="org-node-avatar">${escapeHtml(initials(name || email))}</span>
+            <div class="org-node-body">
+              <p class="org-node-title" title="${escapeAttr(name)}">${escapeHtml(name)}</p>
+              <p class="org-node-role">${escapeHtml(roleLabel(assignment.role))}</p>
+              <p class="org-node-project" title="${escapeAttr(personNode.project.name)}">${escapeHtml(personNode.project.name)}</p>
+            </div>
+          </${tag}>
+        `;
+      }
+
+      function curvePath(fromX, fromY, toX, toY) {
+        const middle = Math.max(80, Math.round((toX - fromX) / 2));
+        return `M ${fromX} ${fromY} C ${fromX + middle} ${fromY}, ${toX - middle} ${toY}, ${toX} ${toY}`;
+      }
+
+      function compareAssignmentsByHierarchy(a, b) {
+        const order = {
+          founder: 0,
+          owner: 1,
+          core_collaborator: 2,
+          contractor: 3
+        };
+        const roleCompare = (order[a.role] ?? 9) - (order[b.role] ?? 9);
+        if (roleCompare !== 0) {
+          return roleCompare;
+        }
+
+        return compareText(memberName(a), memberName(b));
       }
 
       function buildPeople() {
@@ -2724,7 +3707,7 @@
                       <input id="work-log-date" name="work_date" type="date" value="${escapeAttr(todayISO())}" required>
                     </div>
                     <div class="field">
-                      <label for="work-log-hours">Reported Hours</label>
+                      <label for="work-log-hours">Submitted Hours</label>
                       <input id="work-log-hours" name="hours_used" type="number" inputmode="decimal" min="0.01" max="24" step="0.01" required>
                     </div>
                     <div class="field">
@@ -2818,7 +3801,7 @@
                   ${notice}
                   <div class="detail-grid">
                     <div class="detail-card">
-                      <p class="detail-label">Reported Hours</p>
+                      <p class="detail-label">Submitted Hours</p>
                       <p class="detail-value">${formatHours(reportedHours)}</p>
                     </div>
                     <div class="detail-card">
@@ -2959,6 +3942,10 @@
       }
 
       function renderDetailsModal() {
+        if (state.detail.kind === 'collaborator') {
+          return renderCollaboratorDrawer();
+        }
+
         const detail = buildDetailContent();
 
         return `
@@ -2978,6 +3965,77 @@
                 <button class="button button-primary" type="button" data-close-detail>Done</button>
               </div>
             </section>
+          </div>
+        `;
+      }
+
+      function renderCollaboratorDrawer() {
+        const person = buildPeople().find((item) => item.userId === state.detail.id);
+
+        if (!person) {
+          const detail = emptyDetail();
+          return `
+            <div class="modal-backdrop" role="presentation">
+              <section class="modal" role="dialog" aria-modal="true" aria-labelledby="details-title">
+                <div class="modal-header">
+                  <h2 class="modal-title" id="details-title">${escapeHtml(detail.title)}</h2>
+                  <button class="button" type="button" data-close-detail>Close</button>
+                </div>
+                <div class="modal-body">${detail.body}</div>
+              </section>
+            </div>
+          `;
+        }
+
+        const recentActivity = buildCollaboratorActivity(person).slice(0, 6);
+        const recentLogs = state.workLogs
+          .filter((log) => log.worker_user_id === person.userId)
+          .sort((a, b) => compareDateDesc(a.submitted_at || a.work_date, b.submitted_at || b.work_date))
+          .slice(0, 4);
+
+        return `
+          <div class="drawer-backdrop" role="presentation">
+            <aside class="profile-drawer" role="dialog" aria-modal="true" aria-labelledby="collaborator-title">
+              <div class="drawer-header">
+                <div class="drawer-identity">
+                  <span class="avatar">${escapeHtml(initials(person.name || person.email))}</span>
+                  <div class="org-node-body">
+                    <h2 class="modal-title" id="collaborator-title">${escapeHtml(person.name)}</h2>
+                    <p class="modal-copy">${escapeHtml(person.email || 'No email available')}</p>
+                    <p class="modal-copy">${escapeHtml(person.headline)}</p>
+                  </div>
+                </div>
+                <button class="button" type="button" data-close-detail>Close</button>
+              </div>
+              <div class="drawer-body">
+                <div class="detail-grid">
+                  ${detailCard('Approved Hours', formatHours(person.approvedHours))}
+                  ${detailCard('Total Earned', formatMoney(person.totalEarned))}
+                  ${detailCard('Deliverables Completed', person.completedDeliverables)}
+                  ${detailCard('Last Activity', formatDate(person.lastActivity))}
+                </div>
+                <section class="drawer-section">
+                  <p class="drawer-section-title">Projects</p>
+                  <div class="role-list">
+                    ${person.assignments.map((assignment) => `
+                      <span class="role-pill" title="${escapeAttr(`${roleLabel(assignment.role)} - ${assignment.project?.name || 'Project'}`)}">${escapeHtml(roleLabel(assignment.role))} • ${escapeHtml(assignment.project?.name || 'Project')}</span>
+                    `).join('') || '<p class="empty-copy empty-copy-flush">No active project assignments.</p>'}
+                  </div>
+                </section>
+                <section class="drawer-section">
+                  <p class="drawer-section-title">Recent Activity</p>
+                  ${recentActivity.length ? renderMiniList(recentActivity) : '<p class="empty-copy empty-copy-flush">No recent activity for this collaborator.</p>'}
+                </section>
+                <section class="drawer-section">
+                  <p class="drawer-section-title">Latest Work Logs</p>
+                  ${recentLogs.length ? renderMiniList(recentLogs.map((log) => ({
+                    title: log.title || 'Work log',
+                    meta: `${formatDate(log.work_date)} - ${log.project?.name || 'Unassigned'} - ${formatHours(log.hours_used)} submitted / ${log.status === 'approved' ? formatHours(log.approved_hours) : '-'} approved`,
+                    status: log.status
+                  }))) : '<p class="empty-copy empty-copy-flush">No work logs for this collaborator.</p>'}
+                </section>
+              </div>
+            </aside>
           </div>
         `;
       }
@@ -3109,10 +4167,12 @@
             ${detailCard('Worker', log.worker?.full_name || log.worker?.email || 'Unknown')}
             ${detailCard('Work Type', log.work_type || log.category || '-')}
             ${detailCard('Date', formatDate(log.work_date))}
-            ${detailCard('Reported Hours', formatHours(log.hours_used))}
+            ${detailCard('Submitted Hours', formatHours(log.hours_used))}
             ${detailCard('Approved Hours', log.status === 'approved' ? formatHours(log.approved_hours) : '-')}
             ${detailCard('Status', statusLabel(log.status))}
             ${detailCard('Commit', log.commit_hash || '-')}
+            ${detailCard('Approver', log.approver?.full_name || log.approver?.email || '-')}
+            ${detailCard('Rejected By', log.rejecter?.full_name || log.rejecter?.email || '-')}
           </div>
           <div class="detail-card detail-card-spaced">
             <p class="detail-label">Description</p>
@@ -3134,6 +4194,10 @@
             ${detailCard('Status', statusLabel(deliverable.status))}
             ${detailCard('Delivered', formatDate(deliverable.delivered_at))}
             ${detailCard('Approved', formatDate(deliverable.approved_at))}
+          </div>
+          <div class="detail-card detail-card-spaced">
+            <p class="detail-label">Progress</p>
+            <div class="detail-card-body">${renderProgressBar(deliverableProgress(deliverable.status))}</div>
           </div>
           <div class="detail-card detail-card-spaced">
             <p class="detail-label">Description</p>
@@ -3163,12 +4227,9 @@
             ${detailCard('Paid By', payment.payer?.full_name || payment.payer?.email || '-')}
           </div>
           <div class="detail-card detail-card-spaced">
-            <p class="detail-label">History</p>
+            <p class="detail-label">Payment History</p>
             <div class="detail-card-body">
-              ${history.length ? renderActivityFeed(history.map((item) => ({
-                title: `${personDisplayName(item.actor) || 'Founder'} marked payment ${statusLabel(item.new_status)}`,
-                meta: `${formatDate(item.changed_at)} - ${item.note || 'Payment status changed'}`
-              }))) : '<p class="empty-copy empty-copy-flush">No payment history yet.</p>'}
+              ${renderPaymentTimeline(payment, history)}
             </div>
           </div>
         `;
@@ -3471,6 +4532,19 @@
           }
         });
 
+        state.projectRoles.forEach((assignment) => {
+          const inviteDate = assignment.invited_at || assignment.accepted_at || assignment.joined_at;
+          if (!inviteDate || !isInvitationRecord(assignment)) {
+            return;
+          }
+
+          activities.push({
+            date: inviteDate,
+            title: `${memberName(assignment)} invitation ${statusLabel(normalizeInvitationStatus(assignment))}`,
+            meta: `${assignment.project?.name || 'Project'} - ${roleLabel(assignment.role)}`
+          });
+        });
+
         return activities
           .filter((activity) => activity.date)
           .sort((a, b) => new Date(b.date) - new Date(a.date))
@@ -3611,6 +4685,14 @@
         return assignment.active ? 'active_member' : 'pending_acceptance';
       }
 
+      function isInvitationRecord(assignment) {
+        const status = normalizeInvitationStatus(assignment);
+        return Boolean(assignment.invite_email)
+          || Boolean(assignment.invited_at)
+          || Boolean(assignment.accepted_at)
+          || ['invite_sent', 'pending_acceptance', 'error_sending_invite'].includes(status);
+      }
+
       function mergeInvitationStatus(currentStatus, nextStatus) {
         const priority = {
           error_sending_invite: 4,
@@ -3681,6 +4763,52 @@
         return String(value || '')
           .replace(/_/g, ' ')
           .replace(/\b\w/g, (character) => character.toUpperCase());
+      }
+
+      function initials(value) {
+        const cleaned = String(value || 'Bastida Systems')
+          .replace(/@.*$/, '')
+          .trim();
+        const parts = cleaned.split(/\s+/).filter(Boolean);
+        const letters = parts.length > 1
+          ? `${parts[0][0] || ''}${parts[1][0] || ''}`
+          : (parts[0] || 'BS').slice(0, 2);
+
+        return letters.toUpperCase();
+      }
+
+      function compareText(a, b) {
+        return String(a || '').localeCompare(String(b || ''), undefined, { sensitivity: 'base' });
+      }
+
+      function compareDateDesc(a, b) {
+        return dateTime(b) - dateTime(a);
+      }
+
+      function compareDateAsc(a, b) {
+        const first = dateTime(a);
+        const second = dateTime(b);
+
+        if (!first && !second) {
+          return 0;
+        }
+        if (!first) {
+          return 1;
+        }
+        if (!second) {
+          return -1;
+        }
+
+        return first - second;
+      }
+
+      function dateTime(value) {
+        if (!value) {
+          return 0;
+        }
+
+        const date = new Date(value);
+        return Number.isNaN(date.getTime()) ? 0 : date.getTime();
       }
 
       function formatMoney(value) {
