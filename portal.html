@@ -1070,14 +1070,14 @@
     }
 
     .org-canvas {
-      min-height: 540px;
+      min-height: 620px;
       overflow: auto;
       padding: 28px;
     }
 
     .org-scale-shell {
       position: relative;
-      min-width: 940px;
+      min-width: 1180px;
     }
 
     .org-canvas-inner {
@@ -1094,37 +1094,34 @@
 
     .org-connector {
       fill: none;
-      stroke: #94a3b8;
-      stroke-width: 2;
+      stroke: #64748b;
+      stroke-width: 2.2;
       stroke-linecap: round;
       stroke-linejoin: round;
+      opacity: 0.78;
     }
 
     .org-node {
       position: absolute;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      width: 238px;
-      min-height: 74px;
+      width: 292px;
+      min-height: 112px;
       border: 1px solid rgba(203, 213, 225, 0.9);
       border-radius: var(--radius);
       background: rgba(255, 255, 255, 0.94);
       box-shadow: 0 16px 34px rgba(15, 23, 42, 0.08);
-      padding: 12px;
       color: var(--text);
-      text-align: left;
+      overflow: visible;
     }
 
     .org-person-node {
-      width: 252px;
-      min-height: 72px;
+      width: 292px;
+      min-height: 112px;
       border-color: rgba(148, 163, 184, 0.5);
       background: #ffffff;
       transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
     }
 
-    button.org-person-node:hover {
+    .org-person-node:hover {
       border-color: rgba(29, 78, 216, 0.46);
       box-shadow: 0 18px 38px rgba(29, 78, 216, 0.13);
       transform: translateY(-2px);
@@ -1133,6 +1130,29 @@
     .org-root-node {
       border-color: rgba(29, 78, 216, 0.2);
       background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+    }
+
+    .org-node-main {
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      width: 100%;
+      min-height: 112px;
+      border: 0;
+      border-radius: inherit;
+      background: transparent;
+      color: inherit;
+      padding: 13px;
+      text-align: left;
+    }
+
+    button.org-node-main {
+      cursor: pointer;
+    }
+
+    button.org-node-main:focus-visible {
+      outline: 3px solid rgba(29, 78, 216, 0.18);
+      outline-offset: 2px;
     }
 
     .org-node-avatar,
@@ -1165,6 +1185,7 @@
 
     .org-node-body {
       min-width: 0;
+      width: 100%;
     }
 
     .org-node-title,
@@ -1198,6 +1219,26 @@
       line-height: 1.25;
     }
 
+    .org-node-metrics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 9px;
+    }
+
+    .org-node-metric {
+      display: inline-flex;
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      border-radius: 999px;
+      background: rgba(248, 250, 252, 0.85);
+      color: var(--text-soft);
+      padding: 3px 7px;
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
     .org-node-toggle {
       position: absolute;
       top: -10px;
@@ -1213,6 +1254,62 @@
       box-shadow: var(--shadow-soft);
       font-size: 15px;
       font-weight: 900;
+    }
+
+    .org-role-founder {
+      border-color: rgba(49, 46, 129, 0.3);
+      background: linear-gradient(135deg, #eef2ff 0%, #ffffff 78%);
+    }
+
+    .org-role-founder .org-node-avatar {
+      border-color: rgba(49, 46, 129, 0.25);
+      background: #312e81;
+      color: #ffffff;
+    }
+
+    .org-role-owner {
+      border-color: rgba(29, 78, 216, 0.28);
+      background: linear-gradient(135deg, #eff6ff 0%, #ffffff 78%);
+    }
+
+    .org-role-owner .org-node-avatar {
+      border-color: rgba(29, 78, 216, 0.24);
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .org-role-core_collaborator {
+      border-color: rgba(5, 150, 105, 0.26);
+      background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 78%);
+    }
+
+    .org-role-core_collaborator .org-node-avatar {
+      border-color: rgba(5, 150, 105, 0.24);
+      background: #d1fae5;
+      color: #047857;
+    }
+
+    .org-role-contractor {
+      border-color: rgba(180, 83, 9, 0.28);
+      background: linear-gradient(135deg, #fff7ed 0%, #ffffff 78%);
+    }
+
+    .org-role-contractor .org-node-avatar {
+      border-color: rgba(180, 83, 9, 0.24);
+      background: #ffedd5;
+      color: #b45309;
+    }
+
+    .org-role-unassigned_project {
+      border-style: dashed;
+      border-color: rgba(100, 116, 139, 0.5);
+      background: linear-gradient(135deg, #f8fafc 0%, #ffffff 78%);
+    }
+
+    .org-role-unassigned_project .org-node-avatar {
+      border-color: rgba(100, 116, 139, 0.24);
+      background: #e2e8f0;
+      color: #475569;
     }
 
     .drawer-backdrop {
@@ -1471,12 +1568,12 @@
       }
 
       .org-canvas {
-        min-height: 460px;
+        min-height: 520px;
         padding: 18px;
       }
 
       .org-scale-shell {
-        min-width: 850px;
+        min-width: 1040px;
       }
 
       .profile-drawer {
@@ -1573,7 +1670,7 @@
         },
         organization: {
           zoom: 1,
-          collapsedProjectIds: []
+          collapsedNodeIds: []
         },
         tables: {
           people: { filter: '', sort: 'name', page: 1 },
@@ -2051,21 +2148,21 @@
 
         app.querySelectorAll('[data-org-fit]').forEach((button) => {
           button.addEventListener('click', () => {
-            state.organization.zoom = button.dataset.orgFit === 'reset' ? 1 : 0.82;
+            state.organization.zoom = button.dataset.orgFit === 'reset' ? 1 : 0.65;
             renderApp();
           });
         });
 
-        app.querySelectorAll('[data-org-toggle-project]').forEach((button) => {
+        app.querySelectorAll('[data-org-toggle-node]').forEach((button) => {
           button.addEventListener('click', () => {
-            const projectId = button.dataset.orgToggleProject;
-            const collapsed = new Set(state.organization.collapsedProjectIds);
-            if (collapsed.has(projectId)) {
-              collapsed.delete(projectId);
+            const nodeId = button.dataset.orgToggleNode;
+            const collapsed = new Set(state.organization.collapsedNodeIds);
+            if (collapsed.has(nodeId)) {
+              collapsed.delete(nodeId);
             } else {
-              collapsed.add(projectId);
+              collapsed.add(nodeId);
             }
-            state.organization.collapsedProjectIds = Array.from(collapsed);
+            state.organization.collapsedNodeIds = Array.from(collapsed);
             renderApp();
           });
         });
@@ -2073,8 +2170,9 @@
         app.querySelectorAll('[data-org-toggle-all]').forEach((button) => {
           button.addEventListener('click', () => {
             const activeProjects = state.projects.filter((project) => project.status !== 'archived');
-            state.organization.collapsedProjectIds = button.dataset.orgToggleAll === 'collapse'
-              ? activeProjects.map((project) => project.id)
+            const hierarchy = buildOrganizationHierarchy(activeProjects);
+            state.organization.collapsedNodeIds = button.dataset.orgToggleAll === 'collapse'
+              ? collectCollapsibleOrgNodeIds(hierarchy.root).filter((nodeId) => nodeId !== 'org-root')
               : [];
             renderApp();
           });
@@ -3368,26 +3466,7 @@
                   <svg class="org-connector-layer" width="${layout.width}" height="${layout.height}" viewBox="0 0 ${layout.width} ${layout.height}" aria-hidden="true">
                     ${layout.paths.map((path) => `<path class="org-connector" d="${escapeAttr(path)}"></path>`).join('')}
                   </svg>
-                  <article class="org-node org-root-node" style="left:${layout.root.x}px; top:${layout.root.y}px;">
-                    <span class="org-node-avatar org-avatar-brand">BS</span>
-                    <div class="org-node-body">
-                      <p class="org-node-title">Bastida Systems</p>
-                      <p class="org-node-role">Organization</p>
-                      <p class="org-node-project">${projects.length} ${projects.length === 1 ? 'Project' : 'Projects'}</p>
-                    </div>
-                  </article>
-                  ${layout.projects.map((item) => `
-                    <article class="org-node org-project-node" style="left:${item.x}px; top:${item.y}px;">
-                      <button class="org-node-toggle" type="button" data-org-toggle-project="${escapeAttr(item.project.id)}" title="${item.collapsed ? 'Expand project' : 'Collapse project'}">${item.collapsed ? '+' : '-'}</button>
-                      <span class="org-node-avatar org-avatar-project">${escapeHtml(initials(item.project.name))}</span>
-                      <div class="org-node-body">
-                        <p class="org-node-title" title="${escapeAttr(item.project.name)}">${escapeHtml(item.project.name)}</p>
-                        <p class="org-node-role">Project</p>
-                        <p class="org-node-project">${item.memberCount} ${item.memberCount === 1 ? 'Collaborator' : 'Collaborators'} • ${escapeHtml(statusLabel(item.project.status))}</p>
-                      </div>
-                    </article>
-                    ${item.people.map((personNode) => renderOrgPersonNode(personNode)).join('')}
-                  `).join('')}
+                  ${layout.nodes.map((node) => renderOrgTreeNode(node)).join('')}
                 </div>
               </div>
             </div>
@@ -3396,92 +3475,200 @@
       }
 
       function buildOrganizationTreeLayout(projects) {
-        const collapsed = new Set(state.organization.collapsedProjectIds);
-        const root = { x: 36, y: 220 };
-        const projectX = 330;
-        const personX = 678;
-        const projectWidth = 238;
-        const personWidth = 252;
-        const nodeHeight = 74;
-        const personGap = 88;
-        const blockGap = 48;
+        const hierarchy = buildOrganizationHierarchy(projects);
+        const collapsed = new Set(state.organization.collapsedNodeIds);
+        const nodeWidth = 292;
+        const nodeHeight = 112;
+        const margin = 52;
+        const levelGap = 118;
+        const rowGap = 38;
         const paths = [];
-        const projectLayouts = [];
-        let cursorY = 52;
+        const nodes = [];
+        let maxDepth = 0;
 
-        projects.forEach((project) => {
-          const assignments = state.projectRoles
-            .filter((assignment) => assignment.project_id === project.id && assignment.active === true)
-            .sort(compareAssignmentsByHierarchy);
-          const isCollapsed = collapsed.has(project.id);
-          const visibleAssignments = isCollapsed ? [] : assignments;
-          const blockHeight = isCollapsed
-            ? 118
-            : Math.max(134, Math.max(visibleAssignments.length, 1) * personGap);
-          const projectY = cursorY + Math.max(0, (blockHeight - nodeHeight) / 2);
-          const people = visibleAssignments.map((assignment, index) => ({
-            assignment,
-            project,
-            x: personX,
-            y: cursorY + (index * personGap),
-            width: personWidth
-          }));
+        function visibleChildren(node) {
+          return collapsed.has(node.id) ? [] : (node.children || []);
+        }
 
-          projectLayouts.push({
-            project,
-            x: projectX,
-            y: projectY,
-            collapsed: isCollapsed,
-            memberCount: assignments.length,
-            people
+        function measure(node) {
+          const children = visibleChildren(node);
+
+          if (!children.length) {
+            node.subtreeHeight = nodeHeight;
+            return node.subtreeHeight;
+          }
+
+          const childHeight = children.reduce((total, child, index) => (
+            total + measure(child) + (index === 0 ? 0 : rowGap)
+          ), 0);
+
+          node.subtreeHeight = Math.max(nodeHeight, childHeight);
+          return node.subtreeHeight;
+        }
+
+        function place(node, depth, top) {
+          const x = margin + depth * (nodeWidth + levelGap);
+          const y = Math.round(top + ((node.subtreeHeight - nodeHeight) / 2));
+          const children = visibleChildren(node);
+          const layoutNode = {
+            ...node,
+            x,
+            y,
+            width: nodeWidth,
+            height: nodeHeight,
+            collapsed: collapsed.has(node.id),
+            childCount: (node.children || []).length
+          };
+
+          nodes.push(layoutNode);
+          maxDepth = Math.max(maxDepth, depth);
+
+          let cursorY = top;
+          children.forEach((child) => {
+            const childY = place(child, depth + 1, cursorY);
+            paths.push(curvePath(
+              x + nodeWidth,
+              y + nodeHeight / 2,
+              margin + (depth + 1) * (nodeWidth + levelGap),
+              childY + nodeHeight / 2
+            ));
+            cursorY += child.subtreeHeight + rowGap;
           });
 
-          cursorY += blockHeight + blockGap;
-        });
+          return y;
+        }
 
-        const height = Math.max(520, cursorY + 26);
-        root.y = Math.max(52, Math.round((height / 2) - (nodeHeight / 2)));
-
-        projectLayouts.forEach((item) => {
-          paths.push(curvePath(root.x + projectWidth, root.y + nodeHeight / 2, item.x, item.y + nodeHeight / 2));
-          item.people.forEach((person) => {
-            paths.push(curvePath(item.x + projectWidth, item.y + nodeHeight / 2, person.x, person.y + nodeHeight / 2));
-          });
-        });
+        const measuredHeight = measure(hierarchy.root);
+        const height = Math.max(620, measuredHeight + margin * 2);
+        place(hierarchy.root, 0, margin);
 
         return {
-          width: personX + personWidth + 52,
+          width: margin * 2 + (maxDepth + 1) * nodeWidth + maxDepth * levelGap,
           height,
-          root,
-          projects: projectLayouts,
+          nodes,
           paths
         };
       }
 
-      function renderOrgPersonNode(personNode) {
-        const assignment = personNode.assignment;
-        const name = memberName(assignment);
-        const email = memberEmail(assignment);
-        const userId = assignment.member?.id || assignment.user_id || '';
-        const attrs = userId
-          ? `type="button" data-detail-kind="collaborator" data-detail-id="${escapeAttr(userId)}"`
-          : 'aria-disabled="true"';
-        const tag = userId ? 'button' : 'article';
+      function buildOrganizationHierarchy(projects) {
+        const projectMap = new Map(projects.map((project) => [project.id, project]));
+        const assignments = state.projectRoles
+          .filter((assignment) => assignment.active === true)
+          .filter((assignment) => projectMap.has(assignment.project_id))
+          .filter((assignment) => assignment.user_id || assignment.member || assignment.invited_name || assignment.invite_email);
+        const root = {
+          id: 'org-root',
+          kind: 'root',
+          role: 'root',
+          name: 'Bastida Systems',
+          roleText: 'Organization',
+          projectLabel: `${projects.length} ${projects.length === 1 ? 'Project' : 'Projects'}`,
+          approvedHours: null,
+          totalEarned: null,
+          children: []
+        };
+        const founderAssignments = assignments.filter(isFounderAssignment);
+        const founderNodes = groupAssignmentsByPerson(founderAssignments)
+          .map((group) => createFounderOrgNode(group.assignments, projectMap))
+          .sort(compareOrgNodes);
+        const founderByProject = new Map();
+
+        founderNodes.forEach((node) => {
+          root.children.push(node);
+          node.assignments.forEach((assignment) => {
+            if (!founderByProject.has(assignment.project_id)) {
+              founderByProject.set(assignment.project_id, node);
+            }
+          });
+        });
+
+        const fallbackParent = founderNodes[0] || root;
+        const ownerNodesByProject = new Map();
+
+        assignments
+          .filter((assignment) => assignment.role === 'owner')
+          .sort(compareAssignmentsByHierarchy)
+          .forEach((assignment) => {
+            const project = projectMap.get(assignment.project_id);
+            const node = createAssignmentOrgNode(assignment, project);
+            const parent = founderByProject.get(assignment.project_id) || fallbackParent;
+
+            parent.children.push(node);
+
+            if (!ownerNodesByProject.has(assignment.project_id)) {
+              ownerNodesByProject.set(assignment.project_id, []);
+            }
+            ownerNodesByProject.get(assignment.project_id).push(node);
+          });
+
+        const unassignedProjectNodes = new Map();
+        const getUnassignedProjectNode = (project) => {
+          if (!unassignedProjectNodes.has(project.id)) {
+            const node = createUnassignedProjectNode(project);
+            const parent = founderByProject.get(project.id) || fallbackParent;
+            parent.children.push(node);
+            unassignedProjectNodes.set(project.id, node);
+          }
+
+          return unassignedProjectNodes.get(project.id);
+        };
+
+        assignments
+          .filter((assignment) => ['core_collaborator', 'contractor'].includes(assignment.role))
+          .sort(compareAssignmentsByHierarchy)
+          .forEach((assignment) => {
+            const project = projectMap.get(assignment.project_id);
+            const owners = ownerNodesByProject.get(assignment.project_id) || [];
+            const parent = owners[0] || getUnassignedProjectNode(project);
+
+            parent.children.push(createAssignmentOrgNode(assignment, project));
+          });
+
+        sortOrgTree(root);
+
+        return { root };
+      }
+
+      function renderOrgTreeNode(node) {
+        const safeRole = escapeAttr(node.role);
+        const hasChildren = node.childCount > 0;
+        const canOpenProfile = Boolean(node.userId);
+        const mainTag = canOpenProfile ? 'button' : 'div';
+        const profileAttrs = canOpenProfile
+          ? `type="button" data-detail-kind="collaborator" data-detail-id="${escapeAttr(node.userId)}" title="Open ${escapeAttr(node.name)} profile"`
+          : '';
 
         return `
-          <${tag} class="org-node org-person-node" ${attrs} style="left:${personNode.x}px; top:${personNode.y}px;">
-            <span class="org-node-avatar">${escapeHtml(initials(name || email))}</span>
-            <div class="org-node-body">
-              <p class="org-node-title" title="${escapeAttr(name)}">${escapeHtml(name)}</p>
-              <p class="org-node-role">${escapeHtml(roleLabel(assignment.role))}</p>
-              <p class="org-node-project" title="${escapeAttr(personNode.project.name)}">${escapeHtml(personNode.project.name)}</p>
-            </div>
-          </${tag}>
+          <article class="org-node ${node.kind === 'root' ? 'org-root-node' : 'org-person-node'} org-role-${safeRole}" style="left:${node.x}px; top:${node.y}px;">
+            ${hasChildren ? `<button class="org-node-toggle" type="button" data-org-toggle-node="${escapeAttr(node.id)}" title="${node.collapsed ? 'Expand node' : 'Collapse node'}">${node.collapsed ? '+' : '-'}</button>` : ''}
+            <${mainTag} class="org-node-main" ${profileAttrs}>
+              <span class="org-node-avatar ${node.kind === 'root' ? 'org-avatar-brand' : ''}">${escapeHtml(node.avatar || initials(node.name))}</span>
+              <div class="org-node-body">
+                <p class="org-node-title" title="${escapeAttr(node.name)}">${escapeHtml(node.name)}</p>
+                <p class="org-node-role">${escapeHtml(node.roleText)}</p>
+                <p class="org-node-project" title="${escapeAttr(node.projectLabel || '')}">${escapeHtml(node.projectLabel || '')}</p>
+                ${renderOrgNodeMetrics(node)}
+              </div>
+            </${mainTag}>
+          </article>
+        `;
+      }
+
+      function renderOrgNodeMetrics(node) {
+        if (node.kind === 'root' || node.kind === 'unassigned') {
+          return '';
+        }
+
+        return `
+          <div class="org-node-metrics">
+            <span class="org-node-metric">${formatHours(node.approvedHours)}h approved</span>
+            <span class="org-node-metric">${formatMoney(node.totalEarned)} earned</span>
+          </div>
         `;
       }
 
       function curvePath(fromX, fromY, toX, toY) {
-        const middle = Math.max(80, Math.round((toX - fromX) / 2));
+        const middle = Math.max(90, Math.round((toX - fromX) / 2));
         return `M ${fromX} ${fromY} C ${fromX + middle} ${fromY}, ${toX - middle} ${toY}, ${toX} ${toY}`;
       }
 
@@ -3498,6 +3685,169 @@
         }
 
         return compareText(memberName(a), memberName(b));
+      }
+
+      function isFounderAssignment(assignment) {
+        return assignment.role === 'founder'
+          || assignment.member?.platform_role === 'founder'
+          || (
+            assignment.user_id === state.profile?.id
+            && state.profile?.platform_role === 'founder'
+          );
+      }
+
+      function groupAssignmentsByPerson(assignments) {
+        const groups = new Map();
+
+        assignments.forEach((assignment) => {
+          const identity = assignment.member?.id
+            || assignment.user_id
+            || assignment.invite_email
+            || assignment.id;
+
+          if (!groups.has(identity)) {
+            groups.set(identity, {
+              identity,
+              assignments: []
+            });
+          }
+
+          groups.get(identity).assignments.push(assignment);
+        });
+
+        return Array.from(groups.values());
+      }
+
+      function createFounderOrgNode(assignments, projectMap) {
+        const primary = assignments[0];
+        const userId = primary.member?.id || primary.user_id || null;
+        const projectNames = uniqueValues(
+          assignments
+            .map((assignment) => projectMap.get(assignment.project_id)?.name || assignment.project?.name)
+            .filter(Boolean)
+        );
+        const stats = buildOrgNodeStats(userId, null);
+
+        return {
+          id: `founder:${userId || primary.invite_email || primary.id}`,
+          kind: 'person',
+          role: 'founder',
+          name: memberName(primary),
+          email: memberEmail(primary),
+          userId,
+          avatar: initials(memberName(primary)),
+          roleText: roleLabel('founder'),
+          projectLabel: projectNames.length > 1
+            ? `${projectNames.length} Projects`
+            : (projectNames[0] || 'Bastida Systems'),
+          approvedHours: stats.approvedHours,
+          totalEarned: stats.totalEarned,
+          assignments,
+          children: []
+        };
+      }
+
+      function createAssignmentOrgNode(assignment, project) {
+        const userId = assignment.member?.id || assignment.user_id || null;
+        const stats = buildOrgNodeStats(userId, assignment.project_id);
+
+        return {
+          id: `assignment:${assignment.project_id}:${assignment.role}:${userId || assignment.invite_email || assignment.id}`,
+          kind: 'person',
+          role: assignment.role,
+          name: memberName(assignment),
+          email: memberEmail(assignment),
+          userId,
+          avatar: initials(memberName(assignment) || memberEmail(assignment)),
+          roleText: roleLabel(assignment.role),
+          projectLabel: project?.name || assignment.project?.name || 'Project',
+          approvedHours: stats.approvedHours,
+          totalEarned: stats.totalEarned,
+          assignment,
+          children: []
+        };
+      }
+
+      function createUnassignedProjectNode(project) {
+        return {
+          id: `unassigned:${project.id}`,
+          kind: 'unassigned',
+          role: 'unassigned_project',
+          name: 'Unassigned Project',
+          userId: null,
+          avatar: initials(project.name),
+          roleText: 'Missing Owner',
+          projectLabel: project.name,
+          approvedHours: null,
+          totalEarned: null,
+          children: []
+        };
+      }
+
+      function buildOrgNodeStats(userId, projectId = null) {
+        if (!userId) {
+          return {
+            approvedHours: 0,
+            totalEarned: 0
+          };
+        }
+
+        const logs = state.workLogs.filter((log) => (
+          log.worker_user_id === userId
+          && log.status === 'approved'
+          && (!projectId || log.project_id === projectId)
+        ));
+
+        return logs.reduce((stats, log) => {
+          const approvedHours = toNumber(log.approved_hours);
+          stats.approvedHours += approvedHours;
+          stats.totalEarned += approvedHours * findHourlyRate(log.project_id, log.worker_user_id);
+          return stats;
+        }, {
+          approvedHours: 0,
+          totalEarned: 0
+        });
+      }
+
+      function sortOrgTree(node) {
+        node.children = (node.children || []).sort(compareOrgNodes);
+        node.children.forEach(sortOrgTree);
+      }
+
+      function compareOrgNodes(a, b) {
+        const order = {
+          founder: 0,
+          owner: 1,
+          unassigned_project: 2,
+          core_collaborator: 3,
+          contractor: 4,
+          root: 9
+        };
+        const roleCompare = (order[a.role] ?? 8) - (order[b.role] ?? 8);
+        if (roleCompare !== 0) {
+          return roleCompare;
+        }
+
+        const projectCompare = compareText(a.projectLabel, b.projectLabel);
+        if (projectCompare !== 0) {
+          return projectCompare;
+        }
+
+        return compareText(a.name, b.name);
+      }
+
+      function collectCollapsibleOrgNodeIds(node) {
+        const ids = [];
+
+        if ((node.children || []).length) {
+          ids.push(node.id);
+        }
+
+        (node.children || []).forEach((child) => {
+          ids.push(...collectCollapsibleOrgNodeIds(child));
+        });
+
+        return ids;
       }
 
       function buildPeople() {
