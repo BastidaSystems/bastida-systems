@@ -25,7 +25,29 @@ begin
   end if;
 
   if not exists (select 1 from pg_type where typname = 'project_member_role') then
-    create type public.project_member_role as enum ('founder', 'owner', 'core_collaborator', 'contractor');
+    create type public.project_member_role as enum ('founder', 'owner', 'core_collaborator', 'designer', 'developer', 'contractor');
+  end if;
+
+  if exists (select 1 from pg_type where typname = 'project_member_role')
+    and not exists (
+      select 1
+      from pg_enum e
+      join pg_type t on t.oid = e.enumtypid
+      where t.typname = 'project_member_role'
+        and e.enumlabel = 'designer'
+    ) then
+    alter type public.project_member_role add value 'designer';
+  end if;
+
+  if exists (select 1 from pg_type where typname = 'project_member_role')
+    and not exists (
+      select 1
+      from pg_enum e
+      join pg_type t on t.oid = e.enumtypid
+      where t.typname = 'project_member_role'
+        and e.enumlabel = 'developer'
+    ) then
+    alter type public.project_member_role add value 'developer';
   end if;
 
   if not exists (select 1 from pg_type where typname = 'deliverable_status') then
