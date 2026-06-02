@@ -9,6 +9,7 @@
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
@@ -33,11 +34,13 @@
     html {
       scroll-behavior: smooth;
       overflow-x: hidden;
+      overflow-anchor: none;
     }
 
     body {
       margin: 0;
       overflow-x: hidden;
+      overflow-anchor: none;
       background: var(--bg);
       color: var(--text);
       font-family: 'Manrope', sans-serif;
@@ -265,12 +268,39 @@
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
+    .integration-grid {
+      display: grid;
+      gap: 0.85rem;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .integration-card {
+      border: 1px solid rgba(75, 85, 99, 0.54);
+      border-radius: 8px;
+      background: rgba(3, 7, 18, 0.54);
+      padding: 1rem;
+    }
+
+    .integration-card code {
+      color: #ffffff;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .auth-note {
+      border: 1px solid rgba(96, 165, 250, 0.3);
+      border-radius: 8px;
+      background: rgba(96, 165, 250, 0.08);
+      padding: 1rem;
+    }
+
     .hidden {
       display: none !important;
     }
 
     @media (max-width: 980px) {
-      .admin-grid {
+      .admin-grid,
+      .integration-grid {
         grid-template-columns: 1fr;
       }
     }
@@ -352,33 +382,96 @@
         headerTarget.innerHTML = sharedHeader;
       });
   </script>
+  <script>
+    window.pageTranslations = {
+      en: {
+        'meta.title': 'Client Portal | Bastida Systems',
+        'portal.hero.kicker': 'Bastida Systems Private Portal',
+        'portal.hero.title': 'Private company dashboards for owners and Bastida Systems admin.',
+        'portal.hero.body': 'The portal is prepared for Supabase authentication and company-scoped permissions. Owners see only their assigned company dashboards; Bastida Systems admin can manage the full client ecosystem.',
+        'portal.owner.badge': 'Owner Access',
+        'portal.owner.body': 'Each owner is scoped to assigned companies only: Rafael to CocoFilms, Rodrigo to BEOFlow, Blanca to Estrativa, David to FiltraCore and LineOps.',
+        'portal.admin.badge': 'Admin Access',
+        'portal.admin.body': 'Admin can add companies, assign owners, add hour purchases, log work, upload receipt/report names, and view all balances.',
+        'portal.backend.badge': 'Future Backend Integration',
+        'portal.backend.title': 'Supabase data model placeholders',
+        'portal.backend.meta': 'RLS-ready structure',
+        'portal.login.title': 'Secure Login Area',
+        'portal.login.body': 'Prepared for Supabase Auth email and password sign-in.',
+        'portal.login.email': 'Email',
+        'portal.login.password': 'Password',
+        'portal.login.submit': 'Sign In',
+        'portal.auth.badge': 'Supabase Auth Ready',
+        'portal.auth.body': 'Production sign-in should call ',
+        'portal.demo.badge': 'Prototype / Demo Mode',
+        'portal.demo.meta': 'No credentials shown',
+        'portal.demo.body': 'Use these buttons only to preview role-based access while the Supabase backend is being connected.',
+        'portal.warning.body': 'Do not enter real private records until Supabase Auth, Row Level Security, and database-backed permissions are connected.'
+      },
+      es: {
+        'meta.title': 'Portal de Clientes | Bastida Systems',
+        'portal.hero.kicker': 'Portal Privado de Bastida Systems',
+        'portal.hero.title': 'Dashboards privados para dueños y administración de Bastida Systems.',
+        'portal.hero.body': 'El portal está preparado para autenticación con Supabase y permisos por empresa. Los dueños solo ven los dashboards asignados; el admin de Bastida Systems puede administrar todo el ecosistema de clientes.',
+        'portal.owner.badge': 'Acceso de Dueño',
+        'portal.owner.body': 'Cada dueño queda limitado solo a sus empresas asignadas: Rafael a CocoFilms, Rodrigo a BEOFlow, Blanca a Estrativa, David a FiltraCore y LineOps.',
+        'portal.admin.badge': 'Acceso Admin',
+        'portal.admin.body': 'El admin puede agregar empresas, asignar dueños, agregar horas compradas, registrar trabajo, subir recibos/reportes y ver todos los balances.',
+        'portal.backend.badge': 'Integración Backend Futura',
+        'portal.backend.title': 'Tablas placeholder para Supabase',
+        'portal.backend.meta': 'Estructura lista para RLS',
+        'portal.login.title': 'Área de Login Seguro',
+        'portal.login.body': 'Preparado para iniciar sesión con email y contraseña usando Supabase Auth.',
+        'portal.login.email': 'Email',
+        'portal.login.password': 'Contraseña',
+        'portal.login.submit': 'Iniciar Sesión',
+        'portal.auth.badge': 'Listo para Supabase Auth',
+        'portal.auth.body': 'En producción el login debe llamar ',
+        'portal.demo.badge': 'Modo Prototipo / Demo',
+        'portal.demo.meta': 'No se muestran credenciales',
+        'portal.demo.body': 'Usa estos botones solo para previsualizar el acceso por roles mientras se conecta el backend de Supabase.',
+        'portal.warning.body': 'No ingreses registros privados reales hasta conectar Supabase Auth, Row Level Security y permisos guardados en base de datos.'
+      }
+    };
+  </script>
   <script src="site-language.js"></script>
 
   <main class="portal-shell">
     <section id="login-view" class="px-6 md:px-8 py-16 md:py-24">
       <div class="max-w-7xl mx-auto grid gap-8 lg:grid-cols-[0.92fr_1.08fr] items-start">
         <div class="pt-4">
-          <span class="portal-chip">Bastida Systems Private Portal</span>
-          <h1 class="mt-5 text-4xl md:text-6xl font-extrabold leading-tight">
-            Company dashboards for hours, work, payments, and reports.
+          <span class="portal-chip" data-i18n="portal.hero.kicker">Bastida Systems Private Portal</span>
+          <h1 class="mt-5 text-4xl md:text-6xl font-extrabold leading-tight" data-i18n="portal.hero.title">
+            Private company dashboards for owners and Bastida Systems admin.
           </h1>
-          <p class="mt-5 max-w-2xl text-gray-400 text-lg leading-8">
-            Owners sign in to see only their company dashboard. Bastida Systems admin can view and manage all companies, balances, work logs, receipts, and reports.
+          <p class="mt-5 max-w-2xl text-gray-400 text-lg leading-8" data-i18n="portal.hero.body">
+            The portal is prepared for Supabase authentication and company-scoped permissions. Owners see only their assigned company dashboards; Bastida Systems admin can manage the full client ecosystem.
           </p>
 
           <div class="grid gap-4 sm:grid-cols-2 mt-8">
             <div class="portal-card p-5">
-              <span class="status-pill">Owner Access</span>
-              <p class="mt-4 text-gray-300 leading-7">
+              <span class="status-pill" data-i18n="portal.owner.badge">Owner Access</span>
+              <p class="mt-4 text-gray-300 leading-7" data-i18n="portal.owner.body">
                 Each owner is scoped to assigned companies only: Rafael to CocoFilms, Rodrigo to BEOFlow, Blanca to Estrativa, David to FiltraCore and LineOps.
               </p>
             </div>
             <div class="portal-card blue p-5">
-              <span class="status-pill blue">Admin Access</span>
-              <p class="mt-4 text-gray-300 leading-7">
+              <span class="status-pill blue" data-i18n="portal.admin.badge">Admin Access</span>
+              <p class="mt-4 text-gray-300 leading-7" data-i18n="portal.admin.body">
                 Admin can add companies, assign owners, add hour purchases, log work, upload receipt/report names, and view all balances.
               </p>
             </div>
+          </div>
+
+          <div class="portal-card p-5 mt-6">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <span class="status-pill blue" data-i18n="portal.backend.badge">Future Backend Integration</span>
+                <h2 class="text-xl font-semibold mt-3" data-i18n="portal.backend.title">Supabase data model placeholders</h2>
+              </div>
+              <span class="text-xs font-bold uppercase tracking-[0.08em] text-gray-500" data-i18n="portal.backend.meta">RLS-ready structure</span>
+            </div>
+            <div id="backend-plan-login" class="integration-grid mt-5"></div>
           </div>
         </div>
 
@@ -386,53 +479,47 @@
           <div class="flex items-center gap-4 mb-7">
             <img src="img/logo_bastida_sys.png" alt="" aria-hidden="true" class="company-mark">
             <div>
-              <h2 class="text-2xl font-semibold">Secure Login Area</h2>
-              <p class="text-gray-500 text-sm mt-1">Static prototype using sample access profiles.</p>
+              <h2 class="text-2xl font-semibold" data-i18n="portal.login.title">Secure Login Area</h2>
+              <p class="text-gray-500 text-sm mt-1" data-i18n="portal.login.body">Prepared for Supabase Auth email and password sign-in.</p>
             </div>
           </div>
 
           <form id="login-form" class="grid gap-4">
             <label class="grid gap-2">
-              <span class="text-sm font-bold text-gray-400 uppercase tracking-[0.08em]">Email</span>
-              <input id="login-email" class="form-field" type="email" autocomplete="username" placeholder="admin@bastidasystems.com" required>
+              <span class="text-sm font-bold text-gray-400 uppercase tracking-[0.08em]" data-i18n="portal.login.email">Email</span>
+              <input id="login-email" class="form-field" type="email" autocomplete="username" placeholder="owner@company.com" data-portal-placeholder="portal.placeholder.email" required>
             </label>
 
             <label class="grid gap-2">
-              <span class="text-sm font-bold text-gray-400 uppercase tracking-[0.08em]">Access Code</span>
-              <input id="login-code" class="form-field" type="password" autocomplete="current-password" placeholder="Access code" required>
+              <span class="text-sm font-bold text-gray-400 uppercase tracking-[0.08em]" data-i18n="portal.login.password">Password</span>
+              <input id="login-password" class="form-field" type="password" autocomplete="current-password" placeholder="Supabase Auth password" data-portal-placeholder="portal.placeholder.password" required>
             </label>
 
             <p id="login-error" class="hidden text-sm text-red-300"></p>
 
-            <button class="portal-button w-full" type="submit">Enter Portal</button>
+            <button class="portal-button w-full" type="submit" data-i18n="portal.login.submit">Sign In</button>
           </form>
 
-          <details class="mt-6 border-t border-gray-800 pt-5">
-            <summary class="cursor-pointer text-sm font-bold text-gray-400 uppercase tracking-[0.08em]">Prototype access profiles</summary>
-            <div class="grid gap-2 mt-4">
-              <button class="company-tab" type="button" data-action="fill-login" data-email="admin@bastidasystems.com" data-code="BS-ADMIN-2026">
-                Bastida Systems Admin / BS-ADMIN-2026
-              </button>
-              <button class="company-tab" type="button" data-action="fill-login" data-email="david@bastidasystems.com" data-code="BS-DAVID-2026">
-                David Bastida / BS-DAVID-2026
-              </button>
-              <button class="company-tab" type="button" data-action="fill-login" data-email="rodrigo@beoflow.com" data-code="BS-RODRIGO-2026">
-                Rodrigo Bastida / BS-RODRIGO-2026
-              </button>
-              <button class="company-tab" type="button" data-action="fill-login" data-email="rafael@cocofilms.com" data-code="BS-RAFAEL-2026">
-                Rafael Amezquita / BS-RAFAEL-2026
-              </button>
-              <button class="company-tab" type="button" data-action="fill-login" data-email="blanca@estrativa.com" data-code="BS-BLANCA-2026">
-                Blanca Gordon / BS-BLANCA-2026
-              </button>
-              <button class="company-tab" type="button" data-action="fill-login" data-email="isaias@talladordesuenos.com" data-code="BS-ISAIAS-2026">
-                Jiménez Isaías / BS-ISAIAS-2026
-              </button>
-            </div>
-          </details>
+          <div class="auth-note mt-5">
+            <span class="status-pill blue" data-i18n="portal.auth.badge">Supabase Auth Ready</span>
+            <p class="mt-3 text-sm leading-6 text-gray-300">
+              <span data-i18n="portal.auth.body">Production sign-in should call </span><strong>supabase.auth.signInWithPassword</strong>, <span data-portal-i18n="portal.auth.tail">then load dashboard permissions from</span> <strong>users</strong> <span data-portal-i18n="portal.auth.and">and</span> <strong>company_users</strong>.
+            </p>
+          </div>
 
-          <p class="mt-6 text-xs leading-6 text-gray-500">
-            Production deployment should connect this interface to server-side authentication, encrypted storage, and backend-enforced role-based access control before real private records are entered.
+          <div class="mt-6 border-t border-gray-800 pt-5">
+            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <span class="status-pill warning" data-i18n="portal.demo.badge">Prototype / Demo Mode</span>
+              <span class="text-xs font-bold uppercase tracking-[0.08em] text-gray-500" data-i18n="portal.demo.meta">No credentials shown</span>
+            </div>
+            <p class="mt-3 text-sm leading-6 text-gray-400" data-i18n="portal.demo.body">
+              Use these buttons only to preview role-based access while the Supabase backend is being connected.
+            </p>
+            <div id="demo-profile-list" class="grid gap-2 mt-4"></div>
+          </div>
+
+          <p class="mt-6 text-xs leading-6 text-gray-500" data-i18n="portal.warning.body">
+            Do not enter real private records until Supabase Auth, Row Level Security, and database-backed permissions are connected.
           </p>
         </div>
       </div>
@@ -449,7 +536,7 @@
             </div>
             <div class="flex flex-wrap items-center gap-3">
               <span id="portal-message" class="text-sm text-gray-400"></span>
-              <button class="portal-button secondary" type="button" data-action="reset-demo">Reset Demo Data</button>
+              <button class="portal-button secondary" type="button" data-action="reset-demo">Reset Prototype Data</button>
               <button class="portal-button" type="button" data-action="sign-out">Sign Out</button>
             </div>
           </div>
@@ -487,45 +574,476 @@
   </footer>
 
   <script>
-    const users = [
+    /*
+      Supabase integration notes:
+      1. Add your Supabase project URL and anon key below.
+      2. Production login should use Supabase Auth only.
+      3. After sign-in, query public.users and public.company_users to determine
+         which company dashboards the authenticated user may access.
+      4. Private dashboard records should be queried per company from Supabase
+         tables with Row Level Security enabled.
+    */
+    const SUPABASE_CONFIG = {
+      url: '',
+      anonKey: ''
+    };
+
+    const backendTables = [
+      { name: 'companies', purpose: 'Company profile, status, owner summary, website, logo, and public/private flags.', purposeEs: 'Perfil de empresa, estado, resumen de dueño, sitio web, logo y banderas públicas/privadas.' },
+      { name: 'users', purpose: 'Portal profile tied to auth.users.id, role, display name, email, and active status.', purposeEs: 'Perfil del portal conectado a auth.users.id, rol, nombre, email y estado activo.' },
+      { name: 'company_users', purpose: 'Permission bridge assigning owners, admins, and collaborators to company dashboards.', purposeEs: 'Tabla puente de permisos para asignar dueños, admins y colaboradores a dashboards de empresa.' },
+      { name: 'hour_packages', purpose: 'Purchased hour blocks, purchase date, amount, payment status, and package size.', purposeEs: 'Bloques de horas compradas, fecha de compra, monto, estado de pago y tamaño del paquete.' },
+      { name: 'work_logs', purpose: 'Company-specific work entries, time spent, worker, category, status, notes, attachments, and approval.', purposeEs: 'Entradas de trabajo por empresa con tiempo usado, colaborador, categoría, estado, notas, adjuntos y aprobación.' },
+      { name: 'payments', purpose: 'Payment history by company and related hour package.', purposeEs: 'Historial de pagos por empresa y paquete de horas relacionado.' },
+      { name: 'receipts', purpose: 'Receipt metadata, PDF storage path, amount, date, and company relationship.', purposeEs: 'Metadatos de recibos, ruta del PDF, monto, fecha y relación con la empresa.' },
+      { name: 'reports', purpose: 'Monthly, project, hour usage, and work completed reports scoped to one company.', purposeEs: 'Reportes mensuales, de proyecto, uso de horas y trabajo completado, limitados a una empresa.' }
+    ];
+
+    const portalUiText = {
+      en: {
+        'portal.placeholder.email': 'owner@company.com',
+        'portal.placeholder.password': 'Supabase Auth password',
+        'portal.auth.tail': 'then load dashboard permissions from',
+        'portal.auth.and': 'and',
+        'portal.demo.admin': 'Demo admin access',
+        'portal.demo.owner': 'Demo owner access',
+        'portal.message.supabaseMissing': 'Supabase is not configured yet. Use Prototype / Demo mode to preview the portal.',
+        'portal.message.supabaseSignedIn': 'Signed in with Supabase.',
+        'portal.message.demoStarted': 'Prototype / Demo session started for',
+        'portal.message.noCompanies': 'No companies assigned to this profile.',
+        'portal.message.packageAdded': 'hour package added for',
+        'portal.message.packageRequested': 'hour package requested for',
+        'portal.message.packagePrefix': 'Package of',
+        'portal.message.packageAddedSuffix': 'added for',
+        'portal.message.packageRequestedSuffix': 'requested for',
+        'portal.message.approved': 'approved.',
+        'portal.message.reportReady': 'prepared for',
+        'portal.message.receiptReady': 'prepared.',
+        'portal.message.companyAdded': 'added.',
+        'portal.message.detailsUpdated': 'details updated.',
+        'portal.message.assigned': 'assigned to',
+        'portal.message.hoursAdded': 'hours added to',
+        'portal.message.workLogged': 'Work logged for',
+        'portal.message.remainingRecalculated': 'remaining hours recalculated.',
+        'portal.message.recordsAdded': 'Records added for',
+        'portal.message.prototypeReset': 'Prototype data reset.',
+        'portal.message.pdfFallback': 'PDF library unavailable; downloaded text fallback.',
+        'portal.message.signInFailed': 'Unable to sign in.',
+        'portal.task.reviewPackage': 'Review hour package request',
+        'portal.task.setScope': 'Set project scope',
+        'portal.task.addFirstPackage': 'Add first hour package',
+        'portal.task.approve': 'Approve',
+        'portal.note.newCompany': 'New company record created by Bastida Systems admin.',
+        'portal.note.adminWork': 'Logged by Bastida Systems admin.',
+        'portal.scope.admin': 'Admin access to all companies',
+        'portal.scope.owner': 'Owner access only',
+        'portal.count.company': 'Company',
+        'portal.count.companies': 'Companies',
+        'portal.remaining': 'remaining',
+        'portal.dashboard.private': 'Private Dashboard',
+        'portal.dashboard.title': 'Bastida Systems Client Portal',
+        'portal.dashboard.reset': 'Reset Prototype Data',
+        'portal.dashboard.signOut': 'Sign Out',
+        'portal.sidebar.companies': 'Companies',
+        'portal.publicSite': 'Public Site',
+        'portal.metric.purchased': 'Purchased Hours',
+        'portal.metric.used': 'Used Hours',
+        'portal.metric.remaining': 'Remaining Hours',
+        'portal.metric.paymentStatus': 'Payment Status',
+        'portal.payment.paid': 'Paid',
+        'portal.payment.pendingBalance': 'Pending balance',
+        'portal.overview.badge': 'Company Overview',
+        'portal.overview.title': 'Owner and status',
+        'portal.overview.owner': 'CEO / Owner',
+        'portal.overview.status': 'Current Status',
+        'portal.overview.email': 'Owner Email',
+        'portal.buyHours.badge': 'Buy Hours',
+        'portal.buyHours.title': 'Hour Packages',
+        'portal.buyHours.body': 'Request or add work-hour blocks for this company.',
+        'portal.buyHours.add': 'Add package',
+        'portal.buyHours.request': 'Request package',
+        'portal.tasks.pending': 'Pending Tasks',
+        'portal.tasks.approved': 'Approved Changes',
+        'portal.tasks.empty': 'No items yet.',
+        'portal.notes.badge': 'Bastida Notes',
+        'portal.notes.pendingOne': 'item pending approval.',
+        'portal.notes.pendingMany': 'items pending approval.',
+        'portal.hours.badge': 'Hours System',
+        'portal.hours.title': 'Purchased hour blocks',
+        'portal.work.badge': 'Work Log System',
+        'portal.work.title': 'Recent work and history',
+        'portal.payments.badge': 'Payment History',
+        'portal.payments.title': 'Payments by hour package',
+        'portal.records.badge': 'Receipts & Reports',
+        'portal.records.title': 'Downloadable records',
+        'portal.records.receipts': 'Receipts',
+        'portal.records.reports': 'Reports',
+        'portal.records.download': 'Download PDF',
+        'portal.table.none': 'No records yet.',
+        'portal.table.purchaseDate': 'Purchase Date',
+        'portal.table.company': 'Company',
+        'portal.table.package': 'Package',
+        'portal.table.hours': 'Hours',
+        'portal.table.amount': 'Amount',
+        'portal.table.paymentStatus': 'Payment Status',
+        'portal.table.work': 'Work',
+        'portal.table.date': 'Date',
+        'portal.table.time': 'Time',
+        'portal.table.worker': 'Worker',
+        'portal.table.category': 'Category',
+        'portal.table.status': 'Status',
+        'portal.table.notes': 'Notes',
+        'portal.table.attachments': 'Attachments',
+        'portal.table.approval': 'Approval',
+        'portal.table.method': 'Method',
+        'portal.table.relatedPackage': 'Related Package',
+        'portal.table.receipt': 'Receipt',
+        'portal.table.report': 'Report',
+        'portal.table.pdf': 'PDF',
+        'portal.none': 'None',
+        'portal.approve': 'Approve',
+        'portal.admin.badgePanel': 'Admin Dashboard',
+        'portal.admin.titlePanel': 'Manage companies, access, hours, work, payments, receipts, and reports.',
+        'portal.admin.backendBadge': 'Backend Placeholders',
+        'portal.admin.backendTitle': 'Supabase tables to connect next',
+        'portal.admin.addCompany': 'Add company',
+        'portal.admin.companyName': 'Company name',
+        'portal.admin.currentStatus': 'Current status',
+        'portal.admin.shortDescription': 'Short description',
+        'portal.admin.addCompanyButton': 'Add Company',
+        'portal.admin.editCompany': 'Edit company details',
+        'portal.admin.newStatus': 'New status',
+        'portal.admin.updatedDescription': 'Updated description',
+        'portal.admin.saveDetails': 'Save Details',
+        'portal.admin.assignOwner': 'Assign owner / access',
+        'portal.admin.assignOwnerButton': 'Assign Owner',
+        'portal.admin.addPurchasedHours': 'Add purchased hours',
+        'portal.admin.amount': 'Amount',
+        'portal.admin.addHours': 'Add Hours',
+        'portal.admin.logWork': 'Log completed work',
+        'portal.admin.workTitle': 'Work title',
+        'portal.admin.description': 'Description',
+        'portal.admin.timeSpent': 'Time spent',
+        'portal.admin.worker': 'Collaborator / worker',
+        'portal.admin.category': 'Category',
+        'portal.admin.logWorkButton': 'Log Work',
+        'portal.admin.uploadRecords': 'Upload receipt / report',
+        'portal.admin.receiptName': 'Receipt number or file name',
+        'portal.admin.reportName': 'Report name',
+        'portal.admin.addRecords': 'Add Records',
+        'portal.admin.allBalances': 'All company balances',
+        'portal.admin.allWorkLogs': 'All work logs',
+        'portal.method.card': 'Card',
+        'portal.method.bank': 'Bank transfer',
+        'portal.method.admin': 'Admin entry',
+        'portal.method.request': 'Portal request',
+        'portal.unit.hours': 'hours',
+        'portal.report.companyName': 'Company name',
+        'portal.report.owner': 'CEO / Owner',
+        'portal.report.reportDate': 'Report date',
+        'portal.report.hoursPurchased': 'Hours purchased',
+        'portal.report.hoursUsed': 'Hours used',
+        'portal.report.hoursRemaining': 'Hours remaining',
+        'portal.report.workCompleted': 'Work completed',
+        'portal.report.paymentSummary': 'Payment summary',
+        'portal.report.via': 'via',
+        'portal.report.notes': 'Notes from Bastida Systems',
+        'portal.report.noWork': 'No work logged yet.',
+        'portal.report.noPayments': 'No payments logged yet.',
+        'portal.receipt.title': 'Receipt',
+        'portal.receipt.number': 'Receipt number',
+        'portal.receipt.paymentMethod': 'Payment method',
+        'portal.receipt.recordedPayment': 'Recorded payment',
+        'portal.receipt.thanks': 'Thank you for your Bastida Systems hour package purchase.',
+        'portal.status.activePlatform': 'Active platform',
+        'portal.status.activeCollaboration': 'Active collaboration',
+        'portal.status.publishedApp': 'Published app',
+        'portal.status.publishedSite': 'Published site',
+        'portal.status.completed': 'Completed',
+        'portal.status.inProgress': 'In progress',
+        'portal.status.paid': 'Paid',
+        'portal.status.pending': 'Pending',
+        'portal.status.approved': 'Approved'
+      },
+      es: {
+        'portal.placeholder.email': 'dueno@empresa.com',
+        'portal.placeholder.password': 'Contraseña de Supabase Auth',
+        'portal.auth.tail': 'y después cargar permisos desde',
+        'portal.auth.and': 'y',
+        'portal.demo.admin': 'Acceso admin demo',
+        'portal.demo.owner': 'Acceso dueño demo',
+        'portal.message.supabaseMissing': 'Supabase todavía no está configurado. Usa Modo Prototipo / Demo para previsualizar el portal.',
+        'portal.message.supabaseSignedIn': 'Sesión iniciada con Supabase.',
+        'portal.message.demoStarted': 'Sesión Prototipo / Demo iniciada para',
+        'portal.message.noCompanies': 'No hay empresas asignadas a este perfil.',
+        'portal.message.packageAdded': 'paquete de horas agregado para',
+        'portal.message.packageRequested': 'paquete de horas solicitado para',
+        'portal.message.packagePrefix': 'Paquete de',
+        'portal.message.packageAddedSuffix': 'agregado para',
+        'portal.message.packageRequestedSuffix': 'solicitado para',
+        'portal.message.approved': 'aprobado.',
+        'portal.message.reportReady': 'preparado para',
+        'portal.message.receiptReady': 'preparado.',
+        'portal.message.companyAdded': 'agregada.',
+        'portal.message.detailsUpdated': 'detalles actualizados.',
+        'portal.message.assigned': 'asignado a',
+        'portal.message.hoursAdded': 'horas agregadas a',
+        'portal.message.workLogged': 'Trabajo registrado para',
+        'portal.message.remainingRecalculated': 'horas restantes recalculadas.',
+        'portal.message.recordsAdded': 'Registros agregados para',
+        'portal.message.prototypeReset': 'Datos de prototipo reiniciados.',
+        'portal.message.pdfFallback': 'La librería PDF no está disponible; se descargó una versión en texto.',
+        'portal.message.signInFailed': 'No se pudo iniciar sesión.',
+        'portal.task.reviewPackage': 'Revisar solicitud de paquete de horas',
+        'portal.task.setScope': 'Definir alcance del proyecto',
+        'portal.task.addFirstPackage': 'Agregar primer paquete de horas',
+        'portal.task.approve': 'Aprobar',
+        'portal.note.newCompany': 'Registro de empresa creado por admin de Bastida Systems.',
+        'portal.note.adminWork': 'Registrado por admin de Bastida Systems.',
+        'portal.scope.admin': 'Acceso admin a todas las empresas',
+        'portal.scope.owner': 'Acceso de dueño solamente',
+        'portal.count.company': 'Empresa',
+        'portal.count.companies': 'Empresas',
+        'portal.remaining': 'restantes',
+        'portal.dashboard.private': 'Dashboard Privado',
+        'portal.dashboard.title': 'Portal de Clientes Bastida Systems',
+        'portal.dashboard.reset': 'Reiniciar Datos Prototipo',
+        'portal.dashboard.signOut': 'Cerrar Sesión',
+        'portal.sidebar.companies': 'Empresas',
+        'portal.publicSite': 'Sitio Público',
+        'portal.metric.purchased': 'Horas Compradas',
+        'portal.metric.used': 'Horas Usadas',
+        'portal.metric.remaining': 'Horas Restantes',
+        'portal.metric.paymentStatus': 'Estado de Pago',
+        'portal.payment.paid': 'Pagado',
+        'portal.payment.pendingBalance': 'Balance pendiente',
+        'portal.overview.badge': 'Resumen de Empresa',
+        'portal.overview.title': 'Dueño y estado',
+        'portal.overview.owner': 'CEO / Dueño',
+        'portal.overview.status': 'Estado Actual',
+        'portal.overview.email': 'Email del Dueño',
+        'portal.buyHours.badge': 'Comprar Horas',
+        'portal.buyHours.title': 'Paquetes de Horas',
+        'portal.buyHours.body': 'Solicita o agrega bloques de horas de trabajo para esta empresa.',
+        'portal.buyHours.add': 'Agregar paquete',
+        'portal.buyHours.request': 'Solicitar paquete',
+        'portal.tasks.pending': 'Tareas Pendientes',
+        'portal.tasks.approved': 'Cambios Aprobados',
+        'portal.tasks.empty': 'Sin elementos todavía.',
+        'portal.notes.badge': 'Notas de Bastida',
+        'portal.notes.pendingOne': 'elemento pendiente de aprobación.',
+        'portal.notes.pendingMany': 'elementos pendientes de aprobación.',
+        'portal.hours.badge': 'Sistema de Horas',
+        'portal.hours.title': 'Bloques de horas compradas',
+        'portal.work.badge': 'Sistema de Trabajo',
+        'portal.work.title': 'Trabajo reciente e historial',
+        'portal.payments.badge': 'Historial de Pagos',
+        'portal.payments.title': 'Pagos por paquete de horas',
+        'portal.records.badge': 'Recibos y Reportes',
+        'portal.records.title': 'Registros descargables',
+        'portal.records.receipts': 'Recibos',
+        'portal.records.reports': 'Reportes',
+        'portal.records.download': 'Descargar PDF',
+        'portal.table.none': 'Sin registros todavía.',
+        'portal.table.purchaseDate': 'Fecha de Compra',
+        'portal.table.company': 'Empresa',
+        'portal.table.package': 'Paquete',
+        'portal.table.hours': 'Horas',
+        'portal.table.amount': 'Monto',
+        'portal.table.paymentStatus': 'Estado de Pago',
+        'portal.table.work': 'Trabajo',
+        'portal.table.date': 'Fecha',
+        'portal.table.time': 'Tiempo',
+        'portal.table.worker': 'Colaborador',
+        'portal.table.category': 'Categoría',
+        'portal.table.status': 'Estado',
+        'portal.table.notes': 'Notas',
+        'portal.table.attachments': 'Adjuntos',
+        'portal.table.approval': 'Aprobación',
+        'portal.table.method': 'Método',
+        'portal.table.relatedPackage': 'Paquete Relacionado',
+        'portal.table.receipt': 'Recibo',
+        'portal.table.report': 'Reporte',
+        'portal.table.pdf': 'PDF',
+        'portal.none': 'Ninguno',
+        'portal.approve': 'Aprobar',
+        'portal.admin.badgePanel': 'Dashboard Admin',
+        'portal.admin.titlePanel': 'Administrar empresas, accesos, horas, trabajo, pagos, recibos y reportes.',
+        'portal.admin.backendBadge': 'Placeholders Backend',
+        'portal.admin.backendTitle': 'Tablas de Supabase por conectar',
+        'portal.admin.addCompany': 'Agregar empresa',
+        'portal.admin.companyName': 'Nombre de empresa',
+        'portal.admin.currentStatus': 'Estado actual',
+        'portal.admin.shortDescription': 'Descripción corta',
+        'portal.admin.addCompanyButton': 'Agregar Empresa',
+        'portal.admin.editCompany': 'Editar detalles de empresa',
+        'portal.admin.newStatus': 'Nuevo estado',
+        'portal.admin.updatedDescription': 'Descripción actualizada',
+        'portal.admin.saveDetails': 'Guardar Detalles',
+        'portal.admin.assignOwner': 'Asignar dueño / acceso',
+        'portal.admin.assignOwnerButton': 'Asignar Dueño',
+        'portal.admin.addPurchasedHours': 'Agregar horas compradas',
+        'portal.admin.amount': 'Monto',
+        'portal.admin.addHours': 'Agregar Horas',
+        'portal.admin.logWork': 'Registrar trabajo completado',
+        'portal.admin.workTitle': 'Título del trabajo',
+        'portal.admin.description': 'Descripción',
+        'portal.admin.timeSpent': 'Tiempo usado',
+        'portal.admin.worker': 'Colaborador / trabajador',
+        'portal.admin.category': 'Categoría',
+        'portal.admin.logWorkButton': 'Registrar Trabajo',
+        'portal.admin.uploadRecords': 'Subir recibo / reporte',
+        'portal.admin.receiptName': 'Número de recibo o nombre de archivo',
+        'portal.admin.reportName': 'Nombre del reporte',
+        'portal.admin.addRecords': 'Agregar Registros',
+        'portal.admin.allBalances': 'Balances de todas las empresas',
+        'portal.admin.allWorkLogs': 'Todos los registros de trabajo',
+        'portal.method.card': 'Tarjeta',
+        'portal.method.bank': 'Transferencia bancaria',
+        'portal.method.admin': 'Entrada admin',
+        'portal.method.request': 'Solicitud del portal',
+        'portal.unit.hours': 'horas',
+        'portal.report.companyName': 'Nombre de empresa',
+        'portal.report.owner': 'CEO / Dueño',
+        'portal.report.reportDate': 'Fecha del reporte',
+        'portal.report.hoursPurchased': 'Horas compradas',
+        'portal.report.hoursUsed': 'Horas usadas',
+        'portal.report.hoursRemaining': 'Horas restantes',
+        'portal.report.workCompleted': 'Trabajo completado',
+        'portal.report.paymentSummary': 'Resumen de pagos',
+        'portal.report.via': 'por',
+        'portal.report.notes': 'Notas de Bastida Systems',
+        'portal.report.noWork': 'Sin trabajo registrado todavía.',
+        'portal.report.noPayments': 'Sin pagos registrados todavía.',
+        'portal.receipt.title': 'Recibo',
+        'portal.receipt.number': 'Número de recibo',
+        'portal.receipt.paymentMethod': 'Método de pago',
+        'portal.receipt.recordedPayment': 'Pago registrado',
+        'portal.receipt.thanks': 'Gracias por comprar tu paquete de horas con Bastida Systems.',
+        'portal.status.activePlatform': 'Plataforma activa',
+        'portal.status.activeCollaboration': 'Colaboración activa',
+        'portal.status.publishedApp': 'App publicada',
+        'portal.status.publishedSite': 'Sitio publicado',
+        'portal.status.completed': 'Completado',
+        'portal.status.inProgress': 'En progreso',
+        'portal.status.paid': 'Pagado',
+        'portal.status.pending': 'Pendiente',
+        'portal.status.approved': 'Aprobado'
+      }
+    };
+
+    const portalContentTranslations = {
+      es: {
+        'Filtration operations platform for PSI monitoring, filter lifecycle tracking, maintenance readiness, and reporting.': 'Plataforma de operaciones de filtración para monitoreo PSI, seguimiento del ciclo de vida de filtros, preparación de mantenimiento y reportes.',
+        'Kitchen operations platform for menu control, inventory, production planning, staff coordination, and service execution.': 'Plataforma de operaciones de cocina para control de menú, inventario, planeación de producción, coordinación de staff y ejecución de servicio.',
+        'Scheduling app for shift rotations, station coverage, weekly templates, and mobile schedule access.': 'App de programación para rotación de turnos, cobertura de estaciones, plantillas semanales y acceso móvil al horario.',
+        'Professional consulting and advisory collaboration with a responsive public website and direct contact experience.': 'Colaboración de consultoría profesional con sitio público responsive y experiencia de contacto directo.',
+        'Photography and cinematic video production studio presented through a premium dark portfolio website.': 'Estudio de fotografía y producción de video cinematográfico presentado con un sitio de portafolio oscuro y premium.',
+        'Artisan e-commerce collaboration for hand-painted wood sculptures, custom commissions, cart, checkout, and contact flow.': 'Colaboración e-commerce artesanal para esculturas de madera pintadas a mano, pedidos personalizados, carrito, checkout y contacto.',
+        'Focus this month: reporting exports, inventory readiness, and mobile inspection clarity.': 'Enfoque de este mes: exportación de reportes, preparación de inventario y claridad en inspecciones móviles.',
+        'Focus this month: inventory speed, recipe structure, and production planning visibility.': 'Enfoque de este mes: velocidad de inventario, estructura de recetas y visibilidad de planeación de producción.',
+        'Focus this month: App Store listing, schedule export polish, and mobile interaction detail.': 'Enfoque de este mes: ficha de App Store, pulido de exportación de horarios y detalle de interacción móvil.',
+        'Focus this month: contact clarity, copy refinements, and public page polish.': 'Enfoque de este mes: claridad de contacto, ajustes de copy y pulido de página pública.',
+        'Focus this month: premium gallery presentation and booking path clarity.': 'Enfoque de este mes: presentación premium de galería y claridad del flujo de reservas.',
+        'Focus this month: product collection polish and checkout confidence.': 'Enfoque de este mes: pulido de colección de productos y confianza en checkout.',
+        'Added dashboard module': 'Módulo de dashboard agregado',
+        'Optimized mobile version': 'Versión móvil optimizada',
+        'Created monthly usage report': 'Reporte mensual de uso creado',
+        'Updated homepage layout': 'Layout de homepage actualizado',
+        'Fixed login issue': 'Problema de login corregido',
+        'Created new brand section': 'Nueva sección de marca creada',
+        'Created monthly report': 'Reporte mensual creado',
+        'Expanded operations dashboard with filter status cards and maintenance summary.': 'Dashboard de operaciones ampliado con tarjetas de estado de filtros y resumen de mantenimiento.',
+        'Improved mobile navigation, filter detail spacing, and technician action buttons.': 'Navegación móvil mejorada, más espacio en detalles de filtros y botones de acción para técnicos.',
+        'Prepared hour usage and work completed summary for May.': 'Resumen preparado de horas usadas y trabajo completado de mayo.',
+        'Adjusted product page hierarchy and kitchen workflow presentation.': 'Jerarquía de página de producto y presentación del flujo de cocina ajustadas.',
+        'Resolved session handling issue in the kitchen operations login flow.': 'Problema de manejo de sesión corregido en el flujo de login de operaciones de cocina.',
+        'Added LineOps launch presentation area to the Bastida Systems homepage.': 'Área de presentación de lanzamiento de LineOps agregada al homepage de Bastida Systems.',
+        'Refined mobile schedule previews and App Store call-to-action spacing.': 'Previews móviles de horarios y espaciado del llamado a App Store refinados.',
+        'Refined consulting website hero, contact sections, and responsive spacing.': 'Hero del sitio de consultoría, secciones de contacto y espaciado responsive refinados.',
+        'Improved cinematic hero, portfolio rhythm, and booking call-to-action.': 'Hero cinematográfico, ritmo del portafolio y llamado de reserva mejorados.',
+        'Compiled work completed, hours used, and payment summary.': 'Trabajo completado, horas usadas y resumen de pagos compilados.',
+        'Adjusted product cards, collection spacing, and cart flow on mobile.': 'Tarjetas de producto, espaciado de colección y flujo de carrito ajustados en móvil.',
+        'Prepared admin overview for order and collection review.': 'Resumen admin preparado para revisar pedidos y colección.',
+        'Dashboard': 'Dashboard',
+        'Mobile': 'Móvil',
+        'Reporting': 'Reportes',
+        'Website': 'Sitio web',
+        'Authentication': 'Autenticación',
+        'Marketing': 'Marketing',
+        'E-commerce': 'E-commerce',
+        'Admin': 'Admin',
+        'Ready for owner review.': 'Listo para revisión del dueño.',
+        'Reduced friction during field checks.': 'Menos fricción durante revisiones en campo.',
+        'Included payment summary.': 'Resumen de pagos incluido.',
+        'Improved above-the-fold clarity.': 'Claridad inicial de página mejorada.',
+        'Validated with owner account.': 'Validado con cuenta de dueño.',
+        'Live with App Store badge.': 'Publicado con badge de App Store.',
+        'Checked on phone-width layout.': 'Revisado en layout de teléfono.',
+        'Public site remains clean and direct.': 'El sitio público se mantiene limpio y directo.',
+        'Luxury dark visual system preserved.': 'Sistema visual oscuro premium conservado.',
+        'Ready for download.': 'Listo para descargar.',
+        'Improved shopping path on phones.': 'Flujo de compra mejorado en teléfonos.',
+        'Awaiting content confirmation.': 'Esperando confirmación de contenido.',
+        'Monthly report': 'Reporte mensual',
+        'Hour usage report': 'Reporte de uso de horas',
+        'Project report': 'Reporte de proyecto',
+        'Work completed report': 'Reporte de trabajo completado',
+        'Approve May usage report': 'Aprobar reporte de uso de mayo',
+        'Review next reporting export format': 'Revisar siguiente formato de exportación de reportes',
+        'Approve login fix': 'Aprobar corrección de login',
+        'Confirm next inventory module priorities': 'Confirmar prioridades del siguiente módulo de inventario',
+        'Prepare June release notes': 'Preparar notas de lanzamiento de junio',
+        'Collect App Store feedback': 'Recopilar feedback de App Store',
+        'Review final copy updates': 'Revisar ajustes finales de copy',
+        'Approve May monthly report': 'Aprobar reporte mensual de mayo',
+        'Send new gallery selections': 'Enviar nuevas selecciones de galería',
+        'Confirm admin dashboard content': 'Confirmar contenido del dashboard admin',
+        'Approve collection updates': 'Aprobar ajustes de colección',
+        'Dashboard module': 'Módulo de dashboard',
+        'Mobile technician layout': 'Layout móvil de técnico',
+        'Homepage layout': 'Layout de homepage',
+        'Launch section': 'Sección de lanzamiento',
+        'Mobile schedule preview': 'Preview móvil de horario',
+        'Responsive homepage layout': 'Layout responsive de homepage',
+        'Cinematic homepage layout': 'Layout cinematográfico de homepage',
+        'Mobile collection layout': 'Layout móvil de colección'
+      }
+    };
+
+    const demoUsers = [
       {
         email: 'admin@bastidasystems.com',
-        code: 'BS-ADMIN-2026',
         name: 'Bastida Systems Admin',
         role: 'admin',
         companyIds: []
       },
       {
         email: 'david@bastidasystems.com',
-        code: 'BS-DAVID-2026',
         name: 'David Bastida',
         role: 'owner',
         companyIds: ['filtracore', 'lineops']
       },
       {
         email: 'rodrigo@beoflow.com',
-        code: 'BS-RODRIGO-2026',
         name: 'Rodrigo Bastida',
         role: 'owner',
         companyIds: ['beoflow']
       },
       {
         email: 'blanca@estrativa.com',
-        code: 'BS-BLANCA-2026',
         name: 'Blanca Gordon',
         role: 'owner',
         companyIds: ['estrativa']
       },
       {
         email: 'rafael@cocofilms.com',
-        code: 'BS-RAFAEL-2026',
         name: 'Rafael Amezquita',
         role: 'owner',
         companyIds: ['cocofilms']
       },
       {
         email: 'isaias@talladordesuenos.com',
-        code: 'BS-ISAIAS-2026',
         name: 'Jiménez Isaías',
         role: 'owner',
         companyIds: ['tallador']
@@ -734,6 +1252,69 @@
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#039;');
 
+    function getPortalLanguage() {
+      const language = localStorage.getItem('site-language') || (navigator.language.startsWith('es') ? 'es' : 'en');
+      return language === 'es' ? 'es' : 'en';
+    }
+
+    function portalT(key) {
+      const language = getPortalLanguage();
+      return (
+        (portalUiText[language] && portalUiText[language][key]) ||
+        (window.pageTranslations && window.pageTranslations[language] && window.pageTranslations[language][key]) ||
+        portalUiText.en[key] ||
+        (window.pageTranslations && window.pageTranslations.en && window.pageTranslations.en[key]) ||
+        key
+      );
+    }
+
+    function contentT(value) {
+      const text = String(value ?? '');
+      const language = getPortalLanguage();
+      return (portalContentTranslations[language] && portalContentTranslations[language][text]) || text;
+    }
+
+    function applyPortalLanguage() {
+      document.querySelectorAll('[data-portal-i18n]').forEach(element => {
+        element.textContent = portalT(element.dataset.portalI18n);
+      });
+
+      document.querySelectorAll('[data-portal-placeholder]').forEach(element => {
+        element.setAttribute('placeholder', portalT(element.dataset.portalPlaceholder));
+      });
+    }
+
+    function displayStatus(status) {
+      const statusMap = {
+        'Active platform': 'portal.status.activePlatform',
+        'Active collaboration': 'portal.status.activeCollaboration',
+        'Published app': 'portal.status.publishedApp',
+        'Published site': 'portal.status.publishedSite',
+        'Completed': 'portal.status.completed',
+        'In progress': 'portal.status.inProgress',
+        'Paid': 'portal.status.paid',
+        'Pending': 'portal.status.pending',
+        'Approved': 'portal.status.approved'
+      };
+
+      return portalT(statusMap[status] || status);
+    }
+
+    function displayPackage(packageLabel) {
+      return String(packageLabel || '').replace(/\bhours\b/i, portalT('portal.unit.hours'));
+    }
+
+    function displayMethod(method) {
+      const methodMap = {
+        'Card': 'portal.method.card',
+        'Bank transfer': 'portal.method.bank',
+        'Admin entry': 'portal.method.admin',
+        'Portal request': 'portal.method.request'
+      };
+
+      return portalT(methodMap[method] || method);
+    }
+
     function loadCompanies() {
       try {
         const stored = localStorage.getItem(storageKey);
@@ -803,7 +1384,7 @@
 
     function tableRows(items, columns) {
       if (!items.length) {
-        return `<tr><td colspan="${columns.length}" class="text-gray-500">No records yet.</td></tr>`;
+        return `<tr><td colspan="${columns.length}" class="text-gray-500">${portalT('portal.table.none')}</td></tr>`;
       }
       return items.map(item => `
         <tr>
@@ -825,10 +1406,116 @@
       `;
     }
 
+    function renderBackendIntegrationMap(targetId) {
+      const target = document.getElementById(targetId);
+      if (!target) return;
+
+      target.innerHTML = backendTables.map(table => `
+        <article class="integration-card">
+          <code>${escapeHtml(table.name)}</code>
+          <p class="mt-2 text-sm leading-6 text-gray-400">${escapeHtml(getPortalLanguage() === 'es' ? table.purposeEs : table.purpose)}</p>
+        </article>
+      `).join('');
+    }
+
+    function renderDemoProfiles() {
+      const target = document.getElementById('demo-profile-list');
+      if (!target) return;
+
+      target.innerHTML = demoUsers.map(user => `
+        <button class="company-tab" type="button" data-action="start-demo" data-email="${escapeHtml(user.email)}">
+          <span class="flex flex-col gap-1">
+            <strong>${escapeHtml(user.name)}</strong>
+            <span class="text-xs text-gray-500">${user.role === 'admin' ? portalT('portal.demo.admin') : `${portalT('portal.demo.owner')} • ${escapeHtml(user.email)}`}</span>
+          </span>
+        </button>
+      `).join('');
+    }
+
+    function getSupabaseClient() {
+      if (!SUPABASE_CONFIG.url || !SUPABASE_CONFIG.anonKey || !window.supabase) {
+        return null;
+      }
+
+      if (!getSupabaseClient.client) {
+        getSupabaseClient.client = window.supabase.createClient(
+          SUPABASE_CONFIG.url,
+          SUPABASE_CONFIG.anonKey
+        );
+      }
+
+      return getSupabaseClient.client;
+    }
+
+    async function signInWithSupabase(email, password) {
+      const client = getSupabaseClient();
+      if (!client) {
+        throw new Error(portalT('portal.message.supabaseMissing'));
+      }
+
+      const { data, error } = await client.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+
+      return loadAuthenticatedPortalUser(client, data.user);
+    }
+
+    async function loadAuthenticatedPortalUser(client, authUser) {
+      /*
+        TODO Supabase database connection:
+        - Query public.users by auth_user_id = authUser.id.
+        - Query public.company_users for company permissions.
+        - Admin users should receive role = 'admin' and all company IDs.
+        - Owner users should receive only company IDs assigned in company_users.
+        - Keep RLS policies on companies, hour_packages, work_logs, payments,
+          receipts, and reports so owners cannot fetch another company.
+      */
+      const { data: profile, error } = await client
+        .from('users')
+        .select('id, email, full_name, role, active')
+        .eq('auth_user_id', authUser.id)
+        .eq('active', true)
+        .single();
+
+      if (error) throw error;
+
+      const { data: permissions, error: permissionError } = await client
+        .from('company_users')
+        .select('company_id')
+        .eq('user_id', profile.id);
+
+      if (permissionError) throw permissionError;
+
+      return {
+        email: profile.email || authUser.email,
+        name: profile.full_name || authUser.email,
+        role: profile.role,
+        companyIds: (permissions || []).map(item => item.company_id)
+      };
+    }
+
+    function startSession(user, message = '') {
+      if (document.activeElement && typeof document.activeElement.blur === 'function') {
+        document.activeElement.blur();
+      }
+      currentUser = user;
+      selectedCompanyId = null;
+      renderApp();
+      if (message) showMessage(message);
+      resetScrollPosition();
+      window.requestAnimationFrame(resetScrollPosition);
+      [60, 160, 320, 640].forEach(delay => window.setTimeout(resetScrollPosition, delay));
+    }
+
+    function resetScrollPosition() {
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      window.scrollTo(0, 0);
+    }
+
     function renderApp() {
       const visibleCompanies = getVisibleCompanies();
       if (!visibleCompanies.length) {
-        showMessage('No companies assigned to this profile.');
+        showMessage(portalT('portal.message.noCompanies'));
         return;
       }
 
@@ -838,8 +1525,13 @@
 
       document.getElementById('login-view').classList.add('hidden');
       document.getElementById('app-view').classList.remove('hidden');
-      document.getElementById('user-scope').textContent = `${currentUser.name} • ${currentUser.role === 'admin' ? 'Admin access to all companies' : 'Owner access only'}`;
-      document.getElementById('company-count').textContent = `${visibleCompanies.length} ${visibleCompanies.length === 1 ? 'Company' : 'Companies'}`;
+      document.querySelector('#app-view .portal-chip').textContent = portalT('portal.dashboard.private');
+      document.querySelector('#app-view h1').textContent = portalT('portal.dashboard.title');
+      document.querySelector('[data-action="reset-demo"]').textContent = portalT('portal.dashboard.reset');
+      document.querySelector('[data-action="sign-out"]').textContent = portalT('portal.dashboard.signOut');
+      document.querySelector('#app-view aside h2').textContent = portalT('portal.sidebar.companies');
+      document.getElementById('user-scope').textContent = `${currentUser.name} • ${currentUser.role === 'admin' ? portalT('portal.scope.admin') : portalT('portal.scope.owner')}`;
+      document.getElementById('company-count').textContent = `${visibleCompanies.length} ${visibleCompanies.length === 1 ? portalT('portal.count.company') : portalT('portal.count.companies')}`;
 
       renderCompanyNav(visibleCompanies);
       renderAdminPanel();
@@ -855,7 +1547,7 @@
               ${companyLogo(company)}
               <span>
                 <strong class="block text-sm">${escapeHtml(company.name)}</strong>
-                <span class="block text-xs text-gray-500">${formatHours(totals.remaining)} remaining</span>
+                <span class="block text-xs text-gray-500">${formatHours(totals.remaining)} ${portalT('portal.remaining')}</span>
               </span>
             </span>
           </button>
@@ -865,7 +1557,7 @@
 
     function renderDashboard(company) {
       const totals = getTotals(company);
-      const paymentStatus = company.payments.some(payment => payment.status === 'Pending') ? 'Pending balance' : 'Paid';
+      const paymentStatus = company.payments.some(payment => payment.status === 'Pending') ? portalT('portal.payment.pendingBalance') : portalT('portal.payment.paid');
       const pendingWork = company.workLogs.filter(item => item.approval === 'Pending');
       const approvedWork = company.workLogs.filter(item => item.approval === 'Approved');
 
@@ -875,29 +1567,29 @@
             <div class="flex items-start gap-4">
               ${companyLogo(company)}
               <div>
-                <span class="status-pill ${statusClass(company.status)}">${escapeHtml(company.status)}</span>
+                <span class="status-pill ${statusClass(company.status)}">${escapeHtml(displayStatus(company.status))}</span>
                 <h2 class="mt-4 text-3xl md:text-5xl font-extrabold">${escapeHtml(company.name)}</h2>
-                <p class="mt-3 text-gray-400 leading-7 max-w-3xl">${escapeHtml(company.description)}</p>
+                <p class="mt-3 text-gray-400 leading-7 max-w-3xl">${escapeHtml(contentT(company.description))}</p>
               </div>
             </div>
-            <a class="portal-button secondary" href="${escapeHtml(company.website)}" target="${company.website.startsWith('http') ? '_blank' : '_self'}" rel="noopener">Public Site</a>
+            <a class="portal-button secondary" href="${escapeHtml(company.website)}" target="${company.website.startsWith('http') ? '_blank' : '_self'}" rel="noopener">${portalT('portal.publicSite')}</a>
           </div>
 
           <div class="grid gap-4 md:grid-cols-4 mt-8">
             <div class="metric-card">
-              <span class="text-sm text-gray-500">Purchased Hours</span>
+              <span class="text-sm text-gray-500">${portalT('portal.metric.purchased')}</span>
               <strong>${formatHours(totals.purchased)}</strong>
             </div>
             <div class="metric-card">
-              <span class="text-sm text-gray-500">Used Hours</span>
+              <span class="text-sm text-gray-500">${portalT('portal.metric.used')}</span>
               <strong>${formatHours(totals.used)}</strong>
             </div>
             <div class="metric-card">
-              <span class="text-sm text-gray-500">Remaining Hours</span>
+              <span class="text-sm text-gray-500">${portalT('portal.metric.remaining')}</span>
               <strong>${formatHours(totals.remaining)}</strong>
             </div>
             <div class="metric-card">
-              <span class="text-sm text-gray-500">Payment Status</span>
+              <span class="text-sm text-gray-500">${portalT('portal.metric.paymentStatus')}</span>
               <strong class="text-2xl">${escapeHtml(paymentStatus)}</strong>
             </div>
           </div>
@@ -913,12 +1605,12 @@
           </div>
           <aside class="grid gap-6 content-start">
             ${renderHourPackages(company)}
-            ${renderTasks(company.tasks, 'Pending Tasks')}
-            ${renderTasks(approvedWork.map(item => item.title).concat(company.approvedChanges || []), 'Approved Changes')}
+            ${renderTasks(company.tasks, portalT('portal.tasks.pending'))}
+            ${renderTasks(approvedWork.map(item => item.title).concat(company.approvedChanges || []), portalT('portal.tasks.approved'))}
             <div class="portal-card p-5">
-              <span class="status-pill">Bastida Notes</span>
-              <p class="mt-4 text-gray-300 leading-7">${escapeHtml(company.notes)}</p>
-              ${pendingWork.length ? `<p class="mt-4 text-sm text-amber-200">${pendingWork.length} item${pendingWork.length === 1 ? '' : 's'} pending approval.</p>` : ''}
+              <span class="status-pill">${portalT('portal.notes.badge')}</span>
+              <p class="mt-4 text-gray-300 leading-7">${escapeHtml(contentT(company.notes))}</p>
+              ${pendingWork.length ? `<p class="mt-4 text-sm text-amber-200">${pendingWork.length} ${pendingWork.length === 1 ? portalT('portal.notes.pendingOne') : portalT('portal.notes.pendingMany')}</p>` : ''}
             </div>
           </aside>
         </div>
@@ -930,21 +1622,21 @@
         <section class="portal-card p-5 md:p-6">
           <div class="section-title">
             <div>
-              <span class="portal-chip">Company Overview</span>
-              <h3 class="text-2xl font-semibold mt-3">Owner and status</h3>
+              <span class="portal-chip">${portalT('portal.overview.badge')}</span>
+              <h3 class="text-2xl font-semibold mt-3">${portalT('portal.overview.title')}</h3>
             </div>
           </div>
           <div class="grid gap-4 md:grid-cols-3">
             <div class="metric-card">
-              <span class="text-sm text-gray-500">CEO / Owner</span>
+              <span class="text-sm text-gray-500">${portalT('portal.overview.owner')}</span>
               <strong class="metric-value-compact">${escapeHtml(company.owner)}</strong>
             </div>
             <div class="metric-card">
-              <span class="text-sm text-gray-500">Current Status</span>
-              <strong class="metric-value-compact">${escapeHtml(company.status)}</strong>
+              <span class="text-sm text-gray-500">${portalT('portal.overview.status')}</span>
+              <strong class="metric-value-compact">${escapeHtml(displayStatus(company.status))}</strong>
             </div>
             <div class="metric-card">
-              <span class="text-sm text-gray-500">Owner Email</span>
+              <span class="text-sm text-gray-500">${portalT('portal.overview.email')}</span>
               <strong class="metric-value-email">${escapeHtml(company.ownerEmail)}</strong>
             </div>
           </div>
@@ -955,14 +1647,14 @@
     function renderHourPackages(company) {
       return `
         <section class="portal-card p-5">
-          <span class="portal-chip">Buy Hours</span>
-          <h3 class="text-xl font-semibold mt-3">Hour Packages</h3>
-          <p class="text-gray-400 leading-7 mt-3">Request or add work-hour blocks for this company.</p>
+          <span class="portal-chip">${portalT('portal.buyHours.badge')}</span>
+          <h3 class="text-xl font-semibold mt-3">${portalT('portal.buyHours.title')}</h3>
+          <p class="text-gray-400 leading-7 mt-3">${portalT('portal.buyHours.body')}</p>
           <div class="grid grid-cols-2 gap-3 mt-5">
             ${[10, 20, 50, 100].map(hours => `
               <button class="company-tab text-center" type="button" data-action="request-package" data-hours="${hours}">
                 <strong class="block text-lg">${hours}h</strong>
-                <span class="text-xs text-gray-500">${currentUser.role === 'admin' ? 'Add package' : 'Request package'}</span>
+                <span class="text-xs text-gray-500">${currentUser.role === 'admin' ? portalT('portal.buyHours.add') : portalT('portal.buyHours.request')}</span>
               </button>
             `).join('')}
           </div>
@@ -975,7 +1667,7 @@
         <section class="portal-card p-5">
           <span class="portal-chip">${escapeHtml(title)}</span>
           <ul class="portal-list mt-4">
-            ${(items && items.length ? items : ['No items yet.']).map(item => `<li>${escapeHtml(item)}</li>`).join('')}
+            ${(items && items.length ? items : [portalT('portal.tasks.empty')]).map(item => `<li>${escapeHtml(contentT(item))}</li>`).join('')}
           </ul>
         </section>
       `;
@@ -986,16 +1678,16 @@
         <section class="portal-card p-5 md:p-6">
           <div class="section-title">
             <div>
-              <span class="portal-chip">Hours System</span>
-              <h3 class="text-2xl font-semibold mt-3">Purchased hour blocks</h3>
+              <span class="portal-chip">${portalT('portal.hours.badge')}</span>
+              <h3 class="text-2xl font-semibold mt-3">${portalT('portal.hours.title')}</h3>
             </div>
           </div>
           ${renderTable(company.purchases, [
-            { label: 'Purchase Date', render: item => escapeHtml(item.date) },
-            { label: 'Package', render: item => escapeHtml(item.package) },
-            { label: 'Hours', render: item => formatHours(item.hours) },
-            { label: 'Amount', render: item => currency.format(item.amount) },
-            { label: 'Payment Status', render: item => `<span class="status-pill ${statusClass(item.status)}">${escapeHtml(item.status)}</span>` }
+            { label: portalT('portal.table.purchaseDate'), render: item => escapeHtml(item.date) },
+            { label: portalT('portal.table.package'), render: item => escapeHtml(displayPackage(item.package)) },
+            { label: portalT('portal.table.hours'), render: item => formatHours(item.hours) },
+            { label: portalT('portal.table.amount'), render: item => currency.format(item.amount) },
+            { label: portalT('portal.table.paymentStatus'), render: item => `<span class="status-pill ${statusClass(item.status)}">${escapeHtml(displayStatus(item.status))}</span>` }
           ])}
         </section>
       `;
@@ -1006,20 +1698,20 @@
         <section class="portal-card p-5 md:p-6">
           <div class="section-title">
             <div>
-              <span class="portal-chip">Work Log System</span>
-              <h3 class="text-2xl font-semibold mt-3">Recent work and history</h3>
+              <span class="portal-chip">${portalT('portal.work.badge')}</span>
+              <h3 class="text-2xl font-semibold mt-3">${portalT('portal.work.title')}</h3>
             </div>
           </div>
           ${renderTable(company.workLogs, [
-            { label: 'Work', render: item => `<strong class="text-white">${escapeHtml(item.title)}</strong><br>${escapeHtml(item.description)}` },
-            { label: 'Date', render: item => escapeHtml(item.date) },
-            { label: 'Time', render: item => formatHours(item.time) },
-            { label: 'Worker', render: item => escapeHtml(item.worker) },
-            { label: 'Category', render: item => escapeHtml(item.category) },
-            { label: 'Status', render: item => `<span class="status-pill ${statusClass(item.status)}">${escapeHtml(item.status)}</span>` },
-            { label: 'Notes', render: item => escapeHtml(item.notes) },
-            { label: 'Attachments', render: item => (item.attachments || []).map(file => `<span class="block text-gray-300">${escapeHtml(file)}</span>`).join('') || 'None' },
-            { label: 'Approval', render: item => item.approval === 'Pending' ? `<button class="portal-button secondary !min-h-0 !py-2 !px-3 text-xs" type="button" data-action="approve-work" data-work-id="${escapeHtml(item.id)}">Approve</button>` : `<span class="status-pill blue">${escapeHtml(item.approval)}</span>` }
+            { label: portalT('portal.table.work'), render: item => `<strong class="text-white">${escapeHtml(contentT(item.title))}</strong><br>${escapeHtml(contentT(item.description))}` },
+            { label: portalT('portal.table.date'), render: item => escapeHtml(item.date) },
+            { label: portalT('portal.table.time'), render: item => formatHours(item.time) },
+            { label: portalT('portal.table.worker'), render: item => escapeHtml(item.worker) },
+            { label: portalT('portal.table.category'), render: item => escapeHtml(contentT(item.category)) },
+            { label: portalT('portal.table.status'), render: item => `<span class="status-pill ${statusClass(item.status)}">${escapeHtml(displayStatus(item.status))}</span>` },
+            { label: portalT('portal.table.notes'), render: item => escapeHtml(contentT(item.notes)) },
+            { label: portalT('portal.table.attachments'), render: item => (item.attachments || []).map(file => `<span class="block text-gray-300">${escapeHtml(file)}</span>`).join('') || portalT('portal.none') },
+            { label: portalT('portal.table.approval'), render: item => item.approval === 'Pending' ? `<button class="portal-button secondary !min-h-0 !py-2 !px-3 text-xs" type="button" data-action="approve-work" data-work-id="${escapeHtml(item.id)}">${portalT('portal.approve')}</button>` : `<span class="status-pill blue">${escapeHtml(displayStatus(item.approval))}</span>` }
           ])}
         </section>
       `;
@@ -1030,16 +1722,16 @@
         <section class="portal-card p-5 md:p-6">
           <div class="section-title">
             <div>
-              <span class="portal-chip">Payment History</span>
-              <h3 class="text-2xl font-semibold mt-3">Payments by hour package</h3>
+              <span class="portal-chip">${portalT('portal.payments.badge')}</span>
+              <h3 class="text-2xl font-semibold mt-3">${portalT('portal.payments.title')}</h3>
             </div>
           </div>
           ${renderTable(company.payments, [
-            { label: 'Payment Date', render: item => escapeHtml(item.date) },
-            { label: 'Amount', render: item => currency.format(item.amount) },
-            { label: 'Method', render: item => escapeHtml(item.method) },
-            { label: 'Status', render: item => `<span class="status-pill ${statusClass(item.status)}">${escapeHtml(item.status)}</span>` },
-            { label: 'Related Package', render: item => escapeHtml(item.package) }
+            { label: portalT('portal.table.date'), render: item => escapeHtml(item.date) },
+            { label: portalT('portal.table.amount'), render: item => currency.format(item.amount) },
+            { label: portalT('portal.table.method'), render: item => escapeHtml(displayMethod(item.method)) },
+            { label: portalT('portal.table.status'), render: item => `<span class="status-pill ${statusClass(item.status)}">${escapeHtml(displayStatus(item.status))}</span>` },
+            { label: portalT('portal.table.relatedPackage'), render: item => escapeHtml(displayPackage(item.package)) }
           ])}
         </section>
       `;
@@ -1050,26 +1742,26 @@
         <section class="portal-card p-5 md:p-6">
           <div class="section-title">
             <div>
-              <span class="portal-chip">Receipts & Reports</span>
-              <h3 class="text-2xl font-semibold mt-3">Downloadable records</h3>
+              <span class="portal-chip">${portalT('portal.records.badge')}</span>
+              <h3 class="text-2xl font-semibold mt-3">${portalT('portal.records.title')}</h3>
             </div>
           </div>
           <div class="grid gap-6 xl:grid-cols-2">
             <div>
-              <h4 class="font-semibold mb-3">Receipts</h4>
+              <h4 class="font-semibold mb-3">${portalT('portal.records.receipts')}</h4>
               ${renderTable(company.receipts, [
-                { label: 'Receipt', render: item => escapeHtml(item.number) },
-                { label: 'Date', render: item => escapeHtml(item.date) },
-                { label: 'Amount', render: item => currency.format(item.amount) },
-                { label: 'PDF', render: item => `<button class="portal-button secondary !min-h-0 !py-2 !px-3 text-xs" type="button" data-action="download-receipt" data-receipt-id="${escapeHtml(item.id)}">Download PDF</button>` }
+                { label: portalT('portal.table.receipt'), render: item => escapeHtml(item.number) },
+                { label: portalT('portal.table.date'), render: item => escapeHtml(item.date) },
+                { label: portalT('portal.table.amount'), render: item => currency.format(item.amount) },
+                { label: portalT('portal.table.pdf'), render: item => `<button class="portal-button secondary !min-h-0 !py-2 !px-3 text-xs" type="button" data-action="download-receipt" data-receipt-id="${escapeHtml(item.id)}">${portalT('portal.records.download')}</button>` }
               ])}
             </div>
             <div>
-              <h4 class="font-semibold mb-3">Reports</h4>
+              <h4 class="font-semibold mb-3">${portalT('portal.records.reports')}</h4>
               ${renderTable(company.reports, [
-                { label: 'Report', render: item => escapeHtml(item.type) },
-                { label: 'Date', render: item => escapeHtml(item.date) },
-                { label: 'PDF', render: item => `<button class="portal-button secondary !min-h-0 !py-2 !px-3 text-xs" type="button" data-action="download-report" data-report-id="${escapeHtml(item.id)}">Download PDF</button>` }
+                { label: portalT('portal.table.report'), render: item => escapeHtml(contentT(item.type)) },
+                { label: portalT('portal.table.date'), render: item => escapeHtml(item.date) },
+                { label: portalT('portal.table.pdf'), render: item => `<button class="portal-button secondary !min-h-0 !py-2 !px-3 text-xs" type="button" data-action="download-report" data-report-id="${escapeHtml(item.id)}">${portalT('portal.records.download')}</button>` }
               ])}
             </div>
           </div>
@@ -1086,106 +1778,128 @@
       }
 
       const companyOptions = Object.values(companies).map(company => `<option value="${escapeHtml(company.id)}">${escapeHtml(company.name)}</option>`).join('');
-      const ownerOptions = users.filter(user => user.role === 'owner').map(user => `<option value="${escapeHtml(user.email)}">${escapeHtml(user.name)}</option>`).join('');
+      const ownerOptions = demoUsers.filter(user => user.role === 'owner').map(user => `<option value="${escapeHtml(user.email)}">${escapeHtml(user.name)}</option>`).join('');
 
       panel.classList.remove('hidden');
       panel.innerHTML = `
         <div class="portal-card p-5 md:p-6">
           <div class="section-title">
             <div>
-              <span class="portal-chip">Admin Dashboard</span>
-              <h2 class="text-2xl md:text-3xl font-semibold mt-3">Manage companies, access, hours, work, payments, receipts, and reports.</h2>
+              <span class="portal-chip">${portalT('portal.admin.badgePanel')}</span>
+              <h2 class="text-2xl md:text-3xl font-semibold mt-3">${portalT('portal.admin.titlePanel')}</h2>
             </div>
           </div>
 
           <div class="admin-grid mt-6">
             <form id="admin-company-form" class="metric-card grid gap-3">
-              <h3 class="font-semibold text-xl">Add company</h3>
-              <input class="form-field" name="name" placeholder="Company name" required>
+              <h3 class="font-semibold text-xl">${portalT('portal.admin.addCompany')}</h3>
+              <input class="form-field" name="name" placeholder="${escapeHtml(portalT('portal.admin.companyName'))}" required>
               <select class="form-field" name="ownerEmail" required>${ownerOptions}</select>
-              <input class="form-field" name="status" placeholder="Current status" value="Active collaboration" required>
-              <textarea class="form-field" name="description" rows="3" placeholder="Short description" required></textarea>
-              <button class="portal-button" type="submit">Add Company</button>
+              <select class="form-field" name="status" required>
+                <option value="Active collaboration">${displayStatus('Active collaboration')}</option>
+                <option value="Published site">${displayStatus('Published site')}</option>
+                <option value="Published app">${displayStatus('Published app')}</option>
+                <option value="Active platform">${displayStatus('Active platform')}</option>
+              </select>
+              <textarea class="form-field" name="description" rows="3" placeholder="${escapeHtml(portalT('portal.admin.shortDescription'))}" required></textarea>
+              <button class="portal-button" type="submit">${portalT('portal.admin.addCompanyButton')}</button>
             </form>
 
             <form id="admin-edit-form" class="metric-card grid gap-3">
-              <h3 class="font-semibold text-xl">Edit company details</h3>
+              <h3 class="font-semibold text-xl">${portalT('portal.admin.editCompany')}</h3>
               <select class="form-field" name="companyId" required>${companyOptions}</select>
-              <input class="form-field" name="status" placeholder="New status">
-              <textarea class="form-field" name="description" rows="3" placeholder="Updated description"></textarea>
-              <button class="portal-button" type="submit">Save Details</button>
+              <input class="form-field" name="status" placeholder="${escapeHtml(portalT('portal.admin.newStatus'))}">
+              <textarea class="form-field" name="description" rows="3" placeholder="${escapeHtml(portalT('portal.admin.updatedDescription'))}"></textarea>
+              <button class="portal-button" type="submit">${portalT('portal.admin.saveDetails')}</button>
             </form>
 
             <form id="admin-owner-form" class="metric-card grid gap-3">
-              <h3 class="font-semibold text-xl">Assign owner / access</h3>
+              <h3 class="font-semibold text-xl">${portalT('portal.admin.assignOwner')}</h3>
               <select class="form-field" name="companyId" required>${companyOptions}</select>
               <select class="form-field" name="ownerEmail" required>${ownerOptions}</select>
-              <button class="portal-button" type="submit">Assign Owner</button>
+              <button class="portal-button" type="submit">${portalT('portal.admin.assignOwnerButton')}</button>
             </form>
 
             <form id="admin-hours-form" class="metric-card grid gap-3">
-              <h3 class="font-semibold text-xl">Add purchased hours</h3>
+              <h3 class="font-semibold text-xl">${portalT('portal.admin.addPurchasedHours')}</h3>
               <select class="form-field" name="companyId" required>${companyOptions}</select>
               <select class="form-field" name="hours" required>
-                <option value="10">10 hours</option>
-                <option value="20">20 hours</option>
-                <option value="50">50 hours</option>
-                <option value="100">100 hours</option>
+                <option value="10">10 ${portalT('portal.unit.hours')}</option>
+                <option value="20">20 ${portalT('portal.unit.hours')}</option>
+                <option value="50">50 ${portalT('portal.unit.hours')}</option>
+                <option value="100">100 ${portalT('portal.unit.hours')}</option>
               </select>
               <select class="form-field" name="status" required>
-                <option value="Paid">Paid</option>
-                <option value="Pending">Pending</option>
+                <option value="Paid">${displayStatus('Paid')}</option>
+                <option value="Pending">${displayStatus('Pending')}</option>
               </select>
-              <input class="form-field" name="amount" type="number" min="0" step="1" placeholder="Amount" required>
-              <button class="portal-button" type="submit">Add Hours</button>
+              <input class="form-field" name="amount" type="number" min="0" step="1" placeholder="${escapeHtml(portalT('portal.admin.amount'))}" required>
+              <button class="portal-button" type="submit">${portalT('portal.admin.addHours')}</button>
             </form>
 
             <form id="admin-work-form" class="metric-card grid gap-3">
-              <h3 class="font-semibold text-xl">Log completed work</h3>
+              <h3 class="font-semibold text-xl">${portalT('portal.admin.logWork')}</h3>
               <select class="form-field" name="companyId" required>${companyOptions}</select>
-              <input class="form-field" name="title" placeholder="Work title" required>
-              <textarea class="form-field" name="description" rows="3" placeholder="Description" required></textarea>
-              <input class="form-field" name="hours" type="number" min="0.25" step="0.25" placeholder="Time spent" required>
-              <input class="form-field" name="worker" placeholder="Collaborator / worker" value="Bastida Systems" required>
-              <input class="form-field" name="category" placeholder="Category" required>
+              <input class="form-field" name="title" placeholder="${escapeHtml(portalT('portal.admin.workTitle'))}" required>
+              <textarea class="form-field" name="description" rows="3" placeholder="${escapeHtml(portalT('portal.admin.description'))}" required></textarea>
+              <input class="form-field" name="hours" type="number" min="0.25" step="0.25" placeholder="${escapeHtml(portalT('portal.admin.timeSpent'))}" required>
+              <input class="form-field" name="worker" placeholder="${escapeHtml(portalT('portal.admin.worker'))}" value="Bastida Systems" required>
+              <input class="form-field" name="category" placeholder="${escapeHtml(portalT('portal.admin.category'))}" required>
               <select class="form-field" name="status" required>
-                <option value="Completed">Completed</option>
-                <option value="In progress">In progress</option>
+                <option value="Completed">${displayStatus('Completed')}</option>
+                <option value="In progress">${displayStatus('In progress')}</option>
               </select>
-              <button class="portal-button" type="submit">Log Work</button>
+              <button class="portal-button" type="submit">${portalT('portal.admin.logWorkButton')}</button>
             </form>
 
             <form id="admin-upload-form" class="metric-card grid gap-3">
-              <h3 class="font-semibold text-xl">Upload receipt / report</h3>
+              <h3 class="font-semibold text-xl">${portalT('portal.admin.uploadRecords')}</h3>
               <select class="form-field" name="companyId" required>${companyOptions}</select>
-              <input class="form-field" name="receiptName" placeholder="Receipt number or file name">
-              <input class="form-field" name="reportName" placeholder="Report name">
-              <button class="portal-button" type="submit">Add Records</button>
+              <input class="form-field" name="receiptName" placeholder="${escapeHtml(portalT('portal.admin.receiptName'))}">
+              <input class="form-field" name="reportName" placeholder="${escapeHtml(portalT('portal.admin.reportName'))}">
+              <button class="portal-button" type="submit">${portalT('portal.admin.addRecords')}</button>
             </form>
           </div>
 
           <div class="grid gap-6 xl:grid-cols-2 mt-6">
             <div>
-              <h3 class="text-xl font-semibold mb-3">All company balances</h3>
+              <h3 class="text-xl font-semibold mb-3">${portalT('portal.admin.allBalances')}</h3>
               ${renderTable(Object.values(companies), [
-                { label: 'Company', render: company => escapeHtml(company.name) },
-                { label: 'Owner', render: company => escapeHtml(company.owner) },
-                { label: 'Purchased', render: company => formatHours(getTotals(company).purchased) },
-                { label: 'Used', render: company => formatHours(getTotals(company).used) },
-                { label: 'Remaining', render: company => formatHours(getTotals(company).remaining) }
+                { label: portalT('portal.table.company'), render: company => escapeHtml(company.name) },
+                { label: portalT('portal.overview.owner'), render: company => escapeHtml(company.owner) },
+                { label: portalT('portal.metric.purchased'), render: company => formatHours(getTotals(company).purchased) },
+                { label: portalT('portal.metric.used'), render: company => formatHours(getTotals(company).used) },
+                { label: portalT('portal.metric.remaining'), render: company => formatHours(getTotals(company).remaining) }
               ])}
             </div>
             <div>
-              <h3 class="text-xl font-semibold mb-3">All work logs</h3>
+              <h3 class="text-xl font-semibold mb-3">${portalT('portal.admin.allWorkLogs')}</h3>
               ${renderTable(Object.values(companies).flatMap(company => company.workLogs.map(log => ({ ...log, company: company.name }))), [
-                { label: 'Company', render: item => escapeHtml(item.company) },
-                { label: 'Work', render: item => escapeHtml(item.title) },
-                { label: 'Date', render: item => escapeHtml(item.date) },
-                { label: 'Hours', render: item => formatHours(item.time) },
-                { label: 'Approval', render: item => escapeHtml(item.approval) }
+                { label: portalT('portal.table.company'), render: item => escapeHtml(item.company) },
+                { label: portalT('portal.table.work'), render: item => escapeHtml(contentT(item.title)) },
+                { label: portalT('portal.table.date'), render: item => escapeHtml(item.date) },
+                { label: portalT('portal.table.hours'), render: item => formatHours(item.time) },
+                { label: portalT('portal.table.approval'), render: item => escapeHtml(displayStatus(item.approval)) }
               ])}
             </div>
           </div>
+
+          <section class="mt-6 border-t border-gray-800 pt-6">
+            <div class="section-title">
+              <div>
+                <span class="portal-chip">${portalT('portal.admin.backendBadge')}</span>
+                <h3 class="text-2xl font-semibold mt-3">${portalT('portal.admin.backendTitle')}</h3>
+              </div>
+            </div>
+            <div class="integration-grid">
+              ${backendTables.map(table => `
+                <article class="integration-card">
+                  <code>${escapeHtml(table.name)}</code>
+                  <p class="mt-2 text-sm leading-6 text-gray-400">${escapeHtml(getPortalLanguage() === 'es' ? table.purposeEs : table.purpose)}</p>
+                </article>
+              `).join('')}
+            </div>
+          </section>
         </div>
       `;
     }
@@ -1220,11 +1934,11 @@
           amount
         });
       } else {
-        company.tasks.unshift(`Review ${hours} hour package request`);
+        company.tasks.unshift(`${portalT('portal.task.reviewPackage')}: ${hours}h`);
       }
       saveCompanies();
       renderApp();
-      showMessage(`${hours} hour package ${status === 'Paid' ? 'added' : 'requested'} for ${company.name}.`);
+      showMessage(`${portalT('portal.message.packagePrefix')} ${displayPackage(`${hours} hours`)} ${status === 'Paid' ? portalT('portal.message.packageAddedSuffix') : portalT('portal.message.packageRequestedSuffix')} ${company.name}.`);
     }
 
     function approveWork(workId) {
@@ -1238,7 +1952,7 @@
       company.tasks = company.tasks.filter(task => !task.toLowerCase().includes(work.title.toLowerCase()));
       saveCompanies();
       renderApp();
-      showMessage(`${work.title} approved.`);
+      showMessage(`${work.title} ${portalT('portal.message.approved')}`);
     }
 
     function downloadText(lines, filename) {
@@ -1254,7 +1968,7 @@
       const PDF = window.jspdf && window.jspdf.jsPDF;
       if (!PDF) {
         downloadText(lines, `${filename}.txt`);
-        showMessage('PDF library unavailable; downloaded text fallback.');
+        showMessage(portalT('portal.message.pdfFallback'));
         return;
       }
 
@@ -1282,35 +1996,35 @@
 
     function reportLines(company, report) {
       const totals = getTotals(company);
-      const paymentSummary = company.payments.map(payment => `${payment.date}: ${currency.format(payment.amount)} via ${payment.method} (${payment.status})`).join('; ');
-      const workCompleted = company.workLogs.map(work => `${work.date}: ${work.title} - ${formatHours(work.time)} (${work.status}, ${work.approval})`).join('; ');
+      const paymentSummary = company.payments.map(payment => `${payment.date}: ${currency.format(payment.amount)} ${portalT('portal.report.via')} ${displayMethod(payment.method)} (${displayStatus(payment.status)})`).join('; ');
+      const workCompleted = company.workLogs.map(work => `${work.date}: ${contentT(work.title)} - ${formatHours(work.time)} (${displayStatus(work.status)}, ${displayStatus(work.approval)})`).join('; ');
 
       return [
-        `${company.name} - ${report.type}`,
-        `Company name: ${company.name}`,
-        `CEO / Owner: ${company.owner}`,
-        `Report date: ${report.date}`,
-        `Hours purchased: ${formatHours(totals.purchased)}`,
-        `Hours used: ${formatHours(totals.used)}`,
-        `Hours remaining: ${formatHours(totals.remaining)}`,
-        `Work completed: ${workCompleted || 'No work logged yet.'}`,
-        `Payment summary: ${paymentSummary || 'No payments logged yet.'}`,
-        `Notes from Bastida Systems: ${company.notes}`
+        `${company.name} - ${contentT(report.type)}`,
+        `${portalT('portal.report.companyName')}: ${company.name}`,
+        `${portalT('portal.report.owner')}: ${company.owner}`,
+        `${portalT('portal.report.reportDate')}: ${report.date}`,
+        `${portalT('portal.report.hoursPurchased')}: ${formatHours(totals.purchased)}`,
+        `${portalT('portal.report.hoursUsed')}: ${formatHours(totals.used)}`,
+        `${portalT('portal.report.hoursRemaining')}: ${formatHours(totals.remaining)}`,
+        `${portalT('portal.report.workCompleted')}: ${workCompleted || portalT('portal.report.noWork')}`,
+        `${portalT('portal.report.paymentSummary')}: ${paymentSummary || portalT('portal.report.noPayments')}`,
+        `${portalT('portal.report.notes')}: ${contentT(company.notes)}`
       ];
     }
 
     function receiptLines(company, receipt) {
       const payment = company.payments.find(item => Number(item.amount) === Number(receipt.amount));
       return [
-        `${company.name} - Receipt ${receipt.number}`,
-        `Company name: ${company.name}`,
-        `CEO / Owner: ${company.owner}`,
-        `Receipt number: ${receipt.number}`,
-        `Date: ${receipt.date}`,
-        `Amount: ${currency.format(receipt.amount)}`,
-        `Payment method: ${payment ? payment.method : 'Recorded payment'}`,
-        `Status: ${payment ? payment.status : 'Paid'}`,
-        `Notes from Bastida Systems: Thank you for your Bastida Systems hour package purchase.`
+        `${company.name} - ${portalT('portal.receipt.title')} ${receipt.number}`,
+        `${portalT('portal.report.companyName')}: ${company.name}`,
+        `${portalT('portal.report.owner')}: ${company.owner}`,
+        `${portalT('portal.receipt.number')}: ${receipt.number}`,
+        `${portalT('portal.table.date')}: ${receipt.date}`,
+        `${portalT('portal.table.amount')}: ${currency.format(receipt.amount)}`,
+        `${portalT('portal.receipt.paymentMethod')}: ${payment ? displayMethod(payment.method) : portalT('portal.receipt.recordedPayment')}`,
+        `${portalT('portal.table.status')}: ${payment ? displayStatus(payment.status) : displayStatus('Paid')}`,
+        `${portalT('portal.report.notes')}: ${portalT('portal.receipt.thanks')}`
       ];
     }
 
@@ -1320,7 +2034,7 @@
       if (!report) return;
       const filename = `${company.name}-${report.type}-${report.date}`.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
       savePdf(reportLines(company, report), filename);
-      showMessage(`${report.type} prepared for ${company.name}.`);
+      showMessage(`${contentT(report.type)} ${portalT('portal.message.reportReady')} ${company.name}.`);
     }
 
     function downloadReceipt(receiptId) {
@@ -1329,11 +2043,11 @@
       if (!receipt) return;
       const filename = `${company.name}-${receipt.number}`.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
       savePdf(receiptLines(company, receipt), filename);
-      showMessage(`Receipt ${receipt.number} prepared.`);
+      showMessage(`${portalT('portal.receipt.title')} ${receipt.number} ${portalT('portal.message.receiptReady')}`);
     }
 
     function handleAdminCompany(form) {
-      const owner = users.find(user => user.email === form.ownerEmail.value);
+      const owner = demoUsers.find(user => user.email === form.ownerEmail.value);
       const id = form.name.value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `company-${Date.now()}`;
       companies[id] = {
         id,
@@ -1345,19 +2059,19 @@
         website: '#',
         logo: '',
         mark: form.name.value.trim().slice(0, 2).toUpperCase(),
-        notes: 'New company record created by Bastida Systems admin.',
+        notes: portalT('portal.note.newCompany'),
         purchases: [],
         workLogs: [],
         payments: [],
         receipts: [],
         reports: [],
-        tasks: ['Set project scope', 'Add first hour package'],
+        tasks: [portalT('portal.task.setScope'), portalT('portal.task.addFirstPackage')],
         approvedChanges: []
       };
       selectedCompanyId = id;
       saveCompanies();
       renderApp();
-      showMessage(`${companies[id].name} added.`);
+      showMessage(`${companies[id].name} ${portalT('portal.message.companyAdded')}`);
       form.reset();
     }
 
@@ -1368,19 +2082,19 @@
       if (form.description.value.trim()) company.description = form.description.value.trim();
       saveCompanies();
       renderApp();
-      showMessage(`${company.name} details updated.`);
+      showMessage(`${company.name} ${portalT('portal.message.detailsUpdated')}`);
       form.reset();
     }
 
     function handleAdminOwner(form) {
       const company = companies[form.companyId.value];
-      const owner = users.find(user => user.email === form.ownerEmail.value);
+      const owner = demoUsers.find(user => user.email === form.ownerEmail.value);
       if (!company || !owner) return;
       company.owner = owner.name;
       company.ownerEmail = owner.email;
       saveCompanies();
       renderApp();
-      showMessage(`${owner.name} assigned to ${company.name}.`);
+      showMessage(`${owner.name} ${portalT('portal.message.assigned')} ${company.name}.`);
     }
 
     function handleAdminHours(form) {
@@ -1416,7 +2130,7 @@
       }
       saveCompanies();
       renderApp();
-      showMessage(`${hours} hours added to ${company.name}.`);
+      showMessage(`${hours} ${portalT('portal.message.hoursAdded')} ${company.name}.`);
       form.reset();
     }
 
@@ -1432,14 +2146,14 @@
         worker: form.worker.value.trim(),
         category: form.category.value.trim(),
         status: form.status.value,
-        notes: 'Logged by Bastida Systems admin.',
+        notes: portalT('portal.note.adminWork'),
         attachments: ['admin-upload-pending.png'],
         approval: 'Pending'
       });
-      company.tasks.unshift(`Approve ${form.title.value.trim()}`);
+      company.tasks.unshift(`${portalT('portal.task.approve')} ${form.title.value.trim()}`);
       saveCompanies();
       renderApp();
-      showMessage(`Work logged for ${company.name}; remaining hours recalculated.`);
+      showMessage(`${portalT('portal.message.workLogged')} ${company.name}; ${portalT('portal.message.remainingRecalculated')}`);
       form.reset();
     }
 
@@ -1463,29 +2177,27 @@
       }
       saveCompanies();
       renderApp();
-      showMessage(`Records added for ${company.name}.`);
+      showMessage(`${portalT('portal.message.recordsAdded')} ${company.name}.`);
       form.reset();
     }
 
-    document.addEventListener('submit', event => {
+    document.addEventListener('submit', async event => {
       event.preventDefault();
       const form = event.target;
 
       if (form.id === 'login-form') {
         const email = document.getElementById('login-email').value.trim().toLowerCase();
-        const code = document.getElementById('login-code').value.trim();
-        const user = users.find(candidate => candidate.email.toLowerCase() === email && candidate.code === code);
+        const password = document.getElementById('login-password').value;
         const error = document.getElementById('login-error');
-        if (!user) {
-          error.textContent = 'Invalid email or access code.';
+
+        try {
+          const user = await signInWithSupabase(email, password);
+          error.classList.add('hidden');
+          startSession(user, portalT('portal.message.supabaseSignedIn'));
+        } catch (authError) {
+          error.textContent = authError.message || portalT('portal.message.signInFailed');
           error.classList.remove('hidden');
-          return;
         }
-        error.classList.add('hidden');
-        currentUser = user;
-        selectedCompanyId = null;
-        renderApp();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
         return;
       }
 
@@ -1503,9 +2215,12 @@
       if (!button) return;
 
       const action = button.dataset.action;
-      if (action === 'fill-login') {
-        document.getElementById('login-email').value = button.dataset.email;
-        document.getElementById('login-code').value = button.dataset.code;
+      if (action === 'start-demo') {
+        const user = demoUsers.find(candidate => candidate.email.toLowerCase() === button.dataset.email.toLowerCase());
+        if (user) {
+          document.getElementById('login-error').classList.add('hidden');
+          startSession(user, `${portalT('portal.message.demoStarted')} ${user.name}.`);
+        }
       }
 
       if (action === 'select-company') {
@@ -1533,7 +2248,7 @@
         companies = JSON.parse(JSON.stringify(seedCompanies));
         saveCompanies();
         renderApp();
-        showMessage('Demo data reset.');
+        showMessage(portalT('portal.message.prototypeReset'));
       }
 
       if (action === 'sign-out') {
@@ -1546,6 +2261,21 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     });
+
+    document.addEventListener('change', event => {
+      if (!event.target || event.target.id !== 'language-select') return;
+
+      window.setTimeout(() => {
+        applyPortalLanguage();
+        renderBackendIntegrationMap('backend-plan-login');
+        renderDemoProfiles();
+        if (currentUser) renderApp();
+      }, 0);
+    });
+
+    applyPortalLanguage();
+    renderBackendIntegrationMap('backend-plan-login');
+    renderDemoProfiles();
   </script>
 </body>
 </html>
