@@ -822,6 +822,12 @@
           message: '',
           type: ''
         },
+        createProject: {
+          isOpen: false,
+          isSubmitting: false,
+          message: '',
+          type: ''
+        },
         isLoading: true,
         error: null
       };
@@ -1041,7 +1047,7 @@
                     <p class="profile-name">${escapeHtml(profileName())}</p>
                     <p class="profile-role">${escapeHtml(profileRole())}</p>
                   </div>
-                  ${canInviteMembers() ? '<button class="button button-primary" type="button" data-open-invite>Invite Member</button>' : ''}
+                  ${renderWorkspaceActions()}
                   <button class="button" type="button" data-refresh>Refresh</button>
                   <button class="button" type="button" data-sign-out>Logout</button>
                 </div>
@@ -1066,6 +1072,7 @@
               </section>
             </main>
             ${state.invite.isOpen ? renderInviteModal() : ''}
+            ${state.createProject.isOpen ? renderCreateProjectModal() : ''}
           </div>
         `;
 
@@ -1100,6 +1107,16 @@
           });
         });
 
+        app.querySelectorAll('[data-open-create-project]').forEach((button) => {
+          button.addEventListener('click', () => {
+            state.invite.isOpen = false;
+            state.createProject.isOpen = true;
+            state.createProject.message = '';
+            state.createProject.type = '';
+            renderApp();
+          });
+        });
+
         app.querySelectorAll('[data-close-invite]').forEach((button) => {
           button.addEventListener('click', () => {
             state.invite.isOpen = false;
@@ -1108,7 +1125,16 @@
           });
         });
 
+        app.querySelectorAll('[data-close-create-project]').forEach((button) => {
+          button.addEventListener('click', () => {
+            state.createProject.isOpen = false;
+            state.createProject.isSubmitting = false;
+            renderApp();
+          });
+        });
+
         app.querySelector('[data-invite-form]')?.addEventListener('submit', handleInviteSubmit);
+        app.querySelector('[data-create-project-form]')?.addEventListener('submit', handleCreateProjectSubmit);
 
         app.querySelector('[data-refresh]')?.addEventListener('click', async (event) => {
           event.currentTarget.textContent = 'Refreshing';
@@ -1125,6 +1151,44 @@
           await state.client.auth.signOut();
           window.location.href = authRedirects.login || 'login.html';
         });
+      }
+
+      async function handleCreateProjectSubmit(event) {
+        event.preventDefault();
+        const form = event.currentTarget;
+        const formData = new FormData(form);
+
+        state.createProject.isSubmitting = true;
+        state.createProject.message = '';
+        state.createProject.type = '';
+        renderApp();
+
+        try {
+          const body = {
+            name: String(formData.get('name') || '').trim(),
+            slug: String(formData.get('slug') || '').trim() || null,
+            description: String(formData.get('description') || '').trim() || null
+          };
+
+          const { data, error } = await state.client.functions.invoke('create-project', { body });
+          if (error) {
+            throw new Error(data?.error || data?.message || error.message || 'Error creating project.');
+          }
+
+          await loadPortalData();
+          state.activeView = 'projects';
+          state.createProject.isOpen = true;
+          state.createProject.isSubmitting = false;
+          state.createProject.type = 'success';
+          state.createProject.message = data?.message || 'Project created';
+          renderApp();
+        } catch (error) {
+          state.createProject.isOpen = true;
+          state.createProject.isSubmitting = false;
+          state.createProject.type = 'error';
+          state.createProject.message = error instanceof Error ? error.message : 'Error creating project';
+          renderApp();
+        }
       }
 
       async function handleInviteSubmit(event) {
@@ -1246,6 +1310,9 @@
 
       function renderPeople() {
         const people = buildPeople();
+        const emptyCopy = canManageWorkspace()
+          ? 'Create a project, then invite your first collaborator from Bastida OS.'
+          : 'No collaborators have been assigned to your visible projects yet.';
 
         return `
           <div class="toolbar">
@@ -1254,25 +1321,32 @@
               <p class="toolbar-copy">People and invitations are shown only when real project role records exist.</p>
             </div>
             <div class="section-actions">
-              ${canInviteMembers() ? '<button class="button button-primary" type="button" data-open-invite>Invite Member</button>' : ''}
+              ${renderWorkspaceActions()}
             </div>
           </div>
           <section class="panel">
-            ${people.length ? renderPeopleTable(people) : emptyState('No collaborators yet', 'Assign a real user to a real project role in Supabase to populate this section.')}
+            ${people.length ? renderPeopleTable(people) : emptyState('No collaborators yet', emptyCopy)}
           </section>
         `;
       }
 
       function renderProjects() {
+        const emptyCopy = canCreateProjects()
+          ? 'Create your first project from Bastida OS. You will be assigned as Founder automatically.'
+          : 'Projects visible to you will appear here after you are assigned to one.';
+
         return `
           <div class="toolbar">
             <div>
               <h2 class="toolbar-title">Projects</h2>
               <p class="toolbar-copy">Project data is read directly from Supabase.</p>
             </div>
+            <div class="section-actions">
+              ${renderWorkspaceActions()}
+            </div>
           </div>
           <section class="panel">
-            ${state.projects.length ? renderProjectTable() : emptyState('No projects yet', 'Create a real project record in Supabase to populate this section.')}
+            ${state.projects.length ? renderProjectTable() : emptyState('No projects yet', emptyCopy)}
           </section>
         `;
       }
@@ -1532,11 +1606,71 @@
         return Array.from(people.values()).sort((a, b) => a.name.localeCompare(b.name));
       }
 
+      function renderWorkspaceActions() {
+        if (!canManageWorkspace()) {
+          return '';
+        }
+
+        return `
+          ${canCreateProjects() ? '<button class="button" type="button" data-open-create-project>+ Create Project</button>' : ''}
+          ${canInviteMembers() ? '<button class="button button-primary" type="button" data-open-invite>+ Invite Member</button>' : ''}
+        `;
+      }
+
+      function renderCreateProjectModal() {
+        const notice = state.createProject.message
+          ? `<div class="notice notice-${state.createProject.type === 'error' ? 'error' : 'success'}">${escapeHtml(state.createProject.message)}</div>`
+          : '';
+
+        return `
+          <div class="modal-backdrop" role="presentation">
+            <section class="modal" role="dialog" aria-modal="true" aria-labelledby="create-project-title">
+              <form data-create-project-form>
+                <div class="modal-header">
+                  <div>
+                    <h2 class="modal-title" id="create-project-title">Create Project</h2>
+                    <p class="modal-copy">Create a real project and assign yourself as Founder.</p>
+                  </div>
+                  <button class="button" type="button" data-close-create-project>Close</button>
+                </div>
+                <div class="modal-body">
+                  ${notice}
+                  <div class="form-grid">
+                    <div class="field">
+                      <label for="project-name">Project name</label>
+                      <input id="project-name" name="name" type="text" autocomplete="off" required>
+                    </div>
+                    <div class="field">
+                      <label for="project-slug">Slug optional</label>
+                      <input id="project-slug" name="slug" type="text" autocomplete="off" placeholder="client-project">
+                      <p class="field-hint">Use lowercase letters, numbers, and hyphens. Leave empty if you do not need a slug yet.</p>
+                    </div>
+                    <div class="field">
+                      <label for="project-description">Description optional</label>
+                      <input id="project-description" name="description" type="text" autocomplete="off">
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button class="button" type="button" data-close-create-project>Cancel</button>
+                  <button class="button button-primary" type="submit" ${state.createProject.isSubmitting ? 'disabled' : ''}>
+                    ${state.createProject.isSubmitting ? 'Creating project' : 'Create project'}
+                  </button>
+                </div>
+              </form>
+            </section>
+          </div>
+        `;
+      }
+
       function renderInviteModal() {
         const projects = invitableProjects();
         const notice = state.invite.message
           ? `<div class="notice notice-${state.invite.type === 'error' ? 'error' : 'success'}">${escapeHtml(state.invite.message)}</div>`
           : '';
+        const noProjectsNotice = projects.length
+          ? ''
+          : `<div class="notice">Create a project first so the member can be assigned to it. <button class="button" type="button" data-open-create-project>+ Create Project</button></div>`;
 
         return `
           <div class="modal-backdrop" role="presentation">
@@ -1551,6 +1685,7 @@
                 </div>
                 <div class="modal-body">
                   ${notice}
+                  ${noProjectsNotice}
                   <div class="form-grid">
                     <div class="field">
                       <label for="invite-name">Name</label>
@@ -1563,7 +1698,9 @@
                     <div class="field">
                       <label for="invite-project">Project</label>
                       <select id="invite-project" name="project_id" required>
-                        ${projects.map((project) => `<option value="${escapeAttr(project.id)}">${escapeHtml(project.name)}</option>`).join('')}
+                        ${projects.length
+                          ? projects.map((project) => `<option value="${escapeAttr(project.id)}">${escapeHtml(project.name)}</option>`).join('')
+                          : '<option value="">No projects available</option>'}
                       </select>
                     </div>
                     <div class="field">
@@ -1640,11 +1777,39 @@
       }
 
       function canInviteMembers() {
-        return invitableProjects().length > 0;
+        return canManageWorkspace();
+      }
+
+      function canCreateProjects() {
+        if (isGlobalFounderOrAdmin()) {
+          return true;
+        }
+
+        return state.projectRoles.some((assignment) => (
+          assignment.user_id === state.profile?.id
+          && assignment.active === true
+          && assignment.role === 'founder'
+        ));
+      }
+
+      function canManageWorkspace() {
+        if (isGlobalFounderOrAdmin()) {
+          return true;
+        }
+
+        return state.projectRoles.some((assignment) => (
+          assignment.user_id === state.profile?.id
+          && assignment.active === true
+          && ['founder', 'owner'].includes(assignment.role)
+        ));
+      }
+
+      function isGlobalFounderOrAdmin() {
+        return ['platform_admin', 'founder'].includes(state.profile?.platform_role);
       }
 
       function invitableProjects() {
-        if (state.profile?.platform_role === 'platform_admin') {
+        if (isGlobalFounderOrAdmin()) {
           return state.projects;
         }
 

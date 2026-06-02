@@ -6,6 +6,20 @@ begin;
 
 do $$
 begin
+  if exists (select 1 from pg_type where typname = 'platform_role')
+    and not exists (
+      select 1
+      from pg_enum e
+      join pg_type t on t.oid = e.enumtypid
+      where t.typname = 'platform_role'
+        and e.enumlabel = 'founder'
+    ) then
+    alter type public.platform_role add value 'founder';
+  end if;
+end $$;
+
+do $$
+begin
   if not exists (select 1 from pg_type where typname = 'project_status') then
     create type public.project_status as enum ('active', 'paused', 'completed', 'archived');
   end if;
@@ -153,6 +167,13 @@ security definer
 set search_path = public
 as $$
   select private.is_platform_admin()
+    or exists (
+      select 1
+      from public.users u
+      where u.auth_user_id = (select auth.uid())
+        and u.platform_role::text = 'founder'
+        and u.active = true
+    )
     or exists (
       select 1
       from public.project_roles pr

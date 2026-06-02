@@ -229,7 +229,7 @@ async function canInviteForProject(
   platformRole: string,
   projectId: string
 ) {
-  if (platformRole === 'platform_admin') {
+  if (['platform_admin', 'founder'].includes(platformRole)) {
     return true;
   }
 
