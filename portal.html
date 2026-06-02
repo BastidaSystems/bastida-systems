@@ -1047,7 +1047,6 @@
                     <p class="profile-name">${escapeHtml(profileName())}</p>
                     <p class="profile-role">${escapeHtml(profileRole())}</p>
                   </div>
-                  ${renderWorkspaceActions()}
                   <button class="button" type="button" data-refresh>Refresh</button>
                   <button class="button" type="button" data-sign-out>Logout</button>
                 </div>
@@ -1321,7 +1320,7 @@
               <p class="toolbar-copy">People and invitations are shown only when real project role records exist.</p>
             </div>
             <div class="section-actions">
-              ${renderWorkspaceActions()}
+              ${renderPeopleActions()}
             </div>
           </div>
           <section class="panel">
@@ -1342,7 +1341,7 @@
               <p class="toolbar-copy">Project data is read directly from Supabase.</p>
             </div>
             <div class="section-actions">
-              ${renderWorkspaceActions()}
+              ${renderProjectActions()}
             </div>
           </div>
           <section class="panel">
@@ -1606,15 +1605,20 @@
         return Array.from(people.values()).sort((a, b) => a.name.localeCompare(b.name));
       }
 
-      function renderWorkspaceActions() {
-        if (!canManageWorkspace()) {
+      function renderProjectActions() {
+        if (!canCreateProjects()) {
           return '';
         }
 
-        return `
-          ${canCreateProjects() ? '<button class="button" type="button" data-open-create-project>+ Create Project</button>' : ''}
-          ${canInviteMembers() ? '<button class="button button-primary" type="button" data-open-invite>+ Invite Member</button>' : ''}
-        `;
+        return '<button class="button button-primary" type="button" data-open-create-project>+ Create Project</button>';
+      }
+
+      function renderPeopleActions() {
+        if (!canInviteMembers()) {
+          return '';
+        }
+
+        return '<button class="button button-primary" type="button" data-open-invite>+ Invite Collaborator</button>';
       }
 
       function renderCreateProjectModal() {
@@ -1678,7 +1682,7 @@
               <form data-invite-form>
                 <div class="modal-header">
                   <div>
-                    <h2 class="modal-title" id="invite-title">Invite Member</h2>
+                    <h2 class="modal-title" id="invite-title">Invite Collaborator</h2>
                     <p class="modal-copy">Send a real Supabase Auth invitation for a real project role.</p>
                   </div>
                   <button class="button" type="button" data-close-invite>Close</button>
@@ -1722,7 +1726,7 @@
                 <div class="modal-footer">
                   <button class="button" type="button" data-close-invite>Cancel</button>
                   <button class="button button-primary" type="submit" ${state.invite.isSubmitting || !projects.length ? 'disabled' : ''}>
-                    ${state.invite.isSubmitting ? 'Sending invite' : 'Send invite'}
+                    ${state.invite.isSubmitting ? 'Sending invite' : 'Send invitation'}
                   </button>
                 </div>
               </form>
