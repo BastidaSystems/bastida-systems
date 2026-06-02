@@ -6,8 +6,8 @@
 */
 
 window.BASTIDA_SUPABASE_CONFIG = {
-  url: '',
-  anonKey: ''
+  url: 'https://bnyevmmyhculcpedrsxg.supabase.co/rest/v1/',
+  anonKey: 'sb_publishable_nrYAYZKi7wmsrmoH4mFYQQ_wEwB7tUi'
 };
 
 window.BASTIDA_AUTH_REDIRECTS = {
