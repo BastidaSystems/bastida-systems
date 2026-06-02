@@ -137,30 +137,56 @@ Expected result:
 - Rodrigo can view only BEOFlow.
 - Rodrigo cannot insert/update payments, hour packages, work logs, receipts, reports, or users.
 
-## Step 6: Connect `portal.html`
+## Step 6: Configure Auth URLs
 
-In `portal.html`, replace the placeholder config:
+In Supabase Dashboard > Authentication > URL Configuration:
+
+Site URL:
+
+```text
+https://bastidasystems.com
+```
+
+Allowed Redirect URLs:
+
+```text
+https://bastidasystems.com/login.html
+https://bastidasystems.com/portal.html
+https://bastidasystems.com/set-password.html
+https://bastidasystems.com/reset-password.html
+```
+
+For invitations, use this redirect:
+
+```text
+https://bastidasystems.com/set-password.html
+```
+
+If an older invitation points to a local URL, resend the invitation after saving these settings.
+
+## Step 7: Connect frontend config
+
+In `supabase-config.js`, replace the placeholder config:
 
 ```js
-const SUPABASE_CONFIG = {
+window.BASTIDA_SUPABASE_CONFIG = {
   url: 'https://YOUR_PROJECT_ID.supabase.co',
   anonKey: 'YOUR_ANON_OR_PUBLISHABLE_KEY'
 };
 ```
 
-Then replace the current localStorage demo data flow with Supabase queries from:
+Then replace the current localStorage placeholder data flow with Supabase queries from:
 
 `supabase/supabase-js-v2-examples.js`
 
 Recommended production change:
 
-- Keep `Prototype / Demo Mode` only on a dev/staging page.
-- Hide demo profile buttons on the production portal.
 - Use `supabase.auth.signInWithPassword()` for real login.
+- Use `supabase.auth.updateUser({ password })` on `set-password.html` after an invitation session is detected.
 - Load dashboard data from `company_dashboard`.
 - Load details from `hour_packages`, `work_logs`, `payments`, `receipts`, `reports`.
 
-## Step 7: Pilot Test With BEOFlow
+## Step 8: Pilot Test With BEOFlow
 
 Use this exact test flow:
 
@@ -185,7 +211,7 @@ Use this exact test flow:
    - receipt/report metadata
 6. Rodrigo should not be able to create payments or work logs. If he tries, Supabase should return an RLS/function permission error.
 
-## Step 8: Realtime Updates
+## Step 9: Realtime Updates
 
 The SQL attempts to add these tables to the `supabase_realtime` publication:
 

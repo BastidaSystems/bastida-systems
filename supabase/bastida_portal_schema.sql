@@ -237,7 +237,7 @@ create trigger set_reports_updated_at
 before update on public.reports
 for each row execute function public.set_updated_at();
 
-create or replace function public.handle_new_auth_user()
+create or replace function private.handle_new_auth_user()
 returns trigger
 language plpgsql
 security definer
@@ -264,9 +264,10 @@ end;
 $$;
 
 drop trigger if exists on_auth_user_created on auth.users;
+drop function if exists public.handle_new_auth_user();
 create trigger on_auth_user_created
 after insert on auth.users
-for each row execute function public.handle_new_auth_user();
+for each row execute function private.handle_new_auth_user();
 
 create or replace function private.current_user_id()
 returns uuid
@@ -362,7 +363,7 @@ create or replace function public.admin_record_manual_payment(
 )
 returns table(hour_package_id uuid, payment_id uuid, receipt_id uuid)
 language plpgsql
-security definer
+security invoker
 set search_path = public
 as $$
 declare
@@ -484,7 +485,7 @@ create or replace function public.admin_register_work_log(
 )
 returns uuid
 language plpgsql
-security definer
+security invoker
 set search_path = public
 as $$
 declare
@@ -546,7 +547,7 @@ create or replace function public.admin_create_report(
 )
 returns uuid
 language plpgsql
-security definer
+security invoker
 set search_path = public
 as $$
 declare
@@ -851,6 +852,7 @@ group by p.company_id, c.slug, c.name, date_trunc('month', coalesce(p.paid_at, p
 revoke all on all tables in schema public from anon;
 revoke all on all functions in schema private from anon;
 revoke all on all functions in schema private from authenticated;
+revoke execute on function public.set_updated_at() from public, anon, authenticated;
 
 grant usage on schema public to authenticated;
 grant usage on schema private to authenticated;

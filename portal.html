@@ -10,6 +10,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
 
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
@@ -401,12 +402,14 @@
         'portal.login.email': 'Email',
         'portal.login.password': 'Password',
         'portal.login.submit': 'Sign In',
+        'portal.login.dedicated': 'Use dedicated login',
+        'portal.login.invitation': 'Accept invitation',
         'portal.auth.badge': 'Supabase Auth Ready',
         'portal.auth.body': 'Production sign-in should call ',
-        'portal.demo.badge': 'Prototype / Demo Mode',
-        'portal.demo.meta': 'No credentials shown',
-        'portal.demo.body': 'Use these buttons only to preview role-based access while the Supabase backend is being connected.',
-        'portal.warning.body': 'Do not enter real private records until Supabase Auth, Row Level Security, and database-backed permissions are connected.'
+        'portal.production.badge': 'Production Access',
+        'portal.production.meta': 'Supabase required',
+        'portal.production.body': 'Only authenticated client accounts can access this portal. Use the email and password created in Supabase Auth.',
+        'portal.warning.body': 'This portal is ready for production authentication. Connect Supabase Auth, Row Level Security, and database permissions before entering private records.'
       },
       es: {
         'meta.title': 'Portal de Clientes | Bastida Systems',
@@ -425,12 +428,14 @@
         'portal.login.email': 'Email',
         'portal.login.password': 'Contraseña',
         'portal.login.submit': 'Iniciar Sesión',
+        'portal.login.dedicated': 'Usar login dedicado',
+        'portal.login.invitation': 'Aceptar invitación',
         'portal.auth.badge': 'Listo para Supabase Auth',
         'portal.auth.body': 'En producción el login debe llamar ',
-        'portal.demo.badge': 'Modo Prototipo / Demo',
-        'portal.demo.meta': 'No se muestran credenciales',
-        'portal.demo.body': 'Usa estos botones solo para previsualizar el acceso por roles mientras se conecta el backend de Supabase.',
-        'portal.warning.body': 'No ingreses registros privados reales hasta conectar Supabase Auth, Row Level Security y permisos guardados en base de datos.'
+        'portal.production.badge': 'Acceso de Producción',
+        'portal.production.meta': 'Supabase requerido',
+        'portal.production.body': 'Solo cuentas autenticadas de clientes pueden entrar a este portal. Usa el email y contraseña creados en Supabase Auth.',
+        'portal.warning.body': 'Este portal está listo para autenticación de producción. Conecta Supabase Auth, Row Level Security y permisos de base de datos antes de ingresar registros privados.'
       }
     };
   </script>
@@ -462,17 +467,6 @@
               </p>
             </div>
           </div>
-
-          <div class="portal-card p-5 mt-6">
-            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <span class="status-pill blue" data-i18n="portal.backend.badge">Future Backend Integration</span>
-                <h2 class="text-xl font-semibold mt-3" data-i18n="portal.backend.title">Supabase data model placeholders</h2>
-              </div>
-              <span class="text-xs font-bold uppercase tracking-[0.08em] text-gray-500" data-i18n="portal.backend.meta">RLS-ready structure</span>
-            </div>
-            <div id="backend-plan-login" class="integration-grid mt-5"></div>
-          </div>
         </div>
 
         <div class="portal-card p-6 md:p-8">
@@ -500,6 +494,11 @@
             <button class="portal-button w-full" type="submit" data-i18n="portal.login.submit">Sign In</button>
           </form>
 
+          <div class="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-gray-400">
+            <a href="login.html" class="font-bold text-emerald-200 hover:text-white transition" data-i18n="portal.login.dedicated">Use dedicated login</a>
+            <a href="set-password.html" class="font-bold text-emerald-200 hover:text-white transition" data-i18n="portal.login.invitation">Accept invitation</a>
+          </div>
+
           <div class="auth-note mt-5">
             <span class="status-pill blue" data-i18n="portal.auth.badge">Supabase Auth Ready</span>
             <p class="mt-3 text-sm leading-6 text-gray-300">
@@ -509,13 +508,12 @@
 
           <div class="mt-6 border-t border-gray-800 pt-5">
             <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <span class="status-pill warning" data-i18n="portal.demo.badge">Prototype / Demo Mode</span>
-              <span class="text-xs font-bold uppercase tracking-[0.08em] text-gray-500" data-i18n="portal.demo.meta">No credentials shown</span>
+              <span class="status-pill blue" data-i18n="portal.production.badge">Production Access</span>
+              <span class="text-xs font-bold uppercase tracking-[0.08em] text-gray-500" data-i18n="portal.production.meta">Supabase required</span>
             </div>
-            <p class="mt-3 text-sm leading-6 text-gray-400" data-i18n="portal.demo.body">
-              Use these buttons only to preview role-based access while the Supabase backend is being connected.
+            <p class="mt-3 text-sm leading-6 text-gray-400" data-i18n="portal.production.body">
+              Only authenticated client accounts can access this portal. Use the email and password created in Supabase Auth.
             </p>
-            <div id="demo-profile-list" class="grid gap-2 mt-4"></div>
           </div>
 
           <p class="mt-6 text-xs leading-6 text-gray-500" data-i18n="portal.warning.body">
@@ -536,7 +534,6 @@
             </div>
             <div class="flex flex-wrap items-center gap-3">
               <span id="portal-message" class="text-sm text-gray-400"></span>
-              <button class="portal-button secondary" type="button" data-action="reset-demo">Reset Prototype Data</button>
               <button class="portal-button" type="button" data-action="sign-out">Sign Out</button>
             </div>
           </div>
@@ -583,9 +580,16 @@
       4. Private dashboard records should be queried per company from Supabase
          tables with Row Level Security enabled.
     */
-    const SUPABASE_CONFIG = {
+    const SUPABASE_CONFIG = window.BASTIDA_SUPABASE_CONFIG || {
       url: '',
       anonKey: ''
+    };
+
+    const AUTH_REDIRECTS = window.BASTIDA_AUTH_REDIRECTS || {
+      login: 'https://bastidasystems.com/login.html',
+      portal: 'https://bastidasystems.com/portal.html',
+      setPassword: 'https://bastidasystems.com/set-password.html',
+      resetPassword: 'https://bastidasystems.com/reset-password.html'
     };
 
     const backendTables = [
@@ -605,11 +609,10 @@
         'portal.placeholder.password': 'Supabase Auth password',
         'portal.auth.tail': 'then load dashboard permissions from',
         'portal.auth.and': 'and',
-        'portal.demo.admin': 'Demo admin access',
-        'portal.demo.owner': 'Demo owner access',
-        'portal.message.supabaseMissing': 'Supabase is not configured yet. Use Prototype / Demo mode to preview the portal.',
+        'portal.message.supabaseMissing': 'Supabase is not configured yet. Add the project URL and anon key before using the production portal.',
         'portal.message.supabaseSignedIn': 'Signed in with Supabase.',
-        'portal.message.demoStarted': 'Prototype / Demo session started for',
+        'portal.message.supabaseSessionRestored': 'Active Supabase session restored.',
+        'portal.message.supabaseSignedOut': 'Signed out.',
         'portal.message.noCompanies': 'No companies assigned to this profile.',
         'portal.message.packageAdded': 'hour package added for',
         'portal.message.packageRequested': 'hour package requested for',
@@ -626,7 +629,6 @@
         'portal.message.workLogged': 'Work logged for',
         'portal.message.remainingRecalculated': 'remaining hours recalculated.',
         'portal.message.recordsAdded': 'Records added for',
-        'portal.message.prototypeReset': 'Prototype data reset.',
         'portal.message.pdfFallback': 'PDF library unavailable; downloaded text fallback.',
         'portal.message.signInFailed': 'Unable to sign in.',
         'portal.task.reviewPackage': 'Review hour package request',
@@ -642,7 +644,6 @@
         'portal.remaining': 'remaining',
         'portal.dashboard.private': 'Private Dashboard',
         'portal.dashboard.title': 'Bastida Systems Client Portal',
-        'portal.dashboard.reset': 'Reset Prototype Data',
         'portal.dashboard.signOut': 'Sign Out',
         'portal.sidebar.companies': 'Companies',
         'portal.publicSite': 'Public Site',
@@ -770,11 +771,10 @@
         'portal.placeholder.password': 'Contraseña de Supabase Auth',
         'portal.auth.tail': 'y después cargar permisos desde',
         'portal.auth.and': 'y',
-        'portal.demo.admin': 'Acceso admin demo',
-        'portal.demo.owner': 'Acceso dueño demo',
-        'portal.message.supabaseMissing': 'Supabase todavía no está configurado. Usa Modo Prototipo / Demo para previsualizar el portal.',
+        'portal.message.supabaseMissing': 'Supabase todavía no está configurado. Agrega el Project URL y anon key antes de usar el portal de producción.',
         'portal.message.supabaseSignedIn': 'Sesión iniciada con Supabase.',
-        'portal.message.demoStarted': 'Sesión Prototipo / Demo iniciada para',
+        'portal.message.supabaseSessionRestored': 'Sesión activa de Supabase restaurada.',
+        'portal.message.supabaseSignedOut': 'Sesión cerrada.',
         'portal.message.noCompanies': 'No hay empresas asignadas a este perfil.',
         'portal.message.packageAdded': 'paquete de horas agregado para',
         'portal.message.packageRequested': 'paquete de horas solicitado para',
@@ -791,7 +791,6 @@
         'portal.message.workLogged': 'Trabajo registrado para',
         'portal.message.remainingRecalculated': 'horas restantes recalculadas.',
         'portal.message.recordsAdded': 'Registros agregados para',
-        'portal.message.prototypeReset': 'Datos de prototipo reiniciados.',
         'portal.message.pdfFallback': 'La librería PDF no está disponible; se descargó una versión en texto.',
         'portal.message.signInFailed': 'No se pudo iniciar sesión.',
         'portal.task.reviewPackage': 'Revisar solicitud de paquete de horas',
@@ -807,7 +806,6 @@
         'portal.remaining': 'restantes',
         'portal.dashboard.private': 'Dashboard Privado',
         'portal.dashboard.title': 'Portal de Clientes Bastida Systems',
-        'portal.dashboard.reset': 'Reiniciar Datos Prototipo',
         'portal.dashboard.signOut': 'Cerrar Sesión',
         'portal.sidebar.companies': 'Empresas',
         'portal.publicSite': 'Sitio Público',
@@ -1010,45 +1008,6 @@
         'Mobile collection layout': 'Layout móvil de colección'
       }
     };
-
-    const demoUsers = [
-      {
-        email: 'admin@bastidasystems.com',
-        name: 'Bastida Systems Admin',
-        role: 'admin',
-        companyIds: []
-      },
-      {
-        email: 'david@bastidasystems.com',
-        name: 'David Bastida',
-        role: 'owner',
-        companyIds: ['filtracore', 'lineops']
-      },
-      {
-        email: 'rodrigo@beoflow.com',
-        name: 'Rodrigo Bastida',
-        role: 'owner',
-        companyIds: ['beoflow']
-      },
-      {
-        email: 'blanca@estrativa.com',
-        name: 'Blanca Gordon',
-        role: 'owner',
-        companyIds: ['estrativa']
-      },
-      {
-        email: 'rafael@cocofilms.com',
-        name: 'Rafael Amezquita',
-        role: 'owner',
-        companyIds: ['cocofilms']
-      },
-      {
-        email: 'isaias@talladordesuenos.com',
-        name: 'Jiménez Isaías',
-        role: 'owner',
-        companyIds: ['tallador']
-      }
-    ];
 
     const storageKey = 'bastida-client-portal-v1';
     const todayLabel = () => new Date().toISOString().slice(0, 10);
@@ -1418,20 +1377,6 @@
       `).join('');
     }
 
-    function renderDemoProfiles() {
-      const target = document.getElementById('demo-profile-list');
-      if (!target) return;
-
-      target.innerHTML = demoUsers.map(user => `
-        <button class="company-tab" type="button" data-action="start-demo" data-email="${escapeHtml(user.email)}">
-          <span class="flex flex-col gap-1">
-            <strong>${escapeHtml(user.name)}</strong>
-            <span class="text-xs text-gray-500">${user.role === 'admin' ? portalT('portal.demo.admin') : `${portalT('portal.demo.owner')} • ${escapeHtml(user.email)}`}</span>
-          </span>
-        </button>
-      `).join('');
-    }
-
     function getSupabaseClient() {
       if (!SUPABASE_CONFIG.url || !SUPABASE_CONFIG.anonKey || !window.supabase) {
         return null;
@@ -1440,7 +1385,14 @@
       if (!getSupabaseClient.client) {
         getSupabaseClient.client = window.supabase.createClient(
           SUPABASE_CONFIG.url,
-          SUPABASE_CONFIG.anonKey
+          SUPABASE_CONFIG.anonKey,
+          {
+            auth: {
+              autoRefreshToken: true,
+              detectSessionInUrl: true,
+              persistSession: true
+            }
+          }
         );
       }
 
@@ -1471,7 +1423,7 @@
       */
       const { data: profile, error } = await client
         .from('users')
-        .select('id, email, full_name, role, active')
+        .select('id, email, full_name, platform_role, active')
         .eq('auth_user_id', authUser.id)
         .eq('active', true)
         .single();
@@ -1480,7 +1432,7 @@
 
       const { data: permissions, error: permissionError } = await client
         .from('company_users')
-        .select('company_id')
+        .select('company_id, companies(slug)')
         .eq('user_id', profile.id);
 
       if (permissionError) throw permissionError;
@@ -1488,9 +1440,38 @@
       return {
         email: profile.email || authUser.email,
         name: profile.full_name || authUser.email,
-        role: profile.role,
-        companyIds: (permissions || []).map(item => item.company_id)
+        role: profile.platform_role === 'platform_admin' ? 'admin' : 'owner',
+        companyIds: (permissions || []).map(item => (item.companies && item.companies.slug) || item.company_id)
       };
+    }
+
+    async function restoreSupabaseSession() {
+      const client = getSupabaseClient();
+      if (!client) return;
+
+      try {
+        const { data, error } = await client.auth.getSession();
+        if (error) throw error;
+        if (!data.session || !data.session.user) return;
+
+        const user = await loadAuthenticatedPortalUser(client, data.session.user);
+        startSession(user, portalT('portal.message.supabaseSessionRestored'));
+      } catch (error) {
+        await client.auth.signOut();
+        const loginError = document.getElementById('login-error');
+        if (loginError) {
+          loginError.textContent = error.message || portalT('portal.message.signInFailed');
+          loginError.classList.remove('hidden');
+        }
+      }
+    }
+
+    async function signOutWithSupabase() {
+      const client = getSupabaseClient();
+      if (!client) return;
+
+      const { error } = await client.auth.signOut();
+      if (error) throw error;
     }
 
     function startSession(user, message = '') {
@@ -1527,7 +1508,6 @@
       document.getElementById('app-view').classList.remove('hidden');
       document.querySelector('#app-view .portal-chip').textContent = portalT('portal.dashboard.private');
       document.querySelector('#app-view h1').textContent = portalT('portal.dashboard.title');
-      document.querySelector('[data-action="reset-demo"]').textContent = portalT('portal.dashboard.reset');
       document.querySelector('[data-action="sign-out"]').textContent = portalT('portal.dashboard.signOut');
       document.querySelector('#app-view aside h2').textContent = portalT('portal.sidebar.companies');
       document.getElementById('user-scope').textContent = `${currentUser.name} • ${currentUser.role === 'admin' ? portalT('portal.scope.admin') : portalT('portal.scope.owner')}`;
@@ -1778,7 +1758,6 @@
       }
 
       const companyOptions = Object.values(companies).map(company => `<option value="${escapeHtml(company.id)}">${escapeHtml(company.name)}</option>`).join('');
-      const ownerOptions = demoUsers.filter(user => user.role === 'owner').map(user => `<option value="${escapeHtml(user.email)}">${escapeHtml(user.name)}</option>`).join('');
 
       panel.classList.remove('hidden');
       panel.innerHTML = `
@@ -1794,7 +1773,7 @@
             <form id="admin-company-form" class="metric-card grid gap-3">
               <h3 class="font-semibold text-xl">${portalT('portal.admin.addCompany')}</h3>
               <input class="form-field" name="name" placeholder="${escapeHtml(portalT('portal.admin.companyName'))}" required>
-              <select class="form-field" name="ownerEmail" required>${ownerOptions}</select>
+              <input class="form-field" name="ownerEmail" type="email" placeholder="${escapeHtml(portalT('portal.overview.email'))}" required>
               <select class="form-field" name="status" required>
                 <option value="Active collaboration">${displayStatus('Active collaboration')}</option>
                 <option value="Published site">${displayStatus('Published site')}</option>
@@ -1816,7 +1795,7 @@
             <form id="admin-owner-form" class="metric-card grid gap-3">
               <h3 class="font-semibold text-xl">${portalT('portal.admin.assignOwner')}</h3>
               <select class="form-field" name="companyId" required>${companyOptions}</select>
-              <select class="form-field" name="ownerEmail" required>${ownerOptions}</select>
+              <input class="form-field" name="ownerEmail" type="email" placeholder="${escapeHtml(portalT('portal.overview.email'))}" required>
               <button class="portal-button" type="submit">${portalT('portal.admin.assignOwnerButton')}</button>
             </form>
 
@@ -2047,13 +2026,14 @@
     }
 
     function handleAdminCompany(form) {
-      const owner = demoUsers.find(user => user.email === form.ownerEmail.value);
+      const ownerEmail = form.ownerEmail.value.trim().toLowerCase();
+      const ownerName = ownerEmail.split('@')[0] || portalT('portal.overview.owner');
       const id = form.name.value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `company-${Date.now()}`;
       companies[id] = {
         id,
         name: form.name.value.trim(),
-        owner: owner.name,
-        ownerEmail: owner.email,
+        owner: ownerName,
+        ownerEmail,
         description: form.description.value.trim(),
         status: form.status.value.trim(),
         website: '#',
@@ -2088,13 +2068,13 @@
 
     function handleAdminOwner(form) {
       const company = companies[form.companyId.value];
-      const owner = demoUsers.find(user => user.email === form.ownerEmail.value);
-      if (!company || !owner) return;
-      company.owner = owner.name;
-      company.ownerEmail = owner.email;
+      const ownerEmail = form.ownerEmail.value.trim().toLowerCase();
+      if (!company || !ownerEmail) return;
+      company.owner = ownerEmail.split('@')[0] || portalT('portal.overview.owner');
+      company.ownerEmail = ownerEmail;
       saveCompanies();
       renderApp();
-      showMessage(`${owner.name} ${portalT('portal.message.assigned')} ${company.name}.`);
+      showMessage(`${ownerEmail} ${portalT('portal.message.assigned')} ${company.name}.`);
     }
 
     function handleAdminHours(form) {
@@ -2210,19 +2190,11 @@
       if (form.id === 'admin-upload-form') handleAdminUpload(form);
     });
 
-    document.addEventListener('click', event => {
+    document.addEventListener('click', async event => {
       const button = event.target.closest('[data-action]');
       if (!button) return;
 
       const action = button.dataset.action;
-      if (action === 'start-demo') {
-        const user = demoUsers.find(candidate => candidate.email.toLowerCase() === button.dataset.email.toLowerCase());
-        if (user) {
-          document.getElementById('login-error').classList.add('hidden');
-          startSession(user, `${portalT('portal.message.demoStarted')} ${user.name}.`);
-        }
-      }
-
       if (action === 'select-company') {
         selectedCompanyId = button.dataset.companyId;
         renderApp();
@@ -2244,20 +2216,22 @@
         downloadReceipt(button.dataset.receiptId);
       }
 
-      if (action === 'reset-demo') {
-        companies = JSON.parse(JSON.stringify(seedCompanies));
-        saveCompanies();
-        renderApp();
-        showMessage(portalT('portal.message.prototypeReset'));
-      }
-
       if (action === 'sign-out') {
+        button.disabled = true;
+        try {
+          await signOutWithSupabase();
+        } catch (error) {
+          showMessage(error.message || portalT('portal.message.signInFailed'));
+        } finally {
+          button.disabled = false;
+        }
         currentUser = null;
         selectedCompanyId = null;
         document.getElementById('app-view').classList.add('hidden');
         document.getElementById('login-view').classList.remove('hidden');
         document.getElementById('login-form').reset();
         document.getElementById('login-error').classList.add('hidden');
+        showMessage(portalT('portal.message.supabaseSignedOut'));
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     });
@@ -2267,15 +2241,12 @@
 
       window.setTimeout(() => {
         applyPortalLanguage();
-        renderBackendIntegrationMap('backend-plan-login');
-        renderDemoProfiles();
         if (currentUser) renderApp();
       }, 0);
     });
 
     applyPortalLanguage();
-    renderBackendIntegrationMap('backend-plan-login');
-    renderDemoProfiles();
+    restoreSupabaseSession();
   </script>
 </body>
 </html>

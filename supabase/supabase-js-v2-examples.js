@@ -11,6 +11,13 @@
 const BastidaPortalApi = (() => {
   let client = null;
 
+  const authRedirects = Object.freeze({
+    login: 'https://bastidasystems.com/login.html',
+    portal: 'https://bastidasystems.com/portal.html',
+    setPassword: 'https://bastidasystems.com/set-password.html',
+    resetPassword: 'https://bastidasystems.com/reset-password.html'
+  });
+
   function initSupabase({ url, anonKey }) {
     if (!url || !anonKey) {
       throw new Error('Missing Supabase URL or anon/publishable key.');
@@ -50,6 +57,23 @@ const BastidaPortalApi = (() => {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
   }
+
+  async function sendPasswordReset(email) {
+    const supabase = requireClient();
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: authRedirects.setPassword
+    });
+
+    if (error) throw error;
+    return data;
+  }
+
+  /*
+    Do not implement inviteUserByEmail in frontend code.
+    Supabase admin invites require privileged credentials and should stay in
+    the Supabase Dashboard, a secure backend, or an Edge Function that never
+    exposes the service_role key to the browser.
+  */
 
   async function getCurrentSession() {
     const supabase = requireClient();
@@ -321,9 +345,11 @@ const BastidaPortalApi = (() => {
   }
 
   return {
+    authRedirects,
     initSupabase,
     login,
     logout,
+    sendPasswordReset,
     getCurrentSession,
     getCurrentProfile,
     getVisibleCompanies,
