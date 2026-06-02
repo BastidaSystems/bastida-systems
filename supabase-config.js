@@ -6,7 +6,7 @@
 */
 
 window.BASTIDA_SUPABASE_CONFIG = {
-  url: 'https://bnyevmmyhculcpedrsxg.supabase.co/rest/v1/',
+  url: 'https://bnyevmmyhculcpedrsxg.supabase.co',
   anonKey: 'sb_publishable_nrYAYZKi7wmsrmoH4mFYQQ_wEwB7tUi'
 };
 

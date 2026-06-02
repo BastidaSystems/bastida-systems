@@ -3,29 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Client Portal | Bastida Systems</title>
-  <meta name="description" content="Private Bastida Systems client portal for company dashboards, hours, work logs, payments, receipts, and reports.">
+  <title>Bastida OS | Bastida Systems</title>
+  <meta name="description" content="Private Bastida Systems operating portal for collaborators, projects, work logs, deliverables, and payments.">
   <link rel="icon" type="image/png" href="img/logo_bastida_sys.png">
-
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
-
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
   <style>
     :root {
-      color-scheme: dark;
-      --bg: #07090d;
-      --surface: rgba(17, 24, 39, 0.92);
-      --surface-strong: rgba(3, 7, 18, 0.94);
-      --line: rgba(75, 85, 99, 0.62);
-      --muted: #9ca3af;
-      --text: #f9fafb;
-      --accent: #00ff9c;
-      --blue: #60a5fa;
-      --warning: #fbbf24;
+      color-scheme: light;
+      --bg: #f7f8fb;
+      --surface: #ffffff;
+      --surface-muted: #f4f5f7;
+      --text: #111827;
+      --text-soft: #4b5563;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --line-strong: #d1d5db;
+      --accent: #111827;
+      --success: #0f766e;
+      --warning: #92400e;
+      --danger: #b91c1c;
+      --radius: 8px;
+      --shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
     }
 
     * {
@@ -33,2220 +32,1381 @@
     }
 
     html {
+      min-width: 320px;
+      background: var(--bg);
       scroll-behavior: smooth;
-      overflow-x: hidden;
-      overflow-anchor: none;
     }
 
     body {
       margin: 0;
-      overflow-x: hidden;
-      overflow-anchor: none;
       background: var(--bg);
       color: var(--text);
-      font-family: 'Manrope', sans-serif;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       letter-spacing: 0;
     }
 
-    .portal-shell {
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app-shell {
+      display: grid;
+      grid-template-columns: 248px minmax(0, 1fr);
       min-height: 100vh;
-      background:
-        radial-gradient(circle at 76% 8%, rgba(0, 255, 156, 0.14), transparent 30%),
-        radial-gradient(circle at 14% 12%, rgba(96, 165, 250, 0.12), transparent 28%),
-        linear-gradient(128deg, #050607 0%, #0a0f16 46%, #062019 78%, #020304 100%);
     }
 
-    .portal-card {
-      position: relative;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background:
-        radial-gradient(circle at 90% 0%, rgba(0, 255, 156, 0.1), transparent 36%),
-        linear-gradient(145deg, var(--surface), var(--surface-strong));
-      box-shadow: 0 24px 90px rgba(0, 0, 0, 0.32);
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      border-right: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(18px);
+      padding: 22px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
     }
 
-    .portal-card.blue {
-      background:
-        radial-gradient(circle at 88% 0%, rgba(96, 165, 250, 0.15), transparent 34%),
-        linear-gradient(145deg, rgba(12, 20, 38, 0.96), var(--surface-strong));
-    }
-
-    .portal-chip,
-    .status-pill {
-      display: inline-flex;
+    .brand {
+      display: flex;
       align-items: center;
-      width: fit-content;
-      min-height: 1.9rem;
-      padding: 0.3rem 0.68rem;
-      border: 1px solid rgba(0, 255, 156, 0.24);
-      border-radius: 999px;
+      gap: 10px;
+      padding: 0 8px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .brand-text {
+      min-width: 0;
+    }
+
+    .brand-title {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.25;
+    }
+
+    .brand-subtitle {
+      margin: 1px 0 0;
       color: var(--muted);
-      font-size: 0.7rem;
-      font-weight: 800;
+      font-size: 12px;
+      line-height: 1.3;
+    }
+
+    .nav {
+      display: grid;
+      gap: 4px;
+    }
+
+    .nav-button {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      border: 0;
+      border-radius: var(--radius);
+      background: transparent;
+      color: var(--text-soft);
+      padding: 9px 10px;
+      text-align: left;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .nav-button:hover {
+      background: var(--surface-muted);
+      color: var(--text);
+    }
+
+    .nav-button.is-active {
+      background: #111827;
+      color: #ffffff;
+    }
+
+    .nav-count {
+      display: inline-flex;
+      min-width: 24px;
+      justify-content: center;
+      border-radius: 999px;
+      background: rgba(17, 24, 39, 0.08);
+      color: inherit;
+      padding: 2px 7px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .nav-button.is-active .nav-count {
+      background: rgba(255, 255, 255, 0.16);
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 12px 8px 0;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .main {
+      min-width: 0;
+      padding: 24px 28px 42px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-height: 44px;
+      margin-bottom: 28px;
+    }
+
+    .page-kicker {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
       letter-spacing: 0.08em;
       text-transform: uppercase;
     }
 
-    .status-pill.blue {
-      border-color: rgba(96, 165, 250, 0.34);
-      color: #bfdbfe;
+    .page-title {
+      margin: 3px 0 0;
+      font-size: clamp(26px, 4vw, 38px);
+      line-height: 1.08;
+      letter-spacing: -0.02em;
     }
 
-    .status-pill.warning {
-      border-color: rgba(251, 191, 36, 0.34);
-      color: #fde68a;
+    .page-copy {
+      max-width: 680px;
+      margin: 10px 0 0;
+      color: var(--text-soft);
+      font-size: 15px;
+      line-height: 1.65;
     }
 
-    .form-field {
-      width: 100%;
-      min-height: 3rem;
-      border: 1px solid rgba(75, 85, 99, 0.8);
-      border-radius: 8px;
-      background: rgba(3, 7, 18, 0.82);
-      color: #ffffff;
-      padding: 0.78rem 0.9rem;
-      outline: none;
-      transition: border-color 180ms ease, box-shadow 180ms ease;
+    .profile {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      min-width: 0;
     }
 
-    .form-field:focus {
-      border-color: rgba(0, 255, 156, 0.62);
-      box-shadow: 0 0 0 3px rgba(0, 255, 156, 0.1);
+    .profile-meta {
+      min-width: 0;
+      text-align: right;
     }
 
-    .portal-button {
+    .profile-name {
+      margin: 0;
+      overflow: hidden;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.25;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .profile-role {
+      margin: 1px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.25;
+    }
+
+    .button {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 0.45rem;
-      min-height: 2.75rem;
-      border-radius: 999px;
-      padding: 0.68rem 1.1rem;
-      background: #ffffff;
-      color: #000000;
+      gap: 8px;
+      min-height: 38px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      padding: 0 13px;
+      text-decoration: none;
+      font-size: 14px;
       font-weight: 700;
-      transition: opacity 180ms ease, transform 180ms ease, border-color 180ms ease;
+      box-shadow: var(--shadow);
     }
 
-    .portal-button:hover {
-      opacity: 0.86;
-      transform: translateY(-1px);
+    .button:hover {
+      border-color: #9ca3af;
     }
 
-    .portal-button.secondary {
-      border: 1px solid rgba(75, 85, 99, 0.9);
-      background: transparent;
+    .button-primary {
+      border-color: var(--accent);
+      background: var(--accent);
       color: #ffffff;
     }
 
-    .portal-button.secondary:hover {
-      border-color: rgba(255, 255, 255, 0.85);
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 24px 0 14px;
     }
 
-    .metric-card {
-      border: 1px solid rgba(75, 85, 99, 0.56);
-      border-radius: 8px;
-      background: rgba(3, 7, 18, 0.64);
-      padding: 1.15rem;
+    .toolbar-title {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.25;
     }
 
-    .metric-card strong {
-      display: block;
-      margin-top: 0.45rem;
-      font-size: clamp(1.7rem, 3vw, 2.45rem);
+    .toolbar-copy {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 26px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      padding: 17px;
+      box-shadow: var(--shadow);
+      min-width: 0;
+    }
+
+    .metric-label {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .metric-value {
+      margin: 12px 0 0;
+      color: var(--text);
+      font-size: 28px;
+      font-weight: 750;
+      letter-spacing: -0.02em;
       line-height: 1;
     }
 
-    .metric-card strong.metric-value-compact {
-      font-size: clamp(1.45rem, 2vw, 2rem);
-      line-height: 1.12;
+    .metric-caption {
+      margin: 9px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
     }
 
-    .metric-card strong.metric-value-email {
-      font-size: clamp(0.78rem, 0.95vw, 0.9rem);
+    .content-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-wide {
+      grid-column: 1 / -1;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 1px solid var(--line);
+      padding: 15px 16px;
+    }
+
+    .panel-title {
+      margin: 0;
+      font-size: 15px;
       line-height: 1.35;
-      overflow-wrap: anywhere;
-      word-break: break-word;
     }
 
-    .company-tab {
+    .panel-subtitle {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .table-wrap {
       width: 100%;
-      border: 1px solid rgba(75, 85, 99, 0.56);
-      border-radius: 8px;
-      background: rgba(3, 7, 18, 0.58);
-      padding: 0.85rem;
-      color: #d1d5db;
-      text-align: left;
-      transition: border-color 180ms ease, background 180ms ease, color 180ms ease;
+      overflow-x: auto;
     }
 
-    .company-tab:hover,
-    .company-tab.active {
-      border-color: rgba(0, 255, 156, 0.55);
-      background: rgba(0, 255, 156, 0.08);
-      color: #ffffff;
-    }
-
-    .company-mark {
-      display: inline-grid;
-      place-items: center;
-      width: 2.85rem;
-      height: 2.85rem;
-      border: 1px solid rgba(0, 255, 156, 0.22);
-      border-radius: 8px;
-      background: rgba(0, 255, 156, 0.08);
-      color: #ffffff;
-      font-size: 0.72rem;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      object-fit: contain;
-    }
-
-    .data-table {
+    table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 760px;
+      min-width: 720px;
     }
 
-    .data-table th,
-    .data-table td {
-      border-bottom: 1px solid rgba(75, 85, 99, 0.44);
-      padding: 0.9rem 0.85rem;
+    th,
+    td {
+      border-bottom: 1px solid var(--line);
+      padding: 13px 16px;
       text-align: left;
       vertical-align: top;
     }
 
-    .data-table th {
-      color: #9ca3af;
-      font-size: 0.72rem;
+    th {
+      color: var(--muted);
+      background: #fbfbfc;
+      font-size: 11px;
       font-weight: 800;
       letter-spacing: 0.08em;
       text-transform: uppercase;
     }
 
-    .data-table td {
-      color: #d1d5db;
-      font-size: 0.9rem;
-      line-height: 1.5;
+    td {
+      color: var(--text-soft);
+      font-size: 14px;
+      line-height: 1.45;
     }
 
-    .table-frame {
-      overflow-x: auto;
-      border: 1px solid rgba(75, 85, 99, 0.54);
-      border-radius: 8px;
-      background: rgba(3, 7, 18, 0.58);
+    tr:last-child td {
+      border-bottom: 0;
     }
 
-    .section-title {
+    .cell-title {
+      display: block;
+      color: var(--text);
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .cell-subtitle {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fafafa;
+      color: var(--text-soft);
+      padding: 3px 9px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .status-active,
+    .status-approved,
+    .status-paid,
+    .status-completed {
+      border-color: rgba(15, 118, 110, 0.18);
+      background: rgba(15, 118, 110, 0.07);
+      color: var(--success);
+    }
+
+    .status-paused,
+    .status-pending,
+    .status-pending_approval,
+    .status-in_progress {
+      border-color: rgba(146, 64, 14, 0.18);
+      background: rgba(146, 64, 14, 0.07);
+      color: var(--warning);
+    }
+
+    .status-archived,
+    .status-void {
+      border-color: rgba(185, 28, 28, 0.16);
+      background: rgba(185, 28, 28, 0.06);
+      color: var(--danger);
+    }
+
+    .role-list {
       display: flex;
       flex-wrap: wrap;
-      align-items: end;
-      justify-content: space-between;
-      gap: 1rem;
-      margin-bottom: 1rem;
+      gap: 6px;
     }
 
-    .portal-list {
+    .role-pill {
+      display: inline-flex;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface-muted);
+      color: var(--text-soft);
+      padding: 3px 8px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .empty-state,
+    .loading-state,
+    .error-state {
       display: grid;
-      gap: 0.75rem;
-      margin: 0;
-      padding: 0;
-      list-style: none;
+      place-items: center;
+      min-height: 240px;
+      padding: 38px 20px;
+      text-align: center;
     }
 
-    .portal-list li {
-      border-left: 1px solid rgba(0, 255, 156, 0.34);
-      padding-left: 0.9rem;
-      color: #d1d5db;
+    .empty-state.compact {
+      min-height: 170px;
+    }
+
+    .empty-title {
+      margin: 0;
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 750;
+      line-height: 1.35;
+    }
+
+    .empty-copy {
+      max-width: 420px;
+      margin: 8px auto 0;
+      color: var(--muted);
+      font-size: 13px;
       line-height: 1.55;
     }
 
-    .admin-grid {
+    .error-state {
+      border: 1px solid rgba(185, 28, 28, 0.18);
+      border-radius: var(--radius);
+      background: rgba(185, 28, 28, 0.05);
+    }
+
+    .error-state .empty-title {
+      color: var(--danger);
+    }
+
+    .view {
+      display: none;
+    }
+
+    .view.is-active {
+      display: block;
+    }
+
+    .auth-wall {
       display: grid;
-      gap: 1rem;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      place-items: center;
+      min-height: 100vh;
+      padding: 24px;
     }
 
-    .integration-grid {
-      display: grid;
-      gap: 0.85rem;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+    .auth-panel {
+      width: min(100%, 460px);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      padding: 28px;
     }
 
-    .integration-card {
-      border: 1px solid rgba(75, 85, 99, 0.54);
-      border-radius: 8px;
-      background: rgba(3, 7, 18, 0.54);
-      padding: 1rem;
+    .auth-panel h1 {
+      margin: 0;
+      font-size: 26px;
+      letter-spacing: -0.02em;
     }
 
-    .integration-card code {
-      color: #ffffff;
-      font-weight: 800;
-      letter-spacing: 0;
+    .auth-panel p {
+      margin: 10px 0 0;
+      color: var(--text-soft);
+      font-size: 14px;
+      line-height: 1.6;
     }
 
-    .auth-note {
-      border: 1px solid rgba(96, 165, 250, 0.3);
-      border-radius: 8px;
-      background: rgba(96, 165, 250, 0.08);
-      padding: 1rem;
+    .auth-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 22px;
     }
 
-    .hidden {
-      display: none !important;
+    .mobile-nav {
+      display: none;
+      width: 100%;
+      margin: 0 0 20px;
     }
 
-    @media (max-width: 980px) {
-      .admin-grid,
-      .integration-grid {
+    .mobile-nav select {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      padding: 0 12px;
+      font-weight: 700;
+    }
+
+    @media (max-width: 1180px) {
+      .metrics {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 1040px) {
+      .metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .content-grid {
         grid-template-columns: 1fr;
       }
     }
 
-    @media (max-width: 640px) {
-      #site-header nav {
+    @media (max-width: 760px) {
+      .app-shell {
+        display: block;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .main {
+        padding: 18px 16px 34px;
+      }
+
+      .mobile-nav {
+        display: block;
+      }
+
+      .topbar {
         align-items: flex-start;
-        flex-wrap: wrap;
-        gap: 0.85rem;
-        padding-top: 0.95rem !important;
-        padding-bottom: 0.95rem !important;
+        flex-direction: column;
       }
 
-      #site-header nav > div:last-child {
+      .profile {
         width: 100%;
-        justify-content: flex-start;
-        gap: 1rem;
-        overflow-x: auto;
-        padding-bottom: 0.1rem;
+        justify-content: space-between;
       }
 
-      #site-header nav > div:last-child > a {
-        flex: 0 0 auto;
+      .profile-meta {
+        text-align: left;
       }
-    }
 
-    @media (prefers-reduced-motion: reduce) {
-      .portal-button,
-      .company-tab,
-      .form-field {
-        transition: none;
+      .metrics {
+        grid-template-columns: 1fr;
+      }
+
+      .panel-header {
+        flex-direction: column;
+      }
+
+      table {
+        min-width: 640px;
       }
     }
   </style>
 </head>
-
 <body>
-  <div id="site-header"></div>
-
-  <script>
-    const sharedHeader = `
-      <nav class="flex flex-wrap justify-between items-center gap-4 px-4 md:px-8 py-5 border-b border-gray-200 bg-white sticky top-0 z-50">
-        <div class="flex items-center gap-3">
-          <a href="index.html" class="flex items-center gap-3">
-            <img src="img/logo_bastida_sys.png" alt="Bastida Systems Logo" class="h-8 w-auto object-contain">
-            <span class="hidden md:inline text-base font-semibold tracking-[0.08em] text-black uppercase">Bastida Systems LLC</span>
-          </a>
-        </div>
-
-        <div class="flex flex-wrap items-center justify-end gap-4 md:gap-8 text-sm font-medium text-gray-600">
-          <a href="index.html#products" class="hover:text-black transition" data-i18n="nav.products">Work</a>
-          <a href="websites.html" class="hover:text-black transition" data-i18n="nav.websites">Websites</a>
-          <a href="systems.html" class="hover:text-black transition" data-i18n="nav.systems">Systems</a>
-          <a href="about.html" class="hover:text-black transition" data-i18n="nav.about">About</a>
-          <a href="portal.html" class="hover:text-black transition" data-i18n="nav.portal">Client Portal</a>
-          <a href="index.html#contact" class="hover:text-black transition" data-i18n="nav.contact">Contact</a>
-          <label class="language-picker inline-flex min-h-9 items-center gap-2 rounded-lg border border-gray-300 bg-white px-2 py-1 text-xs font-bold uppercase text-gray-500">
-            <span data-i18n="nav.language">Language</span>
-            <select id="language-select" class="rounded-md border-0 bg-gray-900 px-2 py-1 text-xs font-extrabold text-white" aria-label="Language selector" data-i18n-aria-label="nav.languageSelector">
-              <option value="en">EN</option>
-              <option value="es">ES</option>
-            </select>
-          </label>
-        </div>
-      </nav>
-    `;
-
-    const headerTarget = document.getElementById('site-header');
-
-    fetch('header.html')
-      .then(response => {
-        if (!response.ok) throw new Error('header.html not found');
-        return response.text();
-      })
-      .then(html => {
-        headerTarget.innerHTML = html;
-      })
-      .catch(() => {
-        headerTarget.innerHTML = sharedHeader;
-      });
-  </script>
-  <script>
-    window.pageTranslations = {
-      en: {
-        'meta.title': 'Client Portal | Bastida Systems',
-        'portal.hero.kicker': 'Bastida Systems Private Portal',
-        'portal.hero.title': 'Private company dashboards for owners and Bastida Systems admin.',
-        'portal.hero.body': 'The portal is prepared for Supabase authentication and company-scoped permissions. Owners see only their assigned company dashboards; Bastida Systems admin can manage the full client ecosystem.',
-        'portal.owner.badge': 'Owner Access',
-        'portal.owner.body': 'Each owner is scoped to assigned companies only: Rafael to CocoFilms, Rodrigo to BEOFlow, Blanca to Estrativa, David to FiltraCore and LineOps.',
-        'portal.admin.badge': 'Admin Access',
-        'portal.admin.body': 'Admin can add companies, assign owners, add hour purchases, log work, upload receipt/report names, and view all balances.',
-        'portal.backend.badge': 'Future Backend Integration',
-        'portal.backend.title': 'Supabase data model placeholders',
-        'portal.backend.meta': 'RLS-ready structure',
-        'portal.login.title': 'Secure Login Area',
-        'portal.login.body': 'Prepared for Supabase Auth email and password sign-in.',
-        'portal.login.email': 'Email',
-        'portal.login.password': 'Password',
-        'portal.login.submit': 'Sign In',
-        'portal.login.dedicated': 'Use dedicated login',
-        'portal.login.invitation': 'Accept invitation',
-        'portal.auth.badge': 'Supabase Auth Ready',
-        'portal.auth.body': 'Production sign-in should call ',
-        'portal.production.badge': 'Production Access',
-        'portal.production.meta': 'Supabase required',
-        'portal.production.body': 'Only authenticated client accounts can access this portal. Use the email and password created in Supabase Auth.',
-        'portal.warning.body': 'This portal is ready for production authentication. Connect Supabase Auth, Row Level Security, and database permissions before entering private records.'
-      },
-      es: {
-        'meta.title': 'Portal de Clientes | Bastida Systems',
-        'portal.hero.kicker': 'Portal Privado de Bastida Systems',
-        'portal.hero.title': 'Dashboards privados para dueños y administración de Bastida Systems.',
-        'portal.hero.body': 'El portal está preparado para autenticación con Supabase y permisos por empresa. Los dueños solo ven los dashboards asignados; el admin de Bastida Systems puede administrar todo el ecosistema de clientes.',
-        'portal.owner.badge': 'Acceso de Dueño',
-        'portal.owner.body': 'Cada dueño queda limitado solo a sus empresas asignadas: Rafael a CocoFilms, Rodrigo a BEOFlow, Blanca a Estrativa, David a FiltraCore y LineOps.',
-        'portal.admin.badge': 'Acceso Admin',
-        'portal.admin.body': 'El admin puede agregar empresas, asignar dueños, agregar horas compradas, registrar trabajo, subir recibos/reportes y ver todos los balances.',
-        'portal.backend.badge': 'Integración Backend Futura',
-        'portal.backend.title': 'Tablas placeholder para Supabase',
-        'portal.backend.meta': 'Estructura lista para RLS',
-        'portal.login.title': 'Área de Login Seguro',
-        'portal.login.body': 'Preparado para iniciar sesión con email y contraseña usando Supabase Auth.',
-        'portal.login.email': 'Email',
-        'portal.login.password': 'Contraseña',
-        'portal.login.submit': 'Iniciar Sesión',
-        'portal.login.dedicated': 'Usar login dedicado',
-        'portal.login.invitation': 'Aceptar invitación',
-        'portal.auth.badge': 'Listo para Supabase Auth',
-        'portal.auth.body': 'En producción el login debe llamar ',
-        'portal.production.badge': 'Acceso de Producción',
-        'portal.production.meta': 'Supabase requerido',
-        'portal.production.body': 'Solo cuentas autenticadas de clientes pueden entrar a este portal. Usa el email y contraseña creados en Supabase Auth.',
-        'portal.warning.body': 'Este portal está listo para autenticación de producción. Conecta Supabase Auth, Row Level Security y permisos de base de datos antes de ingresar registros privados.'
-      }
-    };
-  </script>
-  <script src="site-language.js"></script>
-
-  <main class="portal-shell">
-    <section id="login-view" class="px-6 md:px-8 py-16 md:py-24">
-      <div class="max-w-7xl mx-auto grid gap-8 lg:grid-cols-[0.92fr_1.08fr] items-start">
-        <div class="pt-4">
-          <span class="portal-chip" data-i18n="portal.hero.kicker">Bastida Systems Private Portal</span>
-          <h1 class="mt-5 text-4xl md:text-6xl font-extrabold leading-tight" data-i18n="portal.hero.title">
-            Private company dashboards for owners and Bastida Systems admin.
-          </h1>
-          <p class="mt-5 max-w-2xl text-gray-400 text-lg leading-8" data-i18n="portal.hero.body">
-            The portal is prepared for Supabase authentication and company-scoped permissions. Owners see only their assigned company dashboards; Bastida Systems admin can manage the full client ecosystem.
-          </p>
-
-          <div class="grid gap-4 sm:grid-cols-2 mt-8">
-            <div class="portal-card p-5">
-              <span class="status-pill" data-i18n="portal.owner.badge">Owner Access</span>
-              <p class="mt-4 text-gray-300 leading-7" data-i18n="portal.owner.body">
-                Each owner is scoped to assigned companies only: Rafael to CocoFilms, Rodrigo to BEOFlow, Blanca to Estrativa, David to FiltraCore and LineOps.
-              </p>
-            </div>
-            <div class="portal-card blue p-5">
-              <span class="status-pill blue" data-i18n="portal.admin.badge">Admin Access</span>
-              <p class="mt-4 text-gray-300 leading-7" data-i18n="portal.admin.body">
-                Admin can add companies, assign owners, add hour purchases, log work, upload receipt/report names, and view all balances.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="portal-card p-6 md:p-8">
-          <div class="flex items-center gap-4 mb-7">
-            <img src="img/logo_bastida_sys.png" alt="" aria-hidden="true" class="company-mark">
-            <div>
-              <h2 class="text-2xl font-semibold" data-i18n="portal.login.title">Secure Login Area</h2>
-              <p class="text-gray-500 text-sm mt-1" data-i18n="portal.login.body">Prepared for Supabase Auth email and password sign-in.</p>
-            </div>
-          </div>
-
-          <form id="login-form" class="grid gap-4">
-            <label class="grid gap-2">
-              <span class="text-sm font-bold text-gray-400 uppercase tracking-[0.08em]" data-i18n="portal.login.email">Email</span>
-              <input id="login-email" class="form-field" type="email" autocomplete="username" placeholder="owner@company.com" data-portal-placeholder="portal.placeholder.email" required>
-            </label>
-
-            <label class="grid gap-2">
-              <span class="text-sm font-bold text-gray-400 uppercase tracking-[0.08em]" data-i18n="portal.login.password">Password</span>
-              <input id="login-password" class="form-field" type="password" autocomplete="current-password" placeholder="Supabase Auth password" data-portal-placeholder="portal.placeholder.password" required>
-            </label>
-
-            <p id="login-error" class="hidden text-sm text-red-300"></p>
-
-            <button class="portal-button w-full" type="submit" data-i18n="portal.login.submit">Sign In</button>
-          </form>
-
-          <div class="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-gray-400">
-            <a href="login.html" class="font-bold text-emerald-200 hover:text-white transition" data-i18n="portal.login.dedicated">Use dedicated login</a>
-            <a href="set-password.html" class="font-bold text-emerald-200 hover:text-white transition" data-i18n="portal.login.invitation">Accept invitation</a>
-          </div>
-
-          <div class="auth-note mt-5">
-            <span class="status-pill blue" data-i18n="portal.auth.badge">Supabase Auth Ready</span>
-            <p class="mt-3 text-sm leading-6 text-gray-300">
-              <span data-i18n="portal.auth.body">Production sign-in should call </span><strong>supabase.auth.signInWithPassword</strong>, <span data-portal-i18n="portal.auth.tail">then load dashboard permissions from</span> <strong>users</strong> <span data-portal-i18n="portal.auth.and">and</span> <strong>company_users</strong>.
-            </p>
-          </div>
-
-          <div class="mt-6 border-t border-gray-800 pt-5">
-            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <span class="status-pill blue" data-i18n="portal.production.badge">Production Access</span>
-              <span class="text-xs font-bold uppercase tracking-[0.08em] text-gray-500" data-i18n="portal.production.meta">Supabase required</span>
-            </div>
-            <p class="mt-3 text-sm leading-6 text-gray-400" data-i18n="portal.production.body">
-              Only authenticated client accounts can access this portal. Use the email and password created in Supabase Auth.
-            </p>
-          </div>
-
-          <p class="mt-6 text-xs leading-6 text-gray-500" data-i18n="portal.warning.body">
-            Do not enter real private records until Supabase Auth, Row Level Security, and database-backed permissions are connected.
-          </p>
-        </div>
+  <div id="app">
+    <div class="loading-state">
+      <div>
+        <p class="empty-title">Loading Bastida OS</p>
+        <p class="empty-copy">Validating your Supabase session.</p>
       </div>
-    </section>
-
-    <section id="app-view" class="hidden px-4 md:px-8 py-8 md:py-12">
-      <div class="max-w-[1440px] mx-auto">
-        <div class="portal-card p-5 md:p-6 mb-6">
-          <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
-              <span class="portal-chip">Private Dashboard</span>
-              <h1 class="mt-3 text-2xl md:text-4xl font-bold">Bastida Systems Client Portal</h1>
-              <p id="user-scope" class="text-gray-400 mt-2"></p>
-            </div>
-            <div class="flex flex-wrap items-center gap-3">
-              <span id="portal-message" class="text-sm text-gray-400"></span>
-              <button class="portal-button" type="button" data-action="sign-out">Sign Out</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="grid gap-6 lg:grid-cols-[18rem_minmax(0,1fr)] items-start">
-          <aside class="portal-card p-4 lg:sticky lg:top-28">
-            <div class="flex items-center justify-between gap-4 mb-4">
-              <h2 class="text-lg font-semibold">Companies</h2>
-              <span id="company-count" class="status-pill"></span>
-            </div>
-            <div id="company-nav" class="grid gap-2"></div>
-          </aside>
-
-          <div class="grid gap-6">
-            <section id="admin-panel" class="hidden"></section>
-            <section id="dashboard"></section>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="px-8 py-10 border-t border-gray-800 text-gray-500 text-sm text-center">
-    <div class="flex flex-wrap justify-center gap-6 mb-4 text-gray-400">
-      <a href="index.html#products" class="hover:text-white transition" data-i18n="nav.products">Work</a>
-      <a href="websites.html" class="hover:text-white transition" data-i18n="nav.websites">Websites</a>
-      <a href="systems.html" class="hover:text-white transition" data-i18n="nav.systems">Systems</a>
-      <a href="about.html" class="hover:text-white transition" data-i18n="nav.about">About</a>
-      <a href="portal.html" class="hover:text-white transition" data-i18n="nav.portal">Client Portal</a>
-      <a href="index.html#contact" class="hover:text-white transition" data-i18n="nav.contact">Contact</a>
-      <a href="privacy.html" class="hover:text-white transition" data-i18n="nav.privacy">Privacy</a>
     </div>
-    <p data-i18n="footer.rights">© 2026 Bastida Systems. All rights reserved.</p>
-  </footer>
+  </div>
 
   <script>
-    /*
-      Supabase integration notes:
-      1. Add your Supabase project URL and anon key below.
-      2. Production login should use Supabase Auth only.
-      3. After sign-in, query public.users and public.company_users to determine
-         which company dashboards the authenticated user may access.
-      4. Private dashboard records should be queried per company from Supabase
-         tables with Row Level Security enabled.
-    */
-    const SUPABASE_CONFIG = window.BASTIDA_SUPABASE_CONFIG || {
-      url: '',
-      anonKey: ''
-    };
-
-    const AUTH_REDIRECTS = window.BASTIDA_AUTH_REDIRECTS || {
-      login: 'https://bastidasystems.com/login.html',
-      portal: 'https://bastidasystems.com/portal.html',
-      setPassword: 'https://bastidasystems.com/set-password.html',
-      resetPassword: 'https://bastidasystems.com/reset-password.html'
-    };
-
-    const backendTables = [
-      { name: 'companies', purpose: 'Company profile, status, owner summary, website, logo, and public/private flags.', purposeEs: 'Perfil de empresa, estado, resumen de dueño, sitio web, logo y banderas públicas/privadas.' },
-      { name: 'users', purpose: 'Portal profile tied to auth.users.id, role, display name, email, and active status.', purposeEs: 'Perfil del portal conectado a auth.users.id, rol, nombre, email y estado activo.' },
-      { name: 'company_users', purpose: 'Permission bridge assigning owners, admins, and collaborators to company dashboards.', purposeEs: 'Tabla puente de permisos para asignar dueños, admins y colaboradores a dashboards de empresa.' },
-      { name: 'hour_packages', purpose: 'Purchased hour blocks, purchase date, amount, payment status, and package size.', purposeEs: 'Bloques de horas compradas, fecha de compra, monto, estado de pago y tamaño del paquete.' },
-      { name: 'work_logs', purpose: 'Company-specific work entries, time spent, worker, category, status, notes, attachments, and approval.', purposeEs: 'Entradas de trabajo por empresa con tiempo usado, colaborador, categoría, estado, notas, adjuntos y aprobación.' },
-      { name: 'payments', purpose: 'Payment history by company and related hour package.', purposeEs: 'Historial de pagos por empresa y paquete de horas relacionado.' },
-      { name: 'receipts', purpose: 'Receipt metadata, PDF storage path, amount, date, and company relationship.', purposeEs: 'Metadatos de recibos, ruta del PDF, monto, fecha y relación con la empresa.' },
-      { name: 'reports', purpose: 'Monthly, project, hour usage, and work completed reports scoped to one company.', purposeEs: 'Reportes mensuales, de proyecto, uso de horas y trabajo completado, limitados a una empresa.' }
-    ];
-
-    const portalUiText = {
-      en: {
-        'portal.placeholder.email': 'owner@company.com',
-        'portal.placeholder.password': 'Supabase Auth password',
-        'portal.auth.tail': 'then load dashboard permissions from',
-        'portal.auth.and': 'and',
-        'portal.message.supabaseMissing': 'Supabase is not configured yet. Add the project URL and anon key before using the production portal.',
-        'portal.message.supabaseSignedIn': 'Signed in with Supabase.',
-        'portal.message.supabaseSessionRestored': 'Active Supabase session restored.',
-        'portal.message.supabaseSignedOut': 'Signed out.',
-        'portal.message.noCompanies': 'No companies assigned to this profile.',
-        'portal.message.packageAdded': 'hour package added for',
-        'portal.message.packageRequested': 'hour package requested for',
-        'portal.message.packagePrefix': 'Package of',
-        'portal.message.packageAddedSuffix': 'added for',
-        'portal.message.packageRequestedSuffix': 'requested for',
-        'portal.message.approved': 'approved.',
-        'portal.message.reportReady': 'prepared for',
-        'portal.message.receiptReady': 'prepared.',
-        'portal.message.companyAdded': 'added.',
-        'portal.message.detailsUpdated': 'details updated.',
-        'portal.message.assigned': 'assigned to',
-        'portal.message.hoursAdded': 'hours added to',
-        'portal.message.workLogged': 'Work logged for',
-        'portal.message.remainingRecalculated': 'remaining hours recalculated.',
-        'portal.message.recordsAdded': 'Records added for',
-        'portal.message.pdfFallback': 'PDF library unavailable; downloaded text fallback.',
-        'portal.message.signInFailed': 'Unable to sign in.',
-        'portal.task.reviewPackage': 'Review hour package request',
-        'portal.task.setScope': 'Set project scope',
-        'portal.task.addFirstPackage': 'Add first hour package',
-        'portal.task.approve': 'Approve',
-        'portal.note.newCompany': 'New company record created by Bastida Systems admin.',
-        'portal.note.adminWork': 'Logged by Bastida Systems admin.',
-        'portal.scope.admin': 'Admin access to all companies',
-        'portal.scope.owner': 'Owner access only',
-        'portal.count.company': 'Company',
-        'portal.count.companies': 'Companies',
-        'portal.remaining': 'remaining',
-        'portal.dashboard.private': 'Private Dashboard',
-        'portal.dashboard.title': 'Bastida Systems Client Portal',
-        'portal.dashboard.signOut': 'Sign Out',
-        'portal.sidebar.companies': 'Companies',
-        'portal.publicSite': 'Public Site',
-        'portal.metric.purchased': 'Purchased Hours',
-        'portal.metric.used': 'Used Hours',
-        'portal.metric.remaining': 'Remaining Hours',
-        'portal.metric.paymentStatus': 'Payment Status',
-        'portal.payment.paid': 'Paid',
-        'portal.payment.pendingBalance': 'Pending balance',
-        'portal.overview.badge': 'Company Overview',
-        'portal.overview.title': 'Owner and status',
-        'portal.overview.owner': 'CEO / Owner',
-        'portal.overview.status': 'Current Status',
-        'portal.overview.email': 'Owner Email',
-        'portal.buyHours.badge': 'Buy Hours',
-        'portal.buyHours.title': 'Hour Packages',
-        'portal.buyHours.body': 'Request or add work-hour blocks for this company.',
-        'portal.buyHours.add': 'Add package',
-        'portal.buyHours.request': 'Request package',
-        'portal.tasks.pending': 'Pending Tasks',
-        'portal.tasks.approved': 'Approved Changes',
-        'portal.tasks.empty': 'No items yet.',
-        'portal.notes.badge': 'Bastida Notes',
-        'portal.notes.pendingOne': 'item pending approval.',
-        'portal.notes.pendingMany': 'items pending approval.',
-        'portal.hours.badge': 'Hours System',
-        'portal.hours.title': 'Purchased hour blocks',
-        'portal.work.badge': 'Work Log System',
-        'portal.work.title': 'Recent work and history',
-        'portal.payments.badge': 'Payment History',
-        'portal.payments.title': 'Payments by hour package',
-        'portal.records.badge': 'Receipts & Reports',
-        'portal.records.title': 'Downloadable records',
-        'portal.records.receipts': 'Receipts',
-        'portal.records.reports': 'Reports',
-        'portal.records.download': 'Download PDF',
-        'portal.table.none': 'No records yet.',
-        'portal.table.purchaseDate': 'Purchase Date',
-        'portal.table.company': 'Company',
-        'portal.table.package': 'Package',
-        'portal.table.hours': 'Hours',
-        'portal.table.amount': 'Amount',
-        'portal.table.paymentStatus': 'Payment Status',
-        'portal.table.work': 'Work',
-        'portal.table.date': 'Date',
-        'portal.table.time': 'Time',
-        'portal.table.worker': 'Worker',
-        'portal.table.category': 'Category',
-        'portal.table.status': 'Status',
-        'portal.table.notes': 'Notes',
-        'portal.table.attachments': 'Attachments',
-        'portal.table.approval': 'Approval',
-        'portal.table.method': 'Method',
-        'portal.table.relatedPackage': 'Related Package',
-        'portal.table.receipt': 'Receipt',
-        'portal.table.report': 'Report',
-        'portal.table.pdf': 'PDF',
-        'portal.none': 'None',
-        'portal.approve': 'Approve',
-        'portal.admin.badgePanel': 'Admin Dashboard',
-        'portal.admin.titlePanel': 'Manage companies, access, hours, work, payments, receipts, and reports.',
-        'portal.admin.backendBadge': 'Backend Placeholders',
-        'portal.admin.backendTitle': 'Supabase tables to connect next',
-        'portal.admin.addCompany': 'Add company',
-        'portal.admin.companyName': 'Company name',
-        'portal.admin.currentStatus': 'Current status',
-        'portal.admin.shortDescription': 'Short description',
-        'portal.admin.addCompanyButton': 'Add Company',
-        'portal.admin.editCompany': 'Edit company details',
-        'portal.admin.newStatus': 'New status',
-        'portal.admin.updatedDescription': 'Updated description',
-        'portal.admin.saveDetails': 'Save Details',
-        'portal.admin.assignOwner': 'Assign owner / access',
-        'portal.admin.assignOwnerButton': 'Assign Owner',
-        'portal.admin.addPurchasedHours': 'Add purchased hours',
-        'portal.admin.amount': 'Amount',
-        'portal.admin.addHours': 'Add Hours',
-        'portal.admin.logWork': 'Log completed work',
-        'portal.admin.workTitle': 'Work title',
-        'portal.admin.description': 'Description',
-        'portal.admin.timeSpent': 'Time spent',
-        'portal.admin.worker': 'Collaborator / worker',
-        'portal.admin.category': 'Category',
-        'portal.admin.logWorkButton': 'Log Work',
-        'portal.admin.uploadRecords': 'Upload receipt / report',
-        'portal.admin.receiptName': 'Receipt number or file name',
-        'portal.admin.reportName': 'Report name',
-        'portal.admin.addRecords': 'Add Records',
-        'portal.admin.allBalances': 'All company balances',
-        'portal.admin.allWorkLogs': 'All work logs',
-        'portal.method.card': 'Card',
-        'portal.method.bank': 'Bank transfer',
-        'portal.method.admin': 'Admin entry',
-        'portal.method.request': 'Portal request',
-        'portal.unit.hours': 'hours',
-        'portal.report.companyName': 'Company name',
-        'portal.report.owner': 'CEO / Owner',
-        'portal.report.reportDate': 'Report date',
-        'portal.report.hoursPurchased': 'Hours purchased',
-        'portal.report.hoursUsed': 'Hours used',
-        'portal.report.hoursRemaining': 'Hours remaining',
-        'portal.report.workCompleted': 'Work completed',
-        'portal.report.paymentSummary': 'Payment summary',
-        'portal.report.via': 'via',
-        'portal.report.notes': 'Notes from Bastida Systems',
-        'portal.report.noWork': 'No work logged yet.',
-        'portal.report.noPayments': 'No payments logged yet.',
-        'portal.receipt.title': 'Receipt',
-        'portal.receipt.number': 'Receipt number',
-        'portal.receipt.paymentMethod': 'Payment method',
-        'portal.receipt.recordedPayment': 'Recorded payment',
-        'portal.receipt.thanks': 'Thank you for your Bastida Systems hour package purchase.',
-        'portal.status.activePlatform': 'Active platform',
-        'portal.status.activeCollaboration': 'Active collaboration',
-        'portal.status.publishedApp': 'Published app',
-        'portal.status.publishedSite': 'Published site',
-        'portal.status.completed': 'Completed',
-        'portal.status.inProgress': 'In progress',
-        'portal.status.paid': 'Paid',
-        'portal.status.pending': 'Pending',
-        'portal.status.approved': 'Approved'
-      },
-      es: {
-        'portal.placeholder.email': 'dueno@empresa.com',
-        'portal.placeholder.password': 'Contraseña de Supabase Auth',
-        'portal.auth.tail': 'y después cargar permisos desde',
-        'portal.auth.and': 'y',
-        'portal.message.supabaseMissing': 'Supabase todavía no está configurado. Agrega el Project URL y anon key antes de usar el portal de producción.',
-        'portal.message.supabaseSignedIn': 'Sesión iniciada con Supabase.',
-        'portal.message.supabaseSessionRestored': 'Sesión activa de Supabase restaurada.',
-        'portal.message.supabaseSignedOut': 'Sesión cerrada.',
-        'portal.message.noCompanies': 'No hay empresas asignadas a este perfil.',
-        'portal.message.packageAdded': 'paquete de horas agregado para',
-        'portal.message.packageRequested': 'paquete de horas solicitado para',
-        'portal.message.packagePrefix': 'Paquete de',
-        'portal.message.packageAddedSuffix': 'agregado para',
-        'portal.message.packageRequestedSuffix': 'solicitado para',
-        'portal.message.approved': 'aprobado.',
-        'portal.message.reportReady': 'preparado para',
-        'portal.message.receiptReady': 'preparado.',
-        'portal.message.companyAdded': 'agregada.',
-        'portal.message.detailsUpdated': 'detalles actualizados.',
-        'portal.message.assigned': 'asignado a',
-        'portal.message.hoursAdded': 'horas agregadas a',
-        'portal.message.workLogged': 'Trabajo registrado para',
-        'portal.message.remainingRecalculated': 'horas restantes recalculadas.',
-        'portal.message.recordsAdded': 'Registros agregados para',
-        'portal.message.pdfFallback': 'La librería PDF no está disponible; se descargó una versión en texto.',
-        'portal.message.signInFailed': 'No se pudo iniciar sesión.',
-        'portal.task.reviewPackage': 'Revisar solicitud de paquete de horas',
-        'portal.task.setScope': 'Definir alcance del proyecto',
-        'portal.task.addFirstPackage': 'Agregar primer paquete de horas',
-        'portal.task.approve': 'Aprobar',
-        'portal.note.newCompany': 'Registro de empresa creado por admin de Bastida Systems.',
-        'portal.note.adminWork': 'Registrado por admin de Bastida Systems.',
-        'portal.scope.admin': 'Acceso admin a todas las empresas',
-        'portal.scope.owner': 'Acceso de dueño solamente',
-        'portal.count.company': 'Empresa',
-        'portal.count.companies': 'Empresas',
-        'portal.remaining': 'restantes',
-        'portal.dashboard.private': 'Dashboard Privado',
-        'portal.dashboard.title': 'Portal de Clientes Bastida Systems',
-        'portal.dashboard.signOut': 'Cerrar Sesión',
-        'portal.sidebar.companies': 'Empresas',
-        'portal.publicSite': 'Sitio Público',
-        'portal.metric.purchased': 'Horas Compradas',
-        'portal.metric.used': 'Horas Usadas',
-        'portal.metric.remaining': 'Horas Restantes',
-        'portal.metric.paymentStatus': 'Estado de Pago',
-        'portal.payment.paid': 'Pagado',
-        'portal.payment.pendingBalance': 'Balance pendiente',
-        'portal.overview.badge': 'Resumen de Empresa',
-        'portal.overview.title': 'Dueño y estado',
-        'portal.overview.owner': 'CEO / Dueño',
-        'portal.overview.status': 'Estado Actual',
-        'portal.overview.email': 'Email del Dueño',
-        'portal.buyHours.badge': 'Comprar Horas',
-        'portal.buyHours.title': 'Paquetes de Horas',
-        'portal.buyHours.body': 'Solicita o agrega bloques de horas de trabajo para esta empresa.',
-        'portal.buyHours.add': 'Agregar paquete',
-        'portal.buyHours.request': 'Solicitar paquete',
-        'portal.tasks.pending': 'Tareas Pendientes',
-        'portal.tasks.approved': 'Cambios Aprobados',
-        'portal.tasks.empty': 'Sin elementos todavía.',
-        'portal.notes.badge': 'Notas de Bastida',
-        'portal.notes.pendingOne': 'elemento pendiente de aprobación.',
-        'portal.notes.pendingMany': 'elementos pendientes de aprobación.',
-        'portal.hours.badge': 'Sistema de Horas',
-        'portal.hours.title': 'Bloques de horas compradas',
-        'portal.work.badge': 'Sistema de Trabajo',
-        'portal.work.title': 'Trabajo reciente e historial',
-        'portal.payments.badge': 'Historial de Pagos',
-        'portal.payments.title': 'Pagos por paquete de horas',
-        'portal.records.badge': 'Recibos y Reportes',
-        'portal.records.title': 'Registros descargables',
-        'portal.records.receipts': 'Recibos',
-        'portal.records.reports': 'Reportes',
-        'portal.records.download': 'Descargar PDF',
-        'portal.table.none': 'Sin registros todavía.',
-        'portal.table.purchaseDate': 'Fecha de Compra',
-        'portal.table.company': 'Empresa',
-        'portal.table.package': 'Paquete',
-        'portal.table.hours': 'Horas',
-        'portal.table.amount': 'Monto',
-        'portal.table.paymentStatus': 'Estado de Pago',
-        'portal.table.work': 'Trabajo',
-        'portal.table.date': 'Fecha',
-        'portal.table.time': 'Tiempo',
-        'portal.table.worker': 'Colaborador',
-        'portal.table.category': 'Categoría',
-        'portal.table.status': 'Estado',
-        'portal.table.notes': 'Notas',
-        'portal.table.attachments': 'Adjuntos',
-        'portal.table.approval': 'Aprobación',
-        'portal.table.method': 'Método',
-        'portal.table.relatedPackage': 'Paquete Relacionado',
-        'portal.table.receipt': 'Recibo',
-        'portal.table.report': 'Reporte',
-        'portal.table.pdf': 'PDF',
-        'portal.none': 'Ninguno',
-        'portal.approve': 'Aprobar',
-        'portal.admin.badgePanel': 'Dashboard Admin',
-        'portal.admin.titlePanel': 'Administrar empresas, accesos, horas, trabajo, pagos, recibos y reportes.',
-        'portal.admin.backendBadge': 'Placeholders Backend',
-        'portal.admin.backendTitle': 'Tablas de Supabase por conectar',
-        'portal.admin.addCompany': 'Agregar empresa',
-        'portal.admin.companyName': 'Nombre de empresa',
-        'portal.admin.currentStatus': 'Estado actual',
-        'portal.admin.shortDescription': 'Descripción corta',
-        'portal.admin.addCompanyButton': 'Agregar Empresa',
-        'portal.admin.editCompany': 'Editar detalles de empresa',
-        'portal.admin.newStatus': 'Nuevo estado',
-        'portal.admin.updatedDescription': 'Descripción actualizada',
-        'portal.admin.saveDetails': 'Guardar Detalles',
-        'portal.admin.assignOwner': 'Asignar dueño / acceso',
-        'portal.admin.assignOwnerButton': 'Asignar Dueño',
-        'portal.admin.addPurchasedHours': 'Agregar horas compradas',
-        'portal.admin.amount': 'Monto',
-        'portal.admin.addHours': 'Agregar Horas',
-        'portal.admin.logWork': 'Registrar trabajo completado',
-        'portal.admin.workTitle': 'Título del trabajo',
-        'portal.admin.description': 'Descripción',
-        'portal.admin.timeSpent': 'Tiempo usado',
-        'portal.admin.worker': 'Colaborador / trabajador',
-        'portal.admin.category': 'Categoría',
-        'portal.admin.logWorkButton': 'Registrar Trabajo',
-        'portal.admin.uploadRecords': 'Subir recibo / reporte',
-        'portal.admin.receiptName': 'Número de recibo o nombre de archivo',
-        'portal.admin.reportName': 'Nombre del reporte',
-        'portal.admin.addRecords': 'Agregar Registros',
-        'portal.admin.allBalances': 'Balances de todas las empresas',
-        'portal.admin.allWorkLogs': 'Todos los registros de trabajo',
-        'portal.method.card': 'Tarjeta',
-        'portal.method.bank': 'Transferencia bancaria',
-        'portal.method.admin': 'Entrada admin',
-        'portal.method.request': 'Solicitud del portal',
-        'portal.unit.hours': 'horas',
-        'portal.report.companyName': 'Nombre de empresa',
-        'portal.report.owner': 'CEO / Dueño',
-        'portal.report.reportDate': 'Fecha del reporte',
-        'portal.report.hoursPurchased': 'Horas compradas',
-        'portal.report.hoursUsed': 'Horas usadas',
-        'portal.report.hoursRemaining': 'Horas restantes',
-        'portal.report.workCompleted': 'Trabajo completado',
-        'portal.report.paymentSummary': 'Resumen de pagos',
-        'portal.report.via': 'por',
-        'portal.report.notes': 'Notas de Bastida Systems',
-        'portal.report.noWork': 'Sin trabajo registrado todavía.',
-        'portal.report.noPayments': 'Sin pagos registrados todavía.',
-        'portal.receipt.title': 'Recibo',
-        'portal.receipt.number': 'Número de recibo',
-        'portal.receipt.paymentMethod': 'Método de pago',
-        'portal.receipt.recordedPayment': 'Pago registrado',
-        'portal.receipt.thanks': 'Gracias por comprar tu paquete de horas con Bastida Systems.',
-        'portal.status.activePlatform': 'Plataforma activa',
-        'portal.status.activeCollaboration': 'Colaboración activa',
-        'portal.status.publishedApp': 'App publicada',
-        'portal.status.publishedSite': 'Sitio publicado',
-        'portal.status.completed': 'Completado',
-        'portal.status.inProgress': 'En progreso',
-        'portal.status.paid': 'Pagado',
-        'portal.status.pending': 'Pendiente',
-        'portal.status.approved': 'Aprobado'
-      }
-    };
-
-    const portalContentTranslations = {
-      es: {
-        'Filtration operations platform for PSI monitoring, filter lifecycle tracking, maintenance readiness, and reporting.': 'Plataforma de operaciones de filtración para monitoreo PSI, seguimiento del ciclo de vida de filtros, preparación de mantenimiento y reportes.',
-        'Kitchen operations platform for menu control, inventory, production planning, staff coordination, and service execution.': 'Plataforma de operaciones de cocina para control de menú, inventario, planeación de producción, coordinación de staff y ejecución de servicio.',
-        'Scheduling app for shift rotations, station coverage, weekly templates, and mobile schedule access.': 'App de programación para rotación de turnos, cobertura de estaciones, plantillas semanales y acceso móvil al horario.',
-        'Professional consulting and advisory collaboration with a responsive public website and direct contact experience.': 'Colaboración de consultoría profesional con sitio público responsive y experiencia de contacto directo.',
-        'Photography and cinematic video production studio presented through a premium dark portfolio website.': 'Estudio de fotografía y producción de video cinematográfico presentado con un sitio de portafolio oscuro y premium.',
-        'Artisan e-commerce collaboration for hand-painted wood sculptures, custom commissions, cart, checkout, and contact flow.': 'Colaboración e-commerce artesanal para esculturas de madera pintadas a mano, pedidos personalizados, carrito, checkout y contacto.',
-        'Focus this month: reporting exports, inventory readiness, and mobile inspection clarity.': 'Enfoque de este mes: exportación de reportes, preparación de inventario y claridad en inspecciones móviles.',
-        'Focus this month: inventory speed, recipe structure, and production planning visibility.': 'Enfoque de este mes: velocidad de inventario, estructura de recetas y visibilidad de planeación de producción.',
-        'Focus this month: App Store listing, schedule export polish, and mobile interaction detail.': 'Enfoque de este mes: ficha de App Store, pulido de exportación de horarios y detalle de interacción móvil.',
-        'Focus this month: contact clarity, copy refinements, and public page polish.': 'Enfoque de este mes: claridad de contacto, ajustes de copy y pulido de página pública.',
-        'Focus this month: premium gallery presentation and booking path clarity.': 'Enfoque de este mes: presentación premium de galería y claridad del flujo de reservas.',
-        'Focus this month: product collection polish and checkout confidence.': 'Enfoque de este mes: pulido de colección de productos y confianza en checkout.',
-        'Added dashboard module': 'Módulo de dashboard agregado',
-        'Optimized mobile version': 'Versión móvil optimizada',
-        'Created monthly usage report': 'Reporte mensual de uso creado',
-        'Updated homepage layout': 'Layout de homepage actualizado',
-        'Fixed login issue': 'Problema de login corregido',
-        'Created new brand section': 'Nueva sección de marca creada',
-        'Created monthly report': 'Reporte mensual creado',
-        'Expanded operations dashboard with filter status cards and maintenance summary.': 'Dashboard de operaciones ampliado con tarjetas de estado de filtros y resumen de mantenimiento.',
-        'Improved mobile navigation, filter detail spacing, and technician action buttons.': 'Navegación móvil mejorada, más espacio en detalles de filtros y botones de acción para técnicos.',
-        'Prepared hour usage and work completed summary for May.': 'Resumen preparado de horas usadas y trabajo completado de mayo.',
-        'Adjusted product page hierarchy and kitchen workflow presentation.': 'Jerarquía de página de producto y presentación del flujo de cocina ajustadas.',
-        'Resolved session handling issue in the kitchen operations login flow.': 'Problema de manejo de sesión corregido en el flujo de login de operaciones de cocina.',
-        'Added LineOps launch presentation area to the Bastida Systems homepage.': 'Área de presentación de lanzamiento de LineOps agregada al homepage de Bastida Systems.',
-        'Refined mobile schedule previews and App Store call-to-action spacing.': 'Previews móviles de horarios y espaciado del llamado a App Store refinados.',
-        'Refined consulting website hero, contact sections, and responsive spacing.': 'Hero del sitio de consultoría, secciones de contacto y espaciado responsive refinados.',
-        'Improved cinematic hero, portfolio rhythm, and booking call-to-action.': 'Hero cinematográfico, ritmo del portafolio y llamado de reserva mejorados.',
-        'Compiled work completed, hours used, and payment summary.': 'Trabajo completado, horas usadas y resumen de pagos compilados.',
-        'Adjusted product cards, collection spacing, and cart flow on mobile.': 'Tarjetas de producto, espaciado de colección y flujo de carrito ajustados en móvil.',
-        'Prepared admin overview for order and collection review.': 'Resumen admin preparado para revisar pedidos y colección.',
-        'Dashboard': 'Dashboard',
-        'Mobile': 'Móvil',
-        'Reporting': 'Reportes',
-        'Website': 'Sitio web',
-        'Authentication': 'Autenticación',
-        'Marketing': 'Marketing',
-        'E-commerce': 'E-commerce',
-        'Admin': 'Admin',
-        'Ready for owner review.': 'Listo para revisión del dueño.',
-        'Reduced friction during field checks.': 'Menos fricción durante revisiones en campo.',
-        'Included payment summary.': 'Resumen de pagos incluido.',
-        'Improved above-the-fold clarity.': 'Claridad inicial de página mejorada.',
-        'Validated with owner account.': 'Validado con cuenta de dueño.',
-        'Live with App Store badge.': 'Publicado con badge de App Store.',
-        'Checked on phone-width layout.': 'Revisado en layout de teléfono.',
-        'Public site remains clean and direct.': 'El sitio público se mantiene limpio y directo.',
-        'Luxury dark visual system preserved.': 'Sistema visual oscuro premium conservado.',
-        'Ready for download.': 'Listo para descargar.',
-        'Improved shopping path on phones.': 'Flujo de compra mejorado en teléfonos.',
-        'Awaiting content confirmation.': 'Esperando confirmación de contenido.',
-        'Monthly report': 'Reporte mensual',
-        'Hour usage report': 'Reporte de uso de horas',
-        'Project report': 'Reporte de proyecto',
-        'Work completed report': 'Reporte de trabajo completado',
-        'Approve May usage report': 'Aprobar reporte de uso de mayo',
-        'Review next reporting export format': 'Revisar siguiente formato de exportación de reportes',
-        'Approve login fix': 'Aprobar corrección de login',
-        'Confirm next inventory module priorities': 'Confirmar prioridades del siguiente módulo de inventario',
-        'Prepare June release notes': 'Preparar notas de lanzamiento de junio',
-        'Collect App Store feedback': 'Recopilar feedback de App Store',
-        'Review final copy updates': 'Revisar ajustes finales de copy',
-        'Approve May monthly report': 'Aprobar reporte mensual de mayo',
-        'Send new gallery selections': 'Enviar nuevas selecciones de galería',
-        'Confirm admin dashboard content': 'Confirmar contenido del dashboard admin',
-        'Approve collection updates': 'Aprobar ajustes de colección',
-        'Dashboard module': 'Módulo de dashboard',
-        'Mobile technician layout': 'Layout móvil de técnico',
-        'Homepage layout': 'Layout de homepage',
-        'Launch section': 'Sección de lanzamiento',
-        'Mobile schedule preview': 'Preview móvil de horario',
-        'Responsive homepage layout': 'Layout responsive de homepage',
-        'Cinematic homepage layout': 'Layout cinematográfico de homepage',
-        'Mobile collection layout': 'Layout móvil de colección'
-      }
-    };
-
-    const storageKey = 'bastida-client-portal-v1';
-    const todayLabel = () => new Date().toISOString().slice(0, 10);
-    const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
-
-    const seedCompanies = {
-      filtracore: {
-        id: 'filtracore',
-        name: 'FiltraCore',
-        owner: 'David Bastida',
-        ownerEmail: 'david@bastidasystems.com',
-        description: 'Filtration operations platform for PSI monitoring, filter lifecycle tracking, maintenance readiness, and reporting.',
-        status: 'Active platform',
-        website: 'filtracore.html',
-        logo: 'img/LOGO_FILTRACOREXCODE.png',
-        mark: 'FC',
-        notes: 'Focus this month: reporting exports, inventory readiness, and mobile inspection clarity.',
-        purchases: [
-          { id: 'fc-hp-1', date: '2026-05-04', package: '50 hours', hours: 50, amount: 4500, method: 'Card', status: 'Paid' },
-          { id: 'fc-hp-2', date: '2026-05-22', package: '20 hours', hours: 20, amount: 1900, method: 'Bank transfer', status: 'Paid' }
-        ],
-        workLogs: [
-          { id: 'fc-w-1', title: 'Added dashboard module', description: 'Expanded operations dashboard with filter status cards and maintenance summary.', date: '2026-05-08', time: 6.5, worker: 'Bastida Systems', category: 'Dashboard', status: 'Completed', notes: 'Ready for owner review.', attachments: ['dashboard-module.png'], approval: 'Approved' },
-          { id: 'fc-w-2', title: 'Optimized mobile version', description: 'Improved mobile navigation, filter detail spacing, and technician action buttons.', date: '2026-05-18', time: 5.25, worker: 'Bastida Systems', category: 'Mobile', status: 'Completed', notes: 'Reduced friction during field checks.', attachments: ['mobile-update.png'], approval: 'Approved' },
-          { id: 'fc-w-3', title: 'Created monthly usage report', description: 'Prepared hour usage and work completed summary for May.', date: '2026-05-28', time: 2, worker: 'Bastida Systems', category: 'Reporting', status: 'Completed', notes: 'Included payment summary.', attachments: ['may-report.pdf'], approval: 'Pending' }
-        ],
-        payments: [
-          { id: 'fc-p-1', date: '2026-05-04', amount: 4500, method: 'Card', status: 'Paid', package: '50 hours' },
-          { id: 'fc-p-2', date: '2026-05-22', amount: 1900, method: 'Bank transfer', status: 'Paid', package: '20 hours' }
-        ],
-        receipts: [
-          { id: 'fc-r-1', number: 'BS-FC-2026-001', date: '2026-05-04', amount: 4500 },
-          { id: 'fc-r-2', number: 'BS-FC-2026-002', date: '2026-05-22', amount: 1900 }
-        ],
-        reports: [
-          { id: 'fc-rep-1', type: 'Monthly report', date: '2026-05-31' },
-          { id: 'fc-rep-2', type: 'Hour usage report', date: '2026-05-31' }
-        ],
-        tasks: ['Approve May usage report', 'Review next reporting export format'],
-        approvedChanges: ['Dashboard module', 'Mobile technician layout']
-      },
-      beoflow: {
-        id: 'beoflow',
-        name: 'BEOFlow',
-        owner: 'Rodrigo Bastida',
-        ownerEmail: 'rodrigo@beoflow.com',
-        description: 'Kitchen operations platform for menu control, inventory, production planning, staff coordination, and service execution.',
-        status: 'Active platform',
-        website: 'beoflow.html',
-        logo: 'img/logobeoflow.png',
-        mark: 'BF',
-        notes: 'Focus this month: inventory speed, recipe structure, and production planning visibility.',
-        purchases: [
-          { id: 'bf-hp-1', date: '2026-05-06', package: '20 hours', hours: 20, amount: 1900, method: 'Card', status: 'Paid' }
-        ],
-        workLogs: [
-          { id: 'bf-w-1', title: 'Updated homepage layout', description: 'Adjusted product page hierarchy and kitchen workflow presentation.', date: '2026-05-11', time: 4, worker: 'Bastida Systems', category: 'Website', status: 'Completed', notes: 'Improved above-the-fold clarity.', attachments: ['beoflow-homepage.png'], approval: 'Approved' },
-          { id: 'bf-w-2', title: 'Fixed login issue', description: 'Resolved session handling issue in the kitchen operations login flow.', date: '2026-05-17', time: 3.5, worker: 'Bastida Systems', category: 'Authentication', status: 'Completed', notes: 'Validated with owner account.', attachments: ['login-fix.png'], approval: 'Pending' }
-        ],
-        payments: [
-          { id: 'bf-p-1', date: '2026-05-06', amount: 1900, method: 'Card', status: 'Paid', package: '20 hours' }
-        ],
-        receipts: [
-          { id: 'bf-r-1', number: 'BS-BF-2026-001', date: '2026-05-06', amount: 1900 }
-        ],
-        reports: [
-          { id: 'bf-rep-1', type: 'Project report', date: '2026-05-25' }
-        ],
-        tasks: ['Approve login fix', 'Confirm next inventory module priorities'],
-        approvedChanges: ['Homepage layout']
-      },
-      lineops: {
-        id: 'lineops',
-        name: 'LineOps',
-        owner: 'David Bastida',
-        ownerEmail: 'david@bastidasystems.com',
-        description: 'Scheduling app for shift rotations, station coverage, weekly templates, and mobile schedule access.',
-        status: 'Published app',
-        website: 'https://apps.apple.com/us/app/lineops-shiftrotation/id6767958380?l=es-MX',
-        logo: 'img/linopsmark.png',
-        mark: 'LO',
-        notes: 'Focus this month: App Store listing, schedule export polish, and mobile interaction detail.',
-        purchases: [
-          { id: 'lo-hp-1', date: '2026-05-10', package: '100 hours', hours: 100, amount: 8500, method: 'Bank transfer', status: 'Paid' }
-        ],
-        workLogs: [
-          { id: 'lo-w-1', title: 'Created new brand section', description: 'Added LineOps launch presentation area to the Bastida Systems homepage.', date: '2026-05-12', time: 5, worker: 'Bastida Systems', category: 'Marketing', status: 'Completed', notes: 'Live with App Store badge.', attachments: ['lineops-launch.png'], approval: 'Approved' },
-          { id: 'lo-w-2', title: 'Optimized mobile version', description: 'Refined mobile schedule previews and App Store call-to-action spacing.', date: '2026-05-21', time: 4.75, worker: 'Bastida Systems', category: 'Mobile', status: 'Completed', notes: 'Checked on phone-width layout.', attachments: ['lineops-mobile.png'], approval: 'Approved' }
-        ],
-        payments: [
-          { id: 'lo-p-1', date: '2026-05-10', amount: 8500, method: 'Bank transfer', status: 'Paid', package: '100 hours' }
-        ],
-        receipts: [
-          { id: 'lo-r-1', number: 'BS-LO-2026-001', date: '2026-05-10', amount: 8500 }
-        ],
-        reports: [
-          { id: 'lo-rep-1', type: 'Work completed report', date: '2026-05-29' }
-        ],
-        tasks: ['Prepare June release notes', 'Collect App Store feedback'],
-        approvedChanges: ['Launch section', 'Mobile schedule preview']
-      },
-      estrativa: {
-        id: 'estrativa',
-        name: 'Estrativa',
-        owner: 'Blanca Gordon',
-        ownerEmail: 'blanca@estrativa.com',
-        description: 'Professional consulting and advisory collaboration with a responsive public website and direct contact experience.',
-        status: 'Published site',
-        website: 'https://bastidadavid.github.io/ESTRATIVA/',
-        logo: 'img/estrattiva-mark.png',
-        mark: 'ES',
-        notes: 'Focus this month: contact clarity, copy refinements, and public page polish.',
-        purchases: [
-          { id: 'es-hp-1', date: '2026-05-03', package: '10 hours', hours: 10, amount: 950, method: 'Card', status: 'Paid' }
-        ],
-        workLogs: [
-          { id: 'es-w-1', title: 'Updated homepage layout', description: 'Refined consulting website hero, contact sections, and responsive spacing.', date: '2026-05-09', time: 3.25, worker: 'Bastida Systems', category: 'Website', status: 'Completed', notes: 'Public site remains clean and direct.', attachments: ['estrativa-layout.png'], approval: 'Approved' }
-        ],
-        payments: [
-          { id: 'es-p-1', date: '2026-05-03', amount: 950, method: 'Card', status: 'Paid', package: '10 hours' }
-        ],
-        receipts: [
-          { id: 'es-r-1', number: 'BS-ES-2026-001', date: '2026-05-03', amount: 950 }
-        ],
-        reports: [
-          { id: 'es-rep-1', type: 'Project report', date: '2026-05-20' }
-        ],
-        tasks: ['Review final copy updates'],
-        approvedChanges: ['Responsive homepage layout']
-      },
-      cocofilms: {
-        id: 'cocofilms',
-        name: 'CocoFilms',
-        owner: 'Rafael Amezquita',
-        ownerEmail: 'rafael@cocofilms.com',
-        description: 'Photography and cinematic video production studio presented through a premium dark portfolio website.',
-        status: 'Published site',
-        website: 'https://bastidadavid.github.io/Cocofilms/',
-        logo: '',
-        mark: 'CF',
-        notes: 'Focus this month: premium gallery presentation and booking path clarity.',
-        purchases: [
-          { id: 'cf-hp-1', date: '2026-05-01', package: '20 hours', hours: 20, amount: 1900, method: 'Card', status: 'Paid' }
-        ],
-        workLogs: [
-          { id: 'cf-w-1', title: 'Updated homepage layout', description: 'Improved cinematic hero, portfolio rhythm, and booking call-to-action.', date: '2026-05-07', time: 5.5, worker: 'Bastida Systems', category: 'Website', status: 'Completed', notes: 'Luxury dark visual system preserved.', attachments: ['cocofilms-home.png'], approval: 'Approved' },
-          { id: 'cf-w-2', title: 'Created monthly report', description: 'Compiled work completed, hours used, and payment summary.', date: '2026-05-30', time: 1.5, worker: 'Bastida Systems', category: 'Reporting', status: 'Completed', notes: 'Ready for download.', attachments: ['cocofilms-report.pdf'], approval: 'Pending' }
-        ],
-        payments: [
-          { id: 'cf-p-1', date: '2026-05-01', amount: 1900, method: 'Card', status: 'Paid', package: '20 hours' }
-        ],
-        receipts: [
-          { id: 'cf-r-1', number: 'BS-CF-2026-001', date: '2026-05-01', amount: 1900 }
-        ],
-        reports: [
-          { id: 'cf-rep-1', type: 'Monthly report', date: '2026-05-30' }
-        ],
-        tasks: ['Approve May monthly report', 'Send new gallery selections'],
-        approvedChanges: ['Cinematic homepage layout']
-      },
-      tallador: {
-        id: 'tallador',
-        name: 'Tallador de Sueños',
-        owner: 'Jiménez Isaías',
-        ownerEmail: 'isaias@talladordesuenos.com',
-        description: 'Artisan e-commerce collaboration for hand-painted wood sculptures, custom commissions, cart, checkout, and contact flow.',
-        status: 'Published site',
-        website: 'https://tallador-de-suenos.onrender.com/',
-        logo: '',
-        mark: 'TS',
-        notes: 'Focus this month: product collection polish and checkout confidence.',
-        purchases: [
-          { id: 'ts-hp-1', date: '2026-05-13', package: '50 hours', hours: 50, amount: 4500, method: 'Bank transfer', status: 'Paid' }
-        ],
-        workLogs: [
-          { id: 'ts-w-1', title: 'Optimized mobile version', description: 'Adjusted product cards, collection spacing, and cart flow on mobile.', date: '2026-05-20', time: 6, worker: 'Bastida Systems', category: 'E-commerce', status: 'Completed', notes: 'Improved shopping path on phones.', attachments: ['tallador-mobile.png'], approval: 'Approved' },
-          { id: 'ts-w-2', title: 'Added dashboard module', description: 'Prepared admin overview for order and collection review.', date: '2026-05-27', time: 4.25, worker: 'Bastida Systems', category: 'Admin', status: 'In progress', notes: 'Awaiting content confirmation.', attachments: ['tallador-admin.png'], approval: 'Pending' }
-        ],
-        payments: [
-          { id: 'ts-p-1', date: '2026-05-13', amount: 4500, method: 'Bank transfer', status: 'Paid', package: '50 hours' }
-        ],
-        receipts: [
-          { id: 'ts-r-1', number: 'BS-TS-2026-001', date: '2026-05-13', amount: 4500 }
-        ],
-        reports: [
-          { id: 'ts-rep-1', type: 'Hour usage report', date: '2026-05-31' }
-        ],
-        tasks: ['Confirm admin dashboard content', 'Approve collection updates'],
-        approvedChanges: ['Mobile collection layout']
-      }
-    };
-
-    let companies = loadCompanies();
-    let currentUser = null;
-    let selectedCompanyId = null;
-
-    const escapeHtml = value => String(value ?? '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
-
-    function getPortalLanguage() {
-      const language = localStorage.getItem('site-language') || (navigator.language.startsWith('es') ? 'es' : 'en');
-      return language === 'es' ? 'es' : 'en';
-    }
-
-    function portalT(key) {
-      const language = getPortalLanguage();
-      return (
-        (portalUiText[language] && portalUiText[language][key]) ||
-        (window.pageTranslations && window.pageTranslations[language] && window.pageTranslations[language][key]) ||
-        portalUiText.en[key] ||
-        (window.pageTranslations && window.pageTranslations.en && window.pageTranslations.en[key]) ||
-        key
-      );
-    }
-
-    function contentT(value) {
-      const text = String(value ?? '');
-      const language = getPortalLanguage();
-      return (portalContentTranslations[language] && portalContentTranslations[language][text]) || text;
-    }
-
-    function applyPortalLanguage() {
-      document.querySelectorAll('[data-portal-i18n]').forEach(element => {
-        element.textContent = portalT(element.dataset.portalI18n);
-      });
-
-      document.querySelectorAll('[data-portal-placeholder]').forEach(element => {
-        element.setAttribute('placeholder', portalT(element.dataset.portalPlaceholder));
-      });
-    }
-
-    function displayStatus(status) {
-      const statusMap = {
-        'Active platform': 'portal.status.activePlatform',
-        'Active collaboration': 'portal.status.activeCollaboration',
-        'Published app': 'portal.status.publishedApp',
-        'Published site': 'portal.status.publishedSite',
-        'Completed': 'portal.status.completed',
-        'In progress': 'portal.status.inProgress',
-        'Paid': 'portal.status.paid',
-        'Pending': 'portal.status.pending',
-        'Approved': 'portal.status.approved'
+    (() => {
+      const app = document.getElementById('app');
+      const authRedirects = window.BASTIDA_AUTH_REDIRECTS || {};
+      const config = window.BASTIDA_SUPABASE_CONFIG || {};
+      const viewLabels = {
+        dashboard: 'Dashboard',
+        people: 'People',
+        projects: 'Projects',
+        deliverables: 'Deliverables',
+        workLogs: 'Work Logs',
+        payments: 'Payments'
       };
-
-      return portalT(statusMap[status] || status);
-    }
-
-    function displayPackage(packageLabel) {
-      return String(packageLabel || '').replace(/\bhours\b/i, portalT('portal.unit.hours'));
-    }
-
-    function displayMethod(method) {
-      const methodMap = {
-        'Card': 'portal.method.card',
-        'Bank transfer': 'portal.method.bank',
-        'Admin entry': 'portal.method.admin',
-        'Portal request': 'portal.method.request'
+      const roleLabels = {
+        founder: 'Founder',
+        owner: 'Owner',
+        core_collaborator: 'Core Collaborator',
+        contractor: 'Contractor'
       };
-
-      return portalT(methodMap[method] || method);
-    }
-
-    function loadCompanies() {
-      try {
-        const stored = localStorage.getItem(storageKey);
-        return stored ? JSON.parse(stored) : JSON.parse(JSON.stringify(seedCompanies));
-      } catch (error) {
-        return JSON.parse(JSON.stringify(seedCompanies));
-      }
-    }
-
-    function saveCompanies() {
-      localStorage.setItem(storageKey, JSON.stringify(companies));
-    }
-
-    function getVisibleCompanies() {
-      const allCompanies = Object.values(companies);
-      if (!currentUser) return [];
-      if (currentUser.role === 'admin') return allCompanies;
-      return allCompanies.filter(company => (
-        currentUser.companyIds.includes(company.id) ||
-        company.ownerEmail.toLowerCase() === currentUser.email.toLowerCase()
-      ));
-    }
-
-    function getTotals(company) {
-      const purchased = company.purchases.reduce((total, item) => {
-        if (item.status === 'Cancelled') return total;
-        return total + Number(item.hours || 0);
-      }, 0);
-      const used = company.workLogs.reduce((total, item) => {
-        if (item.status === 'Cancelled') return total;
-        return total + Number(item.time || 0);
-      }, 0);
-      return {
-        purchased,
-        used,
-        remaining: Math.max(purchased - used, 0)
-      };
-    }
-
-    function formatHours(value) {
-      const rounded = Math.round(Number(value || 0) * 100) / 100;
-      return `${rounded}h`;
-    }
-
-    function showMessage(message) {
-      const target = document.getElementById('portal-message');
-      if (!target) return;
-      target.textContent = message;
-      window.clearTimeout(showMessage.timeout);
-      showMessage.timeout = window.setTimeout(() => {
-        target.textContent = '';
-      }, 3200);
-    }
-
-    function companyLogo(company) {
-      if (company.logo) {
-        return `<img src="${escapeHtml(company.logo)}" alt="${escapeHtml(company.name)} logo" class="company-mark">`;
-      }
-      return `<span class="company-mark" aria-hidden="true">${escapeHtml(company.mark || company.name.slice(0, 2).toUpperCase())}</span>`;
-    }
-
-    function statusClass(status) {
-      if (/pending|in progress/i.test(status)) return 'warning';
-      if (/app|platform|paid|approved|active/i.test(status)) return 'blue';
-      return '';
-    }
-
-    function tableRows(items, columns) {
-      if (!items.length) {
-        return `<tr><td colspan="${columns.length}" class="text-gray-500">${portalT('portal.table.none')}</td></tr>`;
-      }
-      return items.map(item => `
-        <tr>
-          ${columns.map(column => `<td>${column.render(item)}</td>`).join('')}
-        </tr>
-      `).join('');
-    }
-
-    function renderTable(items, columns) {
-      return `
-        <div class="table-frame">
-          <table class="data-table">
-            <thead>
-              <tr>${columns.map(column => `<th>${escapeHtml(column.label)}</th>`).join('')}</tr>
-            </thead>
-            <tbody>${tableRows(items, columns)}</tbody>
-          </table>
-        </div>
-      `;
-    }
-
-    function renderBackendIntegrationMap(targetId) {
-      const target = document.getElementById(targetId);
-      if (!target) return;
-
-      target.innerHTML = backendTables.map(table => `
-        <article class="integration-card">
-          <code>${escapeHtml(table.name)}</code>
-          <p class="mt-2 text-sm leading-6 text-gray-400">${escapeHtml(getPortalLanguage() === 'es' ? table.purposeEs : table.purpose)}</p>
-        </article>
-      `).join('');
-    }
-
-    function getSupabaseClient() {
-      if (!SUPABASE_CONFIG.url || !SUPABASE_CONFIG.anonKey || !window.supabase) {
-        return null;
-      }
-
-      if (!getSupabaseClient.client) {
-        getSupabaseClient.client = window.supabase.createClient(
-          SUPABASE_CONFIG.url,
-          SUPABASE_CONFIG.anonKey,
-          {
-            auth: {
-              autoRefreshToken: true,
-              detectSessionInUrl: true,
-              persistSession: true
-            }
-          }
-        );
-      }
-
-      return getSupabaseClient.client;
-    }
-
-    async function signInWithSupabase(email, password) {
-      const client = getSupabaseClient();
-      if (!client) {
-        throw new Error(portalT('portal.message.supabaseMissing'));
-      }
-
-      const { data, error } = await client.auth.signInWithPassword({ email, password });
-      if (error) throw error;
-
-      return loadAuthenticatedPortalUser(client, data.user);
-    }
-
-    async function loadAuthenticatedPortalUser(client, authUser) {
-      /*
-        TODO Supabase database connection:
-        - Query public.users by auth_user_id = authUser.id.
-        - Query public.company_users for company permissions.
-        - Admin users should receive role = 'admin' and all company IDs.
-        - Owner users should receive only company IDs assigned in company_users.
-        - Keep RLS policies on companies, hour_packages, work_logs, payments,
-          receipts, and reports so owners cannot fetch another company.
-      */
-      const { data: profile, error } = await client
-        .from('users')
-        .select('id, email, full_name, platform_role, active')
-        .eq('auth_user_id', authUser.id)
-        .eq('active', true)
-        .single();
-
-      if (error) throw error;
-
-      const { data: permissions, error: permissionError } = await client
-        .from('company_users')
-        .select('company_id, companies(slug)')
-        .eq('user_id', profile.id);
-
-      if (permissionError) throw permissionError;
-
-      return {
-        email: profile.email || authUser.email,
-        name: profile.full_name || authUser.email,
-        role: profile.platform_role === 'platform_admin' ? 'admin' : 'owner',
-        companyIds: (permissions || []).map(item => (item.companies && item.companies.slug) || item.company_id)
-      };
-    }
-
-    async function restoreSupabaseSession() {
-      const client = getSupabaseClient();
-      if (!client) return;
-
-      try {
-        const { data, error } = await client.auth.getSession();
-        if (error) throw error;
-        if (!data.session || !data.session.user) return;
-
-        const user = await loadAuthenticatedPortalUser(client, data.session.user);
-        startSession(user, portalT('portal.message.supabaseSessionRestored'));
-      } catch (error) {
-        await client.auth.signOut();
-        const loginError = document.getElementById('login-error');
-        if (loginError) {
-          loginError.textContent = error.message || portalT('portal.message.signInFailed');
-          loginError.classList.remove('hidden');
-        }
-      }
-    }
-
-    async function signOutWithSupabase() {
-      const client = getSupabaseClient();
-      if (!client) return;
-
-      const { error } = await client.auth.signOut();
-      if (error) throw error;
-    }
-
-    function startSession(user, message = '') {
-      if (document.activeElement && typeof document.activeElement.blur === 'function') {
-        document.activeElement.blur();
-      }
-      currentUser = user;
-      selectedCompanyId = null;
-      renderApp();
-      if (message) showMessage(message);
-      resetScrollPosition();
-      window.requestAnimationFrame(resetScrollPosition);
-      [60, 160, 320, 640].forEach(delay => window.setTimeout(resetScrollPosition, delay));
-    }
-
-    function resetScrollPosition() {
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
-      window.scrollTo(0, 0);
-    }
-
-    function renderApp() {
-      const visibleCompanies = getVisibleCompanies();
-      if (!visibleCompanies.length) {
-        showMessage(portalT('portal.message.noCompanies'));
-        return;
-      }
-
-      if (!selectedCompanyId || !visibleCompanies.some(company => company.id === selectedCompanyId)) {
-        selectedCompanyId = visibleCompanies[0].id;
-      }
-
-      document.getElementById('login-view').classList.add('hidden');
-      document.getElementById('app-view').classList.remove('hidden');
-      document.querySelector('#app-view .portal-chip').textContent = portalT('portal.dashboard.private');
-      document.querySelector('#app-view h1').textContent = portalT('portal.dashboard.title');
-      document.querySelector('[data-action="sign-out"]').textContent = portalT('portal.dashboard.signOut');
-      document.querySelector('#app-view aside h2').textContent = portalT('portal.sidebar.companies');
-      document.getElementById('user-scope').textContent = `${currentUser.name} • ${currentUser.role === 'admin' ? portalT('portal.scope.admin') : portalT('portal.scope.owner')}`;
-      document.getElementById('company-count').textContent = `${visibleCompanies.length} ${visibleCompanies.length === 1 ? portalT('portal.count.company') : portalT('portal.count.companies')}`;
-
-      renderCompanyNav(visibleCompanies);
-      renderAdminPanel();
-      renderDashboard(companies[selectedCompanyId]);
-    }
-
-    function renderCompanyNav(visibleCompanies) {
-      document.getElementById('company-nav').innerHTML = visibleCompanies.map(company => {
-        const totals = getTotals(company);
-        return `
-          <button class="company-tab ${company.id === selectedCompanyId ? 'active' : ''}" type="button" data-action="select-company" data-company-id="${escapeHtml(company.id)}">
-            <span class="flex items-center gap-3">
-              ${companyLogo(company)}
-              <span>
-                <strong class="block text-sm">${escapeHtml(company.name)}</strong>
-                <span class="block text-xs text-gray-500">${formatHours(totals.remaining)} ${portalT('portal.remaining')}</span>
-              </span>
-            </span>
-          </button>
-        `;
-      }).join('');
-    }
-
-    function renderDashboard(company) {
-      const totals = getTotals(company);
-      const paymentStatus = company.payments.some(payment => payment.status === 'Pending') ? portalT('portal.payment.pendingBalance') : portalT('portal.payment.paid');
-      const pendingWork = company.workLogs.filter(item => item.approval === 'Pending');
-      const approvedWork = company.workLogs.filter(item => item.approval === 'Approved');
-
-      document.getElementById('dashboard').innerHTML = `
-        <div class="portal-card p-6 md:p-8">
-          <div class="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
-            <div class="flex items-start gap-4">
-              ${companyLogo(company)}
-              <div>
-                <span class="status-pill ${statusClass(company.status)}">${escapeHtml(displayStatus(company.status))}</span>
-                <h2 class="mt-4 text-3xl md:text-5xl font-extrabold">${escapeHtml(company.name)}</h2>
-                <p class="mt-3 text-gray-400 leading-7 max-w-3xl">${escapeHtml(contentT(company.description))}</p>
-              </div>
-            </div>
-            <a class="portal-button secondary" href="${escapeHtml(company.website)}" target="${company.website.startsWith('http') ? '_blank' : '_self'}" rel="noopener">${portalT('portal.publicSite')}</a>
-          </div>
-
-          <div class="grid gap-4 md:grid-cols-4 mt-8">
-            <div class="metric-card">
-              <span class="text-sm text-gray-500">${portalT('portal.metric.purchased')}</span>
-              <strong>${formatHours(totals.purchased)}</strong>
-            </div>
-            <div class="metric-card">
-              <span class="text-sm text-gray-500">${portalT('portal.metric.used')}</span>
-              <strong>${formatHours(totals.used)}</strong>
-            </div>
-            <div class="metric-card">
-              <span class="text-sm text-gray-500">${portalT('portal.metric.remaining')}</span>
-              <strong>${formatHours(totals.remaining)}</strong>
-            </div>
-            <div class="metric-card">
-              <span class="text-sm text-gray-500">${portalT('portal.metric.paymentStatus')}</span>
-              <strong class="text-2xl">${escapeHtml(paymentStatus)}</strong>
-            </div>
-          </div>
-        </div>
-
-        <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem] mt-6">
-          <div class="grid gap-6">
-            ${renderOverview(company)}
-            ${renderHours(company)}
-            ${renderWorkLogs(company)}
-            ${renderPayments(company)}
-            ${renderReceiptsAndReports(company)}
-          </div>
-          <aside class="grid gap-6 content-start">
-            ${renderHourPackages(company)}
-            ${renderTasks(company.tasks, portalT('portal.tasks.pending'))}
-            ${renderTasks(approvedWork.map(item => item.title).concat(company.approvedChanges || []), portalT('portal.tasks.approved'))}
-            <div class="portal-card p-5">
-              <span class="status-pill">${portalT('portal.notes.badge')}</span>
-              <p class="mt-4 text-gray-300 leading-7">${escapeHtml(contentT(company.notes))}</p>
-              ${pendingWork.length ? `<p class="mt-4 text-sm text-amber-200">${pendingWork.length} ${pendingWork.length === 1 ? portalT('portal.notes.pendingOne') : portalT('portal.notes.pendingMany')}</p>` : ''}
-            </div>
-          </aside>
-        </div>
-      `;
-    }
-
-    function renderOverview(company) {
-      return `
-        <section class="portal-card p-5 md:p-6">
-          <div class="section-title">
-            <div>
-              <span class="portal-chip">${portalT('portal.overview.badge')}</span>
-              <h3 class="text-2xl font-semibold mt-3">${portalT('portal.overview.title')}</h3>
-            </div>
-          </div>
-          <div class="grid gap-4 md:grid-cols-3">
-            <div class="metric-card">
-              <span class="text-sm text-gray-500">${portalT('portal.overview.owner')}</span>
-              <strong class="metric-value-compact">${escapeHtml(company.owner)}</strong>
-            </div>
-            <div class="metric-card">
-              <span class="text-sm text-gray-500">${portalT('portal.overview.status')}</span>
-              <strong class="metric-value-compact">${escapeHtml(displayStatus(company.status))}</strong>
-            </div>
-            <div class="metric-card">
-              <span class="text-sm text-gray-500">${portalT('portal.overview.email')}</span>
-              <strong class="metric-value-email">${escapeHtml(company.ownerEmail)}</strong>
-            </div>
-          </div>
-        </section>
-      `;
-    }
-
-    function renderHourPackages(company) {
-      return `
-        <section class="portal-card p-5">
-          <span class="portal-chip">${portalT('portal.buyHours.badge')}</span>
-          <h3 class="text-xl font-semibold mt-3">${portalT('portal.buyHours.title')}</h3>
-          <p class="text-gray-400 leading-7 mt-3">${portalT('portal.buyHours.body')}</p>
-          <div class="grid grid-cols-2 gap-3 mt-5">
-            ${[10, 20, 50, 100].map(hours => `
-              <button class="company-tab text-center" type="button" data-action="request-package" data-hours="${hours}">
-                <strong class="block text-lg">${hours}h</strong>
-                <span class="text-xs text-gray-500">${currentUser.role === 'admin' ? portalT('portal.buyHours.add') : portalT('portal.buyHours.request')}</span>
-              </button>
-            `).join('')}
-          </div>
-        </section>
-      `;
-    }
-
-    function renderTasks(items, title) {
-      return `
-        <section class="portal-card p-5">
-          <span class="portal-chip">${escapeHtml(title)}</span>
-          <ul class="portal-list mt-4">
-            ${(items && items.length ? items : [portalT('portal.tasks.empty')]).map(item => `<li>${escapeHtml(contentT(item))}</li>`).join('')}
-          </ul>
-        </section>
-      `;
-    }
-
-    function renderHours(company) {
-      return `
-        <section class="portal-card p-5 md:p-6">
-          <div class="section-title">
-            <div>
-              <span class="portal-chip">${portalT('portal.hours.badge')}</span>
-              <h3 class="text-2xl font-semibold mt-3">${portalT('portal.hours.title')}</h3>
-            </div>
-          </div>
-          ${renderTable(company.purchases, [
-            { label: portalT('portal.table.purchaseDate'), render: item => escapeHtml(item.date) },
-            { label: portalT('portal.table.package'), render: item => escapeHtml(displayPackage(item.package)) },
-            { label: portalT('portal.table.hours'), render: item => formatHours(item.hours) },
-            { label: portalT('portal.table.amount'), render: item => currency.format(item.amount) },
-            { label: portalT('portal.table.paymentStatus'), render: item => `<span class="status-pill ${statusClass(item.status)}">${escapeHtml(displayStatus(item.status))}</span>` }
-          ])}
-        </section>
-      `;
-    }
-
-    function renderWorkLogs(company) {
-      return `
-        <section class="portal-card p-5 md:p-6">
-          <div class="section-title">
-            <div>
-              <span class="portal-chip">${portalT('portal.work.badge')}</span>
-              <h3 class="text-2xl font-semibold mt-3">${portalT('portal.work.title')}</h3>
-            </div>
-          </div>
-          ${renderTable(company.workLogs, [
-            { label: portalT('portal.table.work'), render: item => `<strong class="text-white">${escapeHtml(contentT(item.title))}</strong><br>${escapeHtml(contentT(item.description))}` },
-            { label: portalT('portal.table.date'), render: item => escapeHtml(item.date) },
-            { label: portalT('portal.table.time'), render: item => formatHours(item.time) },
-            { label: portalT('portal.table.worker'), render: item => escapeHtml(item.worker) },
-            { label: portalT('portal.table.category'), render: item => escapeHtml(contentT(item.category)) },
-            { label: portalT('portal.table.status'), render: item => `<span class="status-pill ${statusClass(item.status)}">${escapeHtml(displayStatus(item.status))}</span>` },
-            { label: portalT('portal.table.notes'), render: item => escapeHtml(contentT(item.notes)) },
-            { label: portalT('portal.table.attachments'), render: item => (item.attachments || []).map(file => `<span class="block text-gray-300">${escapeHtml(file)}</span>`).join('') || portalT('portal.none') },
-            { label: portalT('portal.table.approval'), render: item => item.approval === 'Pending' ? `<button class="portal-button secondary !min-h-0 !py-2 !px-3 text-xs" type="button" data-action="approve-work" data-work-id="${escapeHtml(item.id)}">${portalT('portal.approve')}</button>` : `<span class="status-pill blue">${escapeHtml(displayStatus(item.approval))}</span>` }
-          ])}
-        </section>
-      `;
-    }
-
-    function renderPayments(company) {
-      return `
-        <section class="portal-card p-5 md:p-6">
-          <div class="section-title">
-            <div>
-              <span class="portal-chip">${portalT('portal.payments.badge')}</span>
-              <h3 class="text-2xl font-semibold mt-3">${portalT('portal.payments.title')}</h3>
-            </div>
-          </div>
-          ${renderTable(company.payments, [
-            { label: portalT('portal.table.date'), render: item => escapeHtml(item.date) },
-            { label: portalT('portal.table.amount'), render: item => currency.format(item.amount) },
-            { label: portalT('portal.table.method'), render: item => escapeHtml(displayMethod(item.method)) },
-            { label: portalT('portal.table.status'), render: item => `<span class="status-pill ${statusClass(item.status)}">${escapeHtml(displayStatus(item.status))}</span>` },
-            { label: portalT('portal.table.relatedPackage'), render: item => escapeHtml(displayPackage(item.package)) }
-          ])}
-        </section>
-      `;
-    }
-
-    function renderReceiptsAndReports(company) {
-      return `
-        <section class="portal-card p-5 md:p-6">
-          <div class="section-title">
-            <div>
-              <span class="portal-chip">${portalT('portal.records.badge')}</span>
-              <h3 class="text-2xl font-semibold mt-3">${portalT('portal.records.title')}</h3>
-            </div>
-          </div>
-          <div class="grid gap-6 xl:grid-cols-2">
-            <div>
-              <h4 class="font-semibold mb-3">${portalT('portal.records.receipts')}</h4>
-              ${renderTable(company.receipts, [
-                { label: portalT('portal.table.receipt'), render: item => escapeHtml(item.number) },
-                { label: portalT('portal.table.date'), render: item => escapeHtml(item.date) },
-                { label: portalT('portal.table.amount'), render: item => currency.format(item.amount) },
-                { label: portalT('portal.table.pdf'), render: item => `<button class="portal-button secondary !min-h-0 !py-2 !px-3 text-xs" type="button" data-action="download-receipt" data-receipt-id="${escapeHtml(item.id)}">${portalT('portal.records.download')}</button>` }
-              ])}
-            </div>
-            <div>
-              <h4 class="font-semibold mb-3">${portalT('portal.records.reports')}</h4>
-              ${renderTable(company.reports, [
-                { label: portalT('portal.table.report'), render: item => escapeHtml(contentT(item.type)) },
-                { label: portalT('portal.table.date'), render: item => escapeHtml(item.date) },
-                { label: portalT('portal.table.pdf'), render: item => `<button class="portal-button secondary !min-h-0 !py-2 !px-3 text-xs" type="button" data-action="download-report" data-report-id="${escapeHtml(item.id)}">${portalT('portal.records.download')}</button>` }
-              ])}
-            </div>
-          </div>
-        </section>
-      `;
-    }
-
-    function renderAdminPanel() {
-      const panel = document.getElementById('admin-panel');
-      if (!currentUser || currentUser.role !== 'admin') {
-        panel.classList.add('hidden');
-        panel.innerHTML = '';
-        return;
-      }
-
-      const companyOptions = Object.values(companies).map(company => `<option value="${escapeHtml(company.id)}">${escapeHtml(company.name)}</option>`).join('');
-
-      panel.classList.remove('hidden');
-      panel.innerHTML = `
-        <div class="portal-card p-5 md:p-6">
-          <div class="section-title">
-            <div>
-              <span class="portal-chip">${portalT('portal.admin.badgePanel')}</span>
-              <h2 class="text-2xl md:text-3xl font-semibold mt-3">${portalT('portal.admin.titlePanel')}</h2>
-            </div>
-          </div>
-
-          <div class="admin-grid mt-6">
-            <form id="admin-company-form" class="metric-card grid gap-3">
-              <h3 class="font-semibold text-xl">${portalT('portal.admin.addCompany')}</h3>
-              <input class="form-field" name="name" placeholder="${escapeHtml(portalT('portal.admin.companyName'))}" required>
-              <input class="form-field" name="ownerEmail" type="email" placeholder="${escapeHtml(portalT('portal.overview.email'))}" required>
-              <select class="form-field" name="status" required>
-                <option value="Active collaboration">${displayStatus('Active collaboration')}</option>
-                <option value="Published site">${displayStatus('Published site')}</option>
-                <option value="Published app">${displayStatus('Published app')}</option>
-                <option value="Active platform">${displayStatus('Active platform')}</option>
-              </select>
-              <textarea class="form-field" name="description" rows="3" placeholder="${escapeHtml(portalT('portal.admin.shortDescription'))}" required></textarea>
-              <button class="portal-button" type="submit">${portalT('portal.admin.addCompanyButton')}</button>
-            </form>
-
-            <form id="admin-edit-form" class="metric-card grid gap-3">
-              <h3 class="font-semibold text-xl">${portalT('portal.admin.editCompany')}</h3>
-              <select class="form-field" name="companyId" required>${companyOptions}</select>
-              <input class="form-field" name="status" placeholder="${escapeHtml(portalT('portal.admin.newStatus'))}">
-              <textarea class="form-field" name="description" rows="3" placeholder="${escapeHtml(portalT('portal.admin.updatedDescription'))}"></textarea>
-              <button class="portal-button" type="submit">${portalT('portal.admin.saveDetails')}</button>
-            </form>
-
-            <form id="admin-owner-form" class="metric-card grid gap-3">
-              <h3 class="font-semibold text-xl">${portalT('portal.admin.assignOwner')}</h3>
-              <select class="form-field" name="companyId" required>${companyOptions}</select>
-              <input class="form-field" name="ownerEmail" type="email" placeholder="${escapeHtml(portalT('portal.overview.email'))}" required>
-              <button class="portal-button" type="submit">${portalT('portal.admin.assignOwnerButton')}</button>
-            </form>
-
-            <form id="admin-hours-form" class="metric-card grid gap-3">
-              <h3 class="font-semibold text-xl">${portalT('portal.admin.addPurchasedHours')}</h3>
-              <select class="form-field" name="companyId" required>${companyOptions}</select>
-              <select class="form-field" name="hours" required>
-                <option value="10">10 ${portalT('portal.unit.hours')}</option>
-                <option value="20">20 ${portalT('portal.unit.hours')}</option>
-                <option value="50">50 ${portalT('portal.unit.hours')}</option>
-                <option value="100">100 ${portalT('portal.unit.hours')}</option>
-              </select>
-              <select class="form-field" name="status" required>
-                <option value="Paid">${displayStatus('Paid')}</option>
-                <option value="Pending">${displayStatus('Pending')}</option>
-              </select>
-              <input class="form-field" name="amount" type="number" min="0" step="1" placeholder="${escapeHtml(portalT('portal.admin.amount'))}" required>
-              <button class="portal-button" type="submit">${portalT('portal.admin.addHours')}</button>
-            </form>
-
-            <form id="admin-work-form" class="metric-card grid gap-3">
-              <h3 class="font-semibold text-xl">${portalT('portal.admin.logWork')}</h3>
-              <select class="form-field" name="companyId" required>${companyOptions}</select>
-              <input class="form-field" name="title" placeholder="${escapeHtml(portalT('portal.admin.workTitle'))}" required>
-              <textarea class="form-field" name="description" rows="3" placeholder="${escapeHtml(portalT('portal.admin.description'))}" required></textarea>
-              <input class="form-field" name="hours" type="number" min="0.25" step="0.25" placeholder="${escapeHtml(portalT('portal.admin.timeSpent'))}" required>
-              <input class="form-field" name="worker" placeholder="${escapeHtml(portalT('portal.admin.worker'))}" value="Bastida Systems" required>
-              <input class="form-field" name="category" placeholder="${escapeHtml(portalT('portal.admin.category'))}" required>
-              <select class="form-field" name="status" required>
-                <option value="Completed">${displayStatus('Completed')}</option>
-                <option value="In progress">${displayStatus('In progress')}</option>
-              </select>
-              <button class="portal-button" type="submit">${portalT('portal.admin.logWorkButton')}</button>
-            </form>
-
-            <form id="admin-upload-form" class="metric-card grid gap-3">
-              <h3 class="font-semibold text-xl">${portalT('portal.admin.uploadRecords')}</h3>
-              <select class="form-field" name="companyId" required>${companyOptions}</select>
-              <input class="form-field" name="receiptName" placeholder="${escapeHtml(portalT('portal.admin.receiptName'))}">
-              <input class="form-field" name="reportName" placeholder="${escapeHtml(portalT('portal.admin.reportName'))}">
-              <button class="portal-button" type="submit">${portalT('portal.admin.addRecords')}</button>
-            </form>
-          </div>
-
-          <div class="grid gap-6 xl:grid-cols-2 mt-6">
-            <div>
-              <h3 class="text-xl font-semibold mb-3">${portalT('portal.admin.allBalances')}</h3>
-              ${renderTable(Object.values(companies), [
-                { label: portalT('portal.table.company'), render: company => escapeHtml(company.name) },
-                { label: portalT('portal.overview.owner'), render: company => escapeHtml(company.owner) },
-                { label: portalT('portal.metric.purchased'), render: company => formatHours(getTotals(company).purchased) },
-                { label: portalT('portal.metric.used'), render: company => formatHours(getTotals(company).used) },
-                { label: portalT('portal.metric.remaining'), render: company => formatHours(getTotals(company).remaining) }
-              ])}
-            </div>
-            <div>
-              <h3 class="text-xl font-semibold mb-3">${portalT('portal.admin.allWorkLogs')}</h3>
-              ${renderTable(Object.values(companies).flatMap(company => company.workLogs.map(log => ({ ...log, company: company.name }))), [
-                { label: portalT('portal.table.company'), render: item => escapeHtml(item.company) },
-                { label: portalT('portal.table.work'), render: item => escapeHtml(contentT(item.title)) },
-                { label: portalT('portal.table.date'), render: item => escapeHtml(item.date) },
-                { label: portalT('portal.table.hours'), render: item => formatHours(item.time) },
-                { label: portalT('portal.table.approval'), render: item => escapeHtml(displayStatus(item.approval)) }
-              ])}
-            </div>
-          </div>
-
-          <section class="mt-6 border-t border-gray-800 pt-6">
-            <div class="section-title">
-              <div>
-                <span class="portal-chip">${portalT('portal.admin.backendBadge')}</span>
-                <h3 class="text-2xl font-semibold mt-3">${portalT('portal.admin.backendTitle')}</h3>
-              </div>
-            </div>
-            <div class="integration-grid">
-              ${backendTables.map(table => `
-                <article class="integration-card">
-                  <code>${escapeHtml(table.name)}</code>
-                  <p class="mt-2 text-sm leading-6 text-gray-400">${escapeHtml(getPortalLanguage() === 'es' ? table.purposeEs : table.purpose)}</p>
-                </article>
-              `).join('')}
-            </div>
-          </section>
-        </div>
-      `;
-    }
-
-    function requestPackage(hours) {
-      const company = companies[selectedCompanyId];
-      const amount = { 10: 950, 20: 1900, 50: 4500, 100: 8500 }[hours] || hours * 95;
-      const status = currentUser.role === 'admin' ? 'Paid' : 'Pending';
-      const id = `${company.id}-hp-${Date.now()}`;
-      company.purchases.push({
-        id,
-        date: todayLabel(),
-        package: `${hours} hours`,
-        hours,
-        amount,
-        method: currentUser.role === 'admin' ? 'Admin entry' : 'Portal request',
-        status
-      });
-      company.payments.push({
-        id: `${company.id}-p-${Date.now()}`,
-        date: todayLabel(),
-        amount,
-        method: currentUser.role === 'admin' ? 'Admin entry' : 'Portal request',
-        status,
-        package: `${hours} hours`
-      });
-      if (status === 'Paid') {
-        company.receipts.push({
-          id: `${company.id}-r-${Date.now()}`,
-          number: `BS-${company.mark || company.name.slice(0, 2).toUpperCase()}-${new Date().getFullYear()}-${String(company.receipts.length + 1).padStart(3, '0')}`,
-          date: todayLabel(),
-          amount
-        });
-      } else {
-        company.tasks.unshift(`${portalT('portal.task.reviewPackage')}: ${hours}h`);
-      }
-      saveCompanies();
-      renderApp();
-      showMessage(`${portalT('portal.message.packagePrefix')} ${displayPackage(`${hours} hours`)} ${status === 'Paid' ? portalT('portal.message.packageAddedSuffix') : portalT('portal.message.packageRequestedSuffix')} ${company.name}.`);
-    }
-
-    function approveWork(workId) {
-      const company = companies[selectedCompanyId];
-      const work = company.workLogs.find(item => item.id === workId);
-      if (!work) return;
-      work.approval = 'Approved';
-      if (!company.approvedChanges.includes(work.title)) {
-        company.approvedChanges.unshift(work.title);
-      }
-      company.tasks = company.tasks.filter(task => !task.toLowerCase().includes(work.title.toLowerCase()));
-      saveCompanies();
-      renderApp();
-      showMessage(`${work.title} ${portalT('portal.message.approved')}`);
-    }
-
-    function downloadText(lines, filename) {
-      const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = filename;
-      link.click();
-      URL.revokeObjectURL(link.href);
-    }
-
-    function savePdf(lines, filename) {
-      const PDF = window.jspdf && window.jspdf.jsPDF;
-      if (!PDF) {
-        downloadText(lines, `${filename}.txt`);
-        showMessage(portalT('portal.message.pdfFallback'));
-        return;
-      }
-
-      const doc = new PDF();
-      let y = 18;
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(16);
-      doc.text(lines[0], 14, y);
-      y += 10;
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(10);
-      lines.slice(1).forEach(line => {
-        const chunks = doc.splitTextToSize(line, 182);
-        chunks.forEach(chunk => {
-          if (y > 280) {
-            doc.addPage();
-            y = 18;
-          }
-          doc.text(chunk, 14, y);
-          y += 6;
-        });
-      });
-      doc.save(`${filename}.pdf`);
-    }
-
-    function reportLines(company, report) {
-      const totals = getTotals(company);
-      const paymentSummary = company.payments.map(payment => `${payment.date}: ${currency.format(payment.amount)} ${portalT('portal.report.via')} ${displayMethod(payment.method)} (${displayStatus(payment.status)})`).join('; ');
-      const workCompleted = company.workLogs.map(work => `${work.date}: ${contentT(work.title)} - ${formatHours(work.time)} (${displayStatus(work.status)}, ${displayStatus(work.approval)})`).join('; ');
-
-      return [
-        `${company.name} - ${contentT(report.type)}`,
-        `${portalT('portal.report.companyName')}: ${company.name}`,
-        `${portalT('portal.report.owner')}: ${company.owner}`,
-        `${portalT('portal.report.reportDate')}: ${report.date}`,
-        `${portalT('portal.report.hoursPurchased')}: ${formatHours(totals.purchased)}`,
-        `${portalT('portal.report.hoursUsed')}: ${formatHours(totals.used)}`,
-        `${portalT('portal.report.hoursRemaining')}: ${formatHours(totals.remaining)}`,
-        `${portalT('portal.report.workCompleted')}: ${workCompleted || portalT('portal.report.noWork')}`,
-        `${portalT('portal.report.paymentSummary')}: ${paymentSummary || portalT('portal.report.noPayments')}`,
-        `${portalT('portal.report.notes')}: ${contentT(company.notes)}`
-      ];
-    }
-
-    function receiptLines(company, receipt) {
-      const payment = company.payments.find(item => Number(item.amount) === Number(receipt.amount));
-      return [
-        `${company.name} - ${portalT('portal.receipt.title')} ${receipt.number}`,
-        `${portalT('portal.report.companyName')}: ${company.name}`,
-        `${portalT('portal.report.owner')}: ${company.owner}`,
-        `${portalT('portal.receipt.number')}: ${receipt.number}`,
-        `${portalT('portal.table.date')}: ${receipt.date}`,
-        `${portalT('portal.table.amount')}: ${currency.format(receipt.amount)}`,
-        `${portalT('portal.receipt.paymentMethod')}: ${payment ? displayMethod(payment.method) : portalT('portal.receipt.recordedPayment')}`,
-        `${portalT('portal.table.status')}: ${payment ? displayStatus(payment.status) : displayStatus('Paid')}`,
-        `${portalT('portal.report.notes')}: ${portalT('portal.receipt.thanks')}`
-      ];
-    }
-
-    function downloadReport(reportId) {
-      const company = companies[selectedCompanyId];
-      const report = company.reports.find(item => item.id === reportId);
-      if (!report) return;
-      const filename = `${company.name}-${report.type}-${report.date}`.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-      savePdf(reportLines(company, report), filename);
-      showMessage(`${contentT(report.type)} ${portalT('portal.message.reportReady')} ${company.name}.`);
-    }
-
-    function downloadReceipt(receiptId) {
-      const company = companies[selectedCompanyId];
-      const receipt = company.receipts.find(item => item.id === receiptId);
-      if (!receipt) return;
-      const filename = `${company.name}-${receipt.number}`.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-      savePdf(receiptLines(company, receipt), filename);
-      showMessage(`${portalT('portal.receipt.title')} ${receipt.number} ${portalT('portal.message.receiptReady')}`);
-    }
-
-    function handleAdminCompany(form) {
-      const ownerEmail = form.ownerEmail.value.trim().toLowerCase();
-      const ownerName = ownerEmail.split('@')[0] || portalT('portal.overview.owner');
-      const id = form.name.value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `company-${Date.now()}`;
-      companies[id] = {
-        id,
-        name: form.name.value.trim(),
-        owner: ownerName,
-        ownerEmail,
-        description: form.description.value.trim(),
-        status: form.status.value.trim(),
-        website: '#',
-        logo: '',
-        mark: form.name.value.trim().slice(0, 2).toUpperCase(),
-        notes: portalT('portal.note.newCompany'),
-        purchases: [],
+      const state = {
+        client: null,
+        session: null,
+        authUser: null,
+        profile: null,
+        activeView: 'dashboard',
+        projects: [],
+        projectRoles: [],
+        deliverables: [],
         workLogs: [],
         payments: [],
-        receipts: [],
-        reports: [],
-        tasks: [portalT('portal.task.setScope'), portalT('portal.task.addFirstPackage')],
-        approvedChanges: []
+        isLoading: true,
+        error: null
       };
-      selectedCompanyId = id;
-      saveCompanies();
-      renderApp();
-      showMessage(`${companies[id].name} ${portalT('portal.message.companyAdded')}`);
-      form.reset();
-    }
 
-    function handleAdminEdit(form) {
-      const company = companies[form.companyId.value];
-      if (!company) return;
-      if (form.status.value.trim()) company.status = form.status.value.trim();
-      if (form.description.value.trim()) company.description = form.description.value.trim();
-      saveCompanies();
-      renderApp();
-      showMessage(`${company.name} ${portalT('portal.message.detailsUpdated')}`);
-      form.reset();
-    }
-
-    function handleAdminOwner(form) {
-      const company = companies[form.companyId.value];
-      const ownerEmail = form.ownerEmail.value.trim().toLowerCase();
-      if (!company || !ownerEmail) return;
-      company.owner = ownerEmail.split('@')[0] || portalT('portal.overview.owner');
-      company.ownerEmail = ownerEmail;
-      saveCompanies();
-      renderApp();
-      showMessage(`${ownerEmail} ${portalT('portal.message.assigned')} ${company.name}.`);
-    }
-
-    function handleAdminHours(form) {
-      const company = companies[form.companyId.value];
-      const hours = Number(form.hours.value);
-      const amount = Number(form.amount.value);
-      const status = form.status.value;
-      if (!company) return;
-      company.purchases.push({
-        id: `${company.id}-hp-${Date.now()}`,
-        date: todayLabel(),
-        package: `${hours} hours`,
-        hours,
-        amount,
-        method: 'Admin entry',
-        status
+      const moneyFormatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        maximumFractionDigits: 2
       });
-      company.payments.push({
-        id: `${company.id}-p-${Date.now()}`,
-        date: todayLabel(),
-        amount,
-        method: 'Admin entry',
-        status,
-        package: `${hours} hours`
+      const numberFormatter = new Intl.NumberFormat('en-US', {
+        maximumFractionDigits: 2
       });
-      if (status === 'Paid') {
-        company.receipts.push({
-          id: `${company.id}-r-${Date.now()}`,
-          number: `BS-${company.mark || company.name.slice(0, 2).toUpperCase()}-${new Date().getFullYear()}-${String(company.receipts.length + 1).padStart(3, '0')}`,
-          date: todayLabel(),
-          amount
-        });
-      }
-      saveCompanies();
-      renderApp();
-      showMessage(`${hours} ${portalT('portal.message.hoursAdded')} ${company.name}.`);
-      form.reset();
-    }
-
-    function handleAdminWork(form) {
-      const company = companies[form.companyId.value];
-      if (!company) return;
-      company.workLogs.unshift({
-        id: `${company.id}-w-${Date.now()}`,
-        title: form.title.value.trim(),
-        description: form.description.value.trim(),
-        date: todayLabel(),
-        time: Number(form.hours.value),
-        worker: form.worker.value.trim(),
-        category: form.category.value.trim(),
-        status: form.status.value,
-        notes: portalT('portal.note.adminWork'),
-        attachments: ['admin-upload-pending.png'],
-        approval: 'Pending'
+      const dateFormatter = new Intl.DateTimeFormat('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
       });
-      company.tasks.unshift(`${portalT('portal.task.approve')} ${form.title.value.trim()}`);
-      saveCompanies();
-      renderApp();
-      showMessage(`${portalT('portal.message.workLogged')} ${company.name}; ${portalT('portal.message.remainingRecalculated')}`);
-      form.reset();
-    }
 
-    function handleAdminUpload(form) {
-      const company = companies[form.companyId.value];
-      if (!company) return;
-      if (form.receiptName.value.trim()) {
-        company.receipts.push({
-          id: `${company.id}-r-${Date.now()}`,
-          number: form.receiptName.value.trim(),
-          date: todayLabel(),
-          amount: 0
-        });
-      }
-      if (form.reportName.value.trim()) {
-        company.reports.push({
-          id: `${company.id}-rep-${Date.now()}`,
-          type: form.reportName.value.trim(),
-          date: todayLabel()
-        });
-      }
-      saveCompanies();
-      renderApp();
-      showMessage(`${portalT('portal.message.recordsAdded')} ${company.name}.`);
-      form.reset();
-    }
+      init();
 
-    document.addEventListener('submit', async event => {
-      event.preventDefault();
-      const form = event.target;
-
-      if (form.id === 'login-form') {
-        const email = document.getElementById('login-email').value.trim().toLowerCase();
-        const password = document.getElementById('login-password').value;
-        const error = document.getElementById('login-error');
-
+      async function init() {
         try {
-          const user = await signInWithSupabase(email, password);
-          error.classList.add('hidden');
-          startSession(user, portalT('portal.message.supabaseSignedIn'));
-        } catch (authError) {
-          error.textContent = authError.message || portalT('portal.message.signInFailed');
-          error.classList.remove('hidden');
-        }
-        return;
-      }
+          state.client = createSupabaseClient();
+          const { data, error } = await state.client.auth.getSession();
 
-      if (!currentUser || currentUser.role !== 'admin') return;
-      if (form.id === 'admin-company-form') handleAdminCompany(form);
-      if (form.id === 'admin-edit-form') handleAdminEdit(form);
-      if (form.id === 'admin-owner-form') handleAdminOwner(form);
-      if (form.id === 'admin-hours-form') handleAdminHours(form);
-      if (form.id === 'admin-work-form') handleAdminWork(form);
-      if (form.id === 'admin-upload-form') handleAdminUpload(form);
-    });
+          if (error) {
+            throw error;
+          }
 
-    document.addEventListener('click', async event => {
-      const button = event.target.closest('[data-action]');
-      if (!button) return;
+          state.session = data.session;
 
-      const action = button.dataset.action;
-      if (action === 'select-company') {
-        selectedCompanyId = button.dataset.companyId;
-        renderApp();
-      }
+          if (!state.session) {
+            renderSignedOut();
+            return;
+          }
 
-      if (action === 'request-package') {
-        requestPackage(Number(button.dataset.hours));
-      }
+          const userResponse = await state.client.auth.getUser();
+          if (userResponse.error) {
+            throw userResponse.error;
+          }
 
-      if (action === 'approve-work') {
-        approveWork(button.dataset.workId);
-      }
-
-      if (action === 'download-report') {
-        downloadReport(button.dataset.reportId);
-      }
-
-      if (action === 'download-receipt') {
-        downloadReceipt(button.dataset.receiptId);
-      }
-
-      if (action === 'sign-out') {
-        button.disabled = true;
-        try {
-          await signOutWithSupabase();
+          state.authUser = userResponse.data.user;
+          await loadPortalData();
+          renderApp();
         } catch (error) {
-          showMessage(error.message || portalT('portal.message.signInFailed'));
-        } finally {
-          button.disabled = false;
+          state.error = error;
+          renderFatalError(error);
         }
-        currentUser = null;
-        selectedCompanyId = null;
-        document.getElementById('app-view').classList.add('hidden');
-        document.getElementById('login-view').classList.remove('hidden');
-        document.getElementById('login-form').reset();
-        document.getElementById('login-error').classList.add('hidden');
-        showMessage(portalT('portal.message.supabaseSignedOut'));
-        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
-    });
 
-    document.addEventListener('change', event => {
-      if (!event.target || event.target.id !== 'language-select') return;
+      function createSupabaseClient() {
+        if (!window.supabase || !window.supabase.createClient) {
+          throw new Error('Supabase client library did not load.');
+        }
 
-      window.setTimeout(() => {
-        applyPortalLanguage();
-        if (currentUser) renderApp();
-      }, 0);
-    });
+        if (!config.url || !config.anonKey) {
+          throw new Error('Supabase configuration is missing. Add SUPABASE_URL and SUPABASE_ANON_KEY in supabase-config.js.');
+        }
 
-    applyPortalLanguage();
-    restoreSupabaseSession();
+        const supabaseUrl = String(config.url)
+          .replace(/\/rest\/v1\/?$/i, '')
+          .replace(/\/$/, '');
+
+        return window.supabase.createClient(supabaseUrl, config.anonKey);
+      }
+
+      async function loadPortalData() {
+        state.isLoading = true;
+        state.error = null;
+
+        const profileResult = await state.client
+          .from('users')
+          .select('id, auth_user_id, email, full_name, platform_role, active')
+          .eq('auth_user_id', state.authUser.id)
+          .maybeSingle();
+
+        if (profileResult.error) {
+          throw profileResult.error;
+        }
+
+        state.profile = profileResult.data;
+
+        const [projects, roles, deliverables, workLogs, payments] = await Promise.all([
+          state.client
+            .from('projects')
+            .select('id, slug, name, description, status, created_at, updated_at')
+            .order('created_at', { ascending: false }),
+          state.client
+            .from('project_roles')
+            .select('id, project_id, user_id, role, hourly_rate_usd, active, joined_at, member:users!project_roles_user_id_fkey(id, full_name, email, platform_role), project:projects!project_roles_project_id_fkey(id, name, status)')
+            .eq('active', true)
+            .order('joined_at', { ascending: false }),
+          state.client
+            .from('deliverables')
+            .select('id, project_id, title, description, status, due_date, delivered_at, created_at, project:projects!deliverables_project_id_fkey(id, name)')
+            .order('created_at', { ascending: false }),
+          state.client
+            .from('work_logs')
+            .select('id, project_id, title, description, work_date, hours_used, commit_hash, status, is_billable, worker:users!work_logs_worker_user_id_fkey(id, full_name, email), project:projects!work_logs_project_id_fkey(id, name, status)')
+            .order('work_date', { ascending: false }),
+          state.client
+            .from('collaborator_payments')
+            .select('id, project_id, user_id, hourly_rate_usd, approved_hours, total_usd, status, paid_at, created_at, collaborator:users!collaborator_payments_user_id_fkey(id, full_name, email), project:projects!collaborator_payments_project_id_fkey(id, name)')
+            .order('created_at', { ascending: false })
+        ]);
+
+        assertQuery('projects', projects);
+        assertQuery('project_roles', roles);
+        assertQuery('deliverables', deliverables);
+        assertQuery('work_logs', workLogs);
+        assertQuery('collaborator_payments', payments);
+
+        state.projects = projects.data || [];
+        state.projectRoles = roles.data || [];
+        state.deliverables = deliverables.data || [];
+        state.workLogs = workLogs.data || [];
+        state.payments = payments.data || [];
+        state.isLoading = false;
+      }
+
+      function assertQuery(tableName, result) {
+        if (!result.error) {
+          return;
+        }
+
+        const error = new Error(`${tableName}: ${result.error.message}`);
+        error.details = result.error.details;
+        error.hint = result.error.hint;
+        throw error;
+      }
+
+      function renderSignedOut() {
+        app.innerHTML = `
+          <main class="auth-wall">
+            <section class="auth-panel" aria-labelledby="auth-title">
+              <p class="page-kicker">Bastida Systems</p>
+              <h1 id="auth-title">Sign in required</h1>
+              <p>Bastida OS is private. Sign in with your Supabase account or accept your invitation before opening the portal.</p>
+              <div class="auth-actions">
+                <a class="button button-primary" href="${escapeAttr(authRedirects.login || 'login.html')}">Open login</a>
+                <a class="button" href="${escapeAttr(authRedirects.setPassword || 'set-password.html')}">Accept invitation</a>
+              </div>
+            </section>
+          </main>
+        `;
+      }
+
+      function renderFatalError(error) {
+        app.innerHTML = `
+          <main class="auth-wall">
+            <section class="auth-panel" aria-labelledby="error-title">
+              <p class="page-kicker">Bastida Systems</p>
+              <h1 id="error-title">Portal is not ready</h1>
+              <p>${escapeHtml(formatOperationalError(error))}</p>
+              <div class="auth-actions">
+                <button class="button button-primary" type="button" data-retry>Retry</button>
+                <a class="button" href="${escapeAttr(authRedirects.login || 'login.html')}">Open login</a>
+              </div>
+            </section>
+          </main>
+        `;
+        app.querySelector('[data-retry]')?.addEventListener('click', init);
+      }
+
+      function formatOperationalError(error) {
+        const message = error?.message || 'Unknown Supabase error.';
+
+        if (/projects|project_roles|deliverables|collaborator_payments|work_logs/i.test(message)) {
+          return `${message}. Run supabase/bastida_operating_system_schema.sql in Supabase SQL Editor, then refresh.`;
+        }
+
+        return message;
+      }
+
+      function renderApp() {
+        app.innerHTML = `
+          <div class="app-shell">
+            <aside class="sidebar" aria-label="Primary">
+              <div class="brand">
+                <div class="brand-mark">BS</div>
+                <div class="brand-text">
+                  <p class="brand-title">Bastida OS</p>
+                  <p class="brand-subtitle">Operations portal</p>
+                </div>
+              </div>
+              <nav class="nav">
+                ${Object.entries(viewLabels).map(([view, label]) => navButton(view, label)).join('')}
+              </nav>
+              <div class="sidebar-footer">
+                Real-time operating data from Supabase. No local records are generated in the browser.
+              </div>
+            </aside>
+            <main class="main">
+              <div class="mobile-nav">
+                <select aria-label="Select section" data-mobile-nav>
+                  ${Object.entries(viewLabels).map(([view, label]) => `<option value="${view}" ${view === state.activeView ? 'selected' : ''}>${label}</option>`).join('')}
+                </select>
+              </div>
+              <header class="topbar">
+                <div>
+                  <p class="page-kicker">Bastida Systems</p>
+                  <h1 class="page-title" data-view-title>${escapeHtml(viewLabels[state.activeView])}</h1>
+                </div>
+                <div class="profile">
+                  <div class="profile-meta">
+                    <p class="profile-name">${escapeHtml(profileName())}</p>
+                    <p class="profile-role">${escapeHtml(profileRole())}</p>
+                  </div>
+                  <button class="button" type="button" data-refresh>Refresh</button>
+                  <button class="button" type="button" data-sign-out>Logout</button>
+                </div>
+              </header>
+              <section class="view ${state.activeView === 'dashboard' ? 'is-active' : ''}" data-view="dashboard">
+                ${renderDashboard()}
+              </section>
+              <section class="view ${state.activeView === 'people' ? 'is-active' : ''}" data-view="people">
+                ${renderPeople()}
+              </section>
+              <section class="view ${state.activeView === 'projects' ? 'is-active' : ''}" data-view="projects">
+                ${renderProjects()}
+              </section>
+              <section class="view ${state.activeView === 'deliverables' ? 'is-active' : ''}" data-view="deliverables">
+                ${renderDeliverables()}
+              </section>
+              <section class="view ${state.activeView === 'workLogs' ? 'is-active' : ''}" data-view="workLogs">
+                ${renderWorkLogs()}
+              </section>
+              <section class="view ${state.activeView === 'payments' ? 'is-active' : ''}" data-view="payments">
+                ${renderPayments()}
+              </section>
+            </main>
+          </div>
+        `;
+
+        bindAppEvents();
+      }
+
+      function navButton(view, label) {
+        const count = getViewCount(view);
+        return `
+          <button class="nav-button ${state.activeView === view ? 'is-active' : ''}" type="button" data-nav="${view}">
+            <span>${escapeHtml(label)}</span>
+            ${count === '' ? '' : `<span class="nav-count">${count}</span>`}
+          </button>
+        `;
+      }
+
+      function bindAppEvents() {
+        app.querySelectorAll('[data-nav]').forEach((button) => {
+          button.addEventListener('click', () => setActiveView(button.dataset.nav));
+        });
+
+        app.querySelector('[data-mobile-nav]')?.addEventListener('change', (event) => {
+          setActiveView(event.target.value);
+        });
+
+        app.querySelector('[data-refresh]')?.addEventListener('click', async (event) => {
+          event.currentTarget.textContent = 'Refreshing';
+          event.currentTarget.disabled = true;
+          try {
+            await loadPortalData();
+            renderApp();
+          } catch (error) {
+            renderFatalError(error);
+          }
+        });
+
+        app.querySelector('[data-sign-out]')?.addEventListener('click', async () => {
+          await state.client.auth.signOut();
+          window.location.href = authRedirects.login || 'login.html';
+        });
+      }
+
+      function setActiveView(view) {
+        if (!viewLabels[view]) {
+          return;
+        }
+
+        state.activeView = view;
+        app.querySelectorAll('[data-nav]').forEach((button) => {
+          button.classList.toggle('is-active', button.dataset.nav === view);
+        });
+        app.querySelectorAll('[data-view]').forEach((section) => {
+          section.classList.toggle('is-active', section.dataset.view === view);
+        });
+        const title = app.querySelector('[data-view-title]');
+        if (title) {
+          title.textContent = viewLabels[view];
+        }
+        const mobileNav = app.querySelector('[data-mobile-nav]');
+        if (mobileNav) {
+          mobileNav.value = view;
+        }
+      }
+
+      function renderDashboard() {
+        const people = buildPeople();
+        const approvedHours = state.workLogs
+          .filter((log) => ['approved', 'completed'].includes(log.status))
+          .reduce((total, log) => total + toNumber(log.hours_used), 0);
+        const payable = state.payments
+          .filter((payment) => payment.status !== 'void')
+          .reduce((total, payment) => total + toNumber(payment.total_usd), 0);
+
+        return `
+          <p class="page-copy">A live operating view of collaborators, project assignments, approved hours, and payment obligations from Supabase.</p>
+          <div class="metrics">
+            ${metricCard('Projects', state.projects.length, 'Real project records visible to this user.')}
+            ${metricCard('Collaborators', people.length, 'Active people assigned to at least one project.')}
+            ${metricCard('Deliverables', state.deliverables.length, 'Real deliverable records visible to this user.')}
+            ${metricCard('Approved hours', formatHours(approvedHours), 'Work logs marked approved or completed.')}
+            ${metricCard('Payable total', formatMoney(payable), 'Non-void collaborator payment records.')}
+          </div>
+          <div class="content-grid">
+            <section class="panel">
+              <div class="panel-header">
+                <div>
+                  <h2 class="panel-title">Recent work logs</h2>
+                  <p class="panel-subtitle">Latest time entries from real records.</p>
+                </div>
+              </div>
+              ${state.workLogs.length ? renderWorkLogTable(state.workLogs.slice(0, 6), true) : emptyState('No work logs yet', 'Approved work history will appear here after records exist in Supabase.', true)}
+            </section>
+            <section class="panel">
+              <div class="panel-header">
+                <div>
+                  <h2 class="panel-title">Deliverables</h2>
+                  <p class="panel-subtitle">Project delivery records from Supabase.</p>
+                </div>
+              </div>
+              ${state.deliverables.length ? renderDeliverableTable(state.deliverables.slice(0, 6), true) : emptyState('No deliverables yet', 'Deliverables will appear here after records exist in Supabase.', true)}
+            </section>
+            <section class="panel panel-wide">
+              <div class="panel-header">
+                <div>
+                  <h2 class="panel-title">Open payments</h2>
+                  <p class="panel-subtitle">Pending collaborator payment records.</p>
+                </div>
+              </div>
+              ${state.payments.length ? renderPaymentTable(state.payments.slice(0, 6), true) : emptyState('No payments yet', 'Payment records will appear here after they exist in Supabase.', true)}
+            </section>
+          </div>
+        `;
+      }
+
+      function renderPeople() {
+        const people = buildPeople();
+
+        return `
+          <div class="toolbar">
+            <div>
+              <h2 class="toolbar-title">Collaborators</h2>
+              <p class="toolbar-copy">People are shown only when they have real active project role records.</p>
+            </div>
+          </div>
+          <section class="panel">
+            ${people.length ? renderPeopleTable(people) : emptyState('No collaborators yet', 'Assign a real user to a real project role in Supabase to populate this section.')}
+          </section>
+        `;
+      }
+
+      function renderProjects() {
+        return `
+          <div class="toolbar">
+            <div>
+              <h2 class="toolbar-title">Projects</h2>
+              <p class="toolbar-copy">Project data is read directly from Supabase.</p>
+            </div>
+          </div>
+          <section class="panel">
+            ${state.projects.length ? renderProjectTable() : emptyState('No projects yet', 'Create a real project record in Supabase to populate this section.')}
+          </section>
+        `;
+      }
+
+      function renderDeliverables() {
+        return `
+          <div class="toolbar">
+            <div>
+              <h2 class="toolbar-title">Deliverables</h2>
+              <p class="toolbar-copy">Project deliverables are listed only when real records exist in Supabase.</p>
+            </div>
+          </div>
+          <section class="panel">
+            ${state.deliverables.length ? renderDeliverableTable(state.deliverables) : emptyState('No deliverables yet', 'Deliverables will appear here after records exist in Supabase.')}
+          </section>
+        `;
+      }
+
+      function renderWorkLogs() {
+        return `
+          <div class="toolbar">
+            <div>
+              <h2 class="toolbar-title">Work Logs</h2>
+              <p class="toolbar-copy">Project, date, description, hours, optional commit hash, and status.</p>
+            </div>
+          </div>
+          <section class="panel">
+            ${state.workLogs.length ? renderWorkLogTable(state.workLogs) : emptyState('No work logs yet', 'Work logs will appear here after records exist in Supabase.')}
+          </section>
+        `;
+      }
+
+      function renderPayments() {
+        return `
+          <div class="toolbar">
+            <div>
+              <h2 class="toolbar-title">Payments</h2>
+              <p class="toolbar-copy">Collaborator, project, rate, approved hours, total, and payment status.</p>
+            </div>
+          </div>
+          <section class="panel">
+            ${state.payments.length ? renderPaymentTable(state.payments) : emptyState('No payments yet', 'Collaborator payment records will appear here after they exist in Supabase.')}
+          </section>
+        `;
+      }
+
+      function renderPeopleTable(people) {
+        return `
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Collaborator</th>
+                  <th>Project roles</th>
+                  <th>Projects</th>
+                  <th>Default role</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${people.map((person) => `
+                  <tr>
+                    <td>
+                      <span class="cell-title">${escapeHtml(person.name)}</span>
+                      <span class="cell-subtitle">${escapeHtml(person.email)}</span>
+                    </td>
+                    <td>
+                      <div class="role-list">
+                        ${person.roles.map((role) => `<span class="role-pill">${escapeHtml(roleLabel(role))}</span>`).join('')}
+                      </div>
+                    </td>
+                    <td>${person.projects.length}</td>
+                    <td>${escapeHtml(roleLabel(person.defaultRole))}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
+
+      function renderProjectTable() {
+        return `
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Project</th>
+                  <th>Status</th>
+                  <th>Collaborators</th>
+                  <th>Logged hours</th>
+                  <th>Updated</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${state.projects.map((project) => {
+                  const roles = state.projectRoles.filter((role) => role.project_id === project.id);
+                  const hours = state.workLogs
+                    .filter((log) => log.project_id === project.id)
+                    .reduce((total, log) => total + toNumber(log.hours_used), 0);
+
+                  return `
+                    <tr>
+                      <td>
+                        <span class="cell-title">${escapeHtml(project.name)}</span>
+                        <span class="cell-subtitle">${escapeHtml(project.description || project.slug || '')}</span>
+                      </td>
+                      <td>${statusPill(project.status)}</td>
+                      <td>${roles.length}</td>
+                      <td>${formatHours(hours)}</td>
+                      <td>${formatDate(project.updated_at || project.created_at)}</td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
+
+      function renderDeliverableTable(deliverables, compact = false) {
+        return `
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Deliverable</th>
+                  <th>Project</th>
+                  <th>Due date</th>
+                  <th>Delivered</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${deliverables.map((deliverable) => `
+                  <tr>
+                    <td>
+                      <span class="cell-title">${escapeHtml(deliverable.title)}</span>
+                      <span class="cell-subtitle">${escapeHtml(deliverable.description || '')}</span>
+                    </td>
+                    <td>${escapeHtml(deliverable.project?.name || 'Unassigned')}</td>
+                    <td>${formatDate(deliverable.due_date)}</td>
+                    <td>${formatDate(deliverable.delivered_at)}</td>
+                    <td>${statusPill(deliverable.status)}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
+
+      function renderWorkLogTable(logs, compact = false) {
+        return `
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Project</th>
+                  <th>Date</th>
+                  <th>Description</th>
+                  <th>Hours</th>
+                  <th>Commit</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${logs.map((log) => `
+                  <tr>
+                    <td>
+                      <span class="cell-title">${escapeHtml(log.project?.name || 'Unassigned')}</span>
+                      <span class="cell-subtitle">${escapeHtml(log.worker?.full_name || log.worker?.email || '')}</span>
+                    </td>
+                    <td>${formatDate(log.work_date)}</td>
+                    <td>
+                      <span class="cell-title">${escapeHtml(log.title || 'Work log')}</span>
+                      <span class="cell-subtitle">${escapeHtml(log.description || '')}</span>
+                    </td>
+                    <td>${formatHours(log.hours_used)}</td>
+                    <td>${escapeHtml(log.commit_hash || '-')}</td>
+                    <td>${statusPill(log.status)}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
+
+      function renderPaymentTable(payments, compact = false) {
+        return `
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Collaborator</th>
+                  <th>Project</th>
+                  <th>Rate</th>
+                  <th>Approved hours</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${payments.map((payment) => `
+                  <tr>
+                    <td>
+                      <span class="cell-title">${escapeHtml(payment.collaborator?.full_name || payment.collaborator?.email || 'Unassigned')}</span>
+                      <span class="cell-subtitle">${escapeHtml(payment.collaborator?.email || '')}</span>
+                    </td>
+                    <td>${escapeHtml(payment.project?.name || 'Unassigned')}</td>
+                    <td>${formatMoney(payment.hourly_rate_usd)}</td>
+                    <td>${formatHours(payment.approved_hours)}</td>
+                    <td>${formatMoney(payment.total_usd)}</td>
+                    <td>${statusPill(payment.status)}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
+
+      function buildPeople() {
+        const people = new Map();
+
+        state.projectRoles.forEach((assignment) => {
+          const member = assignment.member;
+          if (!member?.id) {
+            return;
+          }
+
+          if (!people.has(member.id)) {
+            people.set(member.id, {
+              id: member.id,
+              name: member.full_name || member.email || 'Unnamed user',
+              email: member.email || '',
+              defaultRole: assignment.role,
+              roles: [],
+              projects: []
+            });
+          }
+
+          const person = people.get(member.id);
+          if (assignment.role && !person.roles.includes(assignment.role)) {
+            person.roles.push(assignment.role);
+          }
+          if (assignment.project?.id && !person.projects.includes(assignment.project.id)) {
+            person.projects.push(assignment.project.id);
+          }
+        });
+
+        return Array.from(people.values()).sort((a, b) => a.name.localeCompare(b.name));
+      }
+
+      function metricCard(label, value, caption) {
+        return `
+          <section class="metric">
+            <p class="metric-label">${escapeHtml(label)}</p>
+            <p class="metric-value">${escapeHtml(String(value))}</p>
+            <p class="metric-caption">${escapeHtml(caption)}</p>
+          </section>
+        `;
+      }
+
+      function emptyState(title, copy, compact = false) {
+        return `
+          <div class="empty-state ${compact ? 'compact' : ''}">
+            <div>
+              <p class="empty-title">${escapeHtml(title)}</p>
+              <p class="empty-copy">${escapeHtml(copy)}</p>
+            </div>
+          </div>
+        `;
+      }
+
+      function statusPill(status) {
+        const normalized = String(status || 'unknown').toLowerCase();
+        return `<span class="status status-${escapeAttr(normalized)}">${escapeHtml(labelize(normalized))}</span>`;
+      }
+
+      function getViewCount(view) {
+        if (view === 'people') {
+          return buildPeople().length;
+        }
+        if (view === 'projects') {
+          return state.projects.length;
+        }
+        if (view === 'deliverables') {
+          return state.deliverables.length;
+        }
+        if (view === 'workLogs') {
+          return state.workLogs.length;
+        }
+        if (view === 'payments') {
+          return state.payments.length;
+        }
+        return '';
+      }
+
+      function profileName() {
+        return state.profile?.full_name || state.authUser?.email || 'Authenticated user';
+      }
+
+      function profileRole() {
+        return labelize(state.profile?.platform_role || 'authenticated');
+      }
+
+      function roleLabel(role) {
+        return roleLabels[role] || labelize(role || 'collaborator');
+      }
+
+      function labelize(value) {
+        return String(value || '')
+          .replace(/_/g, ' ')
+          .replace(/\b\w/g, (character) => character.toUpperCase());
+      }
+
+      function formatMoney(value) {
+        return moneyFormatter.format(toNumber(value));
+      }
+
+      function formatHours(value) {
+        return numberFormatter.format(toNumber(value));
+      }
+
+      function formatDate(value) {
+        if (!value) {
+          return '-';
+        }
+
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) {
+          return '-';
+        }
+
+        return dateFormatter.format(date);
+      }
+
+      function toNumber(value) {
+        const parsed = Number(value);
+        return Number.isFinite(parsed) ? parsed : 0;
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
+      function escapeAttr(value) {
+        return escapeHtml(value).replace(/`/g, '&#096;');
+      }
+    })();
   </script>
 </body>
 </html>
