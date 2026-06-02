@@ -39,6 +39,28 @@ begin
   if not exists (select 1 from pg_type where typname = 'member_invitation_status') then
     create type public.member_invitation_status as enum ('invite_sent', 'pending_acceptance', 'active_member', 'error_sending_invite');
   end if;
+
+  if exists (select 1 from pg_type where typname = 'work_log_status')
+    and not exists (
+      select 1
+      from pg_enum e
+      join pg_type t on t.oid = e.enumtypid
+      where t.typname = 'work_log_status'
+        and e.enumlabel = 'pending_approval'
+    ) then
+    alter type public.work_log_status add value 'pending_approval';
+  end if;
+
+  if exists (select 1 from pg_type where typname = 'work_log_status')
+    and not exists (
+      select 1
+      from pg_enum e
+      join pg_type t on t.oid = e.enumtypid
+      where t.typname = 'work_log_status'
+        and e.enumlabel = 'rejected'
+    ) then
+    alter type public.work_log_status add value 'rejected';
+  end if;
 end $$;
 
 create table if not exists public.projects (
@@ -105,7 +127,44 @@ create table if not exists public.collaborator_payments (
 
 alter table public.work_logs
   add column if not exists project_id uuid references public.projects(id) on delete set null,
-  add column if not exists commit_hash text;
+  add column if not exists commit_hash text,
+  add column if not exists work_type text,
+  add column if not exists evidence_url text,
+  add column if not exists submitted_at timestamptz,
+  add column if not exists approved_by uuid references public.users(id) on delete set null,
+  add column if not exists approved_at timestamptz,
+  add column if not exists rejected_by uuid references public.users(id) on delete set null,
+  add column if not exists rejected_at timestamptz,
+  add column if not exists rejection_reason text,
+  add column if not exists approved_hours numeric(10, 2) check (approved_hours is null or approved_hours >= 0);
+
+alter table public.work_logs
+  alter column company_id drop not null;
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_constraint
+    where conname = 'work_logs_hours_used_max_24'
+  ) then
+    alter table public.work_logs
+      add constraint work_logs_hours_used_max_24
+      check (hours_used <= 24)
+      not valid;
+  end if;
+
+  if not exists (
+    select 1
+    from pg_constraint
+    where conname = 'work_logs_approved_hours_not_above_hours'
+  ) then
+    alter table public.work_logs
+      add constraint work_logs_approved_hours_not_above_hours
+      check (approved_hours is null or approved_hours <= hours_used)
+      not valid;
+  end if;
+end $$;
 
 alter table public.project_roles
   alter column user_id drop not null,
@@ -124,6 +183,9 @@ comment on table public.deliverables is 'Real project deliverables and their del
 comment on table public.collaborator_payments is 'Real collaborator payment calculations from approved hours and rates.';
 comment on column public.work_logs.project_id is 'Optional link from legacy work logs to the operating project model.';
 comment on column public.work_logs.commit_hash is 'Optional source-control commit hash for technical work logs.';
+comment on column public.work_logs.work_type is 'Work category selected by the collaborator when submitting hours.';
+comment on column public.work_logs.evidence_url is 'Optional external evidence link such as Figma, Drive, screenshots, or documents.';
+comment on column public.work_logs.approved_hours is 'Approved payable hours after owner/founder review.';
 
 create index if not exists idx_projects_company_status on public.projects(company_id, status);
 create index if not exists idx_projects_status_updated_at on public.projects(status, updated_at desc);
@@ -138,6 +200,8 @@ create index if not exists idx_deliverables_due_date on public.deliverables(due_
 create index if not exists idx_collaborator_payments_project_status on public.collaborator_payments(project_id, status);
 create index if not exists idx_collaborator_payments_user_status on public.collaborator_payments(user_id, status);
 create index if not exists idx_work_logs_project_date on public.work_logs(project_id, work_date desc);
+create index if not exists idx_work_logs_worker_status on public.work_logs(worker_user_id, status);
+create index if not exists idx_work_logs_project_status on public.work_logs(project_id, status);
 
 drop trigger if exists set_projects_updated_at on public.projects;
 create trigger set_projects_updated_at
@@ -159,6 +223,22 @@ create trigger set_collaborator_payments_updated_at
 before update on public.collaborator_payments
 for each row execute function public.set_updated_at();
 
+create or replace function private.is_global_founder()
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1
+    from public.users u
+    where u.auth_user_id = (select auth.uid())
+      and u.platform_role::text = 'founder'
+      and u.active = true
+  );
+$$;
+
 create or replace function private.has_project_access(p_project_id uuid)
 returns boolean
 language sql
@@ -167,19 +247,34 @@ security definer
 set search_path = public
 as $$
   select private.is_platform_admin()
-    or exists (
-      select 1
-      from public.users u
-      where u.auth_user_id = (select auth.uid())
-        and u.platform_role::text = 'founder'
-        and u.active = true
-    )
+    or private.is_global_founder()
     or exists (
       select 1
       from public.project_roles pr
       join public.users u on u.id = pr.user_id
       where pr.project_id = p_project_id
         and pr.active = true
+        and u.active = true
+        and u.auth_user_id = (select auth.uid())
+    );
+$$;
+
+create or replace function private.can_manage_project(p_project_id uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select private.is_platform_admin()
+    or private.is_global_founder()
+    or exists (
+      select 1
+      from public.project_roles pr
+      join public.users u on u.id = pr.user_id
+      where pr.project_id = p_project_id
+        and pr.active = true
+        and pr.role in ('founder', 'owner')
         and u.active = true
         and u.auth_user_id = (select auth.uid())
     );
@@ -222,18 +317,41 @@ select
   p.name,
   p.slug,
   p.status,
-  count(distinct pr.user_id) filter (where pr.active = true)::integer as collaborator_count,
-  count(distinct d.id)::integer as deliverable_count,
-  count(distinct wl.id)::integer as work_log_count,
-  coalesce(sum(wl.hours_used) filter (where wl.status in ('completed', 'approved')), 0)::numeric as approved_or_completed_hours,
-  coalesce(sum(cp.total_usd) filter (where cp.status <> 'void'), 0)::numeric as payable_total_usd,
+  (
+    select count(distinct pr.user_id)::integer
+    from public.project_roles pr
+    where pr.project_id = p.id
+      and pr.active = true
+      and pr.user_id is not null
+  ) as collaborator_count,
+  (
+    select count(*)::integer
+    from public.deliverables d
+    where d.project_id = p.id
+  ) as deliverable_count,
+  (
+    select count(*)::integer
+    from public.work_logs wl
+    where wl.project_id = p.id
+  ) as work_log_count,
+  coalesce((
+    select sum(wl.approved_hours)
+    from public.work_logs wl
+    where wl.project_id = p.id
+      and wl.status::text = 'approved'
+  ), 0)::numeric as approved_or_completed_hours,
+  coalesce((
+    select sum(wl.approved_hours * coalesce(pr.hourly_rate_usd, 0))
+    from public.work_logs wl
+    left join public.project_roles pr
+      on pr.project_id = wl.project_id
+      and pr.user_id = wl.worker_user_id
+      and pr.active = true
+    where wl.project_id = p.id
+      and wl.status::text = 'approved'
+  ), 0)::numeric as payable_total_usd,
   p.updated_at
-from public.projects p
-left join public.project_roles pr on pr.project_id = p.id
-left join public.deliverables d on d.project_id = p.id
-left join public.work_logs wl on wl.project_id = p.id
-left join public.collaborator_payments cp on cp.project_id = p.id
-group by p.id, p.name, p.slug, p.status, p.updated_at;
+from public.projects p;
 
 alter table public.projects enable row level security;
 alter table public.project_roles enable row level security;
@@ -256,6 +374,13 @@ using (
       and peer_role.user_id = public.users.id
   )
 );
+
+drop policy if exists users_select_global_founder on public.users;
+create policy users_select_global_founder
+on public.users
+for select
+to authenticated
+using (private.is_global_founder());
 
 drop policy if exists projects_select_project_access on public.projects;
 create policy projects_select_project_access
@@ -379,18 +504,54 @@ using (private.is_platform_admin());
 
 drop policy if exists work_logs_select_company_access on public.work_logs;
 drop policy if exists work_logs_select_company_or_project_access on public.work_logs;
+drop policy if exists work_logs_select_operating_access on public.work_logs;
 create policy work_logs_select_company_or_project_access
 on public.work_logs
 for select
 to authenticated
 using (
-  private.has_company_access(company_id)
-  or (project_id is not null and private.has_project_access(project_id))
+  private.is_platform_admin()
+  or private.is_global_founder()
+  or worker_user_id = (select private.current_user_id())
+  or (project_id is not null and private.can_manage_project(project_id))
+);
+
+drop policy if exists work_logs_insert_platform_admin on public.work_logs;
+drop policy if exists work_logs_insert_project_member on public.work_logs;
+create policy work_logs_insert_project_member
+on public.work_logs
+for insert
+to authenticated
+with check (
+  project_id is not null
+  and private.has_project_access(project_id)
+  and worker_user_id = (select private.current_user_id())
+  and coalesce(created_by, (select private.current_user_id())) = (select private.current_user_id())
+  and status::text = 'pending_approval'
+  and hours_used > 0
+  and hours_used <= 24
+);
+
+drop policy if exists work_logs_update_platform_admin on public.work_logs;
+drop policy if exists work_logs_update_project_manager on public.work_logs;
+create policy work_logs_update_project_manager
+on public.work_logs
+for update
+to authenticated
+using (
+  project_id is not null
+  and private.can_manage_project(project_id)
+)
+with check (
+  project_id is not null
+  and private.can_manage_project(project_id)
 );
 
 grant usage on schema public to authenticated;
 grant usage on schema private to authenticated;
+grant execute on function private.is_global_founder() to authenticated;
 grant execute on function private.has_project_access(uuid) to authenticated;
+grant execute on function private.can_manage_project(uuid) to authenticated;
 grant execute on function public.accept_my_project_invites() to authenticated;
 
 grant select, insert, update, delete on

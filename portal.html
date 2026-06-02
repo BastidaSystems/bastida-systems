@@ -590,6 +590,7 @@
 
     .status-archived,
     .status-void,
+    .status-rejected,
     .status-error_sending_invite {
       border-color: rgba(185, 28, 28, 0.16);
       background: rgba(185, 28, 28, 0.06);
@@ -828,6 +829,19 @@
           message: '',
           type: ''
         },
+        workLog: {
+          isOpen: false,
+          isSubmitting: false,
+          message: '',
+          type: ''
+        },
+        rejection: {
+          isOpen: false,
+          logId: null,
+          isSubmitting: false,
+          message: '',
+          type: ''
+        },
         isLoading: true,
         error: null
       };
@@ -914,7 +928,7 @@
         const [projects, roles, deliverables, workLogs, payments] = await Promise.all([
           state.client
             .from('projects')
-            .select('id, slug, name, description, status, created_at, updated_at')
+            .select('id, company_id, slug, name, description, status, created_at, updated_at')
             .order('created_at', { ascending: false }),
           state.client
             .from('project_roles')
@@ -926,7 +940,7 @@
             .order('created_at', { ascending: false }),
           state.client
             .from('work_logs')
-            .select('id, project_id, title, description, work_date, hours_used, commit_hash, status, is_billable, worker:users!work_logs_worker_user_id_fkey(id, full_name, email), project:projects!work_logs_project_id_fkey(id, name, status)')
+            .select('id, company_id, project_id, title, description, category, work_type, work_date, hours_used, approved_hours, evidence_url, commit_hash, status, is_billable, submitted_at, approved_by, approved_at, rejected_by, rejected_at, rejection_reason, worker_user_id, worker:users!work_logs_worker_user_id_fkey(id, full_name, email), project:projects!work_logs_project_id_fkey(id, name, status, company_id)')
             .order('work_date', { ascending: false }),
           state.client
             .from('collaborator_payments')
@@ -1072,6 +1086,8 @@
             </main>
             ${state.invite.isOpen ? renderInviteModal() : ''}
             ${state.createProject.isOpen ? renderCreateProjectModal() : ''}
+            ${state.workLog.isOpen ? renderWorkLogModal() : ''}
+            ${state.rejection.isOpen ? renderRejectModal() : ''}
           </div>
         `;
 
@@ -1116,6 +1132,15 @@
           });
         });
 
+        app.querySelectorAll('[data-open-work-log]').forEach((button) => {
+          button.addEventListener('click', () => {
+            state.workLog.isOpen = true;
+            state.workLog.message = '';
+            state.workLog.type = '';
+            renderApp();
+          });
+        });
+
         app.querySelectorAll('[data-close-invite]').forEach((button) => {
           button.addEventListener('click', () => {
             state.invite.isOpen = false;
@@ -1132,8 +1157,41 @@
           });
         });
 
+        app.querySelectorAll('[data-close-work-log]').forEach((button) => {
+          button.addEventListener('click', () => {
+            state.workLog.isOpen = false;
+            state.workLog.isSubmitting = false;
+            renderApp();
+          });
+        });
+
+        app.querySelectorAll('[data-close-reject]').forEach((button) => {
+          button.addEventListener('click', () => {
+            state.rejection.isOpen = false;
+            state.rejection.logId = null;
+            state.rejection.isSubmitting = false;
+            renderApp();
+          });
+        });
+
         app.querySelector('[data-invite-form]')?.addEventListener('submit', handleInviteSubmit);
         app.querySelector('[data-create-project-form]')?.addEventListener('submit', handleCreateProjectSubmit);
+        app.querySelector('[data-work-log-form]')?.addEventListener('submit', handleWorkLogSubmit);
+        app.querySelector('[data-reject-form]')?.addEventListener('submit', handleRejectSubmit);
+
+        app.querySelectorAll('[data-approve-log]').forEach((button) => {
+          button.addEventListener('click', () => handleApproveWorkLog(button.dataset.approveLog));
+        });
+
+        app.querySelectorAll('[data-reject-log]').forEach((button) => {
+          button.addEventListener('click', () => {
+            state.rejection.isOpen = true;
+            state.rejection.logId = button.dataset.rejectLog;
+            state.rejection.message = '';
+            state.rejection.type = '';
+            renderApp();
+          });
+        });
 
         app.querySelector('[data-refresh]')?.addEventListener('click', async (event) => {
           event.currentTarget.textContent = 'Refreshing';
@@ -1235,6 +1293,161 @@
         }
       }
 
+      async function handleWorkLogSubmit(event) {
+        event.preventDefault();
+        const form = event.currentTarget;
+        const formData = new FormData(form);
+
+        state.workLog.isSubmitting = true;
+        state.workLog.message = '';
+        state.workLog.type = '';
+        renderApp();
+
+        try {
+          const projectId = String(formData.get('project_id') || '').trim();
+          const project = state.projects.find((item) => item.id === projectId);
+          const hours = Number(formData.get('hours_used'));
+
+          if (!project) {
+            throw new Error('Project is required.');
+          }
+
+          if (!Number.isFinite(hours) || hours <= 0 || hours > 24) {
+            throw new Error('Hours must be greater than 0 and no more than 24.');
+          }
+
+          const payload = {
+            company_id: project.company_id || null,
+            project_id: project.id,
+            worker_user_id: state.profile.id,
+            created_by: state.profile.id,
+            title: String(formData.get('title') || '').trim(),
+            description: String(formData.get('description') || '').trim(),
+            work_type: String(formData.get('work_type') || '').trim(),
+            category: String(formData.get('work_type') || '').trim(),
+            work_date: String(formData.get('work_date') || '').trim(),
+            hours_used: hours,
+            evidence_url: String(formData.get('evidence_url') || '').trim() || null,
+            commit_hash: String(formData.get('commit_hash') || '').trim() || null,
+            status: 'pending_approval',
+            submitted_at: new Date().toISOString(),
+            is_billable: true
+          };
+
+          if (!payload.title) {
+            throw new Error('Title is required.');
+          }
+
+          if (!payload.description) {
+            throw new Error('Description is required.');
+          }
+
+          const { error } = await state.client
+            .from('work_logs')
+            .insert(payload);
+
+          if (error) {
+            throw error;
+          }
+
+          await loadPortalData();
+          state.activeView = 'workLogs';
+          state.workLog.isOpen = true;
+          state.workLog.isSubmitting = false;
+          state.workLog.type = 'success';
+          state.workLog.message = 'Work log submitted for approval.';
+          renderApp();
+        } catch (error) {
+          state.workLog.isOpen = true;
+          state.workLog.isSubmitting = false;
+          state.workLog.type = 'error';
+          state.workLog.message = error instanceof Error ? error.message : 'Error creating work log';
+          renderApp();
+        }
+      }
+
+      async function handleApproveWorkLog(logId) {
+        const log = state.workLogs.find((item) => item.id === logId);
+        if (!log || !canReviewWorkLog(log)) {
+          return;
+        }
+
+        const { error } = await state.client
+          .from('work_logs')
+          .update({
+            status: 'approved',
+            approved_by: state.profile.id,
+            approved_at: new Date().toISOString(),
+            approved_hours: toNumber(log.hours_used),
+            rejected_by: null,
+            rejected_at: null,
+            rejection_reason: null
+          })
+          .eq('id', log.id);
+
+        if (error) {
+          state.rejection.isOpen = true;
+          state.rejection.logId = log.id;
+          state.rejection.type = 'error';
+          state.rejection.message = error.message;
+          renderApp();
+          return;
+        }
+
+        await loadPortalData();
+        renderApp();
+      }
+
+      async function handleRejectSubmit(event) {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        const reason = String(formData.get('rejection_reason') || '').trim();
+        const log = state.workLogs.find((item) => item.id === state.rejection.logId);
+
+        if (!log || !canReviewWorkLog(log)) {
+          return;
+        }
+
+        if (!reason) {
+          state.rejection.message = 'Rejection reason is required.';
+          state.rejection.type = 'error';
+          renderApp();
+          return;
+        }
+
+        state.rejection.isSubmitting = true;
+        state.rejection.message = '';
+        state.rejection.type = '';
+        renderApp();
+
+        const { error } = await state.client
+          .from('work_logs')
+          .update({
+            status: 'rejected',
+            rejected_by: state.profile.id,
+            rejected_at: new Date().toISOString(),
+            rejection_reason: reason,
+            approved_by: null,
+            approved_at: null,
+            approved_hours: null
+          })
+          .eq('id', log.id);
+
+        if (error) {
+          state.rejection.isSubmitting = false;
+          state.rejection.message = error.message;
+          state.rejection.type = 'error';
+          renderApp();
+          return;
+        }
+
+        await loadPortalData();
+        state.rejection.isOpen = false;
+        state.rejection.logId = null;
+        state.rejection.isSubmitting = false;
+        renderApp();
+      }
+
       function setActiveView(view) {
         if (!viewLabels[view]) {
           return;
@@ -1259,12 +1472,11 @@
 
       function renderDashboard() {
         const people = buildPeople();
+        const payableRows = buildPayableRows();
         const approvedHours = state.workLogs
-          .filter((log) => ['approved', 'completed'].includes(log.status))
-          .reduce((total, log) => total + toNumber(log.hours_used), 0);
-        const payable = state.payments
-          .filter((payment) => payment.status !== 'void')
-          .reduce((total, payment) => total + toNumber(payment.total_usd), 0);
+          .filter((log) => log.status === 'approved')
+          .reduce((total, log) => total + toNumber(log.approved_hours), 0);
+        const payable = payableRows.reduce((total, payment) => total + toNumber(payment.total_usd), 0);
 
         return `
           <p class="page-copy">A live operating view of collaborators, project assignments, approved hours, and payment obligations from Supabase.</p>
@@ -1272,8 +1484,8 @@
             ${metricCard('Projects', state.projects.length, 'Real project records visible to this user.')}
             ${metricCard('Collaborators', people.length, 'Active people assigned to at least one project.')}
             ${metricCard('Deliverables', state.deliverables.length, 'Real deliverable records visible to this user.')}
-            ${metricCard('Approved hours', formatHours(approvedHours), 'Work logs marked approved or completed.')}
-            ${metricCard('Payable total', formatMoney(payable), 'Non-void collaborator payment records.')}
+            ${metricCard('Approved hours', formatHours(approvedHours), 'Approved hours from approved work logs.')}
+            ${metricCard('Payable total', formatMoney(payable), 'Approved hours multiplied by USD hourly rates.')}
           </div>
           <div class="content-grid">
             <section class="panel">
@@ -1298,10 +1510,10 @@
               <div class="panel-header">
                 <div>
                   <h2 class="panel-title">Open payments</h2>
-                  <p class="panel-subtitle">Pending collaborator payment records.</p>
+                  <p class="panel-subtitle">Approved payable work by collaborator and project.</p>
                 </div>
               </div>
-              ${state.payments.length ? renderPaymentTable(state.payments.slice(0, 6), true) : emptyState('No payments yet', 'Payment records will appear here after they exist in Supabase.', true)}
+              ${payableRows.length ? renderPaymentTable(payableRows.slice(0, 6), true) : emptyState('No payments yet', 'Approved payable work will appear here after owners approve submitted hours.', true)}
             </section>
           </div>
         `;
@@ -1371,6 +1583,9 @@
               <h2 class="toolbar-title">Work Logs</h2>
               <p class="toolbar-copy">Project, date, description, hours, optional commit hash, and status.</p>
             </div>
+            <div class="section-actions">
+              ${canCreateWorkLogs() ? '<button class="button button-primary" type="button" data-open-work-log>+ Create Work Log</button>' : ''}
+            </div>
           </div>
           <section class="panel">
             ${state.workLogs.length ? renderWorkLogTable(state.workLogs) : emptyState('No work logs yet', 'Work logs will appear here after records exist in Supabase.')}
@@ -1379,15 +1594,17 @@
       }
 
       function renderPayments() {
+        const payableRows = buildPayableRows();
+
         return `
           <div class="toolbar">
             <div>
               <h2 class="toolbar-title">Payments</h2>
-              <p class="toolbar-copy">Collaborator, project, rate, approved hours, total, and payment status.</p>
+              <p class="toolbar-copy">Calculated from approved work logs only: approved hours multiplied by USD hourly rates.</p>
             </div>
           </div>
           <section class="panel">
-            ${state.payments.length ? renderPaymentTable(state.payments) : emptyState('No payments yet', 'Collaborator payment records will appear here after they exist in Supabase.')}
+            ${payableRows.length ? renderPaymentTable(payableRows) : emptyState('No payments yet', 'Approved payable work will appear here after owners approve submitted hours.')}
           </section>
         `;
       }
@@ -1505,33 +1722,58 @@
             <table>
               <thead>
                 <tr>
-                  <th>Project</th>
                   <th>Date</th>
-                  <th>Description</th>
+                  <th>Project</th>
+                  <th>Worker</th>
+                  <th>Work Type</th>
+                  <th>Title</th>
                   <th>Hours</th>
-                  <th>Commit</th>
+                  <th>Approved Hours</th>
                   <th>Status</th>
+                  <th>Evidence</th>
+                  <th>Commit</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 ${logs.map((log) => `
                   <tr>
+                    <td>${formatDate(log.work_date)}</td>
                     <td>
                       <span class="cell-title">${escapeHtml(log.project?.name || 'Unassigned')}</span>
-                      <span class="cell-subtitle">${escapeHtml(log.worker?.full_name || log.worker?.email || '')}</span>
                     </td>
-                    <td>${formatDate(log.work_date)}</td>
+                    <td>
+                      <span class="cell-title">${escapeHtml(log.worker?.full_name || log.worker?.email || 'Unknown')}</span>
+                      <span class="cell-subtitle">${escapeHtml(log.worker?.email || '')}</span>
+                    </td>
+                    <td>${escapeHtml(log.work_type || log.category || '-')}</td>
                     <td>
                       <span class="cell-title">${escapeHtml(log.title || 'Work log')}</span>
                       <span class="cell-subtitle">${escapeHtml(log.description || '')}</span>
                     </td>
                     <td>${formatHours(log.hours_used)}</td>
-                    <td>${escapeHtml(log.commit_hash || '-')}</td>
+                    <td>${log.status === 'approved' ? formatHours(log.approved_hours) : '-'}</td>
                     <td>${statusPill(log.status)}</td>
+                    <td>${log.evidence_url ? `<a href="${escapeAttr(log.evidence_url)}" target="_blank" rel="noopener noreferrer">Open</a>` : '-'}</td>
+                    <td>${escapeHtml(log.commit_hash || '-')}</td>
+                    <td>${renderWorkLogActions(log)}</td>
                   </tr>
                 `).join('')}
               </tbody>
             </table>
+          </div>
+        `;
+      }
+
+      function renderWorkLogActions(log) {
+        if (!canReviewWorkLog(log) || log.status !== 'pending_approval') {
+          return '-';
+        }
+
+        return `
+          <div class="section-actions">
+            <button class="button" type="button" data-approve-log="${escapeAttr(log.id)}">Approve</button>
+            <button class="button" type="button" data-reject-log="${escapeAttr(log.id)}">Reject</button>
           </div>
         `;
       }
@@ -1619,6 +1861,118 @@
         }
 
         return '<button class="button button-primary" type="button" data-open-invite>+ Invite Collaborator</button>';
+      }
+
+      function renderWorkLogModal() {
+        const projects = workLogProjects();
+        const notice = state.workLog.message
+          ? `<div class="notice notice-${state.workLog.type === 'error' ? 'error' : 'success'}">${escapeHtml(state.workLog.message)}</div>`
+          : '';
+        const noProjectsNotice = projects.length
+          ? ''
+          : '<div class="notice">No active projects are available for your account yet.</div>';
+
+        return `
+          <div class="modal-backdrop" role="presentation">
+            <section class="modal" role="dialog" aria-modal="true" aria-labelledby="work-log-title">
+              <form data-work-log-form>
+                <div class="modal-header">
+                  <div>
+                    <h2 class="modal-title" id="work-log-title">Create Work Log</h2>
+                    <p class="modal-copy">Submit worked hours for owner or founder approval.</p>
+                  </div>
+                  <button class="button" type="button" data-close-work-log>Close</button>
+                </div>
+                <div class="modal-body">
+                  ${notice}
+                  ${noProjectsNotice}
+                  <div class="form-grid">
+                    <div class="field">
+                      <label for="work-log-project">Project</label>
+                      <select id="work-log-project" name="project_id" required>
+                        ${projects.length
+                          ? projects.map((project) => `<option value="${escapeAttr(project.id)}">${escapeHtml(project.name)}</option>`).join('')
+                          : '<option value="">No projects available</option>'}
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label for="work-log-type">Work Type</label>
+                      <select id="work-log-type" name="work_type" required>
+                        ${workTypeOptions().map((type) => `<option value="${escapeAttr(type)}">${escapeHtml(type)}</option>`).join('')}
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label for="work-log-date">Work Date</label>
+                      <input id="work-log-date" name="work_date" type="date" value="${escapeAttr(todayISO())}" required>
+                    </div>
+                    <div class="field">
+                      <label for="work-log-hours">Hours</label>
+                      <input id="work-log-hours" name="hours_used" type="number" inputmode="decimal" min="0.01" max="24" step="0.01" required>
+                    </div>
+                    <div class="field">
+                      <label for="work-log-title-input">Title</label>
+                      <input id="work-log-title-input" name="title" type="text" autocomplete="off" required>
+                    </div>
+                    <div class="field">
+                      <label for="work-log-description">Description</label>
+                      <input id="work-log-description" name="description" type="text" autocomplete="off" required>
+                    </div>
+                    <div class="field">
+                      <label for="work-log-evidence">Evidence Link optional</label>
+                      <input id="work-log-evidence" name="evidence_url" type="url" autocomplete="off" placeholder="https://">
+                    </div>
+                    <div class="field">
+                      <label for="work-log-commit">Commit Hash optional</label>
+                      <input id="work-log-commit" name="commit_hash" type="text" autocomplete="off">
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button class="button" type="button" data-close-work-log>Cancel</button>
+                  <button class="button button-primary" type="submit" ${state.workLog.isSubmitting || !projects.length ? 'disabled' : ''}>
+                    ${state.workLog.isSubmitting ? 'Submitting' : 'Submit for approval'}
+                  </button>
+                </div>
+              </form>
+            </section>
+          </div>
+        `;
+      }
+
+      function renderRejectModal() {
+        const log = state.workLogs.find((item) => item.id === state.rejection.logId);
+        const notice = state.rejection.message
+          ? `<div class="notice notice-${state.rejection.type === 'error' ? 'error' : 'success'}">${escapeHtml(state.rejection.message)}</div>`
+          : '';
+
+        return `
+          <div class="modal-backdrop" role="presentation">
+            <section class="modal" role="dialog" aria-modal="true" aria-labelledby="reject-log-title">
+              <form data-reject-form>
+                <div class="modal-header">
+                  <div>
+                    <h2 class="modal-title" id="reject-log-title">Reject Work Log</h2>
+                    <p class="modal-copy">${escapeHtml(log?.title || 'Provide a clear reason for rejection.')}</p>
+                  </div>
+                  <button class="button" type="button" data-close-reject>Close</button>
+                </div>
+                <div class="modal-body">
+                  ${notice}
+                  <div class="field">
+                    <label for="rejection-reason">Rejection reason</label>
+                    <input id="rejection-reason" name="rejection_reason" type="text" autocomplete="off" required>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button class="button" type="button" data-close-reject>Cancel</button>
+                  <button class="button button-primary" type="submit" ${state.rejection.isSubmitting ? 'disabled' : ''}>
+                    ${state.rejection.isSubmitting ? 'Rejecting' : 'Reject work log'}
+                  </button>
+                </div>
+              </form>
+            </section>
+          </div>
+        `;
       }
 
       function renderCreateProjectModal() {
@@ -1775,7 +2129,7 @@
           return state.workLogs.length;
         }
         if (view === 'payments') {
-          return state.payments.length;
+          return buildPayableRows().length;
         }
         return '';
       }
@@ -1826,6 +2180,108 @@
         );
 
         return state.projects.filter((project) => projectIds.has(project.id));
+      }
+
+      function canCreateWorkLogs() {
+        if (isGlobalFounderOrAdmin()) {
+          return true;
+        }
+
+        return state.projectRoles.some((assignment) => (
+          assignment.user_id === state.profile?.id
+          && assignment.active === true
+          && ['founder', 'owner', 'core_collaborator', 'contractor'].includes(assignment.role)
+        ));
+      }
+
+      function workLogProjects() {
+        if (isGlobalFounderOrAdmin()) {
+          return state.projects;
+        }
+
+        const projectIds = new Set(
+          state.projectRoles
+            .filter((assignment) => assignment.user_id === state.profile?.id)
+            .filter((assignment) => assignment.active === true)
+            .map((assignment) => assignment.project_id)
+        );
+
+        return state.projects.filter((project) => projectIds.has(project.id));
+      }
+
+      function canReviewWorkLog(log) {
+        if (!log || log.status !== 'pending_approval') {
+          return false;
+        }
+
+        if (isGlobalFounderOrAdmin()) {
+          return true;
+        }
+
+        return state.projectRoles.some((assignment) => (
+          assignment.project_id === log.project_id
+          && assignment.user_id === state.profile?.id
+          && assignment.active === true
+          && ['founder', 'owner'].includes(assignment.role)
+        ));
+      }
+
+      function buildPayableRows() {
+        const rows = new Map();
+
+        state.workLogs
+          .filter((log) => log.status === 'approved')
+          .forEach((log) => {
+            const approvedHours = toNumber(log.approved_hours);
+            if (approvedHours <= 0) {
+              return;
+            }
+
+            const rate = findHourlyRate(log.project_id, log.worker_user_id);
+            const key = `${log.project_id || 'no-project'}:${log.worker_user_id || 'no-user'}:${rate}`;
+
+            if (!rows.has(key)) {
+              rows.set(key, {
+                collaborator: log.worker || { full_name: 'Unknown', email: '' },
+                project: log.project || { name: 'Unassigned' },
+                hourly_rate_usd: rate,
+                approved_hours: 0,
+                total_usd: 0,
+                status: 'approved'
+              });
+            }
+
+            const row = rows.get(key);
+            row.approved_hours += approvedHours;
+            row.total_usd = row.approved_hours * rate;
+          });
+
+        return Array.from(rows.values());
+      }
+
+      function findHourlyRate(projectId, userId) {
+        const role = state.projectRoles.find((assignment) => (
+          assignment.project_id === projectId
+          && assignment.user_id === userId
+          && assignment.active === true
+        ));
+
+        return toNumber(role?.hourly_rate_usd);
+      }
+
+      function workTypeOptions() {
+        return [
+          'UX/UI Design',
+          'Figma Design',
+          'Illustration',
+          'Character Design',
+          'Clothing Design',
+          'Development',
+          'Research',
+          'Meeting',
+          'Revision',
+          'Other'
+        ];
       }
 
       function normalizeInvitationStatus(assignment) {
@@ -1884,6 +2340,10 @@
         }
 
         return dateFormatter.format(date);
+      }
+
+      function todayISO() {
+        return new Date().toISOString().slice(0, 10);
       }
 
       function toNumber(value) {
