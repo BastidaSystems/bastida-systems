@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Client Portal | Bastida Systems</title>
+  <meta name="description" content="Private Bastida Systems client portal for company dashboards, hours, work logs, payments, receipts, and reports.">
+  <link rel="icon" type="image/png" href="img/logo_bastida_sys.png">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07090d;
+      --surface: rgba(17, 24, 39, 0.92);
+      --surface-strong: rgba(3, 7, 18, 0.94);
+      --line: rgba(75, 85, 99, 0.62);
+      --muted: #9ca3af;
+      --text: #f9fafb;
+      --accent: #00ff9c;
+      --blue: #60a5fa;
+      --warning: #fbbf24;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Manrope', sans-serif;
+      letter-spacing: 0;
+    }
+
+    .portal-shell {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 76% 8%, rgba(0, 255, 156, 0.14), transparent 30%),
+        radial-gradient(circle at 14% 12%, rgba(96, 165, 250, 0.12), transparent 28%),
+        linear-gradient(128deg, #050607 0%, #0a0f16 46%, #062019 78%, #020304 100%);
+    }
+
+    .portal-card {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 90% 0%, rgba(0, 255, 156, 0.1), transparent 36%),
+        linear-gradient(145deg, var(--surface), var(--surface-strong));
+      box-shadow: 0 24px 90px rgba(0, 0, 0, 0.32);
+    }
+
+    .portal-card.blue {
+      background:
+        radial-gradient(circle at 88% 0%, rgba(96, 165, 250, 0.15), transparent 34%),
+        linear-gradient(145deg, rgba(12, 20, 38, 0.96), var(--surface-strong));
+    }
+
+    .portal-chip,
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      min-height: 1.9rem;
+      padding: 0.3rem 0.68rem;
+      border: 1px solid rgba(0, 255, 156, 0.24);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .status-pill.blue {
+      border-color: rgba(96, 165, 250, 0.34);
+      color: #bfdbfe;
+    }
+
+    .status-pill.warning {
+      border-color: rgba(251, 191, 36, 0.34);
+      color: #fde68a;
+    }
+
+    .form-field {
+      width: 100%;
+      min-height: 3rem;
+      border: 1px solid rgba(75, 85, 99, 0.8);
+      border-radius: 8px;
+      background: rgba(3, 7, 18, 0.82);
+      color: #ffffff;
+      padding: 0.78rem 0.9rem;
+      outline: none;
+      transition: border-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .form-field:focus {
+      border-color: rgba(0, 255, 156, 0.62);
+      box-shadow: 0 0 0 3px rgba(0, 255, 156, 0.1);
+    }
+
+    .portal-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      min-height: 2.75rem;
+      border-radius: 999px;
+      padding: 0.68rem 1.1rem;
+      background: #ffffff;
+      color: #000000;
+      font-weight: 700;
+      transition: opacity 180ms ease, transform 180ms ease, border-color 180ms ease;
+    }
+
+    .portal-button:hover {
+      opacity: 0.86;
+      transform: translateY(-1px);
+    }
+
+    .portal-button.secondary {
+      border: 1px solid rgba(75, 85, 99, 0.9);
+      background: transparent;
+      color: #ffffff;
+    }
+
+    .portal-button.secondary:hover {
+      border-color: rgba(255, 255, 255, 0.85);
+    }
+
+    .metric-card {
+      border: 1px solid rgba(75, 85, 99, 0.56);
+      border-radius: 8px;
+      background: rgba(3, 7, 18, 0.64);
+      padding: 1.15rem;
+    }
+
+    .metric-card strong {
+      display: block;
+      margin-top: 0.45rem;
+      font-size: clamp(1.7rem, 3vw, 2.45rem);
+      line-height: 1;
+    }
+
+    .metric-card strong.metric-value-compact {
+      font-size: clamp(1.45rem, 2vw, 2rem);
+      line-height: 1.12;
+    }
+
+    .metric-card strong.metric-value-email {
+      font-size: clamp(0.78rem, 0.95vw, 0.9rem);
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .company-tab {
+      width: 100%;
+      border: 1px solid rgba(75, 85, 99, 0.56);
+      border-radius: 8px;
+      background: rgba(3, 7, 18, 0.58);
+      padding: 0.85rem;
+      color: #d1d5db;
+      text-align: left;
+      transition: border-color 180ms ease, background 180ms ease, color 180ms ease;
+    }
+
+    .company-tab:hover,
+    .company-tab.active {
+      border-color: rgba(0, 255, 156, 0.55);
+      background: rgba(0, 255, 156, 0.08);
+      color: #ffffff;
+    }
+
+    .company-mark {
+      display: inline-grid;
+      place-items: center;
+      width: 2.85rem;
+      height: 2.85rem;
+      border: 1px solid rgba(0, 255, 156, 0.22);
+      border-radius: 8px;
+      background: rgba(0, 255, 156, 0.08);
+      color: #ffffff;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      object-fit: contain;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+    }
+
+    .data-table th,
+    .data-table td {
+      border-bottom: 1px solid rgba(75, 85, 99, 0.44);
+      padding: 0.9rem 0.85rem;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .data-table th {
+      color: #9ca3af;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .data-table td {
+      color: #d1d5db;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .table-frame {
+      overflow-x: auto;
+      border: 1px solid rgba(75, 85, 99, 0.54);
+      border-radius: 8px;
+      background: rgba(3, 7, 18, 0.58);
+    }
+
+    .section-title {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .portal-list {
+      display: grid;
+      gap: 0.75rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .portal-list li {
+      border-left: 1px solid rgba(0, 255, 156, 0.34);
+      padding-left: 0.9rem;
+      color: #d1d5db;
+      line-height: 1.55;
+    }
+
+    .admin-grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 980px) {
+      .admin-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      #site-header nav {
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 0.85rem;
+        padding-top: 0.95rem !important;
+        padding-bottom: 0.95rem !important;
+      }
+
+      #site-header nav > div:last-child {
+        width: 100%;
+        justify-content: flex-start;
+        gap: 1rem;
+        overflow-x: auto;
+        padding-bottom: 0.1rem;
+      }
+
+      #site-header nav > div:last-child > a {
+        flex: 0 0 auto;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .portal-button,
+      .company-tab,
+      .form-field {
+        transition: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="site-header"></div>
+
+  <script>
+    const sharedHeader = `
+      <nav class="flex flex-wrap justify-between items-center gap-4 px-4 md:px-8 py-5 border-b border-gray-200 bg-white sticky top-0 z-50">
+        <div class="flex items-center gap-3">
+          <a href="index.html" class="flex items-center gap-3">
+            <img src="img/logo_bastida_sys.png" alt="Bastida Systems Logo" class="h-8 w-auto object-contain">
+            <span class="hidden md:inline text-base font-semibold tracking-[0.08em] text-black uppercase">Bastida Systems LLC</span>
+          </a>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-end gap-4 md:gap-8 text-sm font-medium text-gray-600">
+          <a href="index.html#products" class="hover:text-black transition" data-i18n="nav.products">Work</a>
+          <a href="websites.html" class="hover:text-black transition" data-i18n="nav.websites">Websites</a>
+          <a href="systems.html" class="hover:text-black transition" data-i18n="nav.systems">Systems</a>
+          <a href="about.html" class="hover:text-black transition" data-i18n="nav.about">About</a>
+          <a href="portal.html" class="hover:text-black transition" data-i18n="nav.portal">Client Portal</a>
+          <a href="index.html#contact" class="hover:text-black transition" data-i18n="nav.contact">Contact</a>
+          <label class="language-picker inline-flex min-h-9 items-center gap-2 rounded-lg border border-gray-300 bg-white px-2 py-1 text-xs font-bold uppercase text-gray-500">
+            <span data-i18n="nav.language">Language</span>
+            <select id="language-select" class="rounded-md border-0 bg-gray-900 px-2 py-1 text-xs font-extrabold text-white" aria-label="Language selector" data-i18n-aria-label="nav.languageSelector">
+              <option value="en">EN</option>
+              <option value="es">ES</option>
+            </select>
+          </label>
+        </div>
+      </nav>
+    `;
+
+    const headerTarget = document.getElementById('site-header');
+
+    fetch('header.html')
+      .then(response => {
+        if (!response.ok) throw new Error('header.html not found');
+        return response.text();
+      })
+      .then(html => {
+        headerTarget.innerHTML = html;
+      })
+      .catch(() => {
+        headerTarget.innerHTML = sharedHeader;
+      });
+  </script>
+  <script src="site-language.js"></script>
+
+  <main class="portal-shell">
+    <section id="login-view" class="px-6 md:px-8 py-16 md:py-24">
+      <div class="max-w-7xl mx-auto grid gap-8 lg:grid-cols-[0.92fr_1.08fr] items-start">
+        <div class="pt-4">
+          <span class="portal-chip">Bastida Systems Private Portal</span>
+          <h1 class="mt-5 text-4xl md:text-6xl font-extrabold leading-tight">
+            Company dashboards for hours, work, payments, and reports.
+          </h1>
+          <p class="mt-5 max-w-2xl text-gray-400 text-lg leading-8">
+            Owners sign in to see only their company dashboard. Bastida Systems admin can view and manage all companies, balances, work logs, receipts, and reports.
+          </p>
+
+          <div class="grid gap-4 sm:grid-cols-2 mt-8">
+            <div class="portal-card p-5">
+              <span class="status-pill">Owner Access</span>
+              <p class="mt-4 text-gray-300 leading-7">
+                Each owner is scoped to assigned companies only: Rafael to CocoFilms, Rodrigo to BEOFlow, Blanca to Estrativa, David to FiltraCore and LineOps.
+              </p>
+            </div>
+            <div class="portal-card blue p-5">
+              <span class="status-pill blue">Admin Access</span>
+              <p class="mt-4 text-gray-300 leading-7">
+                Admin can add companies, assign owners, add hour purchases, log work, upload receipt/report names, and view all balances.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="portal-card p-6 md:p-8">
+          <div class="flex items-center gap-4 mb-7">
+            <img src="img/logo_bastida_sys.png" alt="" aria-hidden="true" class="company-mark">
+            <div>
+              <h2 class="text-2xl font-semibold">Secure Login Area</h2>
+              <p class="text-gray-500 text-sm mt-1">Static prototype using sample access profiles.</p>
+            </div>
+          </div>
+
+          <form id="login-form" class="grid gap-4">
+            <label class="grid gap-2">
+              <span class="text-sm font-bold text-gray-400 uppercase tracking-[0.08em]">Email</span>
+              <input id="login-email" class="form-field" type="email" autocomplete="username" placeholder="admin@bastidasystems.com" required>
+            </label>
+
+            <label class="grid gap-2">
+              <span class="text-sm font-bold text-gray-400 uppercase tracking-[0.08em]">Access Code</span>
+              <input id="login-code" class="form-field" type="password" autocomplete="current-password" placeholder="Access code" required>
+            </label>
+
+            <p id="login-error" class="hidden text-sm text-red-300"></p>
+
+            <button class="portal-button w-full" type="submit">Enter Portal</button>
+          </form>
+
+          <details class="mt-6 border-t border-gray-800 pt-5">
+            <summary class="cursor-pointer text-sm font-bold text-gray-400 uppercase tracking-[0.08em]">Prototype access profiles</summary>
+            <div class="grid gap-2 mt-4">
+              <button class="company-tab" type="button" data-action="fill-login" data-email="admin@bastidasystems.com" data-code="BS-ADMIN-2026">
+                Bastida Systems Admin / BS-ADMIN-2026
+              </button>
+              <button class="company-tab" type="button" data-action="fill-login" data-email="david@bastidasystems.com" data-code="BS-DAVID-2026">
+                David Bastida / BS-DAVID-2026
+              </button>
+              <button class="company-tab" type="button" data-action="fill-login" data-email="rodrigo@beoflow.com" data-code="BS-RODRIGO-2026">
+                Rodrigo Bastida / BS-RODRIGO-2026
+              </button>
+              <button class="company-tab" type="button" data-action="fill-login" data-email="rafael@cocofilms.com" data-code="BS-RAFAEL-2026">
+                Rafael Amezquita / BS-RAFAEL-2026
+              </button>
+              <button class="company-tab" type="button" data-action="fill-login" data-email="blanca@estrativa.com" data-code="BS-BLANCA-2026">
+                Blanca Gordon / BS-BLANCA-2026
+              </button>
+              <button class="company-tab" type="button" data-action="fill-login" data-email="isaias@talladordesuenos.com" data-code="BS-ISAIAS-2026">
+                Jiménez Isaías / BS-ISAIAS-2026
+              </button>
+            </div>
+          </details>
+
+          <p class="mt-6 text-xs leading-6 text-gray-500">
+            Production deployment should connect this interface to server-side authentication, encrypted storage, and backend-enforced role-based access control before real private records are entered.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="app-view" class="hidden px-4 md:px-8 py-8 md:py-12">
+      <div class="max-w-[1440px] mx-auto">
+        <div class="portal-card p-5 md:p-6 mb-6">
+          <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <span class="portal-chip">Private Dashboard</span>
+              <h1 class="mt-3 text-2xl md:text-4xl font-bold">Bastida Systems Client Portal</h1>
+              <p id="user-scope" class="text-gray-400 mt-2"></p>
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+              <span id="portal-message" class="text-sm text-gray-400"></span>
+              <button class="portal-button secondary" type="button" data-action="reset-demo">Reset Demo Data</button>
+              <button class="portal-button" type="button" data-action="sign-out">Sign Out</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid gap-6 lg:grid-cols-[18rem_minmax(0,1fr)] items-start">
+          <aside class="portal-card p-4 lg:sticky lg:top-28">
+            <div class="flex items-center justify-between gap-4 mb-4">
+              <h2 class="text-lg font-semibold">Companies</h2>
+              <span id="company-count" class="status-pill"></span>
+            </div>
+            <div id="company-nav" class="grid gap-2"></div>
+          </aside>
+
+          <div class="grid gap-6">
+            <section id="admin-panel" class="hidden"></section>
+            <section id="dashboard"></section>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="px-8 py-10 border-t border-gray-800 text-gray-500 text-sm text-center">
+    <div class="flex flex-wrap justify-center gap-6 mb-4 text-gray-400">
+      <a href="index.html#products" class="hover:text-white transition" data-i18n="nav.products">Work</a>
+      <a href="websites.html" class="hover:text-white transition" data-i18n="nav.websites">Websites</a>
+      <a href="systems.html" class="hover:text-white transition" data-i18n="nav.systems">Systems</a>
+      <a href="about.html" class="hover:text-white transition" data-i18n="nav.about">About</a>
+      <a href="portal.html" class="hover:text-white transition" data-i18n="nav.portal">Client Portal</a>
+      <a href="index.html#contact" class="hover:text-white transition" data-i18n="nav.contact">Contact</a>
+      <a href="privacy.html" class="hover:text-white transition" data-i18n="nav.privacy">Privacy</a>
+    </div>
+    <p data-i18n="footer.rights">© 2026 Bastida Systems. All rights reserved.</p>
+  </footer>
+
+  <script>
+    const users = [
+      {
+        email: 'admin@bastidasystems.com',
+        code: 'BS-ADMIN-2026',
+        name: 'Bastida Systems Admin',
+        role: 'admin',
+        companyIds: []
+      },
+      {
+        email: 'david@bastidasystems.com',
+        code: 'BS-DAVID-2026',
+        name: 'David Bastida',
+        role: 'owner',
+        companyIds: ['filtracore', 'lineops']
+      },
+      {
+        email: 'rodrigo@beoflow.com',
+        code: 'BS-RODRIGO-2026',
+        name: 'Rodrigo Bastida',
+        role: 'owner',
+        companyIds: ['beoflow']
+      },
+      {
+        email: 'blanca@estrativa.com',
+        code: 'BS-BLANCA-2026',
+        name: 'Blanca Gordon',
+        role: 'owner',
+        companyIds: ['estrativa']
+      },
+      {
+        email: 'rafael@cocofilms.com',
+        code: 'BS-RAFAEL-2026',
+        name: 'Rafael Amezquita',
+        role: 'owner',
+        companyIds: ['cocofilms']
+      },
+      {
+        email: 'isaias@talladordesuenos.com',
+        code: 'BS-ISAIAS-2026',
+        name: 'Jiménez Isaías',
+        role: 'owner',
+        companyIds: ['tallador']
+      }
+    ];
+
+    const storageKey = 'bastida-client-portal-v1';
+    const todayLabel = () => new Date().toISOString().slice(0, 10);
+    const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+
+    const seedCompanies = {
+      filtracore: {
+        id: 'filtracore',
+        name: 'FiltraCore',
+        owner: 'David Bastida',
+        ownerEmail: 'david@bastidasystems.com',
+        description: 'Filtration operations platform for PSI monitoring, filter lifecycle tracking, maintenance readiness, and reporting.',
+        status: 'Active platform',
+        website: 'filtracore.html',
+        logo: 'img/LOGO_FILTRACOREXCODE.png',
+        mark: 'FC',
+        notes: 'Focus this month: reporting exports, inventory readiness, and mobile inspection clarity.',
+        purchases: [
+          { id: 'fc-hp-1', date: '2026-05-04', package: '50 hours', hours: 50, amount: 4500, method: 'Card', status: 'Paid' },
+          { id: 'fc-hp-2', date: '2026-05-22', package: '20 hours', hours: 20, amount: 1900, method: 'Bank transfer', status: 'Paid' }
+        ],
+        workLogs: [
+          { id: 'fc-w-1', title: 'Added dashboard module', description: 'Expanded operations dashboard with filter status cards and maintenance summary.', date: '2026-05-08', time: 6.5, worker: 'Bastida Systems', category: 'Dashboard', status: 'Completed', notes: 'Ready for owner review.', attachments: ['dashboard-module.png'], approval: 'Approved' },
+          { id: 'fc-w-2', title: 'Optimized mobile version', description: 'Improved mobile navigation, filter detail spacing, and technician action buttons.', date: '2026-05-18', time: 5.25, worker: 'Bastida Systems', category: 'Mobile', status: 'Completed', notes: 'Reduced friction during field checks.', attachments: ['mobile-update.png'], approval: 'Approved' },
+          { id: 'fc-w-3', title: 'Created monthly usage report', description: 'Prepared hour usage and work completed summary for May.', date: '2026-05-28', time: 2, worker: 'Bastida Systems', category: 'Reporting', status: 'Completed', notes: 'Included payment summary.', attachments: ['may-report.pdf'], approval: 'Pending' }
+        ],
+        payments: [
+          { id: 'fc-p-1', date: '2026-05-04', amount: 4500, method: 'Card', status: 'Paid', package: '50 hours' },
+          { id: 'fc-p-2', date: '2026-05-22', amount: 1900, method: 'Bank transfer', status: 'Paid', package: '20 hours' }
+        ],
+        receipts: [
+          { id: 'fc-r-1', number: 'BS-FC-2026-001', date: '2026-05-04', amount: 4500 },
+          { id: 'fc-r-2', number: 'BS-FC-2026-002', date: '2026-05-22', amount: 1900 }
+        ],
+        reports: [
+          { id: 'fc-rep-1', type: 'Monthly report', date: '2026-05-31' },
+          { id: 'fc-rep-2', type: 'Hour usage report', date: '2026-05-31' }
+        ],
+        tasks: ['Approve May usage report', 'Review next reporting export format'],
+        approvedChanges: ['Dashboard module', 'Mobile technician layout']
+      },
+      beoflow: {
+        id: 'beoflow',
+        name: 'BEOFlow',
+        owner: 'Rodrigo Bastida',
+        ownerEmail: 'rodrigo@beoflow.com',
+        description: 'Kitchen operations platform for menu control, inventory, production planning, staff coordination, and service execution.',
+        status: 'Active platform',
+        website: 'beoflow.html',
+        logo: 'img/logobeoflow.png',
+        mark: 'BF',
+        notes: 'Focus this month: inventory speed, recipe structure, and production planning visibility.',
+        purchases: [
+          { id: 'bf-hp-1', date: '2026-05-06', package: '20 hours', hours: 20, amount: 1900, method: 'Card', status: 'Paid' }
+        ],
+        workLogs: [
+          { id: 'bf-w-1', title: 'Updated homepage layout', description: 'Adjusted product page hierarchy and kitchen workflow presentation.', date: '2026-05-11', time: 4, worker: 'Bastida Systems', category: 'Website', status: 'Completed', notes: 'Improved above-the-fold clarity.', attachments: ['beoflow-homepage.png'], approval: 'Approved' },
+          { id: 'bf-w-2', title: 'Fixed login issue', description: 'Resolved session handling issue in the kitchen operations login flow.', date: '2026-05-17', time: 3.5, worker: 'Bastida Systems', category: 'Authentication', status: 'Completed', notes: 'Validated with owner account.', attachments: ['login-fix.png'], approval: 'Pending' }
+        ],
+        payments: [
+          { id: 'bf-p-1', date: '2026-05-06', amount: 1900, method: 'Card', status: 'Paid', package: '20 hours' }
+        ],
+        receipts: [
+          { id: 'bf-r-1', number: 'BS-BF-2026-001', date: '2026-05-06', amount: 1900 }
+        ],
+        reports: [
+          { id: 'bf-rep-1', type: 'Project report', date: '2026-05-25' }
+        ],
+        tasks: ['Approve login fix', 'Confirm next inventory module priorities'],
+        approvedChanges: ['Homepage layout']
+      },
+      lineops: {
+        id: 'lineops',
+        name: 'LineOps',
+        owner: 'David Bastida',
+        ownerEmail: 'david@bastidasystems.com',
+        description: 'Scheduling app for shift rotations, station coverage, weekly templates, and mobile schedule access.',
+        status: 'Published app',
+        website: 'https://apps.apple.com/us/app/lineops-shiftrotation/id6767958380?l=es-MX',
+        logo: 'img/linopsmark.png',
+        mark: 'LO',
+        notes: 'Focus this month: App Store listing, schedule export polish, and mobile interaction detail.',
+        purchases: [
+          { id: 'lo-hp-1', date: '2026-05-10', package: '100 hours', hours: 100, amount: 8500, method: 'Bank transfer', status: 'Paid' }
+        ],
+        workLogs: [
+          { id: 'lo-w-1', title: 'Created new brand section', description: 'Added LineOps launch presentation area to the Bastida Systems homepage.', date: '2026-05-12', time: 5, worker: 'Bastida Systems', category: 'Marketing', status: 'Completed', notes: 'Live with App Store badge.', attachments: ['lineops-launch.png'], approval: 'Approved' },
+          { id: 'lo-w-2', title: 'Optimized mobile version', description: 'Refined mobile schedule previews and App Store call-to-action spacing.', date: '2026-05-21', time: 4.75, worker: 'Bastida Systems', category: 'Mobile', status: 'Completed', notes: 'Checked on phone-width layout.', attachments: ['lineops-mobile.png'], approval: 'Approved' }
+        ],
+        payments: [
+          { id: 'lo-p-1', date: '2026-05-10', amount: 8500, method: 'Bank transfer', status: 'Paid', package: '100 hours' }
+        ],
+        receipts: [
+          { id: 'lo-r-1', number: 'BS-LO-2026-001', date: '2026-05-10', amount: 8500 }
+        ],
+        reports: [
+          { id: 'lo-rep-1', type: 'Work completed report', date: '2026-05-29' }
+        ],
+        tasks: ['Prepare June release notes', 'Collect App Store feedback'],
+        approvedChanges: ['Launch section', 'Mobile schedule preview']
+      },
+      estrativa: {
+        id: 'estrativa',
+        name: 'Estrativa',
+        owner: 'Blanca Gordon',
+        ownerEmail: 'blanca@estrativa.com',
+        description: 'Professional consulting and advisory collaboration with a responsive public website and direct contact experience.',
+        status: 'Published site',
+        website: 'https://bastidadavid.github.io/ESTRATIVA/',
+        logo: 'img/estrattiva-mark.png',
+        mark: 'ES',
+        notes: 'Focus this month: contact clarity, copy refinements, and public page polish.',
+        purchases: [
+          { id: 'es-hp-1', date: '2026-05-03', package: '10 hours', hours: 10, amount: 950, method: 'Card', status: 'Paid' }
+        ],
+        workLogs: [
+          { id: 'es-w-1', title: 'Updated homepage layout', description: 'Refined consulting website hero, contact sections, and responsive spacing.', date: '2026-05-09', time: 3.25, worker: 'Bastida Systems', category: 'Website', status: 'Completed', notes: 'Public site remains clean and direct.', attachments: ['estrativa-layout.png'], approval: 'Approved' }
+        ],
+        payments: [
+          { id: 'es-p-1', date: '2026-05-03', amount: 950, method: 'Card', status: 'Paid', package: '10 hours' }
+        ],
+        receipts: [
+          { id: 'es-r-1', number: 'BS-ES-2026-001', date: '2026-05-03', amount: 950 }
+        ],
+        reports: [
+          { id: 'es-rep-1', type: 'Project report', date: '2026-05-20' }
+        ],
+        tasks: ['Review final copy updates'],
+        approvedChanges: ['Responsive homepage layout']
+      },
+      cocofilms: {
+        id: 'cocofilms',
+        name: 'CocoFilms',
+        owner: 'Rafael Amezquita',
+        ownerEmail: 'rafael@cocofilms.com',
+        description: 'Photography and cinematic video production studio presented through a premium dark portfolio website.',
+        status: 'Published site',
+        website: 'https://bastidadavid.github.io/Cocofilms/',
+        logo: '',
+        mark: 'CF',
+        notes: 'Focus this month: premium gallery presentation and booking path clarity.',
+        purchases: [
+          { id: 'cf-hp-1', date: '2026-05-01', package: '20 hours', hours: 20, amount: 1900, method: 'Card', status: 'Paid' }
+        ],
+        workLogs: [
+          { id: 'cf-w-1', title: 'Updated homepage layout', description: 'Improved cinematic hero, portfolio rhythm, and booking call-to-action.', date: '2026-05-07', time: 5.5, worker: 'Bastida Systems', category: 'Website', status: 'Completed', notes: 'Luxury dark visual system preserved.', attachments: ['cocofilms-home.png'], approval: 'Approved' },
+          { id: 'cf-w-2', title: 'Created monthly report', description: 'Compiled work completed, hours used, and payment summary.', date: '2026-05-30', time: 1.5, worker: 'Bastida Systems', category: 'Reporting', status: 'Completed', notes: 'Ready for download.', attachments: ['cocofilms-report.pdf'], approval: 'Pending' }
+        ],
+        payments: [
+          { id: 'cf-p-1', date: '2026-05-01', amount: 1900, method: 'Card', status: 'Paid', package: '20 hours' }
+        ],
+        receipts: [
+          { id: 'cf-r-1', number: 'BS-CF-2026-001', date: '2026-05-01', amount: 1900 }
+        ],
+        reports: [
+          { id: 'cf-rep-1', type: 'Monthly report', date: '2026-05-30' }
+        ],
+        tasks: ['Approve May monthly report', 'Send new gallery selections'],
+        approvedChanges: ['Cinematic homepage layout']
+      },
+      tallador: {
+        id: 'tallador',
+        name: 'Tallador de Sueños',
+        owner: 'Jiménez Isaías',
+        ownerEmail: 'isaias@talladordesuenos.com',
+        description: 'Artisan e-commerce collaboration for hand-painted wood sculptures, custom commissions, cart, checkout, and contact flow.',
+        status: 'Published site',
+        website: 'https://tallador-de-suenos.onrender.com/',
+        logo: '',
+        mark: 'TS',
+        notes: 'Focus this month: product collection polish and checkout confidence.',
+        purchases: [
+          { id: 'ts-hp-1', date: '2026-05-13', package: '50 hours', hours: 50, amount: 4500, method: 'Bank transfer', status: 'Paid' }
+        ],
+        workLogs: [
+          { id: 'ts-w-1', title: 'Optimized mobile version', description: 'Adjusted product cards, collection spacing, and cart flow on mobile.', date: '2026-05-20', time: 6, worker: 'Bastida Systems', category: 'E-commerce', status: 'Completed', notes: 'Improved shopping path on phones.', attachments: ['tallador-mobile.png'], approval: 'Approved' },
+          { id: 'ts-w-2', title: 'Added dashboard module', description: 'Prepared admin overview for order and collection review.', date: '2026-05-27', time: 4.25, worker: 'Bastida Systems', category: 'Admin', status: 'In progress', notes: 'Awaiting content confirmation.', attachments: ['tallador-admin.png'], approval: 'Pending' }
+        ],
+        payments: [
+          { id: 'ts-p-1', date: '2026-05-13', amount: 4500, method: 'Bank transfer', status: 'Paid', package: '50 hours' }
+        ],
+        receipts: [
+          { id: 'ts-r-1', number: 'BS-TS-2026-001', date: '2026-05-13', amount: 4500 }
+        ],
+        reports: [
+          { id: 'ts-rep-1', type: 'Hour usage report', date: '2026-05-31' }
+        ],
+        tasks: ['Confirm admin dashboard content', 'Approve collection updates'],
+        approvedChanges: ['Mobile collection layout']
+      }
+    };
+
+    let companies = loadCompanies();
+    let currentUser = null;
+    let selectedCompanyId = null;
+
+    const escapeHtml = value => String(value ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+
+    function loadCompanies() {
+      try {
+        const stored = localStorage.getItem(storageKey);
+        return stored ? JSON.parse(stored) : JSON.parse(JSON.stringify(seedCompanies));
+      } catch (error) {
+        return JSON.parse(JSON.stringify(seedCompanies));
+      }
+    }
+
+    function saveCompanies() {
+      localStorage.setItem(storageKey, JSON.stringify(companies));
+    }
+
+    function getVisibleCompanies() {
+      const allCompanies = Object.values(companies);
+      if (!currentUser) return [];
+      if (currentUser.role === 'admin') return allCompanies;
+      return allCompanies.filter(company => (
+        currentUser.companyIds.includes(company.id) ||
+        company.ownerEmail.toLowerCase() === currentUser.email.toLowerCase()
+      ));
+    }
+
+    function getTotals(company) {
+      const purchased = company.purchases.reduce((total, item) => {
+        if (item.status === 'Cancelled') return total;
+        return total + Number(item.hours || 0);
+      }, 0);
+      const used = company.workLogs.reduce((total, item) => {
+        if (item.status === 'Cancelled') return total;
+        return total + Number(item.time || 0);
+      }, 0);
+      return {
+        purchased,
+        used,
+        remaining: Math.max(purchased - used, 0)
+      };
+    }
+
+    function formatHours(value) {
+      const rounded = Math.round(Number(value || 0) * 100) / 100;
+      return `${rounded}h`;
+    }
+
+    function showMessage(message) {
+      const target = document.getElementById('portal-message');
+      if (!target) return;
+      target.textContent = message;
+      window.clearTimeout(showMessage.timeout);
+      showMessage.timeout = window.setTimeout(() => {
+        target.textContent = '';
+      }, 3200);
+    }
+
+    function companyLogo(company) {
+      if (company.logo) {
+        return `<img src="${escapeHtml(company.logo)}" alt="${escapeHtml(company.name)} logo" class="company-mark">`;
+      }
+      return `<span class="company-mark" aria-hidden="true">${escapeHtml(company.mark || company.name.slice(0, 2).toUpperCase())}</span>`;
+    }
+
+    function statusClass(status) {
+      if (/pending|in progress/i.test(status)) return 'warning';
+      if (/app|platform|paid|approved|active/i.test(status)) return 'blue';
+      return '';
+    }
+
+    function tableRows(items, columns) {
+      if (!items.length) {
+        return `<tr><td colspan="${columns.length}" class="text-gray-500">No records yet.</td></tr>`;
+      }
+      return items.map(item => `
+        <tr>
+          ${columns.map(column => `<td>${column.render(item)}</td>`).join('')}
+        </tr>
+      `).join('');
+    }
+
+    function renderTable(items, columns) {
+      return `
+        <div class="table-frame">
+          <table class="data-table">
+            <thead>
+              <tr>${columns.map(column => `<th>${escapeHtml(column.label)}</th>`).join('')}</tr>
+            </thead>
+            <tbody>${tableRows(items, columns)}</tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function renderApp() {
+      const visibleCompanies = getVisibleCompanies();
+      if (!visibleCompanies.length) {
+        showMessage('No companies assigned to this profile.');
+        return;
+      }
+
+      if (!selectedCompanyId || !visibleCompanies.some(company => company.id === selectedCompanyId)) {
+        selectedCompanyId = visibleCompanies[0].id;
+      }
+
+      document.getElementById('login-view').classList.add('hidden');
+      document.getElementById('app-view').classList.remove('hidden');
+      document.getElementById('user-scope').textContent = `${currentUser.name} • ${currentUser.role === 'admin' ? 'Admin access to all companies' : 'Owner access only'}`;
+      document.getElementById('company-count').textContent = `${visibleCompanies.length} ${visibleCompanies.length === 1 ? 'Company' : 'Companies'}`;
+
+      renderCompanyNav(visibleCompanies);
+      renderAdminPanel();
+      renderDashboard(companies[selectedCompanyId]);
+    }
+
+    function renderCompanyNav(visibleCompanies) {
+      document.getElementById('company-nav').innerHTML = visibleCompanies.map(company => {
+        const totals = getTotals(company);
+        return `
+          <button class="company-tab ${company.id === selectedCompanyId ? 'active' : ''}" type="button" data-action="select-company" data-company-id="${escapeHtml(company.id)}">
+            <span class="flex items-center gap-3">
+              ${companyLogo(company)}
+              <span>
+                <strong class="block text-sm">${escapeHtml(company.name)}</strong>
+                <span class="block text-xs text-gray-500">${formatHours(totals.remaining)} remaining</span>
+              </span>
+            </span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function renderDashboard(company) {
+      const totals = getTotals(company);
+      const paymentStatus = company.payments.some(payment => payment.status === 'Pending') ? 'Pending balance' : 'Paid';
+      const pendingWork = company.workLogs.filter(item => item.approval === 'Pending');
+      const approvedWork = company.workLogs.filter(item => item.approval === 'Approved');
+
+      document.getElementById('dashboard').innerHTML = `
+        <div class="portal-card p-6 md:p-8">
+          <div class="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+            <div class="flex items-start gap-4">
+              ${companyLogo(company)}
+              <div>
+                <span class="status-pill ${statusClass(company.status)}">${escapeHtml(company.status)}</span>
+                <h2 class="mt-4 text-3xl md:text-5xl font-extrabold">${escapeHtml(company.name)}</h2>
+                <p class="mt-3 text-gray-400 leading-7 max-w-3xl">${escapeHtml(company.description)}</p>
+              </div>
+            </div>
+            <a class="portal-button secondary" href="${escapeHtml(company.website)}" target="${company.website.startsWith('http') ? '_blank' : '_self'}" rel="noopener">Public Site</a>
+          </div>
+
+          <div class="grid gap-4 md:grid-cols-4 mt-8">
+            <div class="metric-card">
+              <span class="text-sm text-gray-500">Purchased Hours</span>
+              <strong>${formatHours(totals.purchased)}</strong>
+            </div>
+            <div class="metric-card">
+              <span class="text-sm text-gray-500">Used Hours</span>
+              <strong>${formatHours(totals.used)}</strong>
+            </div>
+            <div class="metric-card">
+              <span class="text-sm text-gray-500">Remaining Hours</span>
+              <strong>${formatHours(totals.remaining)}</strong>
+            </div>
+            <div class="metric-card">
+              <span class="text-sm text-gray-500">Payment Status</span>
+              <strong class="text-2xl">${escapeHtml(paymentStatus)}</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem] mt-6">
+          <div class="grid gap-6">
+            ${renderOverview(company)}
+            ${renderHours(company)}
+            ${renderWorkLogs(company)}
+            ${renderPayments(company)}
+            ${renderReceiptsAndReports(company)}
+          </div>
+          <aside class="grid gap-6 content-start">
+            ${renderHourPackages(company)}
+            ${renderTasks(company.tasks, 'Pending Tasks')}
+            ${renderTasks(approvedWork.map(item => item.title).concat(company.approvedChanges || []), 'Approved Changes')}
+            <div class="portal-card p-5">
+              <span class="status-pill">Bastida Notes</span>
+              <p class="mt-4 text-gray-300 leading-7">${escapeHtml(company.notes)}</p>
+              ${pendingWork.length ? `<p class="mt-4 text-sm text-amber-200">${pendingWork.length} item${pendingWork.length === 1 ? '' : 's'} pending approval.</p>` : ''}
+            </div>
+          </aside>
+        </div>
+      `;
+    }
+
+    function renderOverview(company) {
+      return `
+        <section class="portal-card p-5 md:p-6">
+          <div class="section-title">
+            <div>
+              <span class="portal-chip">Company Overview</span>
+              <h3 class="text-2xl font-semibold mt-3">Owner and status</h3>
+            </div>
+          </div>
+          <div class="grid gap-4 md:grid-cols-3">
+            <div class="metric-card">
+              <span class="text-sm text-gray-500">CEO / Owner</span>
+              <strong class="metric-value-compact">${escapeHtml(company.owner)}</strong>
+            </div>
+            <div class="metric-card">
+              <span class="text-sm text-gray-500">Current Status</span>
+              <strong class="metric-value-compact">${escapeHtml(company.status)}</strong>
+            </div>
+            <div class="metric-card">
+              <span class="text-sm text-gray-500">Owner Email</span>
+              <strong class="metric-value-email">${escapeHtml(company.ownerEmail)}</strong>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderHourPackages(company) {
+      return `
+        <section class="portal-card p-5">
+          <span class="portal-chip">Buy Hours</span>
+          <h3 class="text-xl font-semibold mt-3">Hour Packages</h3>
+          <p class="text-gray-400 leading-7 mt-3">Request or add work-hour blocks for this company.</p>
+          <div class="grid grid-cols-2 gap-3 mt-5">
+            ${[10, 20, 50, 100].map(hours => `
+              <button class="company-tab text-center" type="button" data-action="request-package" data-hours="${hours}">
+                <strong class="block text-lg">${hours}h</strong>
+                <span class="text-xs text-gray-500">${currentUser.role === 'admin' ? 'Add package' : 'Request package'}</span>
+              </button>
+            `).join('')}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderTasks(items, title) {
+      return `
+        <section class="portal-card p-5">
+          <span class="portal-chip">${escapeHtml(title)}</span>
+          <ul class="portal-list mt-4">
+            ${(items && items.length ? items : ['No items yet.']).map(item => `<li>${escapeHtml(item)}</li>`).join('')}
+          </ul>
+        </section>
+      `;
+    }
+
+    function renderHours(company) {
+      return `
+        <section class="portal-card p-5 md:p-6">
+          <div class="section-title">
+            <div>
+              <span class="portal-chip">Hours System</span>
+              <h3 class="text-2xl font-semibold mt-3">Purchased hour blocks</h3>
+            </div>
+          </div>
+          ${renderTable(company.purchases, [
+            { label: 'Purchase Date', render: item => escapeHtml(item.date) },
+            { label: 'Package', render: item => escapeHtml(item.package) },
+            { label: 'Hours', render: item => formatHours(item.hours) },
+            { label: 'Amount', render: item => currency.format(item.amount) },
+            { label: 'Payment Status', render: item => `<span class="status-pill ${statusClass(item.status)}">${escapeHtml(item.status)}</span>` }
+          ])}
+        </section>
+      `;
+    }
+
+    function renderWorkLogs(company) {
+      return `
+        <section class="portal-card p-5 md:p-6">
+          <div class="section-title">
+            <div>
+              <span class="portal-chip">Work Log System</span>
+              <h3 class="text-2xl font-semibold mt-3">Recent work and history</h3>
+            </div>
+          </div>
+          ${renderTable(company.workLogs, [
+            { label: 'Work', render: item => `<strong class="text-white">${escapeHtml(item.title)}</strong><br>${escapeHtml(item.description)}` },
+            { label: 'Date', render: item => escapeHtml(item.date) },
+            { label: 'Time', render: item => formatHours(item.time) },
+            { label: 'Worker', render: item => escapeHtml(item.worker) },
+            { label: 'Category', render: item => escapeHtml(item.category) },
+            { label: 'Status', render: item => `<span class="status-pill ${statusClass(item.status)}">${escapeHtml(item.status)}</span>` },
+            { label: 'Notes', render: item => escapeHtml(item.notes) },
+            { label: 'Attachments', render: item => (item.attachments || []).map(file => `<span class="block text-gray-300">${escapeHtml(file)}</span>`).join('') || 'None' },
+            { label: 'Approval', render: item => item.approval === 'Pending' ? `<button class="portal-button secondary !min-h-0 !py-2 !px-3 text-xs" type="button" data-action="approve-work" data-work-id="${escapeHtml(item.id)}">Approve</button>` : `<span class="status-pill blue">${escapeHtml(item.approval)}</span>` }
+          ])}
+        </section>
+      `;
+    }
+
+    function renderPayments(company) {
+      return `
+        <section class="portal-card p-5 md:p-6">
+          <div class="section-title">
+            <div>
+              <span class="portal-chip">Payment History</span>
+              <h3 class="text-2xl font-semibold mt-3">Payments by hour package</h3>
+            </div>
+          </div>
+          ${renderTable(company.payments, [
+            { label: 'Payment Date', render: item => escapeHtml(item.date) },
+            { label: 'Amount', render: item => currency.format(item.amount) },
+            { label: 'Method', render: item => escapeHtml(item.method) },
+            { label: 'Status', render: item => `<span class="status-pill ${statusClass(item.status)}">${escapeHtml(item.status)}</span>` },
+            { label: 'Related Package', render: item => escapeHtml(item.package) }
+          ])}
+        </section>
+      `;
+    }
+
+    function renderReceiptsAndReports(company) {
+      return `
+        <section class="portal-card p-5 md:p-6">
+          <div class="section-title">
+            <div>
+              <span class="portal-chip">Receipts & Reports</span>
+              <h3 class="text-2xl font-semibold mt-3">Downloadable records</h3>
+            </div>
+          </div>
+          <div class="grid gap-6 xl:grid-cols-2">
+            <div>
+              <h4 class="font-semibold mb-3">Receipts</h4>
+              ${renderTable(company.receipts, [
+                { label: 'Receipt', render: item => escapeHtml(item.number) },
+                { label: 'Date', render: item => escapeHtml(item.date) },
+                { label: 'Amount', render: item => currency.format(item.amount) },
+                { label: 'PDF', render: item => `<button class="portal-button secondary !min-h-0 !py-2 !px-3 text-xs" type="button" data-action="download-receipt" data-receipt-id="${escapeHtml(item.id)}">Download PDF</button>` }
+              ])}
+            </div>
+            <div>
+              <h4 class="font-semibold mb-3">Reports</h4>
+              ${renderTable(company.reports, [
+                { label: 'Report', render: item => escapeHtml(item.type) },
+                { label: 'Date', render: item => escapeHtml(item.date) },
+                { label: 'PDF', render: item => `<button class="portal-button secondary !min-h-0 !py-2 !px-3 text-xs" type="button" data-action="download-report" data-report-id="${escapeHtml(item.id)}">Download PDF</button>` }
+              ])}
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderAdminPanel() {
+      const panel = document.getElementById('admin-panel');
+      if (!currentUser || currentUser.role !== 'admin') {
+        panel.classList.add('hidden');
+        panel.innerHTML = '';
+        return;
+      }
+
+      const companyOptions = Object.values(companies).map(company => `<option value="${escapeHtml(company.id)}">${escapeHtml(company.name)}</option>`).join('');
+      const ownerOptions = users.filter(user => user.role === 'owner').map(user => `<option value="${escapeHtml(user.email)}">${escapeHtml(user.name)}</option>`).join('');
+
+      panel.classList.remove('hidden');
+      panel.innerHTML = `
+        <div class="portal-card p-5 md:p-6">
+          <div class="section-title">
+            <div>
+              <span class="portal-chip">Admin Dashboard</span>
+              <h2 class="text-2xl md:text-3xl font-semibold mt-3">Manage companies, access, hours, work, payments, receipts, and reports.</h2>
+            </div>
+          </div>
+
+          <div class="admin-grid mt-6">
+            <form id="admin-company-form" class="metric-card grid gap-3">
+              <h3 class="font-semibold text-xl">Add company</h3>
+              <input class="form-field" name="name" placeholder="Company name" required>
+              <select class="form-field" name="ownerEmail" required>${ownerOptions}</select>
+              <input class="form-field" name="status" placeholder="Current status" value="Active collaboration" required>
+              <textarea class="form-field" name="description" rows="3" placeholder="Short description" required></textarea>
+              <button class="portal-button" type="submit">Add Company</button>
+            </form>
+
+            <form id="admin-edit-form" class="metric-card grid gap-3">
+              <h3 class="font-semibold text-xl">Edit company details</h3>
+              <select class="form-field" name="companyId" required>${companyOptions}</select>
+              <input class="form-field" name="status" placeholder="New status">
+              <textarea class="form-field" name="description" rows="3" placeholder="Updated description"></textarea>
+              <button class="portal-button" type="submit">Save Details</button>
+            </form>
+
+            <form id="admin-owner-form" class="metric-card grid gap-3">
+              <h3 class="font-semibold text-xl">Assign owner / access</h3>
+              <select class="form-field" name="companyId" required>${companyOptions}</select>
+              <select class="form-field" name="ownerEmail" required>${ownerOptions}</select>
+              <button class="portal-button" type="submit">Assign Owner</button>
+            </form>
+
+            <form id="admin-hours-form" class="metric-card grid gap-3">
+              <h3 class="font-semibold text-xl">Add purchased hours</h3>
+              <select class="form-field" name="companyId" required>${companyOptions}</select>
+              <select class="form-field" name="hours" required>
+                <option value="10">10 hours</option>
+                <option value="20">20 hours</option>
+                <option value="50">50 hours</option>
+                <option value="100">100 hours</option>
+              </select>
+              <select class="form-field" name="status" required>
+                <option value="Paid">Paid</option>
+                <option value="Pending">Pending</option>
+              </select>
+              <input class="form-field" name="amount" type="number" min="0" step="1" placeholder="Amount" required>
+              <button class="portal-button" type="submit">Add Hours</button>
+            </form>
+
+            <form id="admin-work-form" class="metric-card grid gap-3">
+              <h3 class="font-semibold text-xl">Log completed work</h3>
+              <select class="form-field" name="companyId" required>${companyOptions}</select>
+              <input class="form-field" name="title" placeholder="Work title" required>
+              <textarea class="form-field" name="description" rows="3" placeholder="Description" required></textarea>
+              <input class="form-field" name="hours" type="number" min="0.25" step="0.25" placeholder="Time spent" required>
+              <input class="form-field" name="worker" placeholder="Collaborator / worker" value="Bastida Systems" required>
+              <input class="form-field" name="category" placeholder="Category" required>
+              <select class="form-field" name="status" required>
+                <option value="Completed">Completed</option>
+                <option value="In progress">In progress</option>
+              </select>
+              <button class="portal-button" type="submit">Log Work</button>
+            </form>
+
+            <form id="admin-upload-form" class="metric-card grid gap-3">
+              <h3 class="font-semibold text-xl">Upload receipt / report</h3>
+              <select class="form-field" name="companyId" required>${companyOptions}</select>
+              <input class="form-field" name="receiptName" placeholder="Receipt number or file name">
+              <input class="form-field" name="reportName" placeholder="Report name">
+              <button class="portal-button" type="submit">Add Records</button>
+            </form>
+          </div>
+
+          <div class="grid gap-6 xl:grid-cols-2 mt-6">
+            <div>
+              <h3 class="text-xl font-semibold mb-3">All company balances</h3>
+              ${renderTable(Object.values(companies), [
+                { label: 'Company', render: company => escapeHtml(company.name) },
+                { label: 'Owner', render: company => escapeHtml(company.owner) },
+                { label: 'Purchased', render: company => formatHours(getTotals(company).purchased) },
+                { label: 'Used', render: company => formatHours(getTotals(company).used) },
+                { label: 'Remaining', render: company => formatHours(getTotals(company).remaining) }
+              ])}
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold mb-3">All work logs</h3>
+              ${renderTable(Object.values(companies).flatMap(company => company.workLogs.map(log => ({ ...log, company: company.name }))), [
+                { label: 'Company', render: item => escapeHtml(item.company) },
+                { label: 'Work', render: item => escapeHtml(item.title) },
+                { label: 'Date', render: item => escapeHtml(item.date) },
+                { label: 'Hours', render: item => formatHours(item.time) },
+                { label: 'Approval', render: item => escapeHtml(item.approval) }
+              ])}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function requestPackage(hours) {
+      const company = companies[selectedCompanyId];
+      const amount = { 10: 950, 20: 1900, 50: 4500, 100: 8500 }[hours] || hours * 95;
+      const status = currentUser.role === 'admin' ? 'Paid' : 'Pending';
+      const id = `${company.id}-hp-${Date.now()}`;
+      company.purchases.push({
+        id,
+        date: todayLabel(),
+        package: `${hours} hours`,
+        hours,
+        amount,
+        method: currentUser.role === 'admin' ? 'Admin entry' : 'Portal request',
+        status
+      });
+      company.payments.push({
+        id: `${company.id}-p-${Date.now()}`,
+        date: todayLabel(),
+        amount,
+        method: currentUser.role === 'admin' ? 'Admin entry' : 'Portal request',
+        status,
+        package: `${hours} hours`
+      });
+      if (status === 'Paid') {
+        company.receipts.push({
+          id: `${company.id}-r-${Date.now()}`,
+          number: `BS-${company.mark || company.name.slice(0, 2).toUpperCase()}-${new Date().getFullYear()}-${String(company.receipts.length + 1).padStart(3, '0')}`,
+          date: todayLabel(),
+          amount
+        });
+      } else {
+        company.tasks.unshift(`Review ${hours} hour package request`);
+      }
+      saveCompanies();
+      renderApp();
+      showMessage(`${hours} hour package ${status === 'Paid' ? 'added' : 'requested'} for ${company.name}.`);
+    }
+
+    function approveWork(workId) {
+      const company = companies[selectedCompanyId];
+      const work = company.workLogs.find(item => item.id === workId);
+      if (!work) return;
+      work.approval = 'Approved';
+      if (!company.approvedChanges.includes(work.title)) {
+        company.approvedChanges.unshift(work.title);
+      }
+      company.tasks = company.tasks.filter(task => !task.toLowerCase().includes(work.title.toLowerCase()));
+      saveCompanies();
+      renderApp();
+      showMessage(`${work.title} approved.`);
+    }
+
+    function downloadText(lines, filename) {
+      const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+
+    function savePdf(lines, filename) {
+      const PDF = window.jspdf && window.jspdf.jsPDF;
+      if (!PDF) {
+        downloadText(lines, `${filename}.txt`);
+        showMessage('PDF library unavailable; downloaded text fallback.');
+        return;
+      }
+
+      const doc = new PDF();
+      let y = 18;
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(16);
+      doc.text(lines[0], 14, y);
+      y += 10;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      lines.slice(1).forEach(line => {
+        const chunks = doc.splitTextToSize(line, 182);
+        chunks.forEach(chunk => {
+          if (y > 280) {
+            doc.addPage();
+            y = 18;
+          }
+          doc.text(chunk, 14, y);
+          y += 6;
+        });
+      });
+      doc.save(`${filename}.pdf`);
+    }
+
+    function reportLines(company, report) {
+      const totals = getTotals(company);
+      const paymentSummary = company.payments.map(payment => `${payment.date}: ${currency.format(payment.amount)} via ${payment.method} (${payment.status})`).join('; ');
+      const workCompleted = company.workLogs.map(work => `${work.date}: ${work.title} - ${formatHours(work.time)} (${work.status}, ${work.approval})`).join('; ');
+
+      return [
+        `${company.name} - ${report.type}`,
+        `Company name: ${company.name}`,
+        `CEO / Owner: ${company.owner}`,
+        `Report date: ${report.date}`,
+        `Hours purchased: ${formatHours(totals.purchased)}`,
+        `Hours used: ${formatHours(totals.used)}`,
+        `Hours remaining: ${formatHours(totals.remaining)}`,
+        `Work completed: ${workCompleted || 'No work logged yet.'}`,
+        `Payment summary: ${paymentSummary || 'No payments logged yet.'}`,
+        `Notes from Bastida Systems: ${company.notes}`
+      ];
+    }
+
+    function receiptLines(company, receipt) {
+      const payment = company.payments.find(item => Number(item.amount) === Number(receipt.amount));
+      return [
+        `${company.name} - Receipt ${receipt.number}`,
+        `Company name: ${company.name}`,
+        `CEO / Owner: ${company.owner}`,
+        `Receipt number: ${receipt.number}`,
+        `Date: ${receipt.date}`,
+        `Amount: ${currency.format(receipt.amount)}`,
+        `Payment method: ${payment ? payment.method : 'Recorded payment'}`,
+        `Status: ${payment ? payment.status : 'Paid'}`,
+        `Notes from Bastida Systems: Thank you for your Bastida Systems hour package purchase.`
+      ];
+    }
+
+    function downloadReport(reportId) {
+      const company = companies[selectedCompanyId];
+      const report = company.reports.find(item => item.id === reportId);
+      if (!report) return;
+      const filename = `${company.name}-${report.type}-${report.date}`.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      savePdf(reportLines(company, report), filename);
+      showMessage(`${report.type} prepared for ${company.name}.`);
+    }
+
+    function downloadReceipt(receiptId) {
+      const company = companies[selectedCompanyId];
+      const receipt = company.receipts.find(item => item.id === receiptId);
+      if (!receipt) return;
+      const filename = `${company.name}-${receipt.number}`.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      savePdf(receiptLines(company, receipt), filename);
+      showMessage(`Receipt ${receipt.number} prepared.`);
+    }
+
+    function handleAdminCompany(form) {
+      const owner = users.find(user => user.email === form.ownerEmail.value);
+      const id = form.name.value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `company-${Date.now()}`;
+      companies[id] = {
+        id,
+        name: form.name.value.trim(),
+        owner: owner.name,
+        ownerEmail: owner.email,
+        description: form.description.value.trim(),
+        status: form.status.value.trim(),
+        website: '#',
+        logo: '',
+        mark: form.name.value.trim().slice(0, 2).toUpperCase(),
+        notes: 'New company record created by Bastida Systems admin.',
+        purchases: [],
+        workLogs: [],
+        payments: [],
+        receipts: [],
+        reports: [],
+        tasks: ['Set project scope', 'Add first hour package'],
+        approvedChanges: []
+      };
+      selectedCompanyId = id;
+      saveCompanies();
+      renderApp();
+      showMessage(`${companies[id].name} added.`);
+      form.reset();
+    }
+
+    function handleAdminEdit(form) {
+      const company = companies[form.companyId.value];
+      if (!company) return;
+      if (form.status.value.trim()) company.status = form.status.value.trim();
+      if (form.description.value.trim()) company.description = form.description.value.trim();
+      saveCompanies();
+      renderApp();
+      showMessage(`${company.name} details updated.`);
+      form.reset();
+    }
+
+    function handleAdminOwner(form) {
+      const company = companies[form.companyId.value];
+      const owner = users.find(user => user.email === form.ownerEmail.value);
+      if (!company || !owner) return;
+      company.owner = owner.name;
+      company.ownerEmail = owner.email;
+      saveCompanies();
+      renderApp();
+      showMessage(`${owner.name} assigned to ${company.name}.`);
+    }
+
+    function handleAdminHours(form) {
+      const company = companies[form.companyId.value];
+      const hours = Number(form.hours.value);
+      const amount = Number(form.amount.value);
+      const status = form.status.value;
+      if (!company) return;
+      company.purchases.push({
+        id: `${company.id}-hp-${Date.now()}`,
+        date: todayLabel(),
+        package: `${hours} hours`,
+        hours,
+        amount,
+        method: 'Admin entry',
+        status
+      });
+      company.payments.push({
+        id: `${company.id}-p-${Date.now()}`,
+        date: todayLabel(),
+        amount,
+        method: 'Admin entry',
+        status,
+        package: `${hours} hours`
+      });
+      if (status === 'Paid') {
+        company.receipts.push({
+          id: `${company.id}-r-${Date.now()}`,
+          number: `BS-${company.mark || company.name.slice(0, 2).toUpperCase()}-${new Date().getFullYear()}-${String(company.receipts.length + 1).padStart(3, '0')}`,
+          date: todayLabel(),
+          amount
+        });
+      }
+      saveCompanies();
+      renderApp();
+      showMessage(`${hours} hours added to ${company.name}.`);
+      form.reset();
+    }
+
+    function handleAdminWork(form) {
+      const company = companies[form.companyId.value];
+      if (!company) return;
+      company.workLogs.unshift({
+        id: `${company.id}-w-${Date.now()}`,
+        title: form.title.value.trim(),
+        description: form.description.value.trim(),
+        date: todayLabel(),
+        time: Number(form.hours.value),
+        worker: form.worker.value.trim(),
+        category: form.category.value.trim(),
+        status: form.status.value,
+        notes: 'Logged by Bastida Systems admin.',
+        attachments: ['admin-upload-pending.png'],
+        approval: 'Pending'
+      });
+      company.tasks.unshift(`Approve ${form.title.value.trim()}`);
+      saveCompanies();
+      renderApp();
+      showMessage(`Work logged for ${company.name}; remaining hours recalculated.`);
+      form.reset();
+    }
+
+    function handleAdminUpload(form) {
+      const company = companies[form.companyId.value];
+      if (!company) return;
+      if (form.receiptName.value.trim()) {
+        company.receipts.push({
+          id: `${company.id}-r-${Date.now()}`,
+          number: form.receiptName.value.trim(),
+          date: todayLabel(),
+          amount: 0
+        });
+      }
+      if (form.reportName.value.trim()) {
+        company.reports.push({
+          id: `${company.id}-rep-${Date.now()}`,
+          type: form.reportName.value.trim(),
+          date: todayLabel()
+        });
+      }
+      saveCompanies();
+      renderApp();
+      showMessage(`Records added for ${company.name}.`);
+      form.reset();
+    }
+
+    document.addEventListener('submit', event => {
+      event.preventDefault();
+      const form = event.target;
+
+      if (form.id === 'login-form') {
+        const email = document.getElementById('login-email').value.trim().toLowerCase();
+        const code = document.getElementById('login-code').value.trim();
+        const user = users.find(candidate => candidate.email.toLowerCase() === email && candidate.code === code);
+        const error = document.getElementById('login-error');
+        if (!user) {
+          error.textContent = 'Invalid email or access code.';
+          error.classList.remove('hidden');
+          return;
+        }
+        error.classList.add('hidden');
+        currentUser = user;
+        selectedCompanyId = null;
+        renderApp();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+
+      if (!currentUser || currentUser.role !== 'admin') return;
+      if (form.id === 'admin-company-form') handleAdminCompany(form);
+      if (form.id === 'admin-edit-form') handleAdminEdit(form);
+      if (form.id === 'admin-owner-form') handleAdminOwner(form);
+      if (form.id === 'admin-hours-form') handleAdminHours(form);
+      if (form.id === 'admin-work-form') handleAdminWork(form);
+      if (form.id === 'admin-upload-form') handleAdminUpload(form);
+    });
+
+    document.addEventListener('click', event => {
+      const button = event.target.closest('[data-action]');
+      if (!button) return;
+
+      const action = button.dataset.action;
+      if (action === 'fill-login') {
+        document.getElementById('login-email').value = button.dataset.email;
+        document.getElementById('login-code').value = button.dataset.code;
+      }
+
+      if (action === 'select-company') {
+        selectedCompanyId = button.dataset.companyId;
+        renderApp();
+      }
+
+      if (action === 'request-package') {
+        requestPackage(Number(button.dataset.hours));
+      }
+
+      if (action === 'approve-work') {
+        approveWork(button.dataset.workId);
+      }
+
+      if (action === 'download-report') {
+        downloadReport(button.dataset.reportId);
+      }
+
+      if (action === 'download-receipt') {
+        downloadReceipt(button.dataset.receiptId);
+      }
+
+      if (action === 'reset-demo') {
+        companies = JSON.parse(JSON.stringify(seedCompanies));
+        saveCompanies();
+        renderApp();
+        showMessage('Demo data reset.');
+      }
+
+      if (action === 'sign-out') {
+        currentUser = null;
+        selectedCompanyId = null;
+        document.getElementById('app-view').classList.add('hidden');
+        document.getElementById('login-view').classList.remove('hidden');
+        document.getElementById('login-form').reset();
+        document.getElementById('login-error').classList.add('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    });
+  </script>
+</body>
+</html>
