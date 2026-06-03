@@ -274,26 +274,29 @@ h1 {
 }
 
 .password-field input {
-  padding-right: 5.2rem;
+  padding-right: 3rem;
 }
 
 .password-toggle {
   position: absolute;
+  right: 0.55rem;
   top: 50%;
-  right: 0.45rem;
-  min-height: 2.25rem;
-  border: 1px solid transparent;
-  border-radius: 6px;
-  background: var(--surface-subtle);
-  color: var(--accent-strong);
-  padding: 0 0.72rem;
-  font-size: 0.78rem;
-  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  min-height: 2rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted-strong);
+  padding: 0;
+  cursor: pointer;
   transform: translateY(-50%);
 }
 
 .password-toggle:hover {
-  border-color: rgba(31, 138, 112, 0.18);
   background: rgba(31, 138, 112, 0.08);
   color: var(--ink-strong);
 }
@@ -301,6 +304,16 @@ h1 {
 .password-toggle:focus-visible {
   outline: 3px solid rgba(31, 138, 112, 0.2);
   outline-offset: 2px;
+}
+
+.password-icon {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .form-field input:focus,

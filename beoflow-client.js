@@ -675,9 +675,12 @@ function setAuthCopy(title, subtitle) {
 
 function setPasswordToggleState(button, input, isVisible) {
   input.type = isVisible ? 'text' : 'password';
-  button.textContent = isVisible ? 'Hide' : 'Show';
   button.setAttribute('aria-label', isVisible ? 'Hide password' : 'Show password');
   button.setAttribute('aria-pressed', String(isVisible));
+  const eyeIcon = button.querySelector('.password-icon-eye');
+  const eyeOffIcon = button.querySelector('.password-icon-eye-off');
+  if (eyeIcon) eyeIcon.hidden = isVisible;
+  if (eyeOffIcon) eyeOffIcon.hidden = !isVisible;
 }
 
 function resetPasswordVisibility() {
@@ -1301,6 +1304,10 @@ async function sendPasswordResetEmail(email) {
 }
 
 async function updatePassword(newPassword, confirmPassword) {
+  if (newPassword.length < 8) {
+    throw new Error('Password must be at least 8 characters.');
+  }
+
   if (newPassword !== confirmPassword) {
     throw new Error('Passwords do not match.');
   }
