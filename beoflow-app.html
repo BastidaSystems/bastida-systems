@@ -29,6 +29,8 @@
       </div>
 
       <div class="auth-card">
+        <a href="/" class="auth-back-link">&larr; Back to Bastida Systems</a>
+
         <div class="auth-tabs" id="auth-tabs" role="tablist" aria-label="Authentication mode">
           <button type="button" class="auth-tab is-active" id="show-sign-in" data-auth-mode="signin">Sign in</button>
           <button type="button" class="auth-tab" id="show-sign-up" data-auth-mode="signup">Create account</button>
@@ -48,7 +50,17 @@
           </label>
           <label class="form-field">
             <span>Password</span>
-            <input type="password" id="auth-password" autocomplete="current-password" required minlength="6" placeholder="Minimum 6 characters">
+            <span class="password-field">
+              <input type="password" id="auth-password" autocomplete="current-password" required minlength="6" placeholder="Minimum 6 characters">
+              <button type="button" class="password-toggle" data-password-toggle data-target="auth-password" aria-label="Show password" aria-pressed="false">Show</button>
+            </span>
+          </label>
+          <label class="form-field" id="confirm-password-field" hidden>
+            <span>Confirm password</span>
+            <span class="password-field">
+              <input type="password" id="auth-confirm-password" autocomplete="new-password" minlength="8" placeholder="Confirm password" disabled>
+              <button type="button" class="password-toggle" data-password-toggle data-target="auth-confirm-password" aria-label="Show password" aria-pressed="false">Show</button>
+            </span>
           </label>
           <button type="submit" class="primary-action" id="auth-submit">Sign in</button>
         </form>
@@ -71,11 +83,17 @@
           </div>
           <label class="form-field">
             <span>New password</span>
-            <input type="password" id="new-password" autocomplete="new-password" required minlength="6" placeholder="Minimum 6 characters">
+            <span class="password-field">
+              <input type="password" id="new-password" autocomplete="new-password" required minlength="6" placeholder="Minimum 6 characters">
+              <button type="button" class="password-toggle" data-password-toggle data-target="new-password" aria-label="Show password" aria-pressed="false">Show</button>
+            </span>
           </label>
           <label class="form-field">
             <span>Confirm new password</span>
-            <input type="password" id="confirm-new-password" autocomplete="new-password" required minlength="6" placeholder="Confirm password">
+            <span class="password-field">
+              <input type="password" id="confirm-new-password" autocomplete="new-password" required minlength="6" placeholder="Confirm password">
+              <button type="button" class="password-toggle" data-password-toggle data-target="confirm-new-password" aria-label="Show password" aria-pressed="false">Show</button>
+            </span>
           </label>
           <button type="submit" class="primary-action" id="update-password-submit">Update password</button>
         </form>
@@ -88,6 +106,10 @@
           <img src="img/logobeoflow.png" alt="Beoflow">
           <span>Beoflow</span>
         </a>
+        <div class="sidebar-home-links" aria-label="Bastida Systems navigation">
+          <a href="/">Bastida Systems</a>
+          <a href="/beoflow.html">Back to Beoflow overview</a>
+        </div>
         <nav aria-label="Beoflow modules">
           <button type="button" class="sidebar-link is-active" data-section="dashboard" aria-current="page">Dashboard</button>
           <button type="button" class="sidebar-link" data-section="events">Events</button>

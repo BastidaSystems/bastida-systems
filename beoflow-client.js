@@ -201,6 +201,7 @@ function cacheElements() {
     'auth-full-name',
     'auth-email',
     'auth-password',
+    'auth-confirm-password',
     'auth-submit',
     'forgot-password-button',
     'password-reset-request-form',
@@ -212,6 +213,7 @@ function cacheElements() {
     'confirm-new-password',
     'update-password-submit',
     'full-name-field',
+    'confirm-password-field',
     'show-sign-in',
     'show-sign-up',
     'workspace-title',
@@ -671,8 +673,39 @@ function setAuthCopy(title, subtitle) {
   if (els['auth-subtitle']) els['auth-subtitle'].textContent = subtitle;
 }
 
+function setPasswordToggleState(button, input, isVisible) {
+  input.type = isVisible ? 'text' : 'password';
+  button.textContent = isVisible ? 'Hide' : 'Show';
+  button.setAttribute('aria-label', isVisible ? 'Hide password' : 'Show password');
+  button.setAttribute('aria-pressed', String(isVisible));
+}
+
+function resetPasswordVisibility() {
+  document.querySelectorAll('[data-password-toggle]').forEach(button => {
+    const input = document.getElementById(button.dataset.target);
+    if (input) setPasswordToggleState(button, input, false);
+  });
+}
+
+function configureAuthPasswordFields() {
+  const isSignup = state.authMode === 'signup';
+  els['confirm-password-field'].hidden = !isSignup;
+  els['auth-confirm-password'].disabled = !isSignup;
+  els['auth-confirm-password'].required = isSignup;
+  if (isSignup) {
+    els['auth-password'].removeAttribute('minlength');
+    els['auth-confirm-password'].removeAttribute('minlength');
+  } else {
+    els['auth-password'].setAttribute('minlength', '6');
+    els['auth-confirm-password'].setAttribute('minlength', '8');
+  }
+  els['auth-password'].placeholder = isSignup ? 'Minimum 8 characters' : 'Minimum 6 characters';
+  els['auth-password'].autocomplete = isSignup ? 'new-password' : 'current-password';
+}
+
 function renderAuthView() {
   state.isRecoveryMode = false;
+  resetPasswordVisibility();
   setAuthCopy(
     'Kitchen operations workspace',
     'Sign in or create an account to manage your restaurant, events, recipes, inventory, staff, and reports.'
@@ -686,6 +719,7 @@ function renderAuthView() {
   els['password-reset-request-form'].hidden = true;
   els['password-recovery-form'].hidden = true;
   els['full-name-field'].hidden = state.authMode !== 'signup';
+  configureAuthPasswordFields();
   els['auth-submit'].textContent = state.authMode === 'signup' ? 'Create account' : 'Sign in';
   els['show-sign-in'].classList.toggle('is-active', state.authMode === 'signin');
   els['show-sign-up'].classList.toggle('is-active', state.authMode === 'signup');
@@ -710,6 +744,7 @@ function renderResetRequestView() {
 
 function renderPasswordRecoveryView() {
   state.isRecoveryMode = true;
+  resetPasswordVisibility();
   setAuthCopy(
     'Reset your password',
     'Choose a new password for your Beoflow account.'
@@ -1557,6 +1592,14 @@ async function refreshAuthenticatedState(user) {
 }
 
 function bindEvents() {
+  document.querySelectorAll('[data-password-toggle]').forEach(button => {
+    button.addEventListener('click', () => {
+      const input = document.getElementById(button.dataset.target);
+      if (!input) return;
+      setPasswordToggleState(button, input, input.type === 'password');
+    });
+  });
+
   els['show-sign-in'].addEventListener('click', () => {
     state.authMode = 'signin';
     state.isRecoveryMode = false;
@@ -1580,10 +1623,19 @@ function bindEvents() {
 
     const email = els['auth-email'].value.trim();
     const password = els['auth-password'].value;
+    const confirmPassword = els['auth-confirm-password'].value;
     const fullName = els['auth-full-name'].value.trim();
 
     try {
       if (state.authMode === 'signup') {
+        if (password.length < 8) {
+          throw new Error('Password must be at least 8 characters.');
+        }
+
+        if (password !== confirmPassword) {
+          throw new Error('Passwords do not match.');
+        }
+
         els['auth-submit'].textContent = 'Creating account';
         await signUp(email, password, fullName);
       } else {

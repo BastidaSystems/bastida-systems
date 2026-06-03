@@ -167,6 +167,22 @@ h1 {
   padding: 1.45rem;
 }
 
+.auth-back-link {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin-bottom: 1rem;
+  color: var(--muted-strong);
+  font-size: 0.88rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.auth-back-link:hover {
+  color: var(--accent-strong);
+  text-decoration: underline;
+}
+
 .auth-tabs {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -250,6 +266,41 @@ h1 {
   color: var(--ink-strong);
   padding: 0.78rem 0.9rem;
   outline: none;
+}
+
+.password-field {
+  position: relative;
+  display: block;
+}
+
+.password-field input {
+  padding-right: 5.2rem;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 0.45rem;
+  min-height: 2.25rem;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: var(--surface-subtle);
+  color: var(--accent-strong);
+  padding: 0 0.72rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  transform: translateY(-50%);
+}
+
+.password-toggle:hover {
+  border-color: rgba(31, 138, 112, 0.18);
+  background: rgba(31, 138, 112, 0.08);
+  color: var(--ink-strong);
+}
+
+.password-toggle:focus-visible {
+  outline: 3px solid rgba(31, 138, 112, 0.2);
+  outline-offset: 2px;
 }
 
 .form-field input:focus,
@@ -376,7 +427,7 @@ h1 {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   color: #fff;
   font-size: 1.22rem;
   font-weight: 800;
@@ -387,6 +438,27 @@ h1 {
   width: 3rem;
   height: 2rem;
   object-fit: contain;
+}
+
+.sidebar-home-links {
+  display: grid;
+  gap: 0.35rem;
+  margin-bottom: 1.35rem;
+  padding-bottom: 1.1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-home-links a {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.86rem;
+  font-weight: 800;
+  line-height: 1.35;
+  text-decoration: none;
+}
+
+.sidebar-home-links a:hover {
+  color: #fff;
+  text-decoration: underline;
 }
 
 .workspace-sidebar nav {
@@ -878,6 +950,11 @@ h1 {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
+  .sidebar-home-links {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.6rem;
+  }
+
   .sidebar-brand {
     margin-bottom: 1rem;
   }
@@ -944,6 +1021,10 @@ h1 {
 
   .workspace-sidebar nav {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sidebar-home-links {
+    grid-template-columns: 1fr;
   }
 
   .module-empty-state .primary-action,
