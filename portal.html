@@ -571,6 +571,55 @@
       align-items: start;
     }
 
+    .dashboard-overview {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      margin: 0 0 16px;
+      border: 1px solid rgba(203, 213, 225, 0.8);
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, #ffffff 0%, #f8fbff 72%, #eef6ff 100%);
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .dashboard-overview-title {
+      margin: 0;
+      color: var(--text);
+      font-size: 20px;
+      line-height: 1.25;
+      letter-spacing: -0.01em;
+    }
+
+    .dashboard-overview-copy {
+      max-width: 760px;
+      margin: 6px 0 0;
+      color: var(--text-soft);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .dashboard-overview-meta {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+      flex: 0 0 auto;
+    }
+
+    .dashboard-overview-meta span {
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.78);
+      color: var(--text-soft);
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
     .dashboard-grid {
       display: grid;
       grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.65fr);
@@ -1656,6 +1705,14 @@
         flex-direction: column;
       }
 
+      .dashboard-overview {
+        flex-direction: column;
+      }
+
+      .dashboard-overview-meta {
+        justify-content: flex-start;
+      }
+
       .detail-grid {
         grid-template-columns: 1fr;
       }
@@ -2134,7 +2191,7 @@
           return '';
         }
 
-        if (projectOptions.length <= 1) {
+        if (options.length <= 1) {
           return `
             <div class="workspace-switcher" aria-label="Active workspace">
               <span class="workspace-label">Workspace</span>
@@ -2157,16 +2214,37 @@
         const projectOptions = workspaceProjectOptions();
         const options = [];
 
-        if (canUseAllWorkspace() && projectOptions.length > 1) {
+        if (canUseAllWorkspace()) {
           options.push({
             id: 'all',
-            label: 'All Bastida Systems',
-            role: 'Founder',
-            projectName: 'All Bastida Systems'
+            label: workspaceOverviewLabel(),
+            role: workspaceOverviewRole(),
+            projectName: workspaceOverviewLabel()
           });
         }
 
         return options.concat(projectOptions);
+      }
+
+      function workspaceOverviewLabel() {
+        if (isGlobalFounderOrAdmin()) {
+          return 'All Bastida Systems';
+        }
+
+        if (currentUserProjectAssignments().some((assignment) => ['founder', 'owner'].includes(assignment.role))) {
+          return 'All My Workspaces';
+        }
+
+        return 'My Overview';
+      }
+
+      function workspaceOverviewRole() {
+        if (isGlobalFounderOrAdmin()) {
+          return 'Founder';
+        }
+
+        const role = topRoleForAssignments(currentUserProjectAssignments());
+        return role ? roleLabel(role) : 'Overview';
       }
 
       function workspaceProjectOptions() {
@@ -2216,7 +2294,7 @@
 
       function canUseAllWorkspace() {
         return isGlobalFounderOrAdmin()
-          || currentUserProjectAssignments().some((assignment) => assignment.role === 'founder');
+          || currentUserProjectAssignments().length > 0;
       }
 
       function activeWorkspaceOption() {
@@ -2267,7 +2345,7 @@
       }
 
       function visibleWorkspaceProjectIdsForAll() {
-        if (canUseAllWorkspace()) {
+        if (isGlobalFounderOrAdmin()) {
           return state.projects.map((project) => project.id);
         }
 
@@ -2329,6 +2407,10 @@
           return profileRole();
         }
 
+        if (active.id === 'all' && active.role === 'Overview') {
+          return active.projectName;
+        }
+
         return `${active.role} • ${active.projectName}`;
       }
 
@@ -2360,6 +2442,15 @@
           state.workspace.projectId = event.target.value || 'all';
           resetWorkspaceScopedUi();
           renderApp();
+        });
+
+        app.querySelectorAll('[data-open-dashboard-project]').forEach((button) => {
+          button.addEventListener('click', () => {
+            state.workspace.projectId = button.dataset.openDashboardProject || 'all';
+            state.activeView = 'dashboard';
+            resetWorkspaceScopedUi();
+            renderApp();
+          });
         });
 
         app.querySelectorAll('[data-open-invite]').forEach((button) => {
@@ -3465,76 +3556,89 @@
       }
 
       function renderDashboard() {
-        const projects = visibleProjects();
-        const tasks = visibleTasks();
-        const deliverables = visibleDeliverables();
-        const workLogs = visibleWorkLogs();
-        const people = buildPeople();
-        const payableRows = buildPayableRows();
-        const activity = buildActivityItems().slice(0, 10);
-        const pendingDeliverables = deliverables.filter((deliverable) => (
-          !['approved', 'archived'].includes(deliverable.status)
-        )).length;
-        const approvedHours = workLogs
-          .filter((log) => log.status === 'approved')
-          .reduce((total, log) => total + toNumber(log.approved_hours), 0);
-        const payable = payableRows.reduce((total, payment) => total + toNumber(payment.total_usd), 0);
-        const openTasks = tasks.filter((task) => task.status !== 'done').length;
-        const completedTasks = tasks.filter((task) => task.status === 'done').length;
-        const paymentsPaid = payableRows
-          .filter((payment) => normalizePaymentStatus(payment.payment_status || payment.status) === 'paid')
-          .reduce((total, payment) => total + toNumber(payment.total_usd), 0);
-        const paymentsPending = Math.max(0, payable - paymentsPaid);
-        const recentInvites = visibleProjectRoles()
-          .filter((assignment) => isInvitationRecord(assignment))
-          .sort((a, b) => new Date(b.invited_at || b.accepted_at || b.joined_at || 0) - new Date(a.invited_at || a.accepted_at || a.joined_at || 0))
+        const overview = buildDashboardOverview();
+        const metrics = dashboardMetricCards(overview);
+        const recentWorkLogs = overview.workLogs
+          .slice()
+          .sort((a, b) => compareDateDesc(a.submitted_at || a.work_date, b.submitted_at || b.work_date))
+          .slice(0, 6);
+        const recentDeliverables = overview.deliverables
+          .slice()
+          .sort((a, b) => compareDateDesc(a.updated_at || a.created_at, b.updated_at || b.created_at))
           .slice(0, 5);
-        const workspace = activeWorkspaceOption();
+        const recentPayments = overview.payableRows
+          .slice()
+          .sort((a, b) => compareText(a.project?.name, b.project?.name))
+          .slice(0, 5);
+        const recentInvites = overview.projectRoles
+          .filter((assignment) => isInvitationRecord(assignment))
+          .sort((a, b) => compareDateDesc(a.invited_at || a.accepted_at || a.joined_at, b.invited_at || b.accepted_at || b.joined_at))
+          .slice(0, 5);
 
         return `
-          <p class="page-copy">${workspace?.id === 'all' ? 'Founder-level operating view across all visible projects, collaborators, approved hours, deliverables, and payment obligations.' : `Operating view filtered to ${escapeHtml(workspace?.projectName || 'the active workspace')}.`}</p>
+          <section class="dashboard-overview">
+            <div>
+              <h2 class="dashboard-overview-title">${escapeHtml(overview.title)}</h2>
+              <p class="dashboard-overview-copy">${escapeHtml(overview.copy)}</p>
+            </div>
+            <div class="dashboard-overview-meta">
+              <span>${escapeHtml(overview.scopeLabel)}</span>
+              <span>${escapeHtml(overview.modeLabel)}</span>
+            </div>
+          </section>
           <div class="metrics">
-            ${metricCard('Total Organizations', projects.length, 'Visible operating organizations/projects.')}
-            ${metricCard('Total Projects', projects.length, 'Projects visible in the active workspace.')}
-            ${metricCard('Active Collaborators', people.length, 'Active people assigned to visible projects.')}
-            ${metricCard('Approved Hours', formatHours(approvedHours), 'Payable hours approved by owners or founders.')}
-            ${metricCard('Open Tasks', openTasks, 'Backlog, to do, in progress, or review.')}
-            ${metricCard('Completed Tasks', completedTasks, 'Tasks marked done.')}
-            ${metricCard('Pending Deliverables', pendingDeliverables, 'Planned, in progress, or delivered records.')}
-            ${metricCard('Revenue Tracked', formatMoney(payable), 'Approved hours multiplied by hourly rates.')}
-            ${metricCard('Payments Pending', formatMoney(paymentsPending), 'Payable amount not marked paid.')}
-            ${metricCard('Payments Paid', formatMoney(paymentsPaid), 'Payable amount marked paid.')}
+            ${metrics.map((metric) => metricCard(metric.label, metric.value, metric.caption)).join('')}
           </div>
           <div class="dashboard-grid">
             <div class="dashboard-stack">
               <section class="panel">
                 <div class="panel-header">
                   <div>
-                    <h2 class="panel-title">Recent Work Logs</h2>
-                    <p class="panel-subtitle">Latest time entries with Submitted Hours and Approved Hours.</p>
+                    <h2 class="panel-title">Project Breakdown</h2>
+                    <p class="panel-subtitle">Visible projects with approved hours, payable balance, deliverables, documents, and latest activity.</p>
                   </div>
                 </div>
-                ${workLogs.length ? renderWorkLogTable(workLogs.slice(0, 6), true) : emptyState('No work logs yet', 'Approved work history will appear here after records exist in Supabase.', true)}
+                ${overview.projectRows.length ? renderDashboardProjectBreakdown(overview.projectRows) : emptyState('No visible projects yet', 'Project assignments will appear here after real records exist in Supabase.', true)}
+              </section>
+              ${overview.canShowCollaboratorBreakdown ? `
+                <section class="panel">
+                  <div class="panel-header">
+                    <div>
+                      <h2 class="panel-title">Collaborator Breakdown</h2>
+                      <p class="panel-subtitle">Only collaborators from projects you can manage are included.</p>
+                    </div>
+                  </div>
+                  ${overview.collaboratorRows.length ? renderDashboardCollaboratorBreakdown(overview.collaboratorRows) : emptyState('No collaborators yet', 'Managed collaborator metrics will appear after approved work exists.', true)}
+                </section>
+              ` : ''}
+              <section class="panel">
+                <div class="panel-header">
+                  <div>
+                    <h2 class="panel-title">${overview.personalOnly ? 'My Recent Work Logs' : 'Recent Work Logs'}</h2>
+                    <p class="panel-subtitle">Latest records with Submitted Hours and Approved Hours.</p>
+                  </div>
+                </div>
+                ${recentWorkLogs.length ? renderWorkLogTable(recentWorkLogs, true) : emptyState('No work logs yet', 'Approved work history will appear here after records exist in Supabase.', true)}
               </section>
               <div class="dashboard-split">
                 <section class="panel">
                   <div class="panel-header">
                     <div>
-                      <h2 class="panel-title">Recent Deliverables</h2>
+                      <h2 class="panel-title">${overview.personalOnly ? 'My Deliverables' : 'Recent Deliverables'}</h2>
                       <p class="panel-subtitle">Delivery progress, owner review, and evidence state.</p>
                     </div>
                     ${canCreateDeliverables() ? '<button class="button button-small button-primary" type="button" data-open-deliverable>+ Create Deliverable</button>' : ''}
                   </div>
-                  ${deliverables.length ? renderDashboardDeliverables(deliverables.slice(0, 5)) : emptyState('No deliverables yet', 'Deliverables will appear here after records exist in Supabase.', true)}
+                  ${recentDeliverables.length ? renderDashboardDeliverables(recentDeliverables) : emptyState('No deliverables yet', 'Deliverables will appear here after records exist in Supabase.', true)}
                 </section>
                 <section class="panel">
                   <div class="panel-header">
                     <div>
-                      <h2 class="panel-title">Recent Payments</h2>
+                      <h2 class="panel-title">${overview.personalOnly ? 'My Payments' : 'Recent Payments'}</h2>
                       <p class="panel-subtitle">Calculated from approved hours and payment status.</p>
                     </div>
                   </div>
-                  ${payableRows.length ? renderDashboardPayments(payableRows.slice(0, 5)) : emptyState('No payments yet', 'Approved payable work will appear here after owners approve submitted hours.', true)}
+                  ${recentPayments.length ? renderDashboardPayments(recentPayments) : emptyState('No payments yet', 'Approved payable work will appear here after owners approve submitted hours.', true)}
                 </section>
               </div>
             </div>
@@ -3543,23 +3647,710 @@
                 <div class="panel-header">
                   <div>
                     <h2 class="panel-title">Activity Feed</h2>
-                    <p class="panel-subtitle">Work logs, deliverables, payments, and invitations in chronological order.</p>
+                    <p class="panel-subtitle">Work logs, deliverables, payments, documents, and invitations in chronological order.</p>
                   </div>
                 </div>
-                ${activity.length ? renderActivityFeed(activity) : emptyState('No activity yet', 'Activity will appear after real operating records exist.', true)}
+                ${overview.activity.length ? renderActivityFeed(overview.activity.slice(0, 12)) : emptyState('No activity yet', 'Activity will appear after real operating records exist.', true)}
               </section>
-              <section class="panel">
-                <div class="panel-header">
-                  <div>
-                    <h2 class="panel-title">Recent Invitations</h2>
-                    <p class="panel-subtitle">Invitation lifecycle from project_roles.</p>
+              ${overview.personalOnly ? `
+                <section class="panel">
+                  <div class="panel-header">
+                    <div>
+                      <h2 class="panel-title">My Operating Queue</h2>
+                      <p class="panel-subtitle">Pending work logs, open deliverables, and active documents assigned to you.</p>
+                    </div>
                   </div>
-                </div>
-                ${recentInvites.length ? renderDashboardInvitations(recentInvites) : emptyState('No invitations yet', 'Invited collaborators will appear here after real invitation records exist.', true)}
-              </section>
+                  ${renderDashboardPersonalQueue(overview)}
+                </section>
+              ` : `
+                <section class="panel">
+                  <div class="panel-header">
+                    <div>
+                      <h2 class="panel-title">Recent Invitations</h2>
+                      <p class="panel-subtitle">Invitation lifecycle from project_roles.</p>
+                    </div>
+                  </div>
+                  ${recentInvites.length ? renderDashboardInvitations(recentInvites) : emptyState('No invitations yet', 'Invited collaborators will appear here after real invitation records exist.', true)}
+                </section>
+              `}
             </aside>
           </div>
         `;
+      }
+
+      function buildDashboardOverview() {
+        const projects = visibleProjects();
+        const workLogs = dashboardWorkLogs();
+        const payments = dashboardPayments();
+        const paymentHistory = dashboardPaymentHistory();
+        const deliverables = dashboardDeliverables();
+        const documents = dashboardDocuments();
+        const tasks = dashboardTasks();
+        const timeEntries = dashboardTimeEntries();
+        const projectRoles = dashboardProjectRoles();
+        const payableRows = buildPayableRowsForData(workLogs, payments);
+        const totalPayable = payableRows.reduce((total, payment) => total + toNumber(payment.total_usd), 0);
+        const totalPaid = payments
+          .filter((payment) => normalizePaymentStatus(payment.status) === 'paid')
+          .reduce((total, payment) => total + toNumber(payment.total_usd), 0);
+        const approvedHours = workLogs.reduce((total, log) => total + approvedHoursForLog(log), 0);
+        const openDeliverables = deliverables.filter((deliverable) => isOpenDeliverable(deliverable)).length;
+        const completedDeliverables = deliverables.filter((deliverable) => isCompletedDeliverable(deliverable)).length;
+        const pendingWorkLogs = workLogs.filter((log) => log.status === 'pending_approval' && log.worker_user_id === state.profile?.id).length;
+        const activeDocuments = documents.filter((document) => document.status !== 'archived').length;
+        const managedProjectIds = dashboardManagedProjectIds();
+        const canShowCollaboratorBreakdown = managedProjectIds.size > 0;
+        const personalOnly = !canShowCollaboratorBreakdown;
+        const activity = buildDashboardActivityItems({
+          workLogs,
+          deliverables,
+          tasks,
+          timeEntries,
+          documents,
+          paymentHistory,
+          projectRoles,
+          personalOnly
+        });
+
+        return {
+          title: dashboardOverviewTitle(canShowCollaboratorBreakdown),
+          copy: dashboardOverviewCopy(canShowCollaboratorBreakdown),
+          scopeLabel: isAllWorkspaceActive() ? workspaceOverviewLabel() : activeWorkspaceOption()?.projectName || 'Project',
+          modeLabel: personalOnly ? 'Personal scope' : 'Managed scope',
+          personalOnly,
+          canShowCollaboratorBreakdown,
+          projects,
+          workLogs,
+          payments,
+          paymentHistory,
+          deliverables,
+          documents,
+          tasks,
+          timeEntries,
+          projectRoles,
+          payableRows,
+          projectRows: buildDashboardProjectRows(projects, payableRows, payments, workLogs, deliverables, documents, tasks, timeEntries, projectRoles),
+          collaboratorRows: canShowCollaboratorBreakdown ? buildDashboardCollaboratorRows(managedProjectIds) : [],
+          activity,
+          totals: {
+            approvedHours,
+            totalPayable,
+            totalPaid,
+            pendingBalance: Math.max(0, totalPayable - totalPaid),
+            openDeliverables,
+            completedDeliverables,
+            documents: activeDocuments,
+            pendingWorkLogs,
+            activity: activity.length,
+            activeCollaborators: dashboardActiveCollaboratorCount(managedProjectIds)
+          }
+        };
+      }
+
+      function dashboardOverviewTitle(canShowCollaboratorBreakdown) {
+        const active = activeWorkspaceOption();
+        if (!isAllWorkspaceActive()) {
+          return `${active?.projectName || 'Project'} Dashboard`;
+        }
+
+        if (isGlobalFounderOrAdmin()) {
+          return 'All Bastida Systems Overview';
+        }
+
+        return canShowCollaboratorBreakdown ? 'My Workspaces Overview' : 'My Overview';
+      }
+
+      function dashboardOverviewCopy(canShowCollaboratorBreakdown) {
+        const active = activeWorkspaceOption();
+        if (!isAllWorkspaceActive()) {
+          return `Dashboard filtered to ${active?.projectName || 'the selected project'} with metrics scoped to your role and permissions.`;
+        }
+
+        if (isGlobalFounderOrAdmin()) {
+          return 'Company-level operating summary across every project, collaborator, deliverable, document, and payment record visible to this account.';
+        }
+
+        if (canShowCollaboratorBreakdown) {
+          return 'Aggregated summary across every workspace you can access, with team metrics only for projects you can manage.';
+        }
+
+        return 'Personal operating summary across your assigned projects, approved hours, earnings, deliverables, documents, and recent activity.';
+      }
+
+      function dashboardMetricCards(overview) {
+        const totals = overview.totals;
+        if (overview.personalOnly) {
+          return [
+            { label: 'My Projects', value: overview.projects.length, caption: 'Projects assigned to your profile.' },
+            { label: 'My Approved Hours', value: formatHours(totals.approvedHours), caption: 'Approved payable hours from your work logs.' },
+            { label: 'My Earned Amount', value: formatMoney(totals.totalPayable), caption: 'Approved hours multiplied by your project rates.' },
+            { label: 'My Paid Amount', value: formatMoney(totals.totalPaid), caption: 'Payments marked paid for your profile.' },
+            { label: 'My Pending Balance', value: formatMoney(totals.pendingBalance), caption: 'Earned amount not marked paid.' },
+            { label: 'My Pending Work Logs', value: totals.pendingWorkLogs, caption: 'Submitted work logs waiting for approval.' },
+            { label: 'My Deliverables', value: `${totals.openDeliverables} open`, caption: `${totals.completedDeliverables} completed deliverables.` },
+            { label: 'My Documents', value: totals.documents, caption: 'Visible active documents uploaded by you.' },
+            { label: 'My Recent Activity', value: totals.activity, caption: 'Recent operating activity in your scope.' }
+          ];
+        }
+
+        return [
+          { label: isGlobalFounderOrAdmin() ? 'Active Projects' : 'My Active Projects', value: overview.projects.filter((project) => project.status !== 'archived').length, caption: 'Visible projects in the current overview.' },
+          { label: 'Active Collaborators', value: totals.activeCollaborators, caption: 'Collaborators in projects you can manage.' },
+          { label: 'Approved Hours', value: formatHours(totals.approvedHours), caption: 'Approved payable hours in this scope.' },
+          { label: 'Total Earned / Payable', value: formatMoney(totals.totalPayable), caption: 'Approved work valued by hourly rates.' },
+          { label: 'Total Paid', value: formatMoney(totals.totalPaid), caption: 'Payments marked paid.' },
+          { label: 'Pending Balance', value: formatMoney(totals.pendingBalance), caption: 'Payable amount not marked paid.' },
+          { label: 'Open Deliverables', value: totals.openDeliverables, caption: 'Planned, in progress, or delivered.' },
+          { label: 'Completed Deliverables', value: totals.completedDeliverables, caption: 'Approved or completed deliverables.' },
+          { label: 'Documents', value: totals.documents, caption: 'Visible active documents.' },
+          { label: 'Recent Activity', value: totals.activity, caption: 'Chronological operating events.' }
+        ];
+      }
+
+      function renderDashboardProjectBreakdown(rows) {
+        return `
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Project</th>
+                  <th>Current Role</th>
+                  <th>Approved Hours</th>
+                  <th>Total Earned / Payable</th>
+                  <th>Total Paid</th>
+                  <th>Pending Balance</th>
+                  <th>Deliverables</th>
+                  <th>Documents</th>
+                  <th>Work Logs</th>
+                  <th>Last Activity</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rows.map((row) => `
+                  <tr>
+                    <td>
+                      <span class="cell-title" title="${escapeAttr(row.projectName)}">${escapeHtml(row.projectName)}</span>
+                      <span class="cell-subtitle">${escapeHtml(statusLabel(row.status))}</span>
+                    </td>
+                    <td>
+                      <span class="cell-title">${escapeHtml(row.role)}</span>
+                      ${row.projectTitle ? `<span class="cell-subtitle truncate" title="${escapeAttr(row.projectTitle)}">${escapeHtml(row.projectTitle)}</span>` : ''}
+                    </td>
+                    <td>${formatHours(row.approvedHours)}</td>
+                    <td>${formatMoney(row.totalPayable)}</td>
+                    <td>${formatMoney(row.totalPaid)}</td>
+                    <td>${formatMoney(row.pendingBalance)}</td>
+                    <td>
+                      <span class="cell-title">${row.openDeliverables} open</span>
+                      <span class="cell-subtitle">${row.completedDeliverables} completed</span>
+                    </td>
+                    <td>${row.documents}</td>
+                    <td>${row.workLogs}</td>
+                    <td>${formatDate(row.lastActivity)}</td>
+                    <td><button class="button button-small" type="button" data-open-dashboard-project="${escapeAttr(row.projectId)}">View Project</button></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
+
+      function renderDashboardCollaboratorBreakdown(rows) {
+        return `
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Collaborator</th>
+                  <th>Projects Count</th>
+                  <th>Roles / Projects</th>
+                  <th>Approved Hours</th>
+                  <th>Total Earned</th>
+                  <th>Total Paid</th>
+                  <th>Pending Balance</th>
+                  <th>Last Activity</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rows.map((row) => `
+                  <tr>
+                    <td>
+                      <span class="cell-title" title="${escapeAttr(row.name)}">${escapeHtml(row.name)}</span>
+                      <span class="cell-subtitle truncate" title="${escapeAttr(row.email)}">${escapeHtml(row.email)}</span>
+                    </td>
+                    <td>${row.projectsCount}</td>
+                    <td>${renderAssignmentStack(row.assignments, row)}</td>
+                    <td>${formatHours(row.approvedHours)}</td>
+                    <td>${formatMoney(row.totalEarned)}</td>
+                    <td>${formatMoney(row.totalPaid)}</td>
+                    <td>${formatMoney(row.pendingBalance)}</td>
+                    <td>${formatDate(row.lastActivity)}</td>
+                    <td>${row.userId ? `<button class="button button-small" type="button" data-detail-kind="collaborator" data-detail-id="${escapeAttr(row.userId)}">View Details</button>` : '-'}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
+
+      function renderDashboardPersonalQueue(overview) {
+        const items = [
+          ...overview.workLogs
+            .filter((log) => log.status === 'pending_approval')
+            .slice(0, 3)
+            .map((log) => ({
+              title: log.title || 'Pending Work Log',
+              meta: `${log.project?.name || 'Unassigned'} - ${formatHours(log.hours_used)} submitted`,
+              status: log.status
+            })),
+          ...overview.deliverables
+            .filter((deliverable) => isOpenDeliverable(deliverable))
+            .slice(0, 3)
+            .map((deliverable) => ({
+              title: deliverable.title,
+              meta: `${deliverable.project?.name || 'Unassigned'} - due ${formatDate(deliverable.due_date)}`,
+              status: deliverable.status
+            })),
+          ...overview.documents
+            .filter((document) => document.status !== 'archived')
+            .slice(0, 3)
+            .map((document) => ({
+              title: document.name,
+              meta: `${document.project?.name || 'Unassigned'} - ${statusLabel(document.category)}`,
+              status: document.status
+            }))
+        ].slice(0, 8);
+
+        return items.length
+          ? renderMiniList(items)
+          : emptyState('No personal queue yet', 'Pending logs, deliverables, and active documents will appear here.', true);
+      }
+
+      function buildDashboardProjectRows(projects, payableRows, payments, workLogs, deliverables, documents, tasks, timeEntries, projectRoles) {
+        return projects
+          .map((project) => {
+            const projectId = project.id;
+            const projectLogs = workLogs.filter((log) => log.project_id === projectId);
+            const projectPayments = payments.filter((payment) => payment.project_id === projectId);
+            const projectPayableRows = payableRows.filter((payment) => payment.project_id === projectId);
+            const projectDeliverables = deliverables.filter((deliverable) => deliverable.project_id === projectId);
+            const projectDocuments = documents.filter((document) => document.project_id === projectId && document.status !== 'archived');
+            const projectTasks = tasks.filter((task) => task.project_id === projectId);
+            const projectTimeEntries = timeEntries.filter((entry) => entry.project_id === projectId);
+            const projectAssignments = projectRoles.filter((assignment) => assignment.project_id === projectId);
+            const currentAssignment = currentUserAssignmentForProject(projectId);
+            const role = isGlobalFounderOrAdmin() && !currentAssignment
+              ? 'Founder'
+              : roleLabel(currentAssignment?.role || 'member');
+            const totalPayable = projectPayableRows.reduce((total, payment) => total + toNumber(payment.total_usd), 0);
+            const totalPaid = projectPayments
+              .filter((payment) => normalizePaymentStatus(payment.status) === 'paid')
+              .reduce((total, payment) => total + toNumber(payment.total_usd), 0);
+            const lastActivity = latestDateValue([
+              ...projectLogs.map((log) => log.approved_at || log.submitted_at || log.work_date),
+              ...projectDeliverables.map((deliverable) => deliverable.approved_at || deliverable.delivered_at || deliverable.updated_at || deliverable.created_at),
+              ...projectDocuments.map((document) => document.archived_at || document.updated_at || document.created_at),
+              ...projectTasks.map((task) => task.completed_at || task.updated_at || task.created_at),
+              ...projectTimeEntries.map((entry) => entry.ended_at || entry.started_at || entry.updated_at || entry.created_at),
+              ...projectPayments.map((payment) => payment.paid_at || payment.updated_at || payment.created_at),
+              ...projectAssignments.map((assignment) => assignment.accepted_at || assignment.invited_at || assignment.joined_at)
+            ]);
+
+            return {
+              projectId,
+              projectName: project.name,
+              status: project.status,
+              role,
+              projectTitle: currentAssignment?.project_title || '',
+              approvedHours: projectLogs.reduce((total, log) => total + approvedHoursForLog(log), 0),
+              totalPayable,
+              totalPaid,
+              pendingBalance: Math.max(0, totalPayable - totalPaid),
+              openDeliverables: projectDeliverables.filter((deliverable) => isOpenDeliverable(deliverable)).length,
+              completedDeliverables: projectDeliverables.filter((deliverable) => isCompletedDeliverable(deliverable)).length,
+              documents: projectDocuments.length,
+              workLogs: projectLogs.length,
+              lastActivity
+            };
+          })
+          .sort((a, b) => compareText(a.projectName, b.projectName));
+      }
+
+      function buildDashboardCollaboratorRows(managedProjectIds) {
+        const assignments = visibleProjectRoles()
+          .filter((assignment) => assignment.active !== false)
+          .filter((assignment) => managedProjectIds.has(assignment.project_id))
+          .sort(compareAssignmentsByHierarchy);
+        const groups = new Map();
+
+        assignments.forEach((assignment) => {
+          const identity = assignment.member?.id || assignment.user_id || assignment.invite_email || assignment.id;
+          if (!identity) {
+            return;
+          }
+
+          if (!groups.has(identity)) {
+            groups.set(identity, {
+              id: identity,
+              userId: assignment.member?.id || assignment.user_id || null,
+              name: memberName(assignment),
+              email: memberEmail(assignment),
+              assignments: []
+            });
+          }
+
+          groups.get(identity).assignments.push(assignment);
+        });
+
+        const managedLogs = visibleWorkLogs().filter((log) => managedProjectIds.has(log.project_id));
+        const managedPayments = visiblePayments().filter((payment) => managedProjectIds.has(payment.project_id));
+        const managedPayableRows = buildPayableRowsForData(managedLogs, managedPayments);
+
+        return Array.from(groups.values())
+          .map((person) => {
+            const personLogs = managedLogs.filter((log) => log.worker_user_id === person.userId);
+            const personPayments = managedPayments.filter((payment) => payment.user_id === person.userId);
+            const personPayableRows = managedPayableRows.filter((payment) => payment.user_id === person.userId);
+            const totalEarned = personPayableRows.reduce((total, payment) => total + toNumber(payment.total_usd), 0);
+            const totalPaid = personPayments
+              .filter((payment) => normalizePaymentStatus(payment.status) === 'paid')
+              .reduce((total, payment) => total + toNumber(payment.total_usd), 0);
+            const personDeliverables = visibleDeliverables()
+              .filter((deliverable) => managedProjectIds.has(deliverable.project_id))
+              .filter((deliverable) => deliverable.responsible_user_id === person.userId);
+            const personDocuments = visibleDocuments()
+              .filter((document) => managedProjectIds.has(document.project_id))
+              .filter((document) => document.uploaded_by === person.userId);
+            const lastActivity = latestDateValue([
+              ...personLogs.map((log) => log.approved_at || log.submitted_at || log.work_date),
+              ...personPayments.map((payment) => payment.paid_at || payment.updated_at || payment.created_at),
+              ...personDeliverables.map((deliverable) => deliverable.approved_at || deliverable.delivered_at || deliverable.updated_at || deliverable.created_at),
+              ...personDocuments.map((document) => document.archived_at || document.updated_at || document.created_at),
+              ...person.assignments.map((assignment) => assignment.accepted_at || assignment.invited_at || assignment.joined_at)
+            ]);
+
+            return {
+              ...person,
+              platformRole: person.assignments[0]?.member?.platform_role || null,
+              projectNames: uniqueValues(person.assignments.map((assignment) => assignment.project?.name).filter(Boolean)),
+              projectsCount: uniqueValues(person.assignments.map((assignment) => assignment.project_id).filter(Boolean)).length,
+              approvedHours: personLogs.reduce((total, log) => total + approvedHoursForLog(log), 0),
+              totalEarned,
+              totalPaid,
+              pendingBalance: Math.max(0, totalEarned - totalPaid),
+              lastActivity
+            };
+          })
+          .sort((a, b) => compareText(a.name, b.name));
+      }
+
+      function dashboardWorkLogs() {
+        return visibleWorkLogs().filter((log) => canViewDashboardRecord(log.project_id, log.worker_user_id));
+      }
+
+      function dashboardPayments() {
+        return visiblePayments().filter((payment) => canViewDashboardRecord(payment.project_id, payment.user_id));
+      }
+
+      function dashboardPaymentHistory() {
+        return visiblePaymentHistory().filter((history) => (
+          canViewDashboardRecord(history.payment?.project_id, history.payment?.user_id)
+        ));
+      }
+
+      function dashboardDeliverables() {
+        return visibleDeliverables().filter((deliverable) => (
+          canViewTeamDataForProject(deliverable.project_id)
+          || deliverable.responsible_user_id === state.profile?.id
+          || deliverable.created_by === state.profile?.id
+        ));
+      }
+
+      function dashboardDocuments() {
+        return visibleDocuments().filter((document) => (
+          canViewTeamDataForProject(document.project_id)
+          || document.uploaded_by === state.profile?.id
+        ));
+      }
+
+      function dashboardTasks() {
+        return visibleTasks().filter((task) => (
+          canViewTeamDataForProject(task.project_id)
+          || task.assigned_to === state.profile?.id
+          || task.created_by === state.profile?.id
+        ));
+      }
+
+      function dashboardTimeEntries() {
+        return visibleTimeEntries().filter((entry) => canViewDashboardRecord(entry.project_id, entry.user_id));
+      }
+
+      function dashboardProjectRoles() {
+        return visibleProjectRoles().filter((assignment) => (
+          canViewTeamDataForProject(assignment.project_id)
+          || assignment.user_id === state.profile?.id
+        ));
+      }
+
+      function canViewDashboardRecord(projectId, ownerUserId) {
+        return canViewTeamDataForProject(projectId)
+          || ownerUserId === state.profile?.id;
+      }
+
+      function canViewTeamDataForProject(projectId) {
+        return Boolean(projectId) && canManageProject(projectId);
+      }
+
+      function dashboardManagedProjectIds() {
+        return new Set(
+          visibleProjects()
+            .filter((project) => canViewTeamDataForProject(project.id))
+            .map((project) => project.id)
+        );
+      }
+
+      function dashboardActiveCollaboratorCount(managedProjectIds) {
+        if (!managedProjectIds.size) {
+          return 0;
+        }
+
+        return uniqueValues(
+          visibleProjectRoles()
+            .filter((assignment) => managedProjectIds.has(assignment.project_id))
+            .filter((assignment) => assignment.active !== false)
+            .map((assignment) => assignment.member?.id || assignment.user_id)
+            .filter(Boolean)
+        ).length;
+      }
+
+      function currentUserAssignmentForProject(projectId) {
+        return currentUserProjectAssignments()
+          .filter((assignment) => assignment.project_id === projectId)
+          .sort(compareAssignmentsByHierarchy)[0] || null;
+      }
+
+      function approvedHoursForLog(log) {
+        if (!log || log.status !== 'approved') {
+          return 0;
+        }
+
+        const hasApprovedHours = log.approved_hours !== null
+          && typeof log.approved_hours !== 'undefined'
+          && String(log.approved_hours) !== '';
+
+        return hasApprovedHours ? toNumber(log.approved_hours) : toNumber(log.hours_used);
+      }
+
+      function buildPayableRowsForData(workLogs, payments) {
+        const rows = new Map();
+
+        workLogs
+          .filter((log) => log.status === 'approved')
+          .forEach((log) => {
+            const approvedHours = approvedHoursForLog(log);
+            if (approvedHours <= 0) {
+              return;
+            }
+
+            const rate = findHourlyRate(log.project_id, log.worker_user_id);
+            const key = `${log.project_id || 'no-project'}:${log.worker_user_id || 'no-user'}:${rate}`;
+
+            if (!rows.has(key)) {
+              rows.set(key, {
+                key,
+                project_id: log.project_id,
+                user_id: log.worker_user_id,
+                collaborator: log.worker || { full_name: 'Unknown', email: '' },
+                project: log.project || { name: 'Unassigned' },
+                hourly_rate_usd: rate,
+                approved_hours: 0,
+                total_usd: 0,
+                status: 'pending',
+                payment_status: 'pending',
+                paid_at: null,
+                payer: null,
+                payment_id: null
+              });
+            }
+
+            const row = rows.get(key);
+            row.approved_hours += approvedHours;
+            row.total_usd = row.approved_hours * rate;
+          });
+
+        rows.forEach((row) => {
+          const record = findPaymentRecordFrom(payments, row.project_id, row.user_id, row.hourly_rate_usd);
+          if (!record) {
+            return;
+          }
+
+          const recordHours = toNumber(record.approved_hours);
+          const hasNewApprovedHours = Math.abs(recordHours - toNumber(row.approved_hours)) > 0.009;
+          const recordStatus = normalizePaymentStatus(record.status);
+
+          row.payment_id = record.id;
+          row.paid_at = record.paid_at;
+          row.payer = record.payer;
+          row.status = recordStatus;
+          row.payment_status = recordStatus === 'paid' && hasNewApprovedHours ? 'pending' : recordStatus;
+        });
+
+        return Array.from(rows.values()).sort((a, b) => {
+          const projectCompare = compareText(a.project?.name, b.project?.name);
+          if (projectCompare !== 0) {
+            return projectCompare;
+          }
+          return compareText(a.collaborator?.full_name || a.collaborator?.email, b.collaborator?.full_name || b.collaborator?.email);
+        });
+      }
+
+      function findPaymentRecordFrom(payments, projectId, userId, hourlyRate) {
+        return payments
+          .filter((payment) => (
+            payment.project_id === projectId
+            && payment.user_id === userId
+            && toNumber(payment.hourly_rate_usd) === toNumber(hourlyRate)
+          ))
+          .sort((a, b) => compareDateDesc(a.updated_at || a.created_at, b.updated_at || b.created_at))[0] || null;
+      }
+
+      function isOpenDeliverable(deliverable) {
+        return ['planned', 'in_progress', 'delivered'].includes(String(deliverable?.status || '').toLowerCase());
+      }
+
+      function isCompletedDeliverable(deliverable) {
+        return ['approved', 'completed'].includes(String(deliverable?.status || '').toLowerCase());
+      }
+
+      function buildDashboardActivityItems({ workLogs, deliverables, tasks, timeEntries, documents, paymentHistory, projectRoles, personalOnly = false }) {
+        const activities = [];
+
+        workLogs.forEach((log) => {
+          activities.push({
+            date: log.submitted_at || log.work_date,
+            title: `${dashboardActorName(log.worker, 'Collaborator', personalOnly)} created Work Log`,
+            meta: `${log.project?.name || 'Unassigned'} - ${log.title || 'Work log'}`
+          });
+
+          if (log.approved_at) {
+            activities.push({
+              date: log.approved_at,
+              title: `${dashboardActorName(log.approver, 'Owner', personalOnly)} approved Work Log`,
+              meta: `${log.project?.name || 'Unassigned'} - Approved ${formatHours(approvedHoursForLog(log))} of ${formatHours(log.hours_used)} hours`
+            });
+          }
+        });
+
+        deliverables.forEach((deliverable) => {
+          activities.push({
+            date: deliverable.created_at,
+            title: `${dashboardActorName(deliverable.creator, 'Owner', personalOnly)} created Deliverable`,
+            meta: `${deliverable.project?.name || 'Unassigned'} - ${deliverable.title}`
+          });
+
+          if (deliverable.approved_at) {
+            activities.push({
+              date: deliverable.approved_at,
+              title: `${dashboardActorName(deliverable.approver, 'Owner', personalOnly)} approved Deliverable`,
+              meta: `${deliverable.project?.name || 'Unassigned'} - ${deliverable.title}`
+            });
+          }
+        });
+
+        tasks.forEach((task) => {
+          activities.push({
+            date: task.created_at,
+            title: `${dashboardActorName(task.creator, 'Owner', personalOnly)} created Task`,
+            meta: `${task.project?.name || 'Unassigned'} - ${task.title}`
+          });
+
+          if (task.completed_at) {
+            activities.push({
+              date: task.completed_at,
+              title: `${dashboardActorName(task.completer || task.assignee, 'Collaborator', personalOnly)} completed Task`,
+              meta: `${task.project?.name || 'Unassigned'} - ${task.title}`
+            });
+          }
+        });
+
+        timeEntries.forEach((entry) => {
+          activities.push({
+            date: entry.started_at,
+            title: `${dashboardActorName(entry.worker, 'Collaborator', personalOnly)} started Timer`,
+            meta: `${entry.project?.name || 'Unassigned'}${entry.task?.title ? ` - ${entry.task.title}` : ''}`
+          });
+
+          if (entry.ended_at) {
+            activities.push({
+              date: entry.ended_at,
+              title: `${dashboardActorName(entry.worker, 'Collaborator', personalOnly)} stopped Timer`,
+              meta: `${entry.project?.name || 'Unassigned'} - ${formatDurationMinutes(timeEntryDurationMinutes(entry))}`
+            });
+          }
+        });
+
+        documents.forEach((document) => {
+          activities.push({
+            date: document.created_at,
+            title: `${dashboardActorName(document.uploader, 'Collaborator', personalOnly)} uploaded Document`,
+            meta: `${document.project?.name || 'Unassigned'} - ${document.name}`
+          });
+
+          if (document.archived_at) {
+            activities.push({
+              date: document.archived_at,
+              title: `${dashboardActorName(document.archiver, 'Owner', personalOnly)} archived Document`,
+              meta: `${document.project?.name || 'Unassigned'} - ${document.name}`
+            });
+          }
+        });
+
+        paymentHistory.forEach((history) => {
+          if (normalizePaymentStatus(history.new_status) === 'paid') {
+            activities.push({
+              date: history.changed_at,
+              title: `${dashboardActorName(history.actor, 'Founder', personalOnly)} marked payment as Paid`,
+              meta: `${history.payment?.project?.name || 'Unassigned'} - ${history.payment?.collaborator?.full_name || history.payment?.collaborator?.email || 'Collaborator'}`
+            });
+          }
+        });
+
+        projectRoles.forEach((assignment) => {
+          const inviteDate = assignment.invited_at || assignment.accepted_at || assignment.joined_at;
+          if (!inviteDate || !isInvitationRecord(assignment)) {
+            return;
+          }
+
+          activities.push({
+            date: inviteDate,
+            title: `${memberName(assignment)} invitation ${statusLabel(normalizeInvitationStatus(assignment))}`,
+            meta: `${assignment.project?.name || 'Project'} - ${roleLabel(assignment.role)}`
+          });
+        });
+
+        return activities
+          .filter((activity) => activity.date)
+          .sort((a, b) => compareDateDesc(a.date, b.date))
+          .map((activity) => ({
+            ...activity,
+            meta: `${formatDate(activity.date)} - ${activity.meta}`
+          }));
+      }
+
+      function dashboardActorName(person, fallback, personalOnly) {
+        if (!personalOnly) {
+          return personDisplayName(person) || fallback;
+        }
+
+        if (person?.id && person.id === state.profile?.id) {
+          return personDisplayName(person) || 'You';
+        }
+
+        return fallback;
       }
 
       function renderPeople() {
