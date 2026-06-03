@@ -29,8 +29,6 @@
       </div>
 
       <div class="auth-card">
-        <a href="/" class="auth-back-link">&larr; Back to Bastida Systems</a>
-
         <div class="auth-tabs" id="auth-tabs" role="tablist" aria-label="Authentication mode">
           <button type="button" class="auth-tab is-active" id="show-sign-in" data-auth-mode="signin">Sign in</button>
           <button type="button" class="auth-tab" id="show-sign-up" data-auth-mode="signup">Create account</button>
@@ -144,15 +142,92 @@
       </div>
     </section>
 
+    <section class="workspace-gate" id="onboarding-view" hidden aria-labelledby="onboarding-title">
+      <div class="workspace-gate-card onboarding-card">
+        <img src="img/logobeoflow.png" alt="Beoflow" class="gate-logo">
+        <p class="eyebrow" id="onboarding-step">Step 1 of 1</p>
+        <h3 id="onboarding-title">Set up your first restaurant</h3>
+        <p id="onboarding-description">Create a workspace for your restaurant, kitchen, or operation.</p>
+        <div class="app-alert" id="onboarding-message" hidden></div>
+
+        <form id="client-form" class="client-form">
+          <label class="form-field form-field-wide">
+            <span>Restaurant / Operation Name</span>
+            <input type="text" id="client-name" required placeholder="Restaurant name">
+          </label>
+          <label class="form-field">
+            <span>Business Type</span>
+            <select id="client-type" required>
+              <option value="restaurant">Restaurant</option>
+              <option value="catering">Catering</option>
+              <option value="casino_kitchen">Casino Kitchen</option>
+              <option value="hotel_kitchen">Hotel Kitchen</option>
+              <option value="bar">Bar</option>
+              <option value="food_truck">Food Truck</option>
+              <option value="company">Company</option>
+              <option value="other">Other</option>
+            </select>
+          </label>
+          <label class="form-field">
+            <span>City optional</span>
+            <input type="text" id="client-city" placeholder="City">
+          </label>
+          <label class="form-field">
+            <span>State optional</span>
+            <input type="text" id="client-state" placeholder="State">
+          </label>
+          <label class="form-field">
+            <span>Timezone optional</span>
+            <input type="text" id="client-timezone" placeholder="America/Los_Angeles">
+          </label>
+          <button type="submit" class="primary-action form-field-wide" id="create-client-button">Create Workspace</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="workspace-gate" id="workspace-created-view" hidden aria-labelledby="workspace-created-title">
+      <div class="workspace-gate-card workspace-created-card">
+        <img src="img/logobeoflow.png" alt="Beoflow" class="gate-logo">
+        <p class="eyebrow">Beoflow Workspace</p>
+        <h3 id="workspace-created-title">Workspace created</h3>
+        <p id="workspace-created-description">Your Beoflow workspace is ready.</p>
+        <button type="button" class="primary-action" id="continue-dashboard-button">Continue to dashboard</button>
+      </div>
+    </section>
+
+    <section class="workspace-gate" id="client-selector-view" hidden aria-labelledby="client-selector-title">
+      <div class="workspace-gate-card workspace-selector-card">
+        <img src="img/logobeoflow.png" alt="Beoflow" class="gate-logo">
+        <p class="eyebrow">Choose workspace</p>
+        <h3 id="client-selector-title">Choose your workspace</h3>
+        <p>Select the restaurant or operation you want to manage.</p>
+        <div class="client-list" id="client-list"></div>
+        <button type="button" class="secondary-action selector-add-action" id="selector-add-client-button">Add another restaurant</button>
+      </div>
+    </section>
+
     <section class="workspace-shell" id="workspace-view" hidden>
-      <aside class="workspace-sidebar">
-        <a href="beoflow.html" class="sidebar-brand">
+      <header class="mobile-topbar" aria-label="Beoflow mobile navigation">
+        <div class="mobile-topbar-brand">
           <img src="img/logobeoflow.png" alt="Beoflow">
-          <span>Beoflow</span>
-        </a>
-        <div class="sidebar-home-links" aria-label="Bastida Systems navigation">
-          <a href="/">Bastida Systems</a>
-          <a href="/beoflow.html">Back to Beoflow overview</a>
+          <span id="mobile-workspace-name">Beoflow</span>
+        </div>
+        <button type="button" class="mobile-menu-button" id="mobile-menu-button" aria-label="Open menu" aria-controls="workspace-sidebar" aria-expanded="false">
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </button>
+      </header>
+
+      <div class="mobile-drawer-overlay" id="mobile-drawer-overlay" hidden></div>
+
+      <aside class="workspace-sidebar" id="workspace-sidebar" aria-label="Beoflow navigation">
+        <div class="mobile-drawer-header">
+          <div class="sidebar-brand">
+            <img src="img/logobeoflow.png" alt="Beoflow">
+            <span>Beoflow</span>
+          </div>
+          <button type="button" class="mobile-drawer-close" id="mobile-drawer-close" aria-label="Close menu">×</button>
         </div>
         <nav aria-label="Beoflow modules">
           <button type="button" class="sidebar-link is-active" data-section="dashboard" aria-current="page">Dashboard</button>
@@ -164,6 +239,12 @@
           <button type="button" class="sidebar-link" data-section="staff">Staff</button>
           <button type="button" class="sidebar-link" data-section="reports">Reports</button>
         </nav>
+        <div class="mobile-drawer-actions" aria-label="Workspace actions">
+          <button type="button" class="sidebar-link" id="mobile-switch-client-button" data-mobile-action="switch-workspace">Switch workspace</button>
+          <button type="button" class="sidebar-link" id="mobile-add-restaurant-button" data-mobile-action="add-restaurant">Add restaurant</button>
+          <button type="button" class="sidebar-link" id="mobile-workspace-settings-button" data-mobile-action="workspace-settings">Workspace settings</button>
+          <button type="button" class="sidebar-link sidebar-link-danger" id="mobile-sign-out-button" data-mobile-action="sign-out">Sign out</button>
+        </div>
       </aside>
 
       <section class="workspace-main">
@@ -175,59 +256,23 @@
           </div>
           <div class="header-actions">
             <button type="button" class="secondary-action" id="switch-client-button" hidden>Switch restaurant</button>
+            <button type="button" class="secondary-action" id="add-restaurant-button">Add restaurant</button>
+            <button type="button" class="secondary-action" id="workspace-settings-button">Workspace settings</button>
             <button type="button" class="secondary-action" id="sign-out-button">Sign out</button>
           </div>
         </header>
 
         <div class="app-alert" id="workspace-message" hidden></div>
 
-        <section class="onboarding-card" id="onboarding-view" hidden aria-labelledby="onboarding-title">
-          <p class="eyebrow">Onboarding</p>
-          <h3 id="onboarding-title">Create your restaurant</h3>
-          <p>Set up the restaurant workspace your team will use for events, menus, recipes, inventory, production, staff, and reporting.</p>
-
-          <form id="client-form" class="client-form">
-            <label class="form-field form-field-wide">
-              <span>Restaurant / Operation Name</span>
-              <input type="text" id="client-name" required placeholder="Restaurant name">
-            </label>
-            <label class="form-field">
-              <span>Business Type</span>
-              <select id="client-type" required>
-                <option value="restaurant">Restaurant</option>
-                <option value="catering">Catering</option>
-                <option value="casino_kitchen">Casino Kitchen</option>
-                <option value="hotel_kitchen">Hotel Kitchen</option>
-                <option value="bar">Bar</option>
-                <option value="food_truck">Food Truck</option>
-                <option value="company">Company</option>
-                <option value="other">Other</option>
-              </select>
-            </label>
-            <label class="form-field">
-              <span>City optional</span>
-              <input type="text" id="client-city" placeholder="City">
-            </label>
-            <label class="form-field">
-              <span>State optional</span>
-              <input type="text" id="client-state" placeholder="State">
-            </label>
-            <label class="form-field">
-              <span>Timezone optional</span>
-              <input type="text" id="client-timezone" placeholder="America/Los_Angeles">
-            </label>
-            <button type="submit" class="primary-action form-field-wide" id="create-client-button">Create Restaurant</button>
-          </form>
-        </section>
-
-        <section class="client-selector" id="client-selector-view" hidden aria-labelledby="client-selector-title">
-          <p class="eyebrow">Choose workspace</p>
-          <h3 id="client-selector-title">Select your restaurant</h3>
-          <p>You have access to more than one Beoflow client. Choose the workspace you want to open.</p>
-          <div class="client-list" id="client-list"></div>
-        </section>
-
         <section class="dashboard-view" id="dashboard-view" hidden aria-labelledby="dashboard-title">
+          <div class="workspace-control" id="workspace-control">
+            <div>
+              <span>Current workspace</span>
+              <strong id="workspace-control-name">Restaurant workspace</strong>
+            </div>
+            <span class="workspace-badge">Beoflow Workspace</span>
+          </div>
+
           <div class="dashboard-heading">
             <div>
               <p class="eyebrow">Beoflow Workspace</p>
@@ -322,6 +367,62 @@
           <div class="modal-actions">
             <button type="button" class="secondary-action" id="module-cancel-button">Cancel</button>
             <button type="submit" class="primary-action" id="module-save-button">Save</button>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <div class="module-modal-backdrop" id="workspace-switcher-modal" hidden>
+      <section class="module-modal workspace-modal" role="dialog" aria-modal="true" aria-labelledby="workspace-switcher-title">
+        <header class="module-modal-header">
+          <div>
+            <p class="eyebrow">Beoflow Workspace</p>
+            <h3 id="workspace-switcher-title">Switch workspace</h3>
+            <p>Select the restaurant or operation you want to manage.</p>
+          </div>
+          <button type="button" class="modal-icon-button" id="workspace-switcher-close" aria-label="Close workspace switcher">Close</button>
+        </header>
+        <div class="workspace-switcher-list" id="workspace-switcher-list"></div>
+        <div class="modal-actions">
+          <button type="button" class="secondary-action" id="workspace-switcher-add-button">Add another restaurant</button>
+        </div>
+      </section>
+    </div>
+
+    <div class="module-modal-backdrop" id="workspace-settings-modal" hidden>
+      <section class="module-modal workspace-modal" role="dialog" aria-modal="true" aria-labelledby="workspace-settings-title">
+        <header class="module-modal-header">
+          <div>
+            <p class="eyebrow">Workspace settings</p>
+            <h3 id="workspace-settings-title">Workspace settings</h3>
+            <p>Edit the business name and type for the active Beoflow workspace.</p>
+          </div>
+          <button type="button" class="modal-icon-button" id="workspace-settings-close" aria-label="Close workspace settings">Close</button>
+        </header>
+        <div class="app-alert" id="workspace-settings-message" hidden></div>
+        <form class="module-form" id="workspace-settings-form">
+          <div class="module-form-fields">
+            <label class="form-field form-field-wide">
+              <span>Business name</span>
+              <input type="text" id="workspace-settings-name" required placeholder="Restaurant name">
+            </label>
+            <label class="form-field form-field-wide">
+              <span>Business type</span>
+              <select id="workspace-settings-type" required>
+                <option value="restaurant">Restaurant</option>
+                <option value="catering">Catering</option>
+                <option value="casino_kitchen">Casino Kitchen</option>
+                <option value="hotel_kitchen">Hotel Kitchen</option>
+                <option value="bar">Bar</option>
+                <option value="food_truck">Food Truck</option>
+                <option value="company">Company</option>
+                <option value="other">Other</option>
+              </select>
+            </label>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="secondary-action" id="workspace-settings-cancel">Cancel</button>
+            <button type="submit" class="primary-action" id="workspace-settings-save">Save settings</button>
           </div>
         </form>
       </section>

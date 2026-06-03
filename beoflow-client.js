@@ -17,6 +17,8 @@ const state = {
   reportsData: null,
   modalSection: null,
   editingRecord: null,
+  mobileDrawerOpen: false,
+  onboardingMode: 'first',
   authMode: 'signin',
   isRecoveryMode: false,
   passwordUpdatePending: false,
@@ -220,6 +222,13 @@ function cacheElements() {
     'workspace-subtitle',
     'workspace-message',
     'onboarding-view',
+    'onboarding-step',
+    'onboarding-title',
+    'onboarding-description',
+    'onboarding-message',
+    'workspace-created-view',
+    'workspace-created-description',
+    'continue-dashboard-button',
     'client-selector-view',
     'dashboard-view',
     'client-form',
@@ -230,8 +239,19 @@ function cacheElements() {
     'client-timezone',
     'create-client-button',
     'client-list',
+    'selector-add-client-button',
     'dashboard-title',
     'dashboard-description',
+    'workspace-control-name',
+    'workspace-sidebar',
+    'mobile-workspace-name',
+    'mobile-menu-button',
+    'mobile-drawer-overlay',
+    'mobile-drawer-close',
+    'mobile-switch-client-button',
+    'mobile-add-restaurant-button',
+    'mobile-workspace-settings-button',
+    'mobile-sign-out-button',
     'module-view',
     'module-title',
     'module-subtitle',
@@ -254,6 +274,20 @@ function cacheElements() {
     'module-cancel-button',
     'module-save-button',
     'switch-client-button',
+    'add-restaurant-button',
+    'workspace-settings-button',
+    'workspace-switcher-modal',
+    'workspace-switcher-list',
+    'workspace-switcher-close',
+    'workspace-switcher-add-button',
+    'workspace-settings-modal',
+    'workspace-settings-close',
+    'workspace-settings-message',
+    'workspace-settings-form',
+    'workspace-settings-name',
+    'workspace-settings-type',
+    'workspace-settings-cancel',
+    'workspace-settings-save',
     'sign-out-button'
   ].forEach(id => {
     els[id] = document.getElementById(id);
@@ -378,6 +412,8 @@ function clearAlerts() {
   showAlert(els['auth-message'], '');
   showAlert(els['workspace-message'], '');
   showAlert(els['module-form-message'], '');
+  showAlert(els['workspace-settings-message'], '');
+  showAlert(els['onboarding-message'], '');
 }
 
 function setLoading(isLoading) {
@@ -392,8 +428,21 @@ function setLoading(isLoading) {
     els['module-save-button'],
     els['module-cancel-button'],
     els['module-modal-close'],
+    els['continue-dashboard-button'],
+    els['selector-add-client-button'],
     els['sign-out-button'],
-    els['switch-client-button']
+    els['switch-client-button'],
+    els['add-restaurant-button'],
+    els['workspace-settings-button'],
+    els['mobile-switch-client-button'],
+    els['mobile-add-restaurant-button'],
+    els['mobile-workspace-settings-button'],
+    els['mobile-sign-out-button'],
+    els['workspace-switcher-close'],
+    els['workspace-switcher-add-button'],
+    els['workspace-settings-close'],
+    els['workspace-settings-cancel'],
+    els['workspace-settings-save']
   ].forEach(button => {
     if (button) button.disabled = isLoading;
   });
@@ -623,10 +672,65 @@ function updateDashboardCards(counts = state.moduleCounts) {
 }
 
 function hideWorkspaceSections() {
-  els['onboarding-view'].hidden = true;
-  els['client-selector-view'].hidden = true;
   els['dashboard-view'].hidden = true;
   els['module-view'].hidden = true;
+}
+
+function hideStandaloneWorkspaceViews() {
+  els['onboarding-view'].hidden = true;
+  els['workspace-created-view'].hidden = true;
+  els['client-selector-view'].hidden = true;
+}
+
+function closeWorkspaceModals() {
+  els['workspace-switcher-modal'].hidden = true;
+  els['workspace-settings-modal'].hidden = true;
+  showAlert(els['workspace-settings-message'], '');
+}
+
+function isMobileWorkspaceLayout() {
+  return window.matchMedia?.('(max-width: 860px)').matches || false;
+}
+
+function syncMobileDrawerState() {
+  const drawer = els['workspace-sidebar'];
+  const overlay = els['mobile-drawer-overlay'];
+  const menuButton = els['mobile-menu-button'];
+  if (!drawer || !overlay || !menuButton) return;
+
+  const isMobile = isMobileWorkspaceLayout();
+  const isOpen = isMobile && state.mobileDrawerOpen;
+  drawer.classList.toggle('is-open', isOpen);
+  drawer.setAttribute('aria-hidden', isMobile ? String(!isOpen) : 'false');
+  overlay.hidden = !isOpen;
+  overlay.classList.toggle('open', isOpen);
+  menuButton.setAttribute('aria-expanded', String(isOpen));
+  menuButton.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open menu');
+  document.body.classList.toggle('mobile-menu-open', isOpen);
+
+  if (!isMobile && state.mobileDrawerOpen) {
+    state.mobileDrawerOpen = false;
+  }
+}
+
+function openMobileDrawer() {
+  state.mobileDrawerOpen = true;
+  syncMobileDrawerState();
+}
+
+function closeMobileDrawer() {
+  state.mobileDrawerOpen = false;
+  syncMobileDrawerState();
+}
+
+function renderStandaloneWorkspaceView(viewId) {
+  els['session-loading-view'].hidden = true;
+  els['auth-view'].hidden = true;
+  els['workspace-view'].hidden = true;
+  closeMobileDrawer();
+  closeWorkspaceModals();
+  hideStandaloneWorkspaceViews();
+  els[viewId].hidden = false;
 }
 
 function setActiveSidebarSection(section) {
@@ -666,6 +770,9 @@ function renderLoadingSession() {
   els['session-loading-view'].hidden = false;
   els['auth-view'].hidden = true;
   els['workspace-view'].hidden = true;
+  hideStandaloneWorkspaceViews();
+  closeMobileDrawer();
+  closeWorkspaceModals();
 }
 
 function setAuthCopy(title, subtitle) {
@@ -716,6 +823,9 @@ function renderAuthView() {
   els['session-loading-view'].hidden = true;
   els['auth-view'].hidden = false;
   els['workspace-view'].hidden = true;
+  hideStandaloneWorkspaceViews();
+  closeMobileDrawer();
+  closeWorkspaceModals();
   els['auth-tabs'].hidden = false;
   els['auth-form'].hidden = false;
   els['forgot-password-button'].hidden = false;
@@ -737,6 +847,9 @@ function renderResetRequestView() {
   els['session-loading-view'].hidden = true;
   els['auth-view'].hidden = false;
   els['workspace-view'].hidden = true;
+  hideStandaloneWorkspaceViews();
+  closeMobileDrawer();
+  closeWorkspaceModals();
   els['auth-tabs'].hidden = true;
   els['auth-form'].hidden = true;
   els['forgot-password-button'].hidden = true;
@@ -755,6 +868,9 @@ function renderPasswordRecoveryView() {
   els['session-loading-view'].hidden = true;
   els['auth-view'].hidden = false;
   els['workspace-view'].hidden = true;
+  hideStandaloneWorkspaceViews();
+  closeMobileDrawer();
+  closeWorkspaceModals();
   els['auth-tabs'].hidden = true;
   els['auth-form'].hidden = true;
   els['forgot-password-button'].hidden = true;
@@ -776,8 +892,14 @@ function renderConfigState() {
 }
 
 function renderWorkspaceFrame() {
+  if (!state.activeClient?.id) {
+    renderClientSelector();
+    return;
+  }
+
   els['session-loading-view'].hidden = true;
   els['auth-view'].hidden = true;
+  hideStandaloneWorkspaceViews();
   els['workspace-view'].hidden = false;
   const activeName = state.activeClient?.name || 'Beoflow';
   els['workspace-title'].textContent = activeName;
@@ -785,18 +907,63 @@ function renderWorkspaceFrame() {
     ? `Beoflow Workspace for ${formatClientType(state.activeClient.client_type)} operations.`
     : 'Create or select a restaurant to start using Beoflow.';
   els['switch-client-button'].hidden = state.userClients.length < 2;
+  els['mobile-switch-client-button'].hidden = false;
+  renderWorkspaceBadge();
+  syncMobileDrawerState();
 }
 
-function renderOnboarding() {
-  renderWorkspaceFrame();
-  hideWorkspaceSections();
-  els['onboarding-view'].hidden = false;
+function renderWorkspaceBadge() {
+  if (!state.activeClient) return;
+  if (els['workspace-control-name']) {
+    els['workspace-control-name'].textContent = state.activeClient.name || 'Restaurant workspace';
+  }
+  if (els['mobile-workspace-name']) {
+    els['mobile-workspace-name'].textContent = state.activeClient.name || 'Beoflow';
+  }
+}
+
+function resetClientForm() {
+  els['client-form'].reset();
+  els['client-type'].value = 'restaurant';
+}
+
+function renderOnboarding(mode = 'first') {
+  state.onboardingMode = mode;
+  clearAlerts();
+  renderStandaloneWorkspaceView('onboarding-view');
+  resetClientForm();
+
+  if (mode === 'add') {
+    els['onboarding-step'].textContent = 'Add workspace';
+    els['onboarding-title'].textContent = 'Add another restaurant';
+    els['onboarding-description'].textContent = 'Create another Beoflow workspace for a restaurant, kitchen, or operation.';
+    els['create-client-button'].textContent = 'Create Workspace';
+    return;
+  }
+
+  els['onboarding-step'].textContent = 'Step 1 of 1';
+  els['onboarding-title'].textContent = 'Set up your first restaurant';
+  els['onboarding-description'].textContent = 'Create a workspace for your restaurant, kitchen, or operation.';
+  els['create-client-button'].textContent = 'Create Workspace';
+}
+
+function showWorkspaceOnboarding() {
+  renderOnboarding('first');
+}
+
+function renderWorkspaceCreated() {
+  renderStandaloneWorkspaceView('workspace-created-view');
+  const activeName = state.activeClient?.name || 'Your workspace';
+  els['workspace-created-description'].textContent = `${activeName} is ready in Beoflow.`;
 }
 
 function renderClientSelector() {
-  renderWorkspaceFrame();
-  hideWorkspaceSections();
-  els['client-selector-view'].hidden = false;
+  if (state.userClients.length === 0) {
+    showWorkspaceOnboarding();
+    return;
+  }
+
+  renderStandaloneWorkspaceView('client-selector-view');
   els['client-list'].innerHTML = '';
 
   state.userClients.forEach(client => {
@@ -806,13 +973,12 @@ function renderClientSelector() {
     button.innerHTML = `
       <span>
         <strong>${escapeHtml(client.name)}</strong>
-        <span>${escapeHtml(formatClientType(client.client_type))} • ${escapeHtml(client.member_role || 'member')}</span>
+        <span>${escapeHtml(formatClientType(client.client_type))} • ${escapeHtml(client.status || 'active')}</span>
       </span>
-      <span>Open</span>
+      <span>Open workspace</span>
     `;
     button.addEventListener('click', () => {
-      setActiveClient(client);
-      renderDashboard();
+      switchWorkspace(client.id);
     });
     els['client-list'].appendChild(button);
   });
@@ -1488,12 +1654,16 @@ async function createBeoflowClient(clientInput) {
 
   await loadUserClients();
   setActiveClient(state.userClients.find(row => row.id === client.id) || client);
-  renderDashboard();
+  renderWorkspaceCreated();
   return client;
 }
 
 function setActiveClient(client) {
-  state.activeClient = client || null;
+  const validClient = client?.id
+    ? state.userClients.find(row => row.id === client.id) || client
+    : null;
+
+  state.activeClient = validClient;
   state.moduleRecords = {};
   state.moduleCounts = {};
   state.reportsData = null;
@@ -1508,18 +1678,156 @@ function setActiveClient(client) {
   return state.activeClient;
 }
 
+function clearActiveClient() {
+  return setActiveClient(null);
+}
+
 function requireActiveClient() {
-  if (state.activeClient) return state.activeClient;
+  if (
+    state.activeClient?.id
+    && state.userClients.some(client => client.id === state.activeClient.id)
+  ) {
+    return state.activeClient;
+  }
+
+  if (state.activeClient?.id) {
+    clearActiveClient();
+  }
 
   if (state.userClients.length === 0) {
-    renderOnboarding();
+    showWorkspaceOnboarding();
     return null;
   }
 
   const storedClientId = localStorage.getItem(config.activeClientStorageKey || 'beoflow.activeClientId');
   const storedClient = state.userClients.find(client => client.id === storedClientId);
-  setActiveClient(storedClient || state.userClients[0]);
+  if (storedClient && state.userClients.length === 1) {
+    setActiveClient(storedClient);
+    return state.activeClient;
+  }
+
+  if (storedClientId && !storedClient) {
+    localStorage.removeItem(config.activeClientStorageKey || 'beoflow.activeClientId');
+  }
+
+  renderClientSelector();
+  return null;
+}
+
+function switchWorkspace(clientId) {
+  const client = state.userClients.find(row => row.id === clientId);
+  if (!client) {
+    clearActiveClient();
+    renderClientSelector();
+    return null;
+  }
+
+  setActiveClient(client);
+  closeWorkspaceModals();
+  renderDashboard();
   return state.activeClient;
+}
+
+function addAnotherRestaurant() {
+  closeWorkspaceModals();
+  clearAlerts();
+  renderOnboarding('add');
+}
+
+function showWorkspaceSwitcher() {
+  if (state.userClients.length < 2) {
+    renderClientSelector();
+    return;
+  }
+
+  els['workspace-switcher-list'].innerHTML = '';
+  state.userClients.forEach(client => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'client-option';
+    button.innerHTML = `
+      <span>
+        <strong>${escapeHtml(client.name)}</strong>
+        <span>${escapeHtml(formatClientType(client.client_type))} • ${escapeHtml(client.status || 'active')}</span>
+      </span>
+      <span>${client.id === state.activeClient?.id ? 'Current' : 'Open workspace'}</span>
+    `;
+    button.disabled = client.id === state.activeClient?.id;
+    button.addEventListener('click', () => {
+      switchWorkspace(client.id);
+    });
+    els['workspace-switcher-list'].appendChild(button);
+  });
+
+  els['workspace-switcher-modal'].hidden = false;
+}
+
+function showWorkspaceSettings() {
+  const activeClient = requireActiveClient();
+  if (!activeClient) return;
+
+  showAlert(els['workspace-settings-message'], '');
+  els['workspace-settings-name'].value = activeClient.name || '';
+  els['workspace-settings-type'].value = activeClient.client_type || 'restaurant';
+  els['workspace-settings-modal'].hidden = false;
+}
+
+async function updateWorkspaceSettings() {
+  const activeClient = requireActiveClient();
+  if (!activeClient) throw new Error('Open a workspace before editing settings.');
+
+  const name = els['workspace-settings-name'].value.trim();
+  if (!name) throw new Error('Business name is required.');
+
+  const payload = {
+    name,
+    client_type: els['workspace-settings-type'].value
+  };
+
+  const { data, error } = await requireSupabaseClient()
+    .from('clients')
+    .update(payload)
+    .eq('id', activeClient.id)
+    .select('id, name, client_type, status, created_at, updated_at')
+    .single();
+
+  if (error) throw error;
+
+  const updatedClient = {
+    ...activeClient,
+    ...data
+  };
+  state.userClients = state.userClients.map(client => (
+    client.id === updatedClient.id ? { ...client, ...updatedClient } : client
+  ));
+  setActiveClient(updatedClient);
+  closeWorkspaceModals();
+  renderDashboard();
+  showToast('Workspace settings updated.');
+  return updatedClient;
+}
+
+function handleMobileDrawerAction(action) {
+  closeMobileDrawer();
+
+  if (action === 'switch-workspace') {
+    showWorkspaceSwitcher();
+    return;
+  }
+
+  if (action === 'add-restaurant') {
+    addAnotherRestaurant();
+    return;
+  }
+
+  if (action === 'workspace-settings') {
+    showWorkspaceSettings();
+    return;
+  }
+
+  if (action === 'sign-out') {
+    signOut();
+  }
 }
 
 function resetSessionState() {
@@ -1533,6 +1841,8 @@ function resetSessionState() {
   state.reportsData = null;
   state.modalSection = null;
   state.editingRecord = null;
+  state.mobileDrawerOpen = false;
+  state.onboardingMode = 'first';
   localStorage.removeItem(config.activeClientStorageKey || 'beoflow.activeClientId');
 }
 
@@ -1570,7 +1880,7 @@ async function refreshAuthenticatedState(user) {
 
     if (state.userClients.length === 0) {
       setActiveClient(null);
-      renderOnboarding();
+      showWorkspaceOnboarding();
       return;
     }
 
@@ -1581,16 +1891,17 @@ async function refreshAuthenticatedState(user) {
     }
 
     const storedClientId = localStorage.getItem(config.activeClientStorageKey || 'beoflow.activeClientId');
-    const storedClient = state.userClients.find(client => client.id === storedClientId);
-
-    if (storedClient) {
-      setActiveClient(storedClient);
-      renderDashboard();
-    } else {
-      renderClientSelector();
+    if (storedClientId && !state.userClients.some(client => client.id === storedClientId)) {
+      localStorage.removeItem(config.activeClientStorageKey || 'beoflow.activeClientId');
     }
+
+    clearActiveClient();
+    renderClientSelector();
   } catch (error) {
-    renderWorkspaceFrame();
+    els['session-loading-view'].hidden = true;
+    els['auth-view'].hidden = true;
+    els['workspace-view'].hidden = false;
+    hideStandaloneWorkspaceViews();
     hideWorkspaceSections();
     showAlert(els['workspace-message'], error.message || 'Unable to load your Beoflow workspace.');
   } finally {
@@ -1606,6 +1917,18 @@ function bindEvents() {
       setPasswordToggleState(button, input, input.type === 'password');
     });
   });
+
+  els['mobile-menu-button'].addEventListener('click', () => {
+    if (state.mobileDrawerOpen) {
+      closeMobileDrawer();
+      return;
+    }
+
+    openMobileDrawer();
+  });
+
+  els['mobile-drawer-close'].addEventListener('click', closeMobileDrawer);
+  els['mobile-drawer-overlay'].addEventListener('click', closeMobileDrawer);
 
   els['show-sign-in'].addEventListener('click', () => {
     state.authMode = 'signin';
@@ -1729,19 +2052,62 @@ function bindEvents() {
         timezone: els['client-timezone'].value.trim()
       });
     } catch (error) {
-      showAlert(els['workspace-message'], error.message || 'Unable to create restaurant.');
+      showAlert(els['onboarding-message'], error.message || 'Unable to create restaurant.');
     } finally {
       setLoading(false);
     }
   });
 
+  els['continue-dashboard-button'].addEventListener('click', () => {
+    renderDashboard();
+  });
+
+  els['selector-add-client-button'].addEventListener('click', addAnotherRestaurant);
+
   els['switch-client-button'].addEventListener('click', () => {
-    if (state.userClients.length > 1) renderClientSelector();
+    showWorkspaceSwitcher();
+  });
+
+  els['add-restaurant-button'].addEventListener('click', addAnotherRestaurant);
+  els['workspace-settings-button'].addEventListener('click', showWorkspaceSettings);
+
+  document.querySelectorAll('[data-mobile-action]').forEach(button => {
+    button.addEventListener('click', () => {
+      handleMobileDrawerAction(button.dataset.mobileAction);
+    });
+  });
+
+  els['workspace-switcher-add-button'].addEventListener('click', addAnotherRestaurant);
+  els['workspace-switcher-close'].addEventListener('click', closeWorkspaceModals);
+  els['workspace-switcher-modal'].addEventListener('click', event => {
+    if (event.target === els['workspace-switcher-modal']) closeWorkspaceModals();
+  });
+
+  els['workspace-settings-close'].addEventListener('click', closeWorkspaceModals);
+  els['workspace-settings-cancel'].addEventListener('click', closeWorkspaceModals);
+  els['workspace-settings-modal'].addEventListener('click', event => {
+    if (event.target === els['workspace-settings-modal']) closeWorkspaceModals();
+  });
+
+  els['workspace-settings-form'].addEventListener('submit', async event => {
+    event.preventDefault();
+    clearAlerts();
+    setLoading(true);
+
+    try {
+      await updateWorkspaceSettings();
+    } catch (error) {
+      showAlert(els['workspace-settings-message'], error.message || 'Unable to update workspace settings.');
+    } finally {
+      setLoading(false);
+    }
   });
 
   document.querySelectorAll('.sidebar-link[data-section]').forEach(button => {
     button.addEventListener('click', () => {
       const section = button.dataset.section;
+      closeMobileDrawer();
+
       if (section === 'dashboard') {
         renderDashboard();
         return;
@@ -1794,11 +2160,24 @@ function bindEvents() {
     if (event.key === 'Escape' && !els['module-modal'].hidden) {
       closeModuleModal();
     }
+
+    if (event.key === 'Escape' && state.mobileDrawerOpen) {
+      closeMobileDrawer();
+    }
+
+    if (
+      event.key === 'Escape'
+      && (!els['workspace-switcher-modal'].hidden || !els['workspace-settings-modal'].hidden)
+    ) {
+      closeWorkspaceModals();
+    }
   });
 
   els['sign-out-button'].addEventListener('click', () => {
     signOut();
   });
+
+  window.addEventListener('resize', syncMobileDrawerState);
 }
 
 async function boot() {
@@ -1861,6 +2240,16 @@ window.BeoflowClientApp = {
   updatePassword,
   renderDashboard,
   renderModuleSection,
+  showWorkspaceOnboarding,
+  renderOnboarding,
+  renderClientSelector,
+  renderWorkspaceCreated,
+  showWorkspaceSwitcher,
+  showWorkspaceSettings,
+  updateWorkspaceSettings,
+  switchWorkspace,
+  addAnotherRestaurant,
+  clearActiveClient,
   setActiveClient,
   requireActiveClient,
   state
