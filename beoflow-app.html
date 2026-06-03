@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beoflow App | Bastida Systems</title>
+  <link rel="icon" type="image/png" href="img/logobeoflow.png">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="beoflow-app.css?v=client-prod-auth-20260603">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="beoflow-client-config.js?v=client-prod-auth-20260603"></script>
+  <script src="beoflow-client.js?v=client-prod-auth-20260603" defer></script>
+</head>
+<body class="beoflow-app-shell">
+  <main class="beoflow-app" data-testid="beoflow-app">
+    <section class="session-loading" id="session-loading-view" aria-live="polite">
+      <img src="img/logobeoflow.png" alt="" aria-hidden="true">
+      <p class="eyebrow">Beoflow</p>
+      <h1>Loading session</h1>
+      <p>Preparing your secure Beoflow workspace.</p>
+    </section>
+
+    <section class="auth-panel" id="auth-view" aria-labelledby="auth-title">
+      <div class="brand-block">
+        <img src="img/logobeoflow.png" alt="Beoflow" class="app-logo">
+        <p class="eyebrow">Beoflow</p>
+        <h1 id="auth-title">Kitchen operations workspace</h1>
+        <p>Sign in or create an account to manage your restaurant, events, recipes, inventory, staff, and reports.</p>
+      </div>
+
+      <div class="auth-card">
+        <div class="auth-tabs" id="auth-tabs" role="tablist" aria-label="Authentication mode">
+          <button type="button" class="auth-tab is-active" id="show-sign-in" data-auth-mode="signin">Sign in</button>
+          <button type="button" class="auth-tab" id="show-sign-up" data-auth-mode="signup">Create account</button>
+        </div>
+
+        <div class="app-alert" id="config-alert" hidden></div>
+        <div class="app-alert app-alert-success" id="auth-message" hidden></div>
+
+        <form id="auth-form" class="stacked-form">
+          <label class="form-field" id="full-name-field" hidden>
+            <span>Full name</span>
+            <input type="text" id="auth-full-name" autocomplete="name" placeholder="Your name">
+          </label>
+          <label class="form-field">
+            <span>Email</span>
+            <input type="email" id="auth-email" autocomplete="email" required placeholder="you@example.com">
+          </label>
+          <label class="form-field">
+            <span>Password</span>
+            <input type="password" id="auth-password" autocomplete="current-password" required minlength="6" placeholder="Minimum 6 characters">
+          </label>
+          <button type="submit" class="primary-action" id="auth-submit">Sign in</button>
+        </form>
+
+        <button type="button" class="text-action" id="forgot-password-button">Forgot password?</button>
+
+        <form id="password-reset-request-form" class="stacked-form" hidden>
+          <label class="form-field">
+            <span>Email</span>
+            <input type="email" id="reset-email" autocomplete="email" required placeholder="you@example.com">
+          </label>
+          <button type="submit" class="primary-action" id="reset-submit">Send reset email</button>
+          <button type="button" class="text-action text-action-inline" id="back-to-sign-in-button">Back to sign in</button>
+        </form>
+
+        <form id="password-recovery-form" class="stacked-form" hidden>
+          <label class="form-field">
+            <span>New password</span>
+            <input type="password" id="new-password" autocomplete="new-password" required minlength="6" placeholder="Minimum 6 characters">
+          </label>
+          <label class="form-field">
+            <span>Confirm new password</span>
+            <input type="password" id="confirm-new-password" autocomplete="new-password" required minlength="6" placeholder="Confirm password">
+          </label>
+          <button type="submit" class="primary-action" id="update-password-submit">Update password</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="workspace-shell" id="workspace-view" hidden>
+      <aside class="workspace-sidebar">
+        <a href="beoflow.html" class="sidebar-brand">
+          <img src="img/logobeoflow.png" alt="Beoflow">
+          <span>Beoflow</span>
+        </a>
+        <nav aria-label="Beoflow modules">
+          <button type="button" class="sidebar-link is-active">Dashboard</button>
+          <button type="button" class="sidebar-link">Events</button>
+          <button type="button" class="sidebar-link">Menu</button>
+          <button type="button" class="sidebar-link">Recipes</button>
+          <button type="button" class="sidebar-link">Inventory</button>
+          <button type="button" class="sidebar-link">Production</button>
+          <button type="button" class="sidebar-link">Staff</button>
+          <button type="button" class="sidebar-link">Reports</button>
+        </nav>
+      </aside>
+
+      <section class="workspace-main">
+        <header class="workspace-header">
+          <div>
+            <p class="eyebrow">Client-prod workspace</p>
+            <h2 id="workspace-title">Beoflow</h2>
+            <p id="workspace-subtitle">Loading your restaurant workspace.</p>
+          </div>
+          <div class="header-actions">
+            <button type="button" class="secondary-action" id="switch-client-button" hidden>Switch restaurant</button>
+            <button type="button" class="secondary-action" id="sign-out-button">Sign out</button>
+          </div>
+        </header>
+
+        <div class="app-alert" id="workspace-message" hidden></div>
+
+        <section class="onboarding-card" id="onboarding-view" hidden aria-labelledby="onboarding-title">
+          <p class="eyebrow">Onboarding</p>
+          <h3 id="onboarding-title">Create your restaurant</h3>
+          <p>Start your Beoflow workspace by adding your restaurant or operation.</p>
+
+          <form id="client-form" class="client-form">
+            <label class="form-field form-field-wide">
+              <span>Restaurant / Operation Name</span>
+              <input type="text" id="client-name" required placeholder="Restaurant name">
+            </label>
+            <label class="form-field">
+              <span>Business Type</span>
+              <select id="client-type" required>
+                <option value="restaurant">Restaurant</option>
+                <option value="catering">Catering</option>
+                <option value="casino_kitchen">Casino Kitchen</option>
+                <option value="hotel_kitchen">Hotel Kitchen</option>
+                <option value="bar">Bar</option>
+                <option value="food_truck">Food Truck</option>
+                <option value="company">Company</option>
+                <option value="other">Other</option>
+              </select>
+            </label>
+            <label class="form-field">
+              <span>City optional</span>
+              <input type="text" id="client-city" placeholder="City">
+            </label>
+            <label class="form-field">
+              <span>State optional</span>
+              <input type="text" id="client-state" placeholder="State">
+            </label>
+            <label class="form-field">
+              <span>Timezone optional</span>
+              <input type="text" id="client-timezone" placeholder="America/Los_Angeles">
+            </label>
+            <button type="submit" class="primary-action form-field-wide" id="create-client-button">Create Restaurant</button>
+          </form>
+        </section>
+
+        <section class="client-selector" id="client-selector-view" hidden aria-labelledby="client-selector-title">
+          <p class="eyebrow">Choose workspace</p>
+          <h3 id="client-selector-title">Select your restaurant</h3>
+          <p>You have access to more than one Beoflow client. Choose the workspace you want to open.</p>
+          <div class="client-list" id="client-list"></div>
+        </section>
+
+        <section class="dashboard-view" id="dashboard-view" hidden aria-labelledby="dashboard-title">
+          <div class="dashboard-heading">
+            <div>
+              <p class="eyebrow">Dashboard</p>
+              <h3 id="dashboard-title">Restaurant workspace</h3>
+              <p id="dashboard-description">Your Beoflow workspace is ready. Start by adding real operating data.</p>
+            </div>
+          </div>
+
+          <div class="metric-grid">
+            <article class="metric-card">
+              <span>Events</span>
+              <strong>0</strong>
+              <p>No events yet.</p>
+            </article>
+            <article class="metric-card">
+              <span>Recipes</span>
+              <strong>0</strong>
+              <p>No recipes yet.</p>
+            </article>
+            <article class="metric-card">
+              <span>Inventory</span>
+              <strong>0</strong>
+              <p>No inventory items yet.</p>
+            </article>
+            <article class="metric-card">
+              <span>Staff</span>
+              <strong>0</strong>
+              <p>No staff members yet.</p>
+            </article>
+          </div>
+
+          <div class="empty-state-grid">
+            <article class="empty-state-card">
+              <h4>Events</h4>
+              <p>No events yet. Create your first event.</p>
+            </article>
+            <article class="empty-state-card">
+              <h4>Recipes</h4>
+              <p>No recipes yet. Add your first recipe.</p>
+            </article>
+            <article class="empty-state-card">
+              <h4>Inventory</h4>
+              <p>No inventory items yet. Add your first item.</p>
+            </article>
+            <article class="empty-state-card">
+              <h4>Staff</h4>
+              <p>No staff members yet. Invite or add your first team member.</p>
+            </article>
+            <article class="empty-state-card">
+              <h4>Reports</h4>
+              <p>No reports yet. Reports will appear after activity is recorded.</p>
+            </article>
+          </div>
+        </section>
+      </section>
+    </section>
+  </main>
+</body>
+</html>
