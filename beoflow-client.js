@@ -15,6 +15,7 @@ const state = {
   activeClient: null,
   authMode: 'signin',
   isRecoveryMode: false,
+  passwordUpdatePending: false,
   loading: false
 };
 
@@ -23,6 +24,8 @@ const els = {};
 function cacheElements() {
   [
     'auth-view',
+    'auth-title',
+    'auth-subtitle',
     'session-loading-view',
     'workspace-view',
     'config-alert',
@@ -107,6 +110,74 @@ function getEmailActionRedirectUrl() {
   return getProductionRedirectUrl();
 }
 
+function getCombinedAuthParam(name) {
+  const searchParams = new URLSearchParams(window.location.search);
+  const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+  return searchParams.get(name) || hashParams.get(name);
+}
+
+function sanitizeAuthUrlPart(value) {
+  if (!value) return '';
+
+  const prefix = value.startsWith('#') ? '#' : value.startsWith('?') ? '?' : '';
+  const params = new URLSearchParams(value.replace(/^[#?]/, ''));
+  [
+    'access_token',
+    'refresh_token',
+    'token',
+    'token_hash',
+    'code',
+    'provider_token',
+    'provider_refresh_token'
+  ].forEach(key => {
+    if (params.has(key)) params.set(key, '[redacted]');
+  });
+
+  const sanitized = params.toString();
+  return sanitized ? `${prefix}${sanitized}` : prefix;
+}
+
+function getAuthUrlState() {
+  const type = getCombinedAuthParam('type');
+  const accessToken = getCombinedAuthParam('access_token');
+  const refreshToken = getCombinedAuthParam('refresh_token');
+  const code = getCombinedAuthParam('code');
+  const error = getCombinedAuthParam('error');
+  const errorDescription = getCombinedAuthParam('error_description');
+  const hasTokenParams = Boolean(accessToken || refreshToken);
+  const hasCode = Boolean(code);
+  const hasError = Boolean(error || errorDescription);
+  const hasAuthParams = Boolean(type || hasTokenParams || hasCode || hasError);
+  const isRecovery = type === 'recovery' || (!type && (hasTokenParams || hasCode));
+
+  return {
+    type,
+    accessToken,
+    refreshToken,
+    code,
+    error,
+    errorDescription,
+    hasTokenParams,
+    hasCode,
+    hasError,
+    hasAuthParams,
+    isRecovery
+  };
+}
+
+function logAuthUrlState() {
+  console.log('[Beoflow Auth] URL hash/search detected', {
+    hash: sanitizeAuthUrlPart(window.location.hash),
+    search: sanitizeAuthUrlPart(window.location.search)
+  });
+}
+
+function cleanAuthUrl() {
+  if (!window.history?.replaceState) return;
+  if (!window.location.search && !window.location.hash) return;
+  window.history.replaceState({}, document.title, window.location.pathname);
+}
+
 function showAlert(element, message, type = 'error') {
   if (!element) return;
   element.textContent = message;
@@ -151,8 +222,17 @@ function renderLoadingSession() {
   els['workspace-view'].hidden = true;
 }
 
+function setAuthCopy(title, subtitle) {
+  if (els['auth-title']) els['auth-title'].textContent = title;
+  if (els['auth-subtitle']) els['auth-subtitle'].textContent = subtitle;
+}
+
 function renderAuthView() {
   state.isRecoveryMode = false;
+  setAuthCopy(
+    'Kitchen operations workspace',
+    'Sign in or create an account to manage your restaurant, events, recipes, inventory, staff, and reports.'
+  );
   els['session-loading-view'].hidden = true;
   els['auth-view'].hidden = false;
   els['workspace-view'].hidden = true;
@@ -169,6 +249,10 @@ function renderAuthView() {
 
 function renderResetRequestView() {
   state.isRecoveryMode = false;
+  setAuthCopy(
+    'Reset your password',
+    'Send a secure reset email to your Beoflow account address.'
+  );
   els['session-loading-view'].hidden = true;
   els['auth-view'].hidden = false;
   els['workspace-view'].hidden = true;
@@ -182,6 +266,10 @@ function renderResetRequestView() {
 
 function renderPasswordRecoveryView() {
   state.isRecoveryMode = true;
+  setAuthCopy(
+    'Reset your password',
+    'Choose a new password for your Beoflow account.'
+  );
   els['session-loading-view'].hidden = true;
   els['auth-view'].hidden = false;
   els['workspace-view'].hidden = true;
@@ -285,7 +373,7 @@ function initializeSupabase() {
   state.supabase = window.supabase.createClient(config.url, config.anonKey, {
     auth: {
       autoRefreshToken: true,
-      detectSessionInUrl: true,
+      detectSessionInUrl: false,
       persistSession: true
     }
   });
@@ -297,7 +385,73 @@ function initializeSupabase() {
   return state.supabase;
 }
 
+async function handleAuthUrlCallback(supabase, authUrlState = getAuthUrlState()) {
+  if (!authUrlState.hasAuthParams) return false;
+
+  logAuthUrlState();
+
+  if (authUrlState.hasError) {
+    cleanAuthUrl();
+    renderAuthView();
+    showAlert(
+      els['auth-message'],
+      authUrlState.errorDescription || authUrlState.error || 'Authentication link could not be processed.'
+    );
+    return true;
+  }
+
+  if (authUrlState.isRecovery) {
+    state.isRecoveryMode = true;
+    renderPasswordRecoveryView();
+  }
+
+  if (authUrlState.code && typeof supabase.auth.exchangeCodeForSession === 'function') {
+    const { data, error } = await supabase.auth.exchangeCodeForSession(authUrlState.code);
+    if (error) {
+      cleanAuthUrl();
+      state.isRecoveryMode = false;
+      renderAuthView();
+      showAlert(els['auth-message'], error.message || 'Unable to process the reset password link.');
+      return true;
+    }
+
+    state.user = data.session?.user || data.user || state.user;
+  }
+
+  if (
+    authUrlState.accessToken
+    && authUrlState.refreshToken
+    && typeof supabase.auth.setSession === 'function'
+  ) {
+    const { data, error } = await supabase.auth.setSession({
+      access_token: authUrlState.accessToken,
+      refresh_token: authUrlState.refreshToken
+    });
+
+    if (error) {
+      cleanAuthUrl();
+      state.isRecoveryMode = false;
+      renderAuthView();
+      showAlert(els['auth-message'], error.message || 'Unable to process the reset password link.');
+      return true;
+    }
+
+    state.user = data.session?.user || data.user || state.user;
+  }
+
+  cleanAuthUrl();
+
+  if (authUrlState.isRecovery) {
+    renderPasswordRecoveryView();
+    return true;
+  }
+
+  return false;
+}
+
 async function handleAuthStateChange(event, session) {
+  console.log('[Beoflow Auth] Auth event:', event);
+
   if (event === 'PASSWORD_RECOVERY') {
     state.user = session?.user || null;
     renderPasswordRecoveryView();
@@ -308,6 +462,11 @@ async function handleAuthStateChange(event, session) {
     resetSessionState();
     renderAuthView();
     return;
+  }
+
+  if (event === 'USER_UPDATED' && state.passwordUpdatePending) {
+    state.passwordUpdatePending = false;
+    state.isRecoveryMode = false;
   }
 
   if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
@@ -386,10 +545,16 @@ async function updatePassword(newPassword, confirmPassword) {
   const supabase = initializeSupabase();
   if (!supabase) throw new Error('Client-prod is not configured.');
 
+  state.passwordUpdatePending = true;
   const { data, error } = await supabase.auth.updateUser({ password: newPassword });
-  if (error) throw error;
+  if (error) {
+    state.passwordUpdatePending = false;
+    throw error;
+  }
 
+  state.passwordUpdatePending = false;
   state.isRecoveryMode = false;
+  cleanAuthUrl();
   if (data.user) {
     await refreshAuthenticatedState(data.user);
     showAlert(els['workspace-message'], 'Password updated successfully.', 'success');
@@ -794,6 +959,10 @@ async function boot() {
     return;
   }
 
+  const authUrlState = getAuthUrlState();
+  const handledAuthCallback = await handleAuthUrlCallback(supabase, authUrlState);
+  if (handledAuthCallback) return;
+
   const { data, error } = await supabase.auth.getSession();
   if (error) {
     renderAuthView();
@@ -819,6 +988,8 @@ window.BeoflowClientApp = {
   getCurrentUser,
   getAuthRedirectUrl,
   getEmailActionRedirectUrl,
+  getAuthUrlState,
+  handleAuthUrlCallback,
   handleAuthStateChange,
   loadCurrentUserProfile,
   loadUserClients,

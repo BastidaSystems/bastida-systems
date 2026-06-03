@@ -6,10 +6,10 @@
   <title>Beoflow App | Bastida Systems</title>
   <link rel="icon" type="image/png" href="img/logobeoflow.png">
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="beoflow-app.css?v=client-prod-auth-20260603">
+  <link rel="stylesheet" href="beoflow-app.css?v=client-prod-recovery-20260603">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="beoflow-client-config.js?v=client-prod-auth-20260603"></script>
-  <script src="beoflow-client.js?v=client-prod-auth-20260603" defer></script>
+  <script src="beoflow-client-config.js?v=client-prod-recovery-20260603"></script>
+  <script src="beoflow-client.js?v=client-prod-recovery-20260603" defer></script>
 </head>
 <body class="beoflow-app-shell">
   <main class="beoflow-app" data-testid="beoflow-app">
@@ -25,7 +25,7 @@
         <img src="img/logobeoflow.png" alt="Beoflow" class="app-logo">
         <p class="eyebrow">Beoflow</p>
         <h1 id="auth-title">Kitchen operations workspace</h1>
-        <p>Sign in or create an account to manage your restaurant, events, recipes, inventory, staff, and reports.</p>
+        <p id="auth-subtitle">Sign in or create an account to manage your restaurant, events, recipes, inventory, staff, and reports.</p>
       </div>
 
       <div class="auth-card">
@@ -65,6 +65,10 @@
         </form>
 
         <form id="password-recovery-form" class="stacked-form" hidden>
+          <div class="form-heading">
+            <h2>Reset your password</h2>
+            <p>Enter and confirm your new Beoflow password.</p>
+          </div>
           <label class="form-field">
             <span>New password</span>
             <input type="password" id="new-password" autocomplete="new-password" required minlength="6" placeholder="Minimum 6 characters">
