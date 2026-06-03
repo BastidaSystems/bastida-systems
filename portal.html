@@ -336,6 +336,29 @@
       font-size: 12px;
     }
 
+    .inline-link-button {
+      border: 0;
+      background: transparent;
+      color: var(--accent);
+      padding: 0;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      text-align: left;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .inline-link-button:hover {
+      color: #1d4ed8;
+    }
+
+    .detail-value-button {
+      margin-top: 6px;
+      font-size: 15px;
+      line-height: 1.35;
+    }
+
     .button-danger {
       border-color: rgba(220, 38, 38, 0.2);
       color: var(--danger);
@@ -1577,6 +1600,14 @@
       margin-top: 8px;
     }
 
+    .project-team-group-title {
+      margin: 0;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
     .error-state {
       border: 1px solid rgba(185, 28, 28, 0.18);
       border-radius: var(--radius);
@@ -1872,6 +1903,10 @@
           isOpen: false,
           kind: '',
           id: ''
+        },
+        projectTeam: {
+          isOpen: false,
+          projectId: null
         },
         workspace: {
           projectId: 'all'
@@ -2173,6 +2208,7 @@
             ${state.documentEditor.isOpen ? renderDocumentModal() : ''}
             ${state.approval.isOpen ? renderApproveLogModal() : ''}
             ${state.rejection.isOpen ? renderRejectModal() : ''}
+            ${state.projectTeam.isOpen ? renderProjectTeamModal() : ''}
             ${state.detail.isOpen ? renderDetailsModal() : ''}
           </div>
         `;
@@ -2333,6 +2369,8 @@
         state.detail.isOpen = false;
         state.detail.kind = '';
         state.detail.id = '';
+        state.projectTeam.isOpen = false;
+        state.projectTeam.projectId = null;
       }
 
       function isAllWorkspaceActive() {
@@ -2468,6 +2506,22 @@
           });
         });
 
+        app.querySelectorAll('[data-open-project-team]').forEach((button) => {
+          button.addEventListener('click', () => {
+            const projectId = button.dataset.openProjectTeam;
+            if (!projectId || !state.projects.some((project) => project.id === projectId)) {
+              return;
+            }
+
+            state.projectTeam.isOpen = true;
+            state.projectTeam.projectId = projectId;
+            state.detail.isOpen = false;
+            state.detail.kind = '';
+            state.detail.id = '';
+            renderApp();
+          });
+        });
+
         app.querySelectorAll('[data-open-invite]').forEach((button) => {
           button.addEventListener('click', () => {
             state.invite.isOpen = true;
@@ -2553,6 +2607,64 @@
             state.addProject.isOpen = false;
             state.addProject.userId = null;
             state.addProject.isSubmitting = false;
+            renderApp();
+          });
+        });
+
+        app.querySelectorAll('[data-close-project-team]').forEach((button) => {
+          button.addEventListener('click', () => {
+            state.projectTeam.isOpen = false;
+            state.projectTeam.projectId = null;
+            renderApp();
+          });
+        });
+
+        app.querySelectorAll('[data-project-team-open-team]').forEach((button) => {
+          button.addEventListener('click', () => {
+            const projectId = button.dataset.projectTeamOpenTeam;
+            if (!projectId) {
+              return;
+            }
+
+            state.workspace.projectId = projectId;
+            resetWorkspaceScopedUi();
+            state.activeView = 'people';
+            state.projectTeam.isOpen = false;
+            state.projectTeam.projectId = null;
+            renderApp();
+          });
+        });
+
+        app.querySelectorAll('[data-project-team-add]').forEach((button) => {
+          button.addEventListener('click', () => {
+            const projectId = button.dataset.projectTeamAdd;
+            if (!projectId || !canManageProject(projectId)) {
+              return;
+            }
+
+            state.workspace.projectId = projectId;
+            resetWorkspaceScopedUi();
+            state.projectTeam.isOpen = false;
+            state.projectTeam.projectId = null;
+            state.invite.isOpen = true;
+            state.invite.message = '';
+            state.invite.type = '';
+            renderApp();
+          });
+        });
+
+        app.querySelectorAll('[data-project-team-organization]').forEach((button) => {
+          button.addEventListener('click', () => {
+            const projectId = button.dataset.projectTeamOrganization;
+            if (!projectId) {
+              return;
+            }
+
+            state.workspace.projectId = projectId;
+            resetWorkspaceScopedUi();
+            state.activeView = 'organization';
+            state.projectTeam.isOpen = false;
+            state.projectTeam.projectId = null;
             renderApp();
           });
         });
@@ -3292,7 +3404,7 @@
           }
 
           if (!documentUrl && !storagePath) {
-            throw new Error('Document URL or storage path is required.');
+            throw new Error('Add either a document URL or an internal storage reference.');
           }
 
           const payload = {
@@ -4976,7 +5088,7 @@
               </thead>
               <tbody>
                 ${projects.map((project) => {
-                  const roles = visibleProjectRoles().filter((role) => role.project_id === project.id);
+                  const collaboratorCount = projectTeamCollaboratorCount(project.id);
                   const hours = visibleWorkLogs()
                     .filter((log) => log.project_id === project.id && log.status === 'approved')
                     .reduce((total, log) => total + toNumber(log.approved_hours), 0);
@@ -4989,7 +5101,11 @@
                         <span class="cell-subtitle truncate">${escapeHtml(project.description || project.slug || '')}</span>
                       </td>
                       <td>${statusPill(project.status)}</td>
-                      <td>${roles.length}</td>
+                      <td>
+                        <button class="inline-link-button" type="button" data-open-project-team="${escapeAttr(project.id)}" aria-label="Open project team for ${escapeAttr(project.name)}">
+                          ${collaboratorCount}
+                        </button>
+                      </td>
                       <td>${formatHours(hours)}</td>
                       <td>${deliverables.length}</td>
                       <td>${formatDate(project.updated_at || project.created_at)}</td>
@@ -6602,8 +6718,9 @@
                       <input id="document-url" name="document_url" type="url" autocomplete="off" placeholder="https://" value="${escapeAttr(document?.document_url || '')}">
                     </div>
                     <div class="field">
-                      <label for="document-storage-path">Storage Path optional</label>
-                      <input id="document-storage-path" name="storage_path" type="text" autocomplete="off" value="${escapeAttr(document?.storage_path || '')}">
+                      <label for="document-storage-path">Storage Path or Internal Reference</label>
+                      <input id="document-storage-path" name="storage_path" type="text" autocomplete="off" placeholder="documents/company/file-name.pdf; documents/legal/contracts/file-name.pdf; documents/collaborators/person-name/file-name.pdf" value="${escapeAttr(document?.storage_path || '')}">
+                      <span class="cell-subtitle">Use this when the document is stored internally, locally, or will be uploaded later.</span>
                     </div>
                   </div>
                 </div>
@@ -6965,6 +7082,88 @@
         `;
       }
 
+      function renderProjectTeamModal() {
+        const project = state.projects.find((item) => item.id === state.projectTeam.projectId);
+        if (!project) {
+          return '';
+        }
+
+        const rows = projectTeamRows(project.id);
+        const canManage = canManageProject(project.id);
+        const groups = projectTeamRoleGroups()
+          .map((group) => ({
+            ...group,
+            rows: rows.filter((row) => group.roles.includes(row.role))
+          }))
+          .filter((group) => group.rows.length);
+
+        return `
+          <div class="modal-backdrop" role="presentation">
+            <section class="modal modal-wide" role="dialog" aria-modal="true" aria-labelledby="project-team-title">
+              <div class="modal-header">
+                <div>
+                  <h2 class="modal-title" id="project-team-title">Project Team &mdash; ${escapeHtml(project.name)}</h2>
+                  <p class="modal-copy">Active collaborators grouped by project role.</p>
+                </div>
+                <button class="button" type="button" data-close-project-team>Close</button>
+              </div>
+              <div class="modal-body">
+                ${groups.length ? groups.map((group) => renderProjectTeamGroup(group, project)).join('') : emptyState('No active collaborators', 'Active project roles will appear here after real collaborators are assigned.', true)}
+              </div>
+              <div class="modal-footer">
+                <div class="section-actions">
+                  <button class="button" type="button" data-project-team-open-team="${escapeAttr(project.id)}">Open in Team</button>
+                  ${canManage ? `<button class="button button-primary" type="button" data-project-team-add="${escapeAttr(project.id)}">Add Collaborator</button>` : ''}
+                  <button class="button" type="button" data-project-team-organization="${escapeAttr(project.id)}">View Organization Tree</button>
+                </div>
+              </div>
+            </section>
+          </div>
+        `;
+      }
+
+      function renderProjectTeamGroup(group, project) {
+        return `
+          <section class="detail-card detail-card-spaced">
+            <p class="project-team-group-title">${escapeHtml(group.label)}</p>
+            <div class="detail-card-body table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Collaborator</th>
+                    <th>System Role</th>
+                    <th>Project Title / Position</th>
+                    <th>Approved Hours</th>
+                    <th>Total Earned</th>
+                    <th>Completed Deliverables</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${group.rows.map((row) => `
+                    <tr>
+                      <td>
+                        <span class="cell-title">${escapeHtml(row.name)}</span>
+                        <span class="cell-subtitle truncate" title="${escapeAttr(row.email || 'No email')}">${escapeHtml(row.email || 'No email')}</span>
+                      </td>
+                      <td>
+                        <span class="cell-title">${escapeHtml(roleLabel(row.role))}</span>
+                        <span class="cell-subtitle truncate" title="${escapeAttr(project.name)}">${escapeHtml(project.name)}</span>
+                      </td>
+                      <td>${escapeHtml(row.projectTitle || '-')}</td>
+                      <td>${formatHours(row.approvedHours)}h approved</td>
+                      <td>${formatMoney(row.totalEarned)}</td>
+                      <td>${row.completedDeliverables}</td>
+                      <td>${statusPill(row.status)}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        `;
+      }
+
       function renderDetailsModal() {
         if (state.detail.kind === 'collaborator') {
           return renderCollaboratorDrawer();
@@ -7229,7 +7428,7 @@
       }
 
       function renderProjectDetail(project) {
-        const assignments = state.projectRoles.filter((assignment) => assignment.project_id === project.id);
+        const collaboratorCount = projectTeamCollaboratorCount(project.id);
         const logs = state.workLogs.filter((log) => log.project_id === project.id);
         const deliverables = state.deliverables.filter((deliverable) => deliverable.project_id === project.id);
         const approvedHours = logs
@@ -7239,11 +7438,22 @@
         return `
           <div class="detail-grid">
             ${detailCard('Status', statusLabel(project.status))}
-            ${detailCard('Collaborators', assignments.length)}
+            ${projectTeamDetailCard(project, collaboratorCount)}
             ${detailCard('Approved Hours', formatHours(approvedHours))}
             ${detailCard('Deliverables', deliverables.length)}
             ${detailCard('Slug', project.slug || '-')}
             ${detailCard('Updated', formatDate(project.updated_at || project.created_at))}
+          </div>
+        `;
+      }
+
+      function projectTeamDetailCard(project, collaboratorCount) {
+        return `
+          <div class="detail-card">
+            <p class="detail-label">Collaborators</p>
+            <button class="inline-link-button detail-value-button" type="button" data-open-project-team="${escapeAttr(project.id)}" aria-label="Open project team for ${escapeAttr(project.name)}">
+              ${collaboratorCount}
+            </button>
           </div>
         `;
       }
@@ -7665,6 +7875,90 @@
         });
 
         return Array.from(people.values()).sort((a, b) => compareText(a.name, b.name));
+      }
+
+      function projectTeamRoleGroups() {
+        return [
+          { label: 'Founder', roles: ['founder'] },
+          { label: 'Owner', roles: ['owner'] },
+          { label: 'Core Team', roles: ['core_collaborator'] },
+          { label: 'Designers', roles: ['designer'] },
+          { label: 'Developers', roles: ['developer'] },
+          { label: 'Contractors', roles: ['contractor'] }
+        ];
+      }
+
+      function projectTeamAssignments(projectId) {
+        const seen = new Set();
+
+        return state.projectRoles
+          .filter((assignment) => assignment.project_id === projectId)
+          .filter((assignment) => assignment.active !== false)
+          .filter((assignment) => assignment.member || assignment.user_id || assignment.invite_email || assignment.invited_name)
+          .sort(compareAssignmentsByHierarchy)
+          .filter((assignment) => {
+            const identity = assignment.member?.id || assignment.user_id || assignment.invite_email || assignment.id;
+            if (!identity || seen.has(identity)) {
+              return false;
+            }
+
+            seen.add(identity);
+            return true;
+          });
+      }
+
+      function projectTeamCollaboratorCount(projectId) {
+        return projectTeamAssignments(projectId).length;
+      }
+
+      function projectTeamRows(projectId) {
+        return projectTeamAssignments(projectId).map((assignment) => {
+          const userId = assignment.member?.id || assignment.user_id || null;
+          const stats = projectTeamStats(projectId, userId);
+
+          return {
+            assignmentId: assignment.id,
+            userId,
+            role: assignment.role,
+            name: memberName(assignment),
+            email: memberEmail(assignment),
+            projectTitle: assignment.project_title || '',
+            status: normalizeInvitationStatus(assignment),
+            ...stats
+          };
+        });
+      }
+
+      function projectTeamStats(projectId, userId) {
+        if (!projectId || !userId) {
+          return {
+            approvedHours: 0,
+            totalEarned: 0,
+            completedDeliverables: 0
+          };
+        }
+
+        const approvedLogs = state.workLogs.filter((log) => (
+          log.project_id === projectId
+          && log.worker_user_id === userId
+          && log.status === 'approved'
+        ));
+        const approvedHours = approvedLogs.reduce((total, log) => total + approvedHoursForLog(log), 0);
+        const totalEarned = approvedLogs.reduce((total, log) => {
+          const rate = findHourlyRate(log.project_id, log.worker_user_id);
+          return total + (approvedHoursForLog(log) * rate);
+        }, 0);
+        const completedDeliverables = state.deliverables.filter((deliverable) => (
+          deliverable.project_id === projectId
+          && deliverable.responsible_user_id === userId
+          && ['delivered', 'approved'].includes(deliverable.status)
+        )).length;
+
+        return {
+          approvedHours,
+          totalEarned,
+          completedDeliverables
+        };
       }
 
       function addableProjectsForPerson(person) {
