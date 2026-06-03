@@ -13,10 +13,70 @@ const state = {
   profile: null,
   userClients: [],
   activeClient: null,
+  activeSection: 'dashboard',
   authMode: 'signin',
   isRecoveryMode: false,
   passwordUpdatePending: false,
   loading: false
+};
+
+const MODULE_SECTIONS = {
+  events: {
+    title: 'Events',
+    subtitle: 'Plan catering events, service days, banquets, and production schedules.',
+    emptyTitle: 'No events yet.',
+    emptyCopy: 'Create your first event to start planning service operations.',
+    action: 'New Event',
+    index: '01'
+  },
+  menu: {
+    title: 'Menu',
+    subtitle: 'Build menus for restaurants, events, and recurring service operations.',
+    emptyTitle: 'No menu items yet.',
+    emptyCopy: 'Add your first menu item to organize offerings.',
+    action: 'Add Menu Item',
+    index: '02'
+  },
+  recipes: {
+    title: 'Recipes',
+    subtitle: 'Standardize recipes, ingredients, procedures, and consistency.',
+    emptyTitle: 'No recipes yet.',
+    emptyCopy: 'Add your first recipe to begin building your recipe library.',
+    action: 'Add Recipe',
+    index: '03'
+  },
+  inventory: {
+    title: 'Inventory',
+    subtitle: 'Track ingredients, supplies, stock levels, and usage.',
+    emptyTitle: 'No inventory items yet.',
+    emptyCopy: 'Add your first item to start tracking stock.',
+    action: 'Add Inventory Item',
+    index: '04'
+  },
+  production: {
+    title: 'Production',
+    subtitle: 'Organize prep tasks, production logs, and kitchen execution.',
+    emptyTitle: 'No production records yet.',
+    emptyCopy: 'Start a production log when operations begin.',
+    action: 'New Production Log',
+    index: '05'
+  },
+  staff: {
+    title: 'Staff',
+    subtitle: 'Manage team members, roles, schedules, and responsibilities.',
+    emptyTitle: 'No staff members yet.',
+    emptyCopy: 'Add your first staff member or invite a user.',
+    action: 'Add Staff Member',
+    index: '06'
+  },
+  reports: {
+    title: 'Reports',
+    subtitle: 'View operational insights once Beoflow has activity.',
+    emptyTitle: 'No reports yet.',
+    emptyCopy: 'Reports will appear after events, inventory, and production activity.',
+    action: 'View Reports',
+    index: '07'
+  }
 };
 
 const els = {};
@@ -64,6 +124,14 @@ function cacheElements() {
     'client-list',
     'dashboard-title',
     'dashboard-description',
+    'module-view',
+    'module-title',
+    'module-subtitle',
+    'module-empty-icon',
+    'module-empty-title',
+    'module-empty-copy',
+    'module-action-button',
+    'module-toast',
     'switch-client-button',
     'sign-out-button'
   ].forEach(id => {
@@ -197,6 +265,7 @@ function setLoading(isLoading) {
     els['reset-submit'],
     els['update-password-submit'],
     els['create-client-button'],
+    els['module-action-button'],
     els['sign-out-button'],
     els['switch-client-button']
   ].forEach(button => {
@@ -214,6 +283,36 @@ function hideWorkspaceSections() {
   els['onboarding-view'].hidden = true;
   els['client-selector-view'].hidden = true;
   els['dashboard-view'].hidden = true;
+  els['module-view'].hidden = true;
+}
+
+function setActiveSidebarSection(section) {
+  state.activeSection = section;
+
+  document.querySelectorAll('[data-section]').forEach(control => {
+    const isActive = control.dataset.section === section;
+    control.classList.toggle('is-active', isActive);
+
+    if (control.classList.contains('sidebar-link')) {
+      if (isActive) {
+        control.setAttribute('aria-current', 'page');
+      } else {
+        control.removeAttribute('aria-current');
+      }
+    }
+  });
+}
+
+function showModuleToast(message = 'This module is ready for the next build.') {
+  const toast = els['module-toast'];
+  if (!toast) return;
+
+  toast.textContent = message;
+  toast.hidden = false;
+  window.clearTimeout(showModuleToast.timeoutId);
+  showModuleToast.timeoutId = window.setTimeout(() => {
+    toast.hidden = true;
+  }, 2400);
 }
 
 function renderLoadingSession() {
@@ -300,7 +399,7 @@ function renderWorkspaceFrame() {
   const activeName = state.activeClient?.name || 'Beoflow';
   els['workspace-title'].textContent = activeName;
   els['workspace-subtitle'].textContent = state.activeClient
-    ? `${formatClientType(state.activeClient.client_type)} workspace`
+    ? `Beoflow Workspace for ${formatClientType(state.activeClient.client_type)} operations.`
     : 'Create or select a restaurant to start using Beoflow.';
   els['switch-client-button'].hidden = state.userClients.length < 2;
 }
@@ -342,9 +441,32 @@ function renderDashboard() {
 
   renderWorkspaceFrame();
   hideWorkspaceSections();
+  setActiveSidebarSection('dashboard');
   els['dashboard-view'].hidden = false;
   els['dashboard-title'].textContent = state.activeClient.name;
-  els['dashboard-description'].textContent = `${state.activeClient.name} is ready. Add real events, recipes, inventory, staff, and reports when operations begin.`;
+  els['dashboard-description'].textContent = `Welcome to ${state.activeClient.name}. Your Beoflow modules are ready for real operating data when your team starts building.`;
+}
+
+function renderModuleSection(section) {
+  const activeClient = requireActiveClient();
+  if (!activeClient) return;
+
+  const moduleConfig = MODULE_SECTIONS[section];
+  if (!moduleConfig) {
+    renderDashboard();
+    return;
+  }
+
+  renderWorkspaceFrame();
+  hideWorkspaceSections();
+  setActiveSidebarSection(section);
+  els['module-view'].hidden = false;
+  els['module-title'].textContent = moduleConfig.title;
+  els['module-subtitle'].textContent = moduleConfig.subtitle;
+  els['module-empty-icon'].textContent = moduleConfig.index;
+  els['module-empty-title'].textContent = moduleConfig.emptyTitle;
+  els['module-empty-copy'].textContent = moduleConfig.emptyCopy;
+  els['module-action-button'].textContent = moduleConfig.action;
 }
 
 function escapeHtml(value) {
@@ -753,6 +875,7 @@ function resetSessionState() {
   state.profile = null;
   state.userClients = [];
   state.activeClient = null;
+  state.activeSection = 'dashboard';
   localStorage.removeItem(config.activeClientStorageKey || 'beoflow.activeClientId');
 }
 
@@ -942,6 +1065,28 @@ function bindEvents() {
     if (state.userClients.length > 1) renderClientSelector();
   });
 
+  document.querySelectorAll('.sidebar-link[data-section]').forEach(button => {
+    button.addEventListener('click', () => {
+      const section = button.dataset.section;
+      if (section === 'dashboard') {
+        renderDashboard();
+        return;
+      }
+
+      renderModuleSection(section);
+    });
+  });
+
+  document.querySelectorAll('.module-card[data-section]').forEach(card => {
+    card.addEventListener('click', () => {
+      renderModuleSection(card.dataset.section);
+    });
+  });
+
+  els['module-action-button'].addEventListener('click', () => {
+    showModuleToast('This module is ready for the next build.');
+  });
+
   els['sign-out-button'].addEventListener('click', () => {
     signOut();
   });
@@ -996,6 +1141,8 @@ window.BeoflowClientApp = {
   createBeoflowClient,
   sendPasswordResetEmail,
   updatePassword,
+  renderDashboard,
+  renderModuleSection,
   setActiveClient,
   requireActiveClient,
   state

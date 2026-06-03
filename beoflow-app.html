@@ -6,10 +6,10 @@
   <title>Beoflow App | Bastida Systems</title>
   <link rel="icon" type="image/png" href="img/logobeoflow.png">
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="beoflow-app.css?v=client-prod-recovery-20260603">
+  <link rel="stylesheet" href="beoflow-app.css?v=premium-dashboard-20260603">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="beoflow-client-config.js?v=client-prod-recovery-20260603"></script>
-  <script src="beoflow-client.js?v=client-prod-recovery-20260603" defer></script>
+  <script src="beoflow-client.js?v=premium-dashboard-20260603" defer></script>
 </head>
 <body class="beoflow-app-shell">
   <main class="beoflow-app" data-testid="beoflow-app">
@@ -89,21 +89,21 @@
           <span>Beoflow</span>
         </a>
         <nav aria-label="Beoflow modules">
-          <button type="button" class="sidebar-link is-active">Dashboard</button>
-          <button type="button" class="sidebar-link">Events</button>
-          <button type="button" class="sidebar-link">Menu</button>
-          <button type="button" class="sidebar-link">Recipes</button>
-          <button type="button" class="sidebar-link">Inventory</button>
-          <button type="button" class="sidebar-link">Production</button>
-          <button type="button" class="sidebar-link">Staff</button>
-          <button type="button" class="sidebar-link">Reports</button>
+          <button type="button" class="sidebar-link is-active" data-section="dashboard" aria-current="page">Dashboard</button>
+          <button type="button" class="sidebar-link" data-section="events">Events</button>
+          <button type="button" class="sidebar-link" data-section="menu">Menu</button>
+          <button type="button" class="sidebar-link" data-section="recipes">Recipes</button>
+          <button type="button" class="sidebar-link" data-section="inventory">Inventory</button>
+          <button type="button" class="sidebar-link" data-section="production">Production</button>
+          <button type="button" class="sidebar-link" data-section="staff">Staff</button>
+          <button type="button" class="sidebar-link" data-section="reports">Reports</button>
         </nav>
       </aside>
 
       <section class="workspace-main">
         <header class="workspace-header">
           <div>
-            <p class="eyebrow">Client-prod workspace</p>
+            <p class="eyebrow">Beoflow Workspace</p>
             <h2 id="workspace-title">Beoflow</h2>
             <p id="workspace-subtitle">Loading your restaurant workspace.</p>
           </div>
@@ -118,7 +118,7 @@
         <section class="onboarding-card" id="onboarding-view" hidden aria-labelledby="onboarding-title">
           <p class="eyebrow">Onboarding</p>
           <h3 id="onboarding-title">Create your restaurant</h3>
-          <p>Start your Beoflow workspace by adding your restaurant or operation.</p>
+          <p>Set up the restaurant workspace your team will use for events, menus, recipes, inventory, production, staff, and reporting.</p>
 
           <form id="client-form" class="client-form">
             <label class="form-field form-field-wide">
@@ -164,60 +164,74 @@
         <section class="dashboard-view" id="dashboard-view" hidden aria-labelledby="dashboard-title">
           <div class="dashboard-heading">
             <div>
-              <p class="eyebrow">Dashboard</p>
+              <p class="eyebrow">Beoflow Workspace</p>
               <h3 id="dashboard-title">Restaurant workspace</h3>
-              <p id="dashboard-description">Your Beoflow workspace is ready. Start by adding real operating data.</p>
+              <p id="dashboard-description">Welcome to your Beoflow workspace. Your operating modules are ready for real restaurant data when your team starts building.</p>
             </div>
+            <span class="workspace-badge">Beoflow Workspace</span>
           </div>
 
-          <div class="metric-grid">
-            <article class="metric-card">
+          <div class="module-card-grid" aria-label="Beoflow module empty states">
+            <button type="button" class="module-card" data-section="events">
               <span>Events</span>
               <strong>0</strong>
-              <p>No events yet.</p>
-            </article>
-            <article class="metric-card">
+              <p>No events yet</p>
+            </button>
+            <button type="button" class="module-card" data-section="menu">
+              <span>Menu</span>
+              <strong>0</strong>
+              <p>No menu items yet</p>
+            </button>
+            <button type="button" class="module-card" data-section="recipes">
               <span>Recipes</span>
               <strong>0</strong>
-              <p>No recipes yet.</p>
-            </article>
-            <article class="metric-card">
+              <p>No recipes yet</p>
+            </button>
+            <button type="button" class="module-card" data-section="inventory">
               <span>Inventory</span>
               <strong>0</strong>
-              <p>No inventory items yet.</p>
-            </article>
-            <article class="metric-card">
+              <p>No inventory items yet</p>
+            </button>
+            <button type="button" class="module-card" data-section="production">
+              <span>Production</span>
+              <strong>0</strong>
+              <p>No production logs yet</p>
+            </button>
+            <button type="button" class="module-card" data-section="staff">
               <span>Staff</span>
               <strong>0</strong>
-              <p>No staff members yet.</p>
-            </article>
+              <p>No staff members yet</p>
+            </button>
+            <button type="button" class="module-card" data-section="reports">
+              <span>Reports</span>
+              <strong>0</strong>
+              <p>No reports yet</p>
+            </button>
+          </div>
+        </section>
+
+        <section class="module-view" id="module-view" hidden aria-labelledby="module-title">
+          <div class="module-view-header">
+            <div>
+              <p class="eyebrow">Beoflow Module</p>
+              <h3 id="module-title">Events</h3>
+              <p id="module-subtitle">Plan catering events, service days, banquets, and production schedules.</p>
+            </div>
+            <span class="module-count-badge">0 records</span>
           </div>
 
-          <div class="empty-state-grid">
-            <article class="empty-state-card">
-              <h4>Events</h4>
-              <p>No events yet. Create your first event.</p>
-            </article>
-            <article class="empty-state-card">
-              <h4>Recipes</h4>
-              <p>No recipes yet. Add your first recipe.</p>
-            </article>
-            <article class="empty-state-card">
-              <h4>Inventory</h4>
-              <p>No inventory items yet. Add your first item.</p>
-            </article>
-            <article class="empty-state-card">
-              <h4>Staff</h4>
-              <p>No staff members yet. Invite or add your first team member.</p>
-            </article>
-            <article class="empty-state-card">
-              <h4>Reports</h4>
-              <p>No reports yet. Reports will appear after activity is recorded.</p>
-            </article>
+          <div class="module-empty-state">
+            <div class="empty-icon" id="module-empty-icon" aria-hidden="true">01</div>
+            <div>
+              <h4 id="module-empty-title">No events yet.</h4>
+              <p id="module-empty-copy">Create your first event to start planning service operations.</p>
+            </div>
+            <button type="button" class="primary-action" id="module-action-button">New Event</button>
           </div>
         </section>
       </section>
     </section>
+    <div class="module-toast" id="module-toast" role="status" aria-live="polite" hidden>This module is ready for the next build.</div>
   </main>
 </body>
 </html>
