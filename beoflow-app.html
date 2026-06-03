@@ -6,10 +6,10 @@
   <title>Beoflow App | Bastida Systems</title>
   <link rel="icon" type="image/png" href="img/logobeoflow.png">
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="beoflow-app.css?v=premium-dashboard-20260603">
+  <link rel="stylesheet" href="beoflow-app.css?v=mvp-modules-20260603">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="beoflow-client-config.js?v=client-prod-recovery-20260603"></script>
-  <script src="beoflow-client.js?v=premium-dashboard-20260603" defer></script>
+  <script src="beoflow-client.js?v=mvp-modules-20260603" defer></script>
 </head>
 <body class="beoflow-app-shell">
   <main class="beoflow-app" data-testid="beoflow-app">
@@ -174,37 +174,37 @@
           <div class="module-card-grid" aria-label="Beoflow module empty states">
             <button type="button" class="module-card" data-section="events">
               <span>Events</span>
-              <strong>0</strong>
+              <strong data-count-section="events">0</strong>
               <p>No events yet</p>
             </button>
             <button type="button" class="module-card" data-section="menu">
               <span>Menu</span>
-              <strong>0</strong>
+              <strong data-count-section="menu">0</strong>
               <p>No menu items yet</p>
             </button>
             <button type="button" class="module-card" data-section="recipes">
               <span>Recipes</span>
-              <strong>0</strong>
+              <strong data-count-section="recipes">0</strong>
               <p>No recipes yet</p>
             </button>
             <button type="button" class="module-card" data-section="inventory">
               <span>Inventory</span>
-              <strong>0</strong>
+              <strong data-count-section="inventory">0</strong>
               <p>No inventory items yet</p>
             </button>
             <button type="button" class="module-card" data-section="production">
               <span>Production</span>
-              <strong>0</strong>
+              <strong data-count-section="production">0</strong>
               <p>No production logs yet</p>
             </button>
             <button type="button" class="module-card" data-section="staff">
               <span>Staff</span>
-              <strong>0</strong>
+              <strong data-count-section="staff">0</strong>
               <p>No staff members yet</p>
             </button>
             <button type="button" class="module-card" data-section="reports">
               <span>Reports</span>
-              <strong>0</strong>
+              <strong data-count-section="reports">0</strong>
               <p>No reports yet</p>
             </button>
           </div>
@@ -217,10 +217,13 @@
               <h3 id="module-title">Events</h3>
               <p id="module-subtitle">Plan catering events, service days, banquets, and production schedules.</p>
             </div>
-            <span class="module-count-badge">0 records</span>
+            <div class="module-header-actions">
+              <span class="module-count-badge" id="module-count-badge">0 records</span>
+              <button type="button" class="primary-action module-header-action" id="module-header-action-button">New Event</button>
+            </div>
           </div>
 
-          <div class="module-empty-state">
+          <div class="module-empty-state" id="module-empty-state">
             <div class="empty-icon" id="module-empty-icon" aria-hidden="true">01</div>
             <div>
               <h4 id="module-empty-title">No events yet.</h4>
@@ -228,10 +231,35 @@
             </div>
             <button type="button" class="primary-action" id="module-action-button">New Event</button>
           </div>
+
+          <div class="module-record-list" id="module-record-list"></div>
         </section>
       </section>
     </section>
     <div class="module-toast" id="module-toast" role="status" aria-live="polite" hidden>This module is ready for the next build.</div>
+
+    <div class="module-modal-backdrop" id="module-modal" hidden>
+      <section class="module-modal" role="dialog" aria-modal="true" aria-labelledby="module-modal-title">
+        <header class="module-modal-header">
+          <div>
+            <p class="eyebrow">Beoflow Module</p>
+            <h3 id="module-modal-title">Add record</h3>
+            <p id="module-modal-subtitle">Create a new workspace record.</p>
+          </div>
+          <button type="button" class="modal-icon-button" id="module-modal-close" aria-label="Close modal">Close</button>
+        </header>
+
+        <div class="app-alert" id="module-form-message" hidden></div>
+
+        <form class="module-form" id="module-form">
+          <div class="module-form-fields" id="module-form-fields"></div>
+          <div class="modal-actions">
+            <button type="button" class="secondary-action" id="module-cancel-button">Cancel</button>
+            <button type="submit" class="primary-action" id="module-save-button">Save</button>
+          </div>
+        </form>
+      </section>
+    </div>
   </main>
 </body>
 </html>

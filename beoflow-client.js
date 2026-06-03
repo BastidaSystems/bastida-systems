@@ -1,5 +1,3 @@
-const ENABLE_DEMO_DATA = false;
-
 const config = window.BEOFLOW_CLIENT_PROD_CONFIG || {};
 const missingAnonKeyValues = new Set([
   '',
@@ -14,6 +12,11 @@ const state = {
   userClients: [],
   activeClient: null,
   activeSection: 'dashboard',
+  moduleRecords: {},
+  moduleCounts: {},
+  reportsData: null,
+  modalSection: null,
+  editingRecord: null,
   authMode: 'signin',
   isRecoveryMode: false,
   passwordUpdatePending: false,
@@ -27,7 +30,25 @@ const MODULE_SECTIONS = {
     emptyTitle: 'No events yet.',
     emptyCopy: 'Create your first event to start planning service operations.',
     action: 'New Event',
-    index: '01'
+    singular: 'event',
+    plural: 'events',
+    table: 'beoflow_events',
+    index: '01',
+    titleField: 'name',
+    badgeField: 'status',
+    metaFields: ['event_type', 'event_date', 'start_time', 'guest_count', 'location'],
+    detailFields: ['end_time', 'notes'],
+    fields: [
+      { name: 'name', label: 'Event Name', type: 'text', required: true },
+      { name: 'event_type', label: 'Event Type', type: 'text' },
+      { name: 'event_date', label: 'Event Date', type: 'date' },
+      { name: 'start_time', label: 'Start Time', type: 'time' },
+      { name: 'end_time', label: 'End Time', type: 'time' },
+      { name: 'guest_count', label: 'Guest Count', type: 'number', min: '0', step: '1' },
+      { name: 'location', label: 'Location', type: 'text' },
+      { name: 'status', label: 'Status', type: 'text', defaultValue: 'active' },
+      { name: 'notes', label: 'Notes', type: 'textarea', wide: true }
+    ]
   },
   menu: {
     title: 'Menu',
@@ -35,7 +56,21 @@ const MODULE_SECTIONS = {
     emptyTitle: 'No menu items yet.',
     emptyCopy: 'Add your first menu item to organize offerings.',
     action: 'Add Menu Item',
-    index: '02'
+    singular: 'menu item',
+    plural: 'menu items',
+    table: 'beoflow_menu_items',
+    index: '02',
+    titleField: 'name',
+    badgeField: 'status',
+    metaFields: ['category', 'price'],
+    detailFields: ['description'],
+    fields: [
+      { name: 'name', label: 'Item Name', type: 'text', required: true },
+      { name: 'category', label: 'Category', type: 'text' },
+      { name: 'description', label: 'Description', type: 'textarea', wide: true },
+      { name: 'price', label: 'Price', type: 'number', min: '0', step: '0.01' },
+      { name: 'status', label: 'Status', type: 'text', defaultValue: 'active' }
+    ]
   },
   recipes: {
     title: 'Recipes',
@@ -43,7 +78,25 @@ const MODULE_SECTIONS = {
     emptyTitle: 'No recipes yet.',
     emptyCopy: 'Add your first recipe to begin building your recipe library.',
     action: 'Add Recipe',
-    index: '03'
+    singular: 'recipe',
+    plural: 'recipes',
+    table: 'beoflow_recipes',
+    index: '03',
+    titleField: 'name',
+    badgeField: 'status',
+    metaFields: ['category', 'yield_quantity', 'prep_time', 'cook_time'],
+    detailFields: ['ingredients', 'procedure', 'notes'],
+    fields: [
+      { name: 'name', label: 'Recipe Name', type: 'text', required: true },
+      { name: 'category', label: 'Category', type: 'text' },
+      { name: 'yield_quantity', label: 'Yield Quantity', type: 'text' },
+      { name: 'prep_time', label: 'Prep Time', type: 'text' },
+      { name: 'cook_time', label: 'Cook Time', type: 'text' },
+      { name: 'ingredients', label: 'Ingredients', type: 'textarea', wide: true },
+      { name: 'procedure', label: 'Procedure', type: 'textarea', wide: true },
+      { name: 'notes', label: 'Notes', type: 'textarea', wide: true },
+      { name: 'status', label: 'Status', type: 'text', defaultValue: 'active' }
+    ]
   },
   inventory: {
     title: 'Inventory',
@@ -51,7 +104,25 @@ const MODULE_SECTIONS = {
     emptyTitle: 'No inventory items yet.',
     emptyCopy: 'Add your first item to start tracking stock.',
     action: 'Add Inventory Item',
-    index: '04'
+    singular: 'inventory item',
+    plural: 'inventory items',
+    table: 'beoflow_inventory_items',
+    index: '04',
+    titleField: 'name',
+    badgeField: 'status',
+    metaFields: ['category', 'quantity', 'unit', 'par_level', 'vendor'],
+    detailFields: ['cost_per_unit', 'notes'],
+    fields: [
+      { name: 'name', label: 'Item Name', type: 'text', required: true },
+      { name: 'category', label: 'Category', type: 'text' },
+      { name: 'unit', label: 'Unit', type: 'text' },
+      { name: 'quantity', label: 'Quantity', type: 'number', step: '0.01' },
+      { name: 'par_level', label: 'Par Level', type: 'number', step: '0.01' },
+      { name: 'cost_per_unit', label: 'Cost Per Unit', type: 'number', min: '0', step: '0.01' },
+      { name: 'vendor', label: 'Vendor', type: 'text' },
+      { name: 'status', label: 'Status', type: 'text', defaultValue: 'active' },
+      { name: 'notes', label: 'Notes', type: 'textarea', wide: true }
+    ]
   },
   production: {
     title: 'Production',
@@ -59,7 +130,22 @@ const MODULE_SECTIONS = {
     emptyTitle: 'No production records yet.',
     emptyCopy: 'Start a production log when operations begin.',
     action: 'New Production Log',
-    index: '05'
+    singular: 'production log',
+    plural: 'production logs',
+    table: 'beoflow_production_logs',
+    index: '05',
+    titleField: 'title',
+    badgeField: 'status',
+    metaFields: ['production_date', 'shift', 'assigned_to'],
+    detailFields: ['notes'],
+    fields: [
+      { name: 'title', label: 'Log Title', type: 'text', required: true },
+      { name: 'production_date', label: 'Production Date', type: 'date' },
+      { name: 'shift', label: 'Shift', type: 'text' },
+      { name: 'assigned_to', label: 'Assigned To', type: 'text' },
+      { name: 'status', label: 'Status', type: 'text', defaultValue: 'active' },
+      { name: 'notes', label: 'Notes', type: 'textarea', wide: true }
+    ]
   },
   staff: {
     title: 'Staff',
@@ -67,7 +153,22 @@ const MODULE_SECTIONS = {
     emptyTitle: 'No staff members yet.',
     emptyCopy: 'Add your first staff member or invite a user.',
     action: 'Add Staff Member',
-    index: '06'
+    singular: 'staff member',
+    plural: 'staff members',
+    table: 'beoflow_staff',
+    index: '06',
+    titleField: 'full_name',
+    badgeField: 'status',
+    metaFields: ['role', 'email', 'phone'],
+    detailFields: ['notes'],
+    fields: [
+      { name: 'full_name', label: 'Full Name', type: 'text', required: true },
+      { name: 'role', label: 'Role', type: 'text' },
+      { name: 'email', label: 'Email', type: 'email' },
+      { name: 'phone', label: 'Phone', type: 'tel' },
+      { name: 'status', label: 'Status', type: 'text', defaultValue: 'active' },
+      { name: 'notes', label: 'Notes', type: 'textarea', wide: true }
+    ]
   },
   reports: {
     title: 'Reports',
@@ -75,9 +176,14 @@ const MODULE_SECTIONS = {
     emptyTitle: 'No reports yet.',
     emptyCopy: 'Reports will appear after events, inventory, and production activity.',
     action: 'View Reports',
+    singular: 'report',
+    plural: 'reports',
+    table: null,
     index: '07'
   }
 };
+
+const DATA_SECTIONS = Object.keys(MODULE_SECTIONS).filter(section => MODULE_SECTIONS[section].table);
 
 const els = {};
 
@@ -127,11 +233,24 @@ function cacheElements() {
     'module-view',
     'module-title',
     'module-subtitle',
+    'module-count-badge',
+    'module-header-action-button',
+    'module-empty-state',
     'module-empty-icon',
     'module-empty-title',
     'module-empty-copy',
     'module-action-button',
+    'module-record-list',
     'module-toast',
+    'module-modal',
+    'module-modal-title',
+    'module-modal-subtitle',
+    'module-modal-close',
+    'module-form-message',
+    'module-form',
+    'module-form-fields',
+    'module-cancel-button',
+    'module-save-button',
     'switch-client-button',
     'sign-out-button'
   ].forEach(id => {
@@ -256,6 +375,7 @@ function showAlert(element, message, type = 'error') {
 function clearAlerts() {
   showAlert(els['auth-message'], '');
   showAlert(els['workspace-message'], '');
+  showAlert(els['module-form-message'], '');
 }
 
 function setLoading(isLoading) {
@@ -266,6 +386,10 @@ function setLoading(isLoading) {
     els['update-password-submit'],
     els['create-client-button'],
     els['module-action-button'],
+    els['module-header-action-button'],
+    els['module-save-button'],
+    els['module-cancel-button'],
+    els['module-modal-close'],
     els['sign-out-button'],
     els['switch-client-button']
   ].forEach(button => {
@@ -279,6 +403,223 @@ function formatClientType(value) {
     .replace(/\b\w/g, letter => letter.toUpperCase());
 }
 
+function formatLabel(value) {
+  return String(value || '')
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, letter => letter.toUpperCase());
+}
+
+function formatRecordValue(fieldName, value) {
+  if (value === null || value === undefined || value === '') return '';
+
+  if (fieldName === 'price' || fieldName === 'cost_per_unit') {
+    const numberValue = Number(value);
+    if (Number.isFinite(numberValue)) {
+      return numberValue.toLocaleString('en-US', {
+        style: 'currency',
+        currency: 'USD'
+      });
+    }
+  }
+
+  if (fieldName === 'guest_count') {
+    return `${value} guests`;
+  }
+
+  if (fieldName === 'par_level') {
+    return `Par ${value}`;
+  }
+
+  if (fieldName === 'prep_time' || fieldName === 'cook_time') {
+    return String(value);
+  }
+
+  if (fieldName.endsWith('_date') || fieldName === 'event_date') {
+    const date = new Date(`${value}T00:00:00`);
+    if (!Number.isNaN(date.getTime())) {
+      return date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+    }
+  }
+
+  if (fieldName === 'status') {
+    return formatLabel(value);
+  }
+
+  return String(value);
+}
+
+function getRecordTitle(section, record) {
+  const moduleConfig = MODULE_SECTIONS[section];
+  if (!moduleConfig) return 'Record';
+  return record?.[moduleConfig.titleField] || moduleConfig.title;
+}
+
+function getActiveClientId() {
+  return requireActiveClient()?.id || null;
+}
+
+function requireSupabaseClient() {
+  const supabase = initializeSupabase();
+  if (!supabase) throw new Error('Client-prod is not configured.');
+  return supabase;
+}
+
+function requireSignedInUserId() {
+  if (!state.user?.id) throw new Error('Sign in before managing Beoflow records.');
+  return state.user.id;
+}
+
+function getModuleConfig(section) {
+  const moduleConfig = MODULE_SECTIONS[section];
+  if (!moduleConfig) throw new Error('Unknown Beoflow module.');
+  return moduleConfig;
+}
+
+function withActiveRecordFilter(query) {
+  return query.neq('status', 'archived');
+}
+
+function normalizePayloadValue(field, value) {
+  if (value === '') return null;
+  if (field.type === 'number') {
+    const numberValue = Number(value);
+    return Number.isFinite(numberValue) ? numberValue : null;
+  }
+  return value;
+}
+
+function isLowStock(record) {
+  const quantity = Number(record?.quantity);
+  const parLevel = Number(record?.par_level);
+  return Number.isFinite(quantity) && Number.isFinite(parLevel) && quantity <= parLevel;
+}
+
+async function countTableRecords(table) {
+  const clientId = getActiveClientId();
+  if (!clientId) return 0;
+
+  const { count, error } = await withActiveRecordFilter(
+    requireSupabaseClient()
+      .from(table)
+      .select('id', { count: 'exact', head: true })
+      .eq('client_id', clientId)
+  );
+
+  if (error) throw error;
+  return count || 0;
+}
+
+async function loadDashboardCounts() {
+  const counts = {};
+
+  await Promise.all(DATA_SECTIONS.map(async section => {
+    counts[section] = await countTableRecords(MODULE_SECTIONS[section].table);
+  }));
+
+  const reportSourceTotal = DATA_SECTIONS.reduce((total, section) => total + (counts[section] || 0), 0);
+  counts.reports = reportSourceTotal;
+  state.moduleCounts = counts;
+  return counts;
+}
+
+async function loadModuleData(section) {
+  const moduleConfig = getModuleConfig(section);
+  if (section === 'reports') return loadReportsData();
+
+  const clientId = getActiveClientId();
+  if (!clientId) return [];
+
+  const { data, error } = await withActiveRecordFilter(
+    requireSupabaseClient()
+      .from(moduleConfig.table)
+      .select('*')
+      .eq('client_id', clientId)
+  ).order('created_at', { ascending: false });
+
+  if (error) throw error;
+
+  state.moduleRecords[section] = data || [];
+  state.moduleCounts[section] = state.moduleRecords[section].length;
+  return state.moduleRecords[section];
+}
+
+async function loadReportsData() {
+  const clientId = getActiveClientId();
+  if (!clientId) return null;
+
+  const counts = await loadDashboardCounts();
+  const { data: inventoryRows, error } = await withActiveRecordFilter(
+    requireSupabaseClient()
+      .from(MODULE_SECTIONS.inventory.table)
+      .select('id, quantity, par_level')
+      .eq('client_id', clientId)
+  );
+
+  if (error) throw error;
+
+  const lowStockItems = (inventoryRows || []).filter(isLowStock).length;
+  state.reportsData = {
+    total_staff: counts.staff || 0,
+    total_menu_items: counts.menu || 0,
+    total_recipes: counts.recipes || 0,
+    total_inventory_items: counts.inventory || 0,
+    total_events: counts.events || 0,
+    total_production_logs: counts.production || 0,
+    low_stock_items: lowStockItems
+  };
+  return state.reportsData;
+}
+
+async function createRecord(table, payload) {
+  const clientId = getActiveClientId();
+  if (!clientId) throw new Error('Open a restaurant workspace before creating records.');
+
+  const userId = requireSignedInUserId();
+  const { data, error } = await requireSupabaseClient()
+    .from(table)
+    .insert({
+      ...payload,
+      client_id: clientId,
+      created_by: userId
+    })
+    .select('*')
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+async function updateRecord(table, id, payload) {
+  const clientId = getActiveClientId();
+  if (!clientId) throw new Error('Open a restaurant workspace before updating records.');
+
+  const { data, error } = await requireSupabaseClient()
+    .from(table)
+    .update(payload)
+    .eq('id', id)
+    .eq('client_id', clientId)
+    .select('*')
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+async function deleteOrArchiveRecord(table, id) {
+  return updateRecord(table, id, { status: 'archived' });
+}
+
+function updateDashboardCards(counts = state.moduleCounts) {
+  document.querySelectorAll('[data-count-section]').forEach(element => {
+    const section = element.dataset.countSection;
+    element.textContent = String(counts[section] || 0);
+  });
+}
+
 function hideWorkspaceSections() {
   els['onboarding-view'].hidden = true;
   els['client-selector-view'].hidden = true;
@@ -289,7 +630,7 @@ function hideWorkspaceSections() {
 function setActiveSidebarSection(section) {
   state.activeSection = section;
 
-  document.querySelectorAll('[data-section]').forEach(control => {
+  document.querySelectorAll('.sidebar-link[data-section], .module-card[data-section]').forEach(control => {
     const isActive = control.dataset.section === section;
     control.classList.toggle('is-active', isActive);
 
@@ -313,6 +654,10 @@ function showModuleToast(message = 'This module is ready for the next build.') {
   showModuleToast.timeoutId = window.setTimeout(() => {
     toast.hidden = true;
   }, 2400);
+}
+
+function showToast(message) {
+  showModuleToast(message);
 }
 
 function renderLoadingSession() {
@@ -445,6 +790,15 @@ function renderDashboard() {
   els['dashboard-view'].hidden = false;
   els['dashboard-title'].textContent = state.activeClient.name;
   els['dashboard-description'].textContent = `Welcome to ${state.activeClient.name}. Your Beoflow modules are ready for real operating data when your team starts building.`;
+  updateDashboardCards();
+
+  loadDashboardCounts()
+    .then(counts => {
+      if (state.activeSection === 'dashboard') updateDashboardCards(counts);
+    })
+    .catch(error => {
+      showAlert(els['workspace-message'], error.message || 'Unable to load dashboard counts.');
+    });
 }
 
 function renderModuleSection(section) {
@@ -463,10 +817,262 @@ function renderModuleSection(section) {
   els['module-view'].hidden = false;
   els['module-title'].textContent = moduleConfig.title;
   els['module-subtitle'].textContent = moduleConfig.subtitle;
+  els['module-count-badge'].textContent = section === 'reports' ? '7 metrics' : 'Loading';
+  els['module-header-action-button'].textContent = moduleConfig.action;
+  els['module-header-action-button'].hidden = section === 'reports';
   els['module-empty-icon'].textContent = moduleConfig.index;
   els['module-empty-title'].textContent = moduleConfig.emptyTitle;
   els['module-empty-copy'].textContent = moduleConfig.emptyCopy;
   els['module-action-button'].textContent = moduleConfig.action;
+  els['module-action-button'].hidden = section === 'reports';
+  els['module-empty-state'].hidden = true;
+  els['module-record-list'].hidden = false;
+  els['module-record-list'].innerHTML = '<div class="module-loading">Loading workspace records.</div>';
+
+  loadModuleData(section)
+    .then(result => {
+      if (state.activeSection !== section) return;
+      if (section === 'reports') {
+        renderReportsSection(result);
+        return;
+      }
+
+      renderModuleList(section, result);
+      updateDashboardCards(state.moduleCounts);
+    })
+    .catch(error => {
+      els['module-count-badge'].textContent = 'Unable to load';
+      els['module-record-list'].innerHTML = '';
+      els['module-empty-state'].hidden = false;
+      showAlert(els['workspace-message'], error.message || `Unable to load ${moduleConfig.title}.`);
+    });
+}
+
+function renderModuleList(section, records = state.moduleRecords[section] || []) {
+  const moduleConfig = getModuleConfig(section);
+  const count = records.length;
+  els['module-count-badge'].textContent = `${count} ${count === 1 ? moduleConfig.singular : moduleConfig.plural}`;
+  els['module-empty-state'].hidden = count > 0;
+  els['module-record-list'].hidden = count === 0;
+
+  if (count === 0) {
+    els['module-record-list'].innerHTML = '';
+    return;
+  }
+
+  els['module-record-list'].innerHTML = records.map(record => renderRecordCard(section, record)).join('');
+}
+
+function renderRecordCard(section, record) {
+  const moduleConfig = getModuleConfig(section);
+  const title = getRecordTitle(section, record);
+  const status = record?.[moduleConfig.badgeField] || 'active';
+  const metaHtml = (moduleConfig.metaFields || [])
+    .map(fieldName => formatRecordValue(fieldName, record?.[fieldName]))
+    .filter(Boolean)
+    .map(value => `<span>${escapeHtml(value)}</span>`)
+    .join('');
+  const detailHtml = (moduleConfig.detailFields || [])
+    .map(fieldName => {
+      const value = formatRecordValue(fieldName, record?.[fieldName]);
+      if (!value) return '';
+      return `
+        <div class="record-detail">
+          <span>${escapeHtml(formatLabel(fieldName))}</span>
+          <p>${escapeHtml(value)}</p>
+        </div>
+      `;
+    })
+    .filter(Boolean)
+    .join('');
+  const lowStockHtml = section === 'inventory' && isLowStock(record)
+    ? '<span class="status-badge status-badge-warning">Low Stock</span>'
+    : '';
+
+  return `
+    <article class="record-card">
+      <div class="record-card-main">
+        <div class="record-title-row">
+          <h4>${escapeHtml(title)}</h4>
+          <div class="record-badges">
+            ${lowStockHtml}
+            <span class="status-badge">${escapeHtml(formatRecordValue('status', status))}</span>
+          </div>
+        </div>
+        ${metaHtml ? `<div class="record-meta">${metaHtml}</div>` : ''}
+        ${detailHtml ? `<div class="record-details">${detailHtml}</div>` : ''}
+      </div>
+      <div class="record-actions">
+        <button type="button" class="secondary-action" data-module-action="edit" data-section="${escapeHtml(section)}" data-record-id="${escapeHtml(record.id)}">Edit</button>
+        <button type="button" class="secondary-action danger-action" data-module-action="archive" data-section="${escapeHtml(section)}" data-record-id="${escapeHtml(record.id)}">Archive</button>
+      </div>
+    </article>
+  `;
+}
+
+function renderReportsSection(reportsData = state.reportsData) {
+  const metrics = [
+    ['total_staff', 'Total staff'],
+    ['total_menu_items', 'Total menu items'],
+    ['total_recipes', 'Total recipes'],
+    ['total_inventory_items', 'Total inventory items'],
+    ['total_events', 'Total events'],
+    ['total_production_logs', 'Total production logs'],
+    ['low_stock_items', 'Low stock items']
+  ];
+  const totalSourceRecords = metrics
+    .filter(([key]) => key !== 'low_stock_items')
+    .reduce((total, [key]) => total + (reportsData?.[key] || 0), 0);
+
+  els['module-count-badge'].textContent = '7 metrics';
+  els['module-empty-state'].hidden = totalSourceRecords > 0;
+  els['module-record-list'].hidden = false;
+  els['module-record-list'].innerHTML = `
+    <div class="reports-grid">
+      ${metrics.map(([key, label]) => `
+        <article class="report-card">
+          <span>${escapeHtml(label)}</span>
+          <strong>${escapeHtml(reportsData?.[key] || 0)}</strong>
+        </article>
+      `).join('')}
+    </div>
+  `;
+  updateDashboardCards(state.moduleCounts);
+}
+
+function getRecordById(section, recordId) {
+  return (state.moduleRecords[section] || []).find(record => String(record.id) === String(recordId));
+}
+
+function renderFormField(field, record = null) {
+  const rawValue = record?.[field.name] ?? field.defaultValue ?? '';
+  const value = rawValue === null || rawValue === undefined ? '' : String(rawValue);
+  const requiredAttr = field.required ? ' required' : '';
+  const minAttr = field.min !== undefined ? ` min="${escapeHtml(field.min)}"` : '';
+  const stepAttr = field.step !== undefined ? ` step="${escapeHtml(field.step)}"` : '';
+  const wideClass = field.wide || field.type === 'textarea' ? ' form-field-wide' : '';
+
+  if (field.type === 'textarea') {
+    return `
+      <label class="form-field${wideClass}">
+        <span>${escapeHtml(field.label)}</span>
+        <textarea name="${escapeHtml(field.name)}"${requiredAttr}>${escapeHtml(value)}</textarea>
+      </label>
+    `;
+  }
+
+  return `
+    <label class="form-field${wideClass}">
+      <span>${escapeHtml(field.label)}</span>
+      <input type="${escapeHtml(field.type || 'text')}" name="${escapeHtml(field.name)}" value="${escapeHtml(value)}"${requiredAttr}${minAttr}${stepAttr}>
+    </label>
+  `;
+}
+
+function openModuleModal(section, record = null) {
+  const moduleConfig = getModuleConfig(section);
+  if (!moduleConfig.table) return;
+
+  state.modalSection = section;
+  state.editingRecord = record;
+  showAlert(els['module-form-message'], '');
+  els['module-modal-title'].textContent = record
+    ? `Edit ${moduleConfig.singular}`
+    : moduleConfig.action;
+  els['module-modal-subtitle'].textContent = record
+    ? `Update this ${moduleConfig.singular} for ${state.activeClient?.name || 'this workspace'}.`
+    : `Create a new ${moduleConfig.singular} for ${state.activeClient?.name || 'this workspace'}.`;
+  els['module-save-button'].textContent = record ? 'Save Changes' : moduleConfig.action;
+  els['module-form-fields'].innerHTML = moduleConfig.fields
+    .map(field => renderFormField(field, record))
+    .join('');
+  els['module-modal'].hidden = false;
+  const firstInput = els['module-form-fields'].querySelector('input, textarea, select');
+  if (firstInput) firstInput.focus();
+}
+
+function closeModuleModal() {
+  state.modalSection = null;
+  state.editingRecord = null;
+  els['module-modal'].hidden = true;
+  els['module-form'].reset();
+  els['module-form-fields'].innerHTML = '';
+  showAlert(els['module-form-message'], '');
+}
+
+function buildModulePayload(section) {
+  const moduleConfig = getModuleConfig(section);
+  const formData = new FormData(els['module-form']);
+  const payload = {};
+
+  moduleConfig.fields.forEach(field => {
+    const rawValue = String(formData.get(field.name) || '').trim();
+    if (field.required && !rawValue) {
+      throw new Error(`${field.label} is required.`);
+    }
+
+    if (field.name === 'status' && !rawValue) {
+      payload[field.name] = field.defaultValue || 'active';
+      return;
+    }
+
+    payload[field.name] = normalizePayloadValue(field, rawValue);
+  });
+
+  return payload;
+}
+
+async function saveModuleRecord(event) {
+  event.preventDefault();
+  const section = state.modalSection;
+  if (!section) return;
+
+  const moduleConfig = getModuleConfig(section);
+  setLoading(true);
+  showAlert(els['module-form-message'], '');
+
+  try {
+    const payload = buildModulePayload(section);
+    if (state.editingRecord?.id) {
+      await updateRecord(moduleConfig.table, state.editingRecord.id, payload);
+      showToast(`${moduleConfig.title} record updated.`);
+    } else {
+      await createRecord(moduleConfig.table, payload);
+      showToast(`${moduleConfig.title} record created.`);
+    }
+
+    closeModuleModal();
+    await loadDashboardCounts();
+    updateDashboardCards();
+    renderModuleSection(section);
+  } catch (error) {
+    showAlert(els['module-form-message'], error.message || `Unable to save ${moduleConfig.singular}.`);
+  } finally {
+    setLoading(false);
+  }
+}
+
+async function archiveModuleRecord(section, recordId) {
+  const moduleConfig = getModuleConfig(section);
+  const record = getRecordById(section, recordId);
+  const recordName = getRecordTitle(section, record);
+  const shouldArchive = window.confirm(`Archive ${recordName}?`);
+  if (!shouldArchive) return;
+
+  setLoading(true);
+  clearAlerts();
+
+  try {
+    await deleteOrArchiveRecord(moduleConfig.table, recordId);
+    await loadDashboardCounts();
+    updateDashboardCards();
+    renderModuleSection(section);
+    showToast(`${moduleConfig.title} record archived.`);
+  } catch (error) {
+    showAlert(els['workspace-message'], error.message || `Unable to archive ${moduleConfig.singular}.`);
+  } finally {
+    setLoading(false);
+  }
 }
 
 function escapeHtml(value) {
@@ -846,6 +1452,10 @@ async function createBeoflowClient(clientInput) {
 
 function setActiveClient(client) {
   state.activeClient = client || null;
+  state.moduleRecords = {};
+  state.moduleCounts = {};
+  state.reportsData = null;
+  state.activeSection = 'dashboard';
 
   if (state.activeClient?.id) {
     localStorage.setItem(config.activeClientStorageKey || 'beoflow.activeClientId', state.activeClient.id);
@@ -876,6 +1486,11 @@ function resetSessionState() {
   state.userClients = [];
   state.activeClient = null;
   state.activeSection = 'dashboard';
+  state.moduleRecords = {};
+  state.moduleCounts = {};
+  state.reportsData = null;
+  state.modalSection = null;
+  state.editingRecord = null;
   localStorage.removeItem(config.activeClientStorageKey || 'beoflow.activeClientId');
 }
 
@@ -1084,7 +1699,42 @@ function bindEvents() {
   });
 
   els['module-action-button'].addEventListener('click', () => {
-    showModuleToast('This module is ready for the next build.');
+    openModuleModal(state.activeSection);
+  });
+
+  els['module-header-action-button'].addEventListener('click', () => {
+    openModuleModal(state.activeSection);
+  });
+
+  els['module-record-list'].addEventListener('click', event => {
+    const actionButton = event.target.closest('[data-module-action]');
+    if (!actionButton) return;
+
+    const section = actionButton.dataset.section;
+    const recordId = actionButton.dataset.recordId;
+    if (actionButton.dataset.moduleAction === 'edit') {
+      const record = getRecordById(section, recordId);
+      if (record) openModuleModal(section, record);
+      return;
+    }
+
+    if (actionButton.dataset.moduleAction === 'archive') {
+      archiveModuleRecord(section, recordId);
+    }
+  });
+
+  els['module-form'].addEventListener('submit', saveModuleRecord);
+
+  els['module-cancel-button'].addEventListener('click', closeModuleModal);
+  els['module-modal-close'].addEventListener('click', closeModuleModal);
+  els['module-modal'].addEventListener('click', event => {
+    if (event.target === els['module-modal']) closeModuleModal();
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && !els['module-modal'].hidden) {
+      closeModuleModal();
+    }
   });
 
   els['sign-out-button'].addEventListener('click', () => {
@@ -1138,6 +1788,15 @@ window.BeoflowClientApp = {
   handleAuthStateChange,
   loadCurrentUserProfile,
   loadUserClients,
+  getActiveClientId,
+  loadModuleData,
+  createRecord,
+  updateRecord,
+  deleteOrArchiveRecord,
+  renderModuleList,
+  openModuleModal,
+  closeModuleModal,
+  showToast,
   createBeoflowClient,
   sendPasswordResetEmail,
   updatePassword,
