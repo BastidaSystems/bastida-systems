@@ -226,17 +226,23 @@ create table if not exists public.time_entries (
 
 create table if not exists public.project_documents (
   id uuid primary key default gen_random_uuid(),
-  project_id uuid not null references public.projects(id) on delete cascade,
+  project_id uuid references public.projects(id) on delete cascade,
+  document_scope text default 'project',
   name text not null,
   category public.project_document_category not null,
   document_url text,
   storage_path text,
   status public.project_document_status not null default 'active',
+  related_user_id uuid references public.users(id) on delete set null,
   uploaded_by uuid references public.users(id) on delete set null,
   archived_by uuid references public.users(id) on delete set null,
   archived_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
+  constraint project_documents_scope_allowed
+    check (coalesce(document_scope, 'project') in ('project', 'company', 'collaborator', 'legal', 'finance', 'internal')),
+  constraint project_documents_project_scope_requires_project
+    check (coalesce(document_scope, 'project') <> 'project' or project_id is not null),
   check (document_url is not null or storage_path is not null)
 );
 
@@ -304,6 +310,36 @@ alter table public.project_roles
   add column if not exists last_invite_error text,
   add column if not exists accepted_at timestamptz;
 
+alter table public.project_documents
+  alter column project_id drop not null,
+  add column if not exists document_scope text default 'project',
+  add column if not exists related_user_id uuid references public.users(id) on delete set null;
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_constraint
+    where conname = 'project_documents_scope_allowed'
+  ) then
+    alter table public.project_documents
+      add constraint project_documents_scope_allowed
+      check (coalesce(document_scope, 'project') in ('project', 'company', 'collaborator', 'legal', 'finance', 'internal'))
+      not valid;
+  end if;
+
+  if not exists (
+    select 1
+    from pg_constraint
+    where conname = 'project_documents_project_scope_requires_project'
+  ) then
+    alter table public.project_documents
+      add constraint project_documents_project_scope_requires_project
+      check (coalesce(document_scope, 'project') <> 'project' or project_id is not null)
+      not valid;
+  end if;
+end $$;
+
 comment on table public.projects is 'Real Bastida Systems projects. Empty until created from real business records.';
 comment on table public.project_roles is 'Project-specific user roles. One user can have different roles across different projects.';
 comment on column public.project_roles.invitation_status is 'Invitation lifecycle for dashboard-invited project members.';
@@ -327,6 +363,8 @@ comment on column public.project_tasks.assigned_to is 'Project collaborator assi
 comment on table public.time_entries is 'Live time tracking entries that can be converted into work log submissions.';
 comment on column public.time_entries.duration_minutes is 'Generated stopped timer duration in minutes.';
 comment on table public.project_documents is 'Project documents and contracts metadata. File storage remains external or Supabase Storage-backed.';
+comment on column public.project_documents.document_scope is 'Document visibility scope. Null is treated as project for backwards compatibility.';
+comment on column public.project_documents.related_user_id is 'Optional collaborator associated with a non-project document such as a contract, NDA, or administrative record.';
 
 create index if not exists idx_projects_company_status on public.projects(company_id, status);
 create index if not exists idx_projects_status_updated_at on public.projects(status, updated_at desc);
@@ -351,6 +389,9 @@ create index if not exists idx_project_tasks_due_date on public.project_tasks(du
 create index if not exists idx_time_entries_project_user_status on public.time_entries(project_id, user_id, status);
 create index if not exists idx_time_entries_user_started_at on public.time_entries(user_id, started_at desc);
 create index if not exists idx_project_documents_project_category on public.project_documents(project_id, category);
+create index if not exists idx_project_documents_project_scope on public.project_documents(project_id, document_scope);
+create index if not exists idx_project_documents_scope_status on public.project_documents(document_scope, status);
+create index if not exists idx_project_documents_related_user on public.project_documents(related_user_id, created_at desc);
 create index if not exists idx_project_documents_uploaded_by on public.project_documents(uploaded_by, created_at desc);
 
 drop trigger if exists set_projects_updated_at on public.projects;
@@ -1305,7 +1346,34 @@ create policy project_documents_select_project_access
 on public.project_documents
 for select
 to authenticated
-using (private.has_project_access(project_id));
+using (
+  private.is_platform_admin()
+  or private.is_global_founder()
+  or (
+    project_id is not null
+    and private.has_project_access(project_id)
+    and (
+      coalesce(document_scope, 'project') in ('project', 'company')
+      or private.can_manage_project(project_id)
+      or uploaded_by = (select private.current_user_id())
+      or related_user_id = (select private.current_user_id())
+    )
+  )
+  or uploaded_by = (select private.current_user_id())
+  or related_user_id = (select private.current_user_id())
+  or (
+    related_user_id is not null
+    and coalesce(document_scope, 'project') in ('collaborator', 'legal', 'internal')
+    and (project_documents.project_id is null or private.can_manage_project(project_documents.project_id))
+    and exists (
+      select 1
+      from public.project_roles pr
+      where pr.user_id = project_documents.related_user_id
+        and pr.active = true
+        and private.can_manage_project(pr.project_id)
+    )
+  )
+);
 
 drop policy if exists project_documents_insert_project_member on public.project_documents;
 create policy project_documents_insert_project_member
@@ -1313,8 +1381,40 @@ on public.project_documents
 for insert
 to authenticated
 with check (
-  private.has_project_access(project_id)
-  and coalesce(uploaded_by, (select private.current_user_id())) = (select private.current_user_id())
+  coalesce(uploaded_by, (select private.current_user_id())) = (select private.current_user_id())
+  and (
+    private.is_platform_admin()
+    or private.is_global_founder()
+    or (
+      project_id is not null
+      and private.has_project_access(project_id)
+      and coalesce(document_scope, 'project') = 'project'
+    )
+    or (
+      project_id is not null
+      and private.can_manage_project(project_id)
+    )
+    or (
+      related_user_id = (select private.current_user_id())
+      and coalesce(document_scope, 'project') in ('collaborator', 'legal', 'internal')
+    )
+    or (
+      coalesce(document_scope, 'project') = 'internal'
+      and uploaded_by = (select private.current_user_id())
+    )
+    or (
+      related_user_id is not null
+      and coalesce(document_scope, 'project') in ('collaborator', 'legal', 'internal')
+      and (project_documents.project_id is null or private.can_manage_project(project_documents.project_id))
+      and exists (
+        select 1
+        from public.project_roles pr
+        where pr.user_id = project_documents.related_user_id
+          and pr.active = true
+          and private.can_manage_project(pr.project_id)
+      )
+    )
+  )
 );
 
 drop policy if exists project_documents_update_uploader_or_project_manager on public.project_documents;
@@ -1323,12 +1423,48 @@ on public.project_documents
 for update
 to authenticated
 using (
-  uploaded_by = (select private.current_user_id())
-  or private.can_manage_project(project_id)
+  private.is_platform_admin()
+  or private.is_global_founder()
+  or uploaded_by = (select private.current_user_id())
+  or related_user_id = (select private.current_user_id())
+  or (project_id is not null and private.can_manage_project(project_id))
+  or (
+    related_user_id is not null
+    and coalesce(document_scope, 'project') in ('collaborator', 'legal', 'internal')
+    and (project_documents.project_id is null or private.can_manage_project(project_documents.project_id))
+    and exists (
+      select 1
+      from public.project_roles pr
+      where pr.user_id = project_documents.related_user_id
+        and pr.active = true
+        and private.can_manage_project(pr.project_id)
+    )
+  )
 )
 with check (
-  uploaded_by = (select private.current_user_id())
-  or private.can_manage_project(project_id)
+  private.is_platform_admin()
+  or private.is_global_founder()
+  or (
+    uploaded_by = (select private.current_user_id())
+    and (
+      (project_id is not null and private.has_project_access(project_id))
+      or related_user_id = (select private.current_user_id())
+      or coalesce(document_scope, 'project') = 'internal'
+    )
+  )
+  or (project_id is not null and private.can_manage_project(project_id))
+  or (
+    related_user_id is not null
+    and coalesce(document_scope, 'project') in ('collaborator', 'legal', 'internal')
+    and (project_documents.project_id is null or private.can_manage_project(project_documents.project_id))
+    and exists (
+      select 1
+      from public.project_roles pr
+      where pr.user_id = project_documents.related_user_id
+        and pr.active = true
+        and private.can_manage_project(pr.project_id)
+    )
+  )
 );
 
 drop policy if exists project_documents_delete_project_manager on public.project_documents;
@@ -1336,7 +1472,11 @@ create policy project_documents_delete_project_manager
 on public.project_documents
 for delete
 to authenticated
-using (private.can_manage_project(project_id));
+using (
+  private.is_platform_admin()
+  or private.is_global_founder()
+  or (project_id is not null and private.can_manage_project(project_id))
+);
 
 grant usage on schema public to authenticated;
 grant usage on schema private to authenticated;

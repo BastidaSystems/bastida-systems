@@ -712,6 +712,7 @@
     }
 
     .table-filter input,
+    .table-filter select,
     .table-sort select {
       min-height: 34px;
       border: 1px solid var(--line-strong);
@@ -727,6 +728,7 @@
     }
 
     .table-filter input:focus,
+    .table-filter select:focus,
     .table-sort select:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1);
@@ -975,6 +977,8 @@
     .status-completed,
     .status-done,
     .status-converted,
+    .status-collaborator,
+    .status-internal,
     .status-active_member {
       border-color: rgba(15, 118, 110, 0.18);
       background: rgba(15, 118, 110, 0.07);
@@ -989,6 +993,8 @@
     .status-review,
     .status-running,
     .status-high,
+    .status-legal,
+    .status-finance,
     .status-invite_sent,
     .status-pending_acceptance {
       border-color: rgba(146, 64, 14, 0.18);
@@ -1002,6 +1008,8 @@
     .status-low,
     .status-medium,
     .status-stopped,
+    .status-project,
+    .status-company,
     .status-draft {
       border-color: rgba(37, 99, 235, 0.18);
       background: rgba(37, 99, 235, 0.07);
@@ -1875,7 +1883,7 @@
         tables: {
           people: { filter: '', sort: 'name', page: 1 },
           tasks: { filter: '', sort: 'due_date', page: 1 },
-          documents: { filter: '', sort: 'created_desc', page: 1 },
+          documents: { filter: '', sort: 'created_desc', page: 1, scope: 'all', project: 'all', collaborator: 'all', category: 'all', status: 'all' },
           deliverables: { filter: '', sort: 'created_desc', page: 1 },
           workLogs: { filter: '', sort: 'date_desc', page: 1 },
           payments: { filter: '', sort: 'total_desc', page: 1 }
@@ -1983,7 +1991,7 @@
             .order('started_at', { ascending: false }),
           state.client
             .from('project_documents')
-            .select('id, project_id, name, category, document_url, storage_path, status, uploaded_by, archived_by, archived_at, created_at, updated_at, project:projects!project_documents_project_id_fkey(id, name), uploader:users!project_documents_uploaded_by_fkey(id, full_name, email), archiver:users!project_documents_archived_by_fkey(id, full_name, email)')
+            .select('id, project_id, document_scope, related_user_id, name, category, document_url, storage_path, status, uploaded_by, archived_by, archived_at, created_at, updated_at, project:projects!project_documents_project_id_fkey(id, name), related_user:users!project_documents_related_user_id_fkey(id, full_name, email), uploader:users!project_documents_uploaded_by_fkey(id, full_name, email), archiver:users!project_documents_archived_by_fkey(id, full_name, email)')
             .order('created_at', { ascending: false }),
           state.client
             .from('deliverables')
@@ -2379,7 +2387,14 @@
 
       function visibleDocuments() {
         const projectIds = activeWorkspaceProjectIds();
-        return state.documents.filter((document) => projectIds.has(document.project_id));
+        return state.documents.filter((document) => {
+          if (document.project_id) {
+            return projectIds.has(document.project_id)
+              && canViewProjectScopedDocument(document);
+          }
+
+          return canViewGeneralDocument(document, activeWorkspaceProjectId());
+        });
       }
 
       function visibleWorkLogs() {
@@ -2611,6 +2626,8 @@
         app.querySelector('[data-work-log-form]')?.addEventListener('submit', handleWorkLogSubmit);
         app.querySelector('[data-task-form]')?.addEventListener('submit', handleTaskSubmit);
         app.querySelector('[data-document-form]')?.addEventListener('submit', handleDocumentSubmit);
+        app.querySelector('[data-document-scope]')?.addEventListener('change', updateDocumentScopeUi);
+        updateDocumentScopeUi();
         app.querySelector('[data-start-timer-form]')?.addEventListener('submit', handleStartTimerSubmit);
         app.querySelector('[data-approve-log-form]')?.addEventListener('submit', handleApproveWorkLogSubmit);
         app.querySelector('[data-reject-form]')?.addEventListener('submit', handleRejectSubmit);
@@ -2696,6 +2713,18 @@
             }
             state.tables[key].sort = select.value;
             state.tables[key].page = 1;
+            renderApp();
+          });
+        });
+
+        app.querySelectorAll('[data-document-filter]').forEach((select) => {
+          select.addEventListener('change', () => {
+            const key = select.dataset.documentFilter;
+            if (!key || typeof state.tables.documents[key] === 'undefined') {
+              return;
+            }
+            state.tables.documents[key] = select.value || 'all';
+            state.tables.documents.page = 1;
             renderApp();
           });
         });
@@ -3233,7 +3262,9 @@
         const form = event.currentTarget;
         const formData = new FormData(form);
         const documentId = state.documentEditor.documentId;
+        const scope = normalizeDocumentScope(formData.get('document_scope'));
         const projectId = String(formData.get('project_id') || '').trim();
+        const relatedUserId = String(formData.get('related_user_id') || '').trim();
         const name = String(formData.get('name') || '').trim();
         const documentUrl = String(formData.get('document_url') || '').trim() || null;
         const storagePath = String(formData.get('storage_path') || '').trim() || null;
@@ -3244,8 +3275,16 @@
         renderApp();
 
         try {
-          if (!projectId || !state.projects.some((project) => project.id === projectId)) {
+          if (documentScopeRequiresProject(scope) && (!projectId || !state.projects.some((project) => project.id === projectId))) {
             throw new Error('Project is required.');
+          }
+
+          if (projectId && !state.projects.some((project) => project.id === projectId)) {
+            throw new Error('Selected project is not available.');
+          }
+
+          if (relatedUserId && !visibleCollaboratorOptions().some((person) => person.userId === relatedUserId)) {
+            throw new Error('Selected collaborator is not available.');
           }
 
           if (!name) {
@@ -3257,7 +3296,9 @@
           }
 
           const payload = {
-            project_id: projectId,
+            project_id: projectId || null,
+            document_scope: scope,
+            related_user_id: relatedUserId || null,
             name,
             category: String(formData.get('category') || 'contracts').trim(),
             document_url: documentUrl,
@@ -3920,7 +3961,7 @@
             .slice(0, 3)
             .map((document) => ({
               title: document.name,
-              meta: `${document.project?.name || 'Unassigned'} - ${statusLabel(document.category)}`,
+              meta: `${documentProjectLabel(document)} - ${statusLabel(document.category)}`,
               status: document.status
             }))
         ].slice(0, 8);
@@ -3938,7 +3979,7 @@
             const projectPayments = payments.filter((payment) => payment.project_id === projectId);
             const projectPayableRows = payableRows.filter((payment) => payment.project_id === projectId);
             const projectDeliverables = deliverables.filter((deliverable) => deliverable.project_id === projectId);
-            const projectDocuments = documents.filter((document) => document.project_id === projectId && document.status !== 'archived');
+            const projectDocuments = documents.filter((document) => document.status !== 'archived' && documentMatchesProjectContext(document, projectId));
             const projectTasks = tasks.filter((task) => task.project_id === projectId);
             const projectTimeEntries = timeEntries.filter((entry) => entry.project_id === projectId);
             const projectAssignments = projectRoles.filter((assignment) => assignment.project_id === projectId);
@@ -4023,8 +4064,12 @@
               .filter((deliverable) => managedProjectIds.has(deliverable.project_id))
               .filter((deliverable) => deliverable.responsible_user_id === person.userId);
             const personDocuments = visibleDocuments()
-              .filter((document) => managedProjectIds.has(document.project_id))
-              .filter((document) => document.uploaded_by === person.userId);
+              .filter((document) => (
+                document.project_id
+                  ? managedProjectIds.has(document.project_id)
+                  : canManageRelatedUserDocument(document)
+              ))
+              .filter((document) => documentRelatedToPerson(document, person.userId));
             const lastActivity = latestDateValue([
               ...personLogs.map((log) => log.approved_at || log.submitted_at || log.work_date),
               ...personPayments.map((payment) => payment.paid_at || payment.updated_at || payment.created_at),
@@ -4072,7 +4117,8 @@
 
       function dashboardDocuments() {
         return visibleDocuments().filter((document) => (
-          canViewTeamDataForProject(document.project_id)
+          canViewDocumentTeamScope(document)
+          || document.related_user_id === state.profile?.id
           || document.uploaded_by === state.profile?.id
         ));
       }
@@ -4103,6 +4149,104 @@
 
       function canViewTeamDataForProject(projectId) {
         return Boolean(projectId) && canManageProject(projectId);
+      }
+
+      function canViewProjectScopedDocument(document) {
+        if (!document?.project_id) {
+          return false;
+        }
+
+        if (isGlobalFounderOrAdmin()) {
+          return true;
+        }
+
+        const scope = documentScopeValue(document);
+        if (['project', 'company'].includes(scope)) {
+          return true;
+        }
+
+        return canManageProject(document.project_id)
+          || canManageRelatedUserDocument(document, document.project_id)
+          || document.uploaded_by === state.profile?.id
+          || document.related_user_id === state.profile?.id;
+      }
+
+      function canViewGeneralDocument(document, projectId = null) {
+        if (!document || document.project_id) {
+          return false;
+        }
+
+        if (isGlobalFounderOrAdmin()) {
+          return true;
+        }
+
+        if (document.uploaded_by === state.profile?.id || document.related_user_id === state.profile?.id) {
+          return true;
+        }
+
+        return canManageRelatedUserDocument(document, projectId);
+      }
+
+      function canViewDocumentTeamScope(document) {
+        if (!document) {
+          return false;
+        }
+
+        if (document.project_id) {
+          return canViewTeamDataForProject(document.project_id);
+        }
+
+        if (isGlobalFounderOrAdmin()) {
+          return true;
+        }
+
+        return canManageRelatedUserDocument(document, activeWorkspaceProjectId());
+      }
+
+      function canManageRelatedUserDocument(document, projectId = null) {
+        const relatedUserId = document?.related_user_id;
+        if (!relatedUserId || !managerVisibleDocumentScopes().includes(documentScopeValue(document))) {
+          return false;
+        }
+
+        const scopedProjectId = document.project_id || projectId || null;
+        return state.projectRoles
+          .filter((assignment) => assignment.active === true)
+          .filter((assignment) => assignment.user_id === relatedUserId || assignment.member?.id === relatedUserId)
+          .some((assignment) => (
+            (!scopedProjectId || assignment.project_id === scopedProjectId)
+            && canManageProject(assignment.project_id)
+          ));
+      }
+
+      function documentRelatedToPerson(document, userId) {
+        return Boolean(document && userId)
+          && (
+            document.uploaded_by === userId
+            || document.related_user_id === userId
+          );
+      }
+
+      function relatedUserAssignedToProject(userId, projectId) {
+        return Boolean(userId && projectId)
+          && state.projectRoles.some((assignment) => (
+            assignment.active === true
+            && assignment.project_id === projectId
+            && (assignment.user_id === userId || assignment.member?.id === userId)
+          ));
+      }
+
+      function documentMatchesProjectContext(document, projectId) {
+        if (!document || !projectId) {
+          return false;
+        }
+
+        if (document.project_id) {
+          return document.project_id === projectId;
+        }
+
+        return Boolean(document.related_user_id)
+          && relatedUserAssignedToProject(document.related_user_id, projectId);
       }
 
       function dashboardManagedProjectIds() {
@@ -4297,14 +4441,14 @@
           activities.push({
             date: document.created_at,
             title: `${dashboardActorName(document.uploader, 'Collaborator', personalOnly)} uploaded Document`,
-            meta: `${document.project?.name || 'Unassigned'} - ${document.name}`
+            meta: `${documentProjectLabel(document)} - ${document.name}`
           });
 
           if (document.archived_at) {
             activities.push({
               date: document.archived_at,
               title: `${dashboardActorName(document.archiver, 'Owner', personalOnly)} archived Document`,
-              meta: `${document.project?.name || 'Unassigned'} - ${document.name}`
+              meta: `${documentProjectLabel(document)} - ${document.name}`
             });
           }
         });
@@ -4635,20 +4779,28 @@
       }
 
       function renderDocumentTable(documents, compact = false) {
+        const filteredDocuments = compact ? documents : filterDocumentsByControls(documents);
         const table = compact
-          ? { rows: documents, total: documents.length, page: 1, pageCount: 1, start: 0 }
-          : prepareTableRows('documents', documents, documentSearchText, {
+          ? { rows: filteredDocuments, total: filteredDocuments.length, page: 1, pageCount: 1, start: 0 }
+          : prepareTableRows('documents', filteredDocuments, documentSearchText, {
             created_desc: (a, b) => compareDateDesc(a.created_at, b.created_at),
             category: (a, b) => compareText(statusLabel(a.category), statusLabel(b.category)),
-            project: (a, b) => compareText(a.project?.name, b.project?.name),
+            scope: (a, b) => compareText(documentScopeLabel(documentScopeValue(a)), documentScopeLabel(documentScopeValue(b))),
+            project: (a, b) => compareText(documentProjectLabel(a), documentProjectLabel(b)),
+            collaborator: (a, b) => compareText(documentRelatedUserLabel(a), documentRelatedUserLabel(b)),
+            status: (a, b) => compareText(statusLabel(a.status), statusLabel(b.status)),
             name: (a, b) => compareText(a.name, b.name)
           });
 
         return `
+          ${compact ? '' : renderDocumentFilterControls(documents)}
           ${compact ? '' : renderTableControls('documents', [
             ['created_desc', 'Newest'],
+            ['scope', 'Scope'],
             ['category', 'Category'],
             ['project', 'Project'],
+            ['collaborator', 'Collaborator'],
+            ['status', 'Status'],
             ['name', 'Name']
           ], table)}
           ${!table.rows.length ? emptyState('No matching documents', 'Adjust the filter or clear the search field.', true) : `
@@ -4656,13 +4808,14 @@
             <table>
               <thead>
                 <tr>
-                  <th>Document Name</th>
+                  <th>Document</th>
+                  <th>Scope</th>
                   <th>Project</th>
-                  <th>Organization</th>
+                  <th>Related Collaborator</th>
                   <th>Category</th>
-                  <th>Uploaded By</th>
-                  <th>Created Date</th>
                   <th>Status</th>
+                  <th>Uploaded By</th>
+                  <th>Updated</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -4673,15 +4826,19 @@
                       <span class="cell-title" title="${escapeAttr(document.name)}">${escapeHtml(document.name)}</span>
                       <span class="cell-subtitle truncate" title="${escapeAttr(document.document_url || document.storage_path || '')}">${escapeHtml(document.document_url || document.storage_path || '')}</span>
                     </td>
-                    <td>${escapeHtml(document.project?.name || 'Unassigned')}</td>
-                    <td>Bastida Systems</td>
+                    <td>${documentScopePill(documentScopeValue(document))}</td>
+                    <td>${escapeHtml(documentProjectLabel(document))}</td>
+                    <td>
+                      <span class="cell-title">${escapeHtml(documentRelatedUserLabel(document))}</span>
+                      <span class="cell-subtitle truncate">${escapeHtml(document.related_user?.email || '')}</span>
+                    </td>
                     <td>${statusPill(document.category)}</td>
+                    <td>${statusPill(document.status)}</td>
                     <td>
                       <span class="cell-title">${escapeHtml(document.uploader?.full_name || document.uploader?.email || '-')}</span>
                       <span class="cell-subtitle truncate">${escapeHtml(document.uploader?.email || '')}</span>
                     </td>
-                    <td>${formatDate(document.created_at)}</td>
-                    <td>${statusPill(document.status)}</td>
+                    <td>${formatDate(document.updated_at || document.created_at)}</td>
                     <td>${renderDocumentActions(document)}</td>
                   </tr>
                 `).join('')}
@@ -5247,6 +5404,112 @@
         `;
       }
 
+      function renderDocumentFilterControls(documents) {
+        const control = state.tables.documents;
+        const projects = uniqueDocumentsByKey(
+          documents
+            .filter((document) => document.project_id)
+            .map((document) => ({
+              value: document.project_id,
+              label: document.project?.name || 'Project'
+            }))
+        );
+        const collaborators = uniqueDocumentsByKey(
+          documents
+            .filter((document) => document.related_user_id)
+            .map((document) => ({
+              value: document.related_user_id,
+              label: documentRelatedUserLabel(document)
+            }))
+        );
+        const categories = uniqueValues(documents.map((document) => document.category).filter(Boolean));
+        const statuses = uniqueValues(documents.map((document) => document.status).filter(Boolean));
+
+        return `
+          <div class="table-controls">
+            <div class="table-control-group">
+              ${renderDocumentFilterSelect('scope', 'Scope', [
+                ['all', 'All Scopes'],
+                ...documentScopeOptions().map((option) => [option.value, option.label])
+              ], control.scope)}
+              ${renderDocumentFilterSelect('project', 'Project', [
+                ['all', 'All Projects'],
+                ['general', 'Bastida Systems'],
+                ...projects.map((project) => [project.value, project.label])
+              ], control.project)}
+              ${renderDocumentFilterSelect('collaborator', 'Collaborator', [
+                ['all', 'All Collaborators'],
+                ...collaborators.map((person) => [person.value, person.label])
+              ], control.collaborator)}
+              ${renderDocumentFilterSelect('category', 'Category', [
+                ['all', 'All Categories'],
+                ...categories.map((category) => [category, statusLabel(category)])
+              ], control.category)}
+              ${renderDocumentFilterSelect('status', 'Status', [
+                ['all', 'All Statuses'],
+                ...statuses.map((status) => [status, statusLabel(status)])
+              ], control.status)}
+            </div>
+          </div>
+        `;
+      }
+
+      function renderDocumentFilterSelect(key, label, options, selectedValue) {
+        return `
+          <label class="table-filter">
+            <span>${escapeHtml(label)}</span>
+            <select data-document-filter="${escapeAttr(key)}">
+              ${options.map(([value, optionLabel]) => `<option value="${escapeAttr(value)}" ${String(selectedValue || 'all') === String(value) ? 'selected' : ''}>${escapeHtml(optionLabel)}</option>`).join('')}
+            </select>
+          </label>
+        `;
+      }
+
+      function uniqueDocumentsByKey(items) {
+        const byValue = new Map();
+        items.forEach((item) => {
+          if (!item.value || byValue.has(item.value)) {
+            return;
+          }
+          byValue.set(item.value, item);
+        });
+
+        return Array.from(byValue.values()).sort((a, b) => compareText(a.label, b.label));
+      }
+
+      function filterDocumentsByControls(documents) {
+        const control = state.tables.documents;
+
+        return documents.filter((document) => {
+          const scope = documentScopeValue(document);
+          if (control.scope !== 'all' && scope !== control.scope) {
+            return false;
+          }
+
+          if (control.project === 'general' && document.project_id) {
+            return false;
+          }
+
+          if (control.project !== 'all' && control.project !== 'general' && document.project_id !== control.project) {
+            return false;
+          }
+
+          if (control.collaborator !== 'all' && document.related_user_id !== control.collaborator) {
+            return false;
+          }
+
+          if (control.category !== 'all' && document.category !== control.category) {
+            return false;
+          }
+
+          if (control.status !== 'all' && document.status !== control.status) {
+            return false;
+          }
+
+          return true;
+        });
+      }
+
       function prepareTableRows(tableKey, rows, getSearchText, sorters) {
         const control = state.tables[tableKey];
         const filter = String(control.filter || '').trim().toLowerCase();
@@ -5384,12 +5647,12 @@
           });
 
         visibleDocuments()
-          .filter((document) => document.uploaded_by === person.userId)
+          .filter((document) => documentRelatedToPerson(document, person.userId))
           .forEach((document) => {
             activities.push({
               date: document.archived_at || document.updated_at || document.created_at,
               title: 'Document Activity',
-              meta: `${formatDate(document.archived_at || document.updated_at || document.created_at)} - ${document.project?.name || 'Unassigned'} - ${document.name}`,
+              meta: `${formatDate(document.archived_at || document.updated_at || document.created_at)} - ${documentProjectLabel(document)} - ${document.name}`,
               status: document.status
             });
           });
@@ -5448,7 +5711,10 @@
       function documentSearchText(document) {
         return [
           document.name,
-          document.project?.name,
+          documentScopeLabel(documentScopeValue(document)),
+          documentProjectLabel(document),
+          document.related_user?.full_name,
+          document.related_user?.email,
           document.uploader?.full_name,
           document.uploader?.email,
           statusLabel(document.category),
@@ -6278,7 +6544,10 @@
           ? state.documents.find((item) => item.id === state.documentEditor.documentId)
           : null;
         const projects = workLogProjects();
-        const selectedProjectId = document?.project_id || projects[0]?.id || '';
+        const selectedScope = documentScopeValue(document);
+        const selectedProjectId = document?.project_id || (!document ? activeWorkspaceProjectId() || projects[0]?.id || '' : '');
+        const collaborators = visibleCollaboratorOptions();
+        const showCollaborator = ['collaborator', 'legal', 'finance', 'internal'].includes(selectedScope);
         const notice = state.documentEditor.message
           ? `<div class="notice notice-${state.documentEditor.type === 'error' ? 'error' : 'success'}">${escapeHtml(state.documentEditor.message)}</div>`
           : '';
@@ -6290,7 +6559,7 @@
                 <div class="modal-header">
                   <div>
                     <h2 class="modal-title" id="document-title">${document ? 'Edit Document' : 'Upload Document'}</h2>
-                    <p class="modal-copy">Register a real document URL or storage path with project context.</p>
+                    <p class="modal-copy">Register a real document URL or storage path with project, company, or collaborator context.</p>
                   </div>
                   <button class="button" type="button" data-close-document>Close</button>
                 </div>
@@ -6298,16 +6567,29 @@
                   ${notice}
                   <div class="form-grid">
                     <div class="field">
-                      <label for="document-project">Project</label>
-                      <select id="document-project" name="project_id" required>
-                        ${projects.length
-                          ? projects.map((project) => `<option value="${escapeAttr(project.id)}" ${project.id === selectedProjectId ? 'selected' : ''}>${escapeHtml(project.name)}</option>`).join('')
-                          : '<option value="">No projects available</option>'}
+                      <label for="document-scope">Document Scope</label>
+                      <select id="document-scope" name="document_scope" data-document-scope required>
+                        ${documentScopeOptions().map((option) => `<option value="${escapeAttr(option.value)}" ${option.value === selectedScope ? 'selected' : ''}>${escapeHtml(option.label)}</option>`).join('')}
                       </select>
                     </div>
                     <div class="field">
                       <label for="document-name">Document Name</label>
                       <input id="document-name" name="name" type="text" autocomplete="off" value="${escapeAttr(document?.name || '')}" required>
+                    </div>
+                    <div class="field">
+                      <label for="document-project">Project</label>
+                      <select id="document-project" name="project_id" data-document-project>
+                        <option value="" ${!selectedProjectId ? 'selected' : ''}>Bastida Systems / General</option>
+                        ${projects.map((project) => `<option value="${escapeAttr(project.id)}" ${project.id === selectedProjectId ? 'selected' : ''}>${escapeHtml(project.name)}</option>`).join('')}
+                      </select>
+                      <span class="cell-subtitle" data-document-project-hint>${documentScopeRequiresProject(selectedScope) ? 'Required for project documents.' : 'Optional. Leave blank for Bastida Systems-level documents.'}</span>
+                    </div>
+                    <div class="field" data-document-collaborator-field ${showCollaborator ? '' : 'hidden'}>
+                      <label for="document-related-user">Related Collaborator optional</label>
+                      <select id="document-related-user" name="related_user_id" data-document-collaborator>
+                        <option value="">No related collaborator</option>
+                        ${collaborators.map((person) => `<option value="${escapeAttr(person.userId)}" ${person.userId === document?.related_user_id ? 'selected' : ''}>${escapeHtml(person.name)}${person.email ? ` - ${escapeHtml(person.email)}` : ''}</option>`).join('')}
+                      </select>
                     </div>
                     <div class="field">
                       <label for="document-category">Category</label>
@@ -6327,7 +6609,7 @@
                 </div>
                 <div class="modal-footer">
                   <button class="button" type="button" data-close-document>Cancel</button>
-                  <button class="button button-primary" type="submit" ${state.documentEditor.isSubmitting || !projects.length ? 'disabled' : ''}>
+                  <button class="button button-primary" type="submit" ${state.documentEditor.isSubmitting ? 'disabled' : ''}>
                     ${state.documentEditor.isSubmitting ? 'Saving' : 'Save Document'}
                   </button>
                 </div>
@@ -6733,7 +7015,7 @@
         const canAddToProject = addableProjectsForPerson(person).length > 0;
         const projectBreakdown = buildCollaboratorProjectBreakdown(person.userId);
         const recentDocuments = visibleDocuments()
-          .filter((document) => document.uploaded_by === person.userId)
+          .filter((document) => documentRelatedToPerson(document, person.userId))
           .sort((a, b) => compareDateDesc(a.created_at, b.created_at))
           .slice(0, 4);
         const recentActivity = buildCollaboratorActivity(person).slice(0, 6);
@@ -6782,9 +7064,9 @@
                   <p class="drawer-section-title">Documents</p>
                   ${recentDocuments.length ? renderMiniList(recentDocuments.map((document) => ({
                     title: document.name,
-                    meta: `${formatDate(document.created_at)} - ${document.project?.name || 'Unassigned'} - ${statusLabel(document.category)}`,
+                    meta: `${formatDate(document.created_at)} - ${documentProjectLabel(document)} - ${statusLabel(document.category)}`,
                     status: document.status
-                  }))) : '<p class="empty-copy empty-copy-flush">No documents uploaded by this collaborator.</p>'}
+                  }))) : '<p class="empty-copy empty-copy-flush">No documents related to this collaborator.</p>'}
                 </section>
                 <section class="drawer-section">
                   <p class="drawer-section-title">Recent Activity</p>
@@ -6892,7 +7174,7 @@
 
           return {
             title: document.name,
-            copy: `${document.project?.name || 'Unassigned'} - ${statusLabel(document.category)}`,
+            copy: `${documentProjectLabel(document)} - ${documentScopeLabel(documentScopeValue(document))}`,
             body: renderDocumentDetail(document)
           };
         }
@@ -7040,12 +7322,13 @@
 
         return `
           <div class="detail-grid">
-            ${detailCard('Project', document.project?.name || 'Unassigned')}
-            ${detailCard('Organization', 'Bastida Systems')}
+            ${detailCard('Scope', documentScopeLabel(documentScopeValue(document)))}
+            ${detailCard('Project', documentProjectLabel(document))}
+            ${detailCard('Related Collaborator', documentRelatedUserLabel(document))}
             ${detailCard('Category', statusLabel(document.category))}
             ${detailCard('Status', statusLabel(document.status))}
             ${detailCard('Uploaded By', document.uploader?.full_name || document.uploader?.email || '-')}
-            ${detailCard('Created Date', formatDate(document.created_at))}
+            ${detailCard('Updated', formatDate(document.updated_at || document.created_at))}
             ${detailCard('Archived', formatDate(document.archived_at))}
             ${detailCard('Archived By', document.archiver?.full_name || document.archiver?.email || '-')}
           </div>
@@ -7117,6 +7400,11 @@
         return `<span class="status status-${escapeAttr(normalized)}">${escapeHtml(statusLabel(normalized))}</span>`;
       }
 
+      function documentScopePill(scope) {
+        const normalized = normalizeDocumentScope(scope);
+        return `<span class="status status-${escapeAttr(normalized)}">${escapeHtml(documentScopeLabel(normalized))}</span>`;
+      }
+
       function statusLabel(status) {
         const normalized = String(status || 'unknown').toLowerCase();
         const labels = {
@@ -7145,6 +7433,11 @@
           pitch_decks: 'Pitch Decks',
           design_files: 'Design Files',
           legal: 'Legal',
+          project: 'Project Document',
+          company: 'Bastida Systems General',
+          collaborator: 'Collaborator / Team Document',
+          finance: 'Finance / Admin',
+          internal: 'Internal / Personal',
           google_drive_url: 'Google Drive',
           pending: 'Pending',
           approved: 'Approved',
@@ -7336,7 +7629,10 @@
       function canArchiveDocument(document) {
         return Boolean(document)
           && (
-            canManageProject(document.project_id)
+            isGlobalFounderOrAdmin()
+            || canManageProject(document.project_id)
+            || canManageRelatedUserDocument(document, activeWorkspaceProjectId())
+            || document.related_user_id === state.profile?.id
             || document.uploaded_by === state.profile?.id
           );
       }
@@ -7427,7 +7723,7 @@
             .filter((entry) => entry.user_id === userId)
             .map((entry) => entry.ended_at || entry.started_at || entry.updated_at || entry.created_at),
           ...visibleDocuments()
-            .filter((document) => document.uploaded_by === userId)
+            .filter((document) => documentRelatedToPerson(document, userId))
             .map((document) => document.archived_at || document.updated_at || document.created_at)
         ].filter(Boolean);
 
@@ -7555,14 +7851,14 @@
           activities.push({
             date: document.created_at,
             title: `${personDisplayName(document.uploader) || 'Collaborator'} uploaded Document`,
-            meta: `${document.project?.name || 'Unassigned'} - ${document.name}`
+            meta: `${documentProjectLabel(document)} - ${document.name}`
           });
 
           if (document.archived_at) {
             activities.push({
               date: document.archived_at,
               title: `${personDisplayName(document.archiver) || 'Owner'} archived Document`,
-              meta: `${document.project?.name || 'Unassigned'} - ${document.name}`
+              meta: `${documentProjectLabel(document)} - ${document.name}`
             });
           }
         });
@@ -7774,6 +8070,116 @@
           'design_files',
           'legal'
         ];
+      }
+
+      function documentScopeOptions() {
+        return [
+          { value: 'project', label: 'Project Document' },
+          { value: 'company', label: 'Bastida Systems General' },
+          { value: 'collaborator', label: 'Collaborator / Team Document' },
+          { value: 'legal', label: 'Legal / Contracts' },
+          { value: 'finance', label: 'Finance / Admin' },
+          { value: 'internal', label: 'Internal / Personal' }
+        ];
+      }
+
+      function managerVisibleDocumentScopes() {
+        return ['collaborator', 'legal', 'internal'];
+      }
+
+      function normalizeDocumentScope(value) {
+        const scope = String(value || 'project').trim().toLowerCase();
+        return documentScopeOptions().some((option) => option.value === scope) ? scope : 'project';
+      }
+
+      function documentScopeValue(document) {
+        return normalizeDocumentScope(document?.document_scope);
+      }
+
+      function documentScopeLabel(scope) {
+        const normalized = normalizeDocumentScope(scope);
+        return documentScopeOptions().find((option) => option.value === normalized)?.label || 'Project Document';
+      }
+
+      function documentScopeRequiresProject(scope) {
+        return normalizeDocumentScope(scope) === 'project';
+      }
+
+      function documentProjectLabel(document) {
+        return document?.project?.name || (document?.project_id ? 'Project' : 'Bastida Systems');
+      }
+
+      function documentRelatedUserLabel(document) {
+        return document?.related_user?.full_name
+          || document?.related_user?.email
+          || '-';
+      }
+
+      function visibleCollaboratorOptions() {
+        const people = new Map();
+
+        buildPeople()
+          .filter((person) => person.userId)
+          .forEach((person) => {
+            people.set(person.userId, {
+              userId: person.userId,
+              name: person.name || person.email || 'Collaborator',
+              email: person.email || ''
+            });
+          });
+
+        visibleDocuments()
+          .filter((document) => document.related_user_id && document.related_user)
+          .forEach((document) => {
+            if (people.has(document.related_user_id)) {
+              return;
+            }
+            people.set(document.related_user_id, {
+              userId: document.related_user_id,
+              name: document.related_user.full_name || document.related_user.email || 'Collaborator',
+              email: document.related_user.email || ''
+            });
+          });
+
+        if (state.profile?.id && !people.has(state.profile.id)) {
+          people.set(state.profile.id, {
+            userId: state.profile.id,
+            name: state.profile.full_name || state.profile.email || 'Me',
+            email: state.profile.email || ''
+          });
+        }
+
+        return Array.from(people.values()).sort((a, b) => compareText(a.name, b.name));
+      }
+
+      function updateDocumentScopeUi() {
+        const scopeSelect = app.querySelector('[data-document-scope]');
+        const projectSelect = app.querySelector('[data-document-project]');
+        const projectHint = app.querySelector('[data-document-project-hint]');
+        const collaboratorField = app.querySelector('[data-document-collaborator-field]');
+        const collaboratorSelect = app.querySelector('[data-document-collaborator]');
+
+        if (!scopeSelect || !projectSelect) {
+          return;
+        }
+
+        const scope = normalizeDocumentScope(scopeSelect.value);
+        const requiresProject = documentScopeRequiresProject(scope);
+        projectSelect.required = requiresProject;
+
+        if (projectHint) {
+          projectHint.textContent = requiresProject
+            ? 'Required for project documents.'
+            : 'Optional. Leave blank for Bastida Systems-level documents.';
+        }
+
+        if (collaboratorField) {
+          const shouldShowCollaborator = ['collaborator', 'legal', 'finance', 'internal'].includes(scope);
+          collaboratorField.hidden = !shouldShowCollaborator;
+          if (!shouldShowCollaborator && collaboratorSelect) {
+            collaboratorSelect.value = '';
+          }
+        }
       }
 
       function normalizeInvitationStatus(assignment) {
