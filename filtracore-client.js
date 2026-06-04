@@ -34,7 +34,7 @@
     },
     systems: {
       index: '02',
-      title: 'Systems',
+      title: 'Systems / Equipment',
       subtitle: 'Create and monitor whole-home, RO, ice, beverage, coffee, dishwashing, and main-line filtration systems.'
     },
     filters: {
@@ -963,6 +963,7 @@
     requireOwnerAdmin('Only owner/admin users can create filters.');
     const data = new FormData(form);
     const workspace = requireActiveWorkspace();
+    // TODO: persist filter quantity after schema migration.
     const payload = {
       client_id: state.activeClient.id,
       workspace_id: workspace.id,
@@ -1256,7 +1257,7 @@
     return `
       <div class="metric-grid">
         ${metricCard(stats.placeLabel, String(stats.placeCount), stats.placeCount === 0 ? stats.placeEmptyText : 'Workspace places')}
-        ${metricCard('Total Systems', String(stats.totalSystems), stats.totalSystems === 0 ? 'Add your first filtration system' : 'Filtration systems in scope')}
+        ${metricCard('Total Systems / Equipment', String(stats.totalSystems), stats.totalSystems === 0 ? 'Add your first filtration system' : 'Filtration systems and equipment in scope')}
         ${metricCard('Healthy Systems', String(stats.healthySystems), 'Inside configured PSI range')}
         ${metricCard('Warning Systems', String(stats.warningSystems), 'Needs review')}
         ${metricCard('Critical Systems', String(stats.criticalSystems), 'Needs immediate attention')}
@@ -1390,10 +1391,10 @@
       ${renderSectionHeader('systems', `${state.records.systems.length} systems`)}
       <div class="module-grid">
         <form class="module-form" data-action="create-system">
-          <h4>Create system</h4>
+          <h4>Create system / equipment</h4>
           <label class="form-field">
-            <span>Name</span>
-            <input name="name" required placeholder="System name">
+            <span>Equipment / Machine Name</span>
+            <input name="name" required placeholder="Machine or system name">
           </label>
           ${renderSystemParentField()}
           <div class="form-grid">
@@ -1408,11 +1409,11 @@
               <input name="brand" placeholder="Brand">
             </label>
             <label class="form-field">
-              <span>Model</span>
-              <input name="model" placeholder="Model">
+              <span>Reference / Model</span>
+              <input name="model" placeholder="Rootdef, asset ID, or model">
             </label>
             <label class="form-field">
-              <span>Serial Number</span>
+              <span>Serial number</span>
               <input name="serial_number" placeholder="Serial number">
             </label>
             <label class="form-field">
@@ -1424,10 +1425,10 @@
               <input type="number" name="psi_max" step="0.01" required placeholder="70">
             </label>
           </div>
-          <button type="submit" class="primary-action">Create system</button>
+          <button type="submit" class="primary-action">Create system / equipment</button>
         </form>
         <div class="record-panel">
-          <h4>Systems</h4>
+          <h4>Systems / Equipment</h4>
           ${renderSystemList(state.records.systems)}
         </div>
       </div>
@@ -1442,8 +1443,8 @@
           <h4>Create filter</h4>
           ${renderSystemSelectField('system_id', true)}
           <label class="form-field">
-            <span>Filter Name</span>
-            <input name="filter_name" required placeholder="Filter name">
+            <span>Filter type/name</span>
+            <input name="filter_name" required placeholder="Filter type/name">
           </label>
           <div class="form-grid">
             <label class="form-field">
@@ -1467,6 +1468,10 @@
             <label class="form-field">
               <span>Life Months</span>
               <input type="number" name="life_months" min="0" step="1">
+            </label>
+            <label class="form-field">
+              <span>Filter amount</span>
+              <input type="number" name="filter_amount" min="0" step="1" placeholder="Quantity">
             </label>
           </div>
           <button type="submit" class="primary-action">Create filter</button>
@@ -1668,9 +1673,9 @@
   function renderSystemSelectField(name, required) {
     return `
       <label class="form-field">
-        <span>System</span>
+        <span>System / Equipment</span>
         <select name="${escapeHtml(name)}"${required ? ' required' : ''}>
-          <option value="">Select system</option>
+          <option value="">Select system / equipment</option>
           ${state.records.systems.map(system => `<option value="${escapeHtml(system.id)}">${escapeHtml(system.name)}</option>`).join('')}
         </select>
       </label>
@@ -1783,6 +1788,8 @@
             <div class="record-meta">
               <span>${escapeHtml(optionLabel(SYSTEM_TYPE_OPTIONS, system.system_type, 'System'))}</span>
               <span>PSI ${valueOrDash(system.psi_min)}-${valueOrDash(system.psi_max)}</span>
+              ${system.model ? `<span>Reference ${escapeHtml(system.model)}</span>` : ''}
+              ${system.serial_number ? `<span>Serial ${escapeHtml(system.serial_number)}</span>` : ''}
               ${system.location_id ? `<span>${escapeHtml(locationName(system.location_id))}</span>` : ''}
               ${system.property_id ? `<span>${escapeHtml(propertyName(system.property_id))}</span>` : ''}
             </div>
@@ -1805,6 +1812,7 @@
             <div class="record-meta">
               <span>${escapeHtml(systemName(filter.system_id))}</span>
               ${filter.filter_type ? `<span>${escapeHtml(optionLabel(FILTER_TYPE_OPTIONS, filter.filter_type, 'Filter'))}</span>` : ''}
+              ${filter.filter_amount != null ? `<span>Amount ${escapeHtml(filter.filter_amount)}</span>` : ''}
               ${filter.sku ? `<span>SKU ${escapeHtml(filter.sku)}</span>` : ''}
               ${filter.installed_at ? `<span>Installed ${formatDate(filter.installed_at)}</span>` : ''}
               ${filter.due_date ? `<span>Due ${formatDate(filter.due_date)}</span>` : ''}
