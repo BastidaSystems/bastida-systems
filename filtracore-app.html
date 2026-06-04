@@ -75,7 +75,6 @@
 
         <div class="auth-actions-row">
           <button type="button" class="text-action" id="forgot-password-button">Forgot password?</button>
-          <button type="button" class="text-action local-preview-action" id="local-preview-button" hidden>Preview app shell</button>
         </div>
 
         <form id="password-reset-request-form" class="stacked-form" hidden>
@@ -124,9 +123,9 @@
         <img src="img/LOGO_FILTRACOREXCODE.png" alt="FiltraCore" class="gate-logo">
         <p class="eyebrow">Client access</p>
         <h2 id="client-selector-title">Choose a FiltraCore client</h2>
-        <p>Only clients with FiltraCore enabled in Client-prod will appear here.</p>
+        <p>Choose a Client-prod client where your account has access. FiltraCore will enable the product record when your role allows it.</p>
         <div class="client-list" id="client-list"></div>
-        <button type="button" class="secondary-action" id="start-local-onboarding-button">Continue with setup shell</button>
+        <button type="button" class="secondary-action" id="start-local-onboarding-button" hidden>Start onboarding</button>
       </div>
     </section>
 
@@ -135,7 +134,7 @@
         <img src="img/LOGO_FILTRACOREXCODE.png" alt="FiltraCore" class="gate-logo">
         <p class="eyebrow">Onboarding</p>
         <h2 id="onboarding-title">Choose your setup</h2>
-        <p id="onboarding-description">Set the shape of your workspace. FiltraCore tables are not written yet; this setup is stored locally until the schema exists.</p>
+        <p id="onboarding-description">Set the shape of your FiltraCore workspace. This will create the first workspace records in Client-prod.</p>
         <div class="app-alert" id="onboarding-message" hidden></div>
 
         <form id="onboarding-form" class="onboarding-form">
@@ -202,7 +201,7 @@
           </div>
 
           <div class="onboarding-footer">
-            <p>No filtration data will be inserted until the FiltraCore schema and RLS are added.</p>
+            <p>Business creates company, location, and system records. Home creates property and system records.</p>
             <button type="submit" class="primary-action" id="onboarding-submit">Continue to dashboard</button>
           </div>
         </form>
@@ -255,7 +254,11 @@
             <h2 id="workspace-title">Dashboard</h2>
             <p id="workspace-subtitle">Operational visibility for water filtration systems, filters, PSI readings, maintenance, alerts, and reports.</p>
           </div>
-          <span class="status-pill" id="workspace-mode-pill">Schema pending</span>
+          <div class="workspace-actions">
+            <select id="active-workspace-select" aria-label="Active FiltraCore workspace" hidden></select>
+            <button type="button" class="secondary-action compact-action" id="refresh-workspace-button">Refresh</button>
+            <span class="status-pill" id="workspace-mode-pill">Loading</span>
+          </div>
         </header>
 
         <section class="dashboard-view app-section is-active" id="section-dashboard">
@@ -300,7 +303,7 @@
               </div>
               <div class="empty-state">
                 <h4>No filtration systems yet.</h4>
-                <p>Add business locations or home properties, then connect systems once the database tables are available.</p>
+                <p>Add business locations or home properties, then create systems in the active FiltraCore workspace.</p>
               </div>
             </article>
 
