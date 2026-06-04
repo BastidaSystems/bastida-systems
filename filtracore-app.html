@@ -131,8 +131,17 @@
 
     <section class="workspace-gate" id="onboarding-view" hidden aria-labelledby="onboarding-title">
       <div class="workspace-gate-card onboarding-card">
-        <img src="img/LOGO_FILTRACOREXCODE.png" alt="FiltraCore" class="gate-logo">
-        <p class="eyebrow">Onboarding</p>
+        <div class="gate-header">
+          <div>
+            <img src="img/LOGO_FILTRACOREXCODE.png" alt="FiltraCore" class="gate-logo">
+            <p class="eyebrow">Onboarding</p>
+          </div>
+          <div class="gate-actions" aria-label="Onboarding actions">
+            <button type="button" class="secondary-action compact-action" id="onboarding-change-client-button">Change client</button>
+            <button type="button" class="secondary-action compact-action" id="onboarding-sign-out-button">Sign out</button>
+            <a href="filtracore.html" class="secondary-action compact-action">Back to landing</a>
+          </div>
+        </div>
         <h2 id="onboarding-title">Choose your setup</h2>
         <p id="onboarding-description">Set the shape of your FiltraCore workspace. This will create the first workspace records in Client-prod.</p>
         <div class="app-alert" id="onboarding-message" hidden></div>

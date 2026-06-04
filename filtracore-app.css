@@ -65,6 +65,10 @@ button {
   cursor: pointer;
 }
 
+a {
+  text-decoration: none;
+}
+
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,
@@ -393,6 +397,21 @@ h3 {
   width: 6rem;
   height: 3.6rem;
   margin-bottom: 1rem;
+}
+
+.gate-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.35rem;
+}
+
+.gate-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.55rem;
 }
 
 .client-list {
@@ -1060,6 +1079,14 @@ h3 {
   .workspace-actions {
     justify-content: flex-start;
   }
+
+  .gate-header {
+    display: grid;
+  }
+
+  .gate-actions {
+    justify-content: flex-start;
+  }
 }
 
 @media (max-width: 560px) {
@@ -1089,6 +1116,15 @@ h3 {
 
   .form-grid {
     grid-template-columns: 1fr;
+  }
+
+  .gate-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .gate-actions .compact-action {
+    width: 100%;
   }
 
   .psi-scale {

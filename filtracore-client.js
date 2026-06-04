@@ -129,6 +129,8 @@
       'home-property-name',
       'home-property-type',
       'home-system-name',
+      'onboarding-change-client-button',
+      'onboarding-sign-out-button',
       'onboarding-submit',
       'workspace-view',
       'workspace-title',
@@ -321,6 +323,33 @@
     localStorage.removeItem(config.activeClientStorageKey);
     localStorage.removeItem(config.activeWorkspaceStorageKey);
     renderAuthView();
+  }
+
+  async function changeClientFromOnboarding() {
+    localStorage.removeItem(config.activeClientStorageKey);
+    localStorage.removeItem(config.activeWorkspaceStorageKey);
+    state.activeClient = null;
+    state.workspaces = [];
+    state.activeWorkspace = null;
+    state.records = createEmptyRecords();
+
+    if (!state.user) {
+      renderAuthView();
+      return;
+    }
+
+    try {
+      if (state.userClients.length === 0) {
+        await loadUserClients();
+      }
+
+      const message = state.userClients.length <= 1
+        ? 'Client selection was cleared. Select this client again, or sign out to use another account.'
+        : 'Client selection was cleared. Choose another FiltraCore client.';
+      renderClientSelector(message);
+    } catch (error) {
+      renderClientSelector(error.message || 'Client selection was cleared, but clients could not be reloaded.');
+    }
   }
 
   async function sendPasswordReset(event) {
@@ -1750,6 +1779,8 @@
     els.passwordResetRequestForm.addEventListener('submit', sendPasswordReset);
     els.passwordRecoveryForm.addEventListener('submit', updatePassword);
     els.onboardingForm.addEventListener('submit', submitOnboarding);
+    els.onboardingChangeClientButton.addEventListener('click', changeClientFromOnboarding);
+    els.onboardingSignOutButton.addEventListener('click', signOut);
     els.mobileMenuButton.addEventListener('click', toggleMobileMenu);
     els.sidebarBackdrop.addEventListener('click', closeMobileMenu);
     els.signOutButton.addEventListener('click', signOut);
