@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FiltraCore App | Bastida Systems</title>
+  <link rel="icon" type="image/png" href="img/LOGO_FILTRACOREXCODE.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="filtracore-app.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="filtracore-client-config.js"></script>
+  <script src="filtracore-client.js" defer></script>
+</head>
+<body class="filtracore-shell">
+  <main class="app-root" data-testid="filtracore-app">
+    <section class="session-loading" id="session-loading-view" aria-live="polite">
+      <img src="img/LOGO_FILTRACOREXCODE.png" alt="" aria-hidden="true">
+      <p class="eyebrow">FiltraCore</p>
+      <h1>Loading session</h1>
+      <p>Preparing your water systems workspace.</p>
+    </section>
+
+    <section class="auth-panel" id="auth-view" hidden aria-labelledby="auth-title">
+      <div class="brand-block">
+        <img src="img/LOGO_FILTRACOREXCODE.png" alt="FiltraCore" class="app-logo">
+        <p class="eyebrow">FiltraCore App</p>
+        <h1 id="auth-title">Water system operations workspace</h1>
+        <p id="auth-subtitle">Sign in or create an account to manage filtration systems, filters, PSI readings, maintenance, alerts, and reports.</p>
+      </div>
+
+      <div class="auth-card">
+        <div class="auth-tabs" id="auth-tabs" role="tablist" aria-label="Authentication mode">
+          <button type="button" class="auth-tab is-active" id="show-sign-in" data-auth-mode="signin">Sign in</button>
+          <button type="button" class="auth-tab" id="show-sign-up" data-auth-mode="signup">Create account</button>
+        </div>
+
+        <div class="app-alert" id="config-alert" hidden></div>
+        <div class="app-alert app-alert-success" id="auth-message" hidden></div>
+
+        <form id="auth-form" class="stacked-form">
+          <label class="form-field" id="full-name-field" hidden>
+            <span>Full name</span>
+            <input type="text" id="auth-full-name" autocomplete="name" placeholder="Your name">
+          </label>
+
+          <label class="form-field">
+            <span>Email</span>
+            <input type="email" id="auth-email" autocomplete="email" required placeholder="you@example.com">
+          </label>
+
+          <label class="form-field">
+            <span>Password</span>
+            <span class="password-field">
+              <input type="password" id="auth-password" autocomplete="current-password" required minlength="6" placeholder="Minimum 6 characters">
+              <button type="button" class="password-toggle" data-password-toggle data-target="auth-password" aria-label="Show password" aria-pressed="false">
+                <span class="password-icon" aria-hidden="true"></span>
+              </button>
+            </span>
+          </label>
+
+          <label class="form-field" id="confirm-password-field" hidden>
+            <span>Confirm password</span>
+            <span class="password-field">
+              <input type="password" id="auth-confirm-password" autocomplete="new-password" minlength="8" placeholder="Confirm password" disabled>
+              <button type="button" class="password-toggle" data-password-toggle data-target="auth-confirm-password" aria-label="Show password" aria-pressed="false">
+                <span class="password-icon" aria-hidden="true"></span>
+              </button>
+            </span>
+          </label>
+
+          <button type="submit" class="primary-action" id="auth-submit">Sign in</button>
+        </form>
+
+        <div class="auth-actions-row">
+          <button type="button" class="text-action" id="forgot-password-button">Forgot password?</button>
+          <button type="button" class="text-action local-preview-action" id="local-preview-button" hidden>Preview app shell</button>
+        </div>
+
+        <form id="password-reset-request-form" class="stacked-form" hidden>
+          <div class="form-heading">
+            <h2>Password recovery</h2>
+            <p>The reset flow is ready for Supabase redirect configuration.</p>
+          </div>
+          <label class="form-field">
+            <span>Email</span>
+            <input type="email" id="reset-email" autocomplete="email" required placeholder="you@example.com">
+          </label>
+          <button type="submit" class="primary-action" id="reset-submit">Send reset email</button>
+          <button type="button" class="text-action text-action-inline" id="back-to-sign-in-button">Back to sign in</button>
+        </form>
+
+        <form id="password-recovery-form" class="stacked-form" hidden>
+          <div class="form-heading">
+            <h2>Reset your password</h2>
+            <p>Enter and confirm your new FiltraCore password.</p>
+          </div>
+          <label class="form-field">
+            <span>New password</span>
+            <span class="password-field">
+              <input type="password" id="new-password" autocomplete="new-password" required placeholder="Minimum 8 characters">
+              <button type="button" class="password-toggle" data-password-toggle data-target="new-password" aria-label="Show password" aria-pressed="false">
+                <span class="password-icon" aria-hidden="true"></span>
+              </button>
+            </span>
+          </label>
+          <label class="form-field">
+            <span>Confirm new password</span>
+            <span class="password-field">
+              <input type="password" id="confirm-new-password" autocomplete="new-password" required placeholder="Confirm password">
+              <button type="button" class="password-toggle" data-password-toggle data-target="confirm-new-password" aria-label="Show password" aria-pressed="false">
+                <span class="password-icon" aria-hidden="true"></span>
+              </button>
+            </span>
+          </label>
+          <button type="submit" class="primary-action" id="update-password-submit">Update password</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="workspace-gate" id="client-selector-view" hidden aria-labelledby="client-selector-title">
+      <div class="workspace-gate-card client-selector-card">
+        <img src="img/LOGO_FILTRACOREXCODE.png" alt="FiltraCore" class="gate-logo">
+        <p class="eyebrow">Client access</p>
+        <h2 id="client-selector-title">Choose a FiltraCore client</h2>
+        <p>Only clients with FiltraCore enabled in Client-prod will appear here.</p>
+        <div class="client-list" id="client-list"></div>
+        <button type="button" class="secondary-action" id="start-local-onboarding-button">Continue with setup shell</button>
+      </div>
+    </section>
+
+    <section class="workspace-gate" id="onboarding-view" hidden aria-labelledby="onboarding-title">
+      <div class="workspace-gate-card onboarding-card">
+        <img src="img/LOGO_FILTRACOREXCODE.png" alt="FiltraCore" class="gate-logo">
+        <p class="eyebrow">Onboarding</p>
+        <h2 id="onboarding-title">Choose your setup</h2>
+        <p id="onboarding-description">Set the shape of your workspace. FiltraCore tables are not written yet; this setup is stored locally until the schema exists.</p>
+        <div class="app-alert" id="onboarding-message" hidden></div>
+
+        <form id="onboarding-form" class="onboarding-form">
+          <fieldset class="setup-options">
+            <legend>Step 1</legend>
+            <label class="setup-option is-selected" data-mode-card="business">
+              <input type="radio" name="setup-mode" value="business" checked>
+              <span class="setup-option-title">Business</span>
+              <span class="setup-option-copy">For restaurants, casinos, hotels, healthcare facilities, commercial buildings, and companies.</span>
+            </label>
+            <label class="setup-option" data-mode-card="home">
+              <input type="radio" name="setup-mode" value="home">
+              <span class="setup-option-title">Home</span>
+              <span class="setup-option-copy">For homeowners, landlords, rentals, and residential properties.</span>
+            </label>
+          </fieldset>
+
+          <div class="setup-fields" id="business-fields">
+            <label class="form-field form-field-wide">
+              <span>Company / Organization Name</span>
+              <input type="text" id="business-company-name" autocomplete="organization" placeholder="Company or organization name">
+            </label>
+            <label class="form-field">
+              <span>Industry</span>
+              <select id="business-industry">
+                <option value="restaurant">Restaurant</option>
+                <option value="casino">Casino</option>
+                <option value="hotel">Hotel</option>
+                <option value="healthcare">Healthcare</option>
+                <option value="commercial_building">Commercial Building</option>
+                <option value="small_business">Small Business</option>
+                <option value="other">Other</option>
+              </select>
+            </label>
+            <label class="form-field">
+              <span>First Location Name</span>
+              <input type="text" id="business-location-name" placeholder="Location name">
+            </label>
+            <label class="form-field form-field-wide">
+              <span>First Filtration System Name</span>
+              <input type="text" id="business-system-name" placeholder="Filtration system name">
+            </label>
+          </div>
+
+          <div class="setup-fields" id="home-fields" hidden>
+            <label class="form-field form-field-wide">
+              <span>Property / Home Name</span>
+              <input type="text" id="home-property-name" placeholder="Property or home name">
+            </label>
+            <label class="form-field">
+              <span>Property Type</span>
+              <select id="home-property-type">
+                <option value="house">House</option>
+                <option value="apartment">Apartment</option>
+                <option value="rental_property">Rental Property</option>
+                <option value="multi_family">Multi-family</option>
+                <option value="other">Other</option>
+              </select>
+            </label>
+            <label class="form-field form-field-wide">
+              <span>First Filtration System Name</span>
+              <input type="text" id="home-system-name" placeholder="Filtration system name">
+            </label>
+          </div>
+
+          <div class="onboarding-footer">
+            <p>No filtration data will be inserted until the FiltraCore schema and RLS are added.</p>
+            <button type="submit" class="primary-action" id="onboarding-submit">Continue to dashboard</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section class="workspace" id="workspace-view" hidden>
+      <div class="mobile-topbar">
+        <button type="button" class="icon-button" id="mobile-menu-button" aria-label="Open navigation" aria-expanded="false">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <img src="img/LOGO_FILTRACOREXCODE.png" alt="FiltraCore">
+      </div>
+
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+          <img src="img/LOGO_FILTRACOREXCODE.png" alt="FiltraCore">
+          <div>
+            <p>FiltraCore</p>
+            <span id="sidebar-client-name">Workspace shell</span>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav" aria-label="FiltraCore modules">
+          <button type="button" class="nav-item is-active" data-section="dashboard">Dashboard</button>
+          <button type="button" class="nav-item" data-section="locations">Locations / Properties</button>
+          <button type="button" class="nav-item" data-section="systems">Systems</button>
+          <button type="button" class="nav-item" data-section="filters">Filters</button>
+          <button type="button" class="nav-item" data-section="psi">PSI Readings</button>
+          <button type="button" class="nav-item" data-section="maintenance">Maintenance</button>
+          <button type="button" class="nav-item" data-section="alerts">Alerts</button>
+          <button type="button" class="nav-item" data-section="reports">Reports</button>
+          <button type="button" class="nav-item" data-section="settings">Settings</button>
+        </nav>
+
+        <div class="sidebar-footer">
+          <span id="sidebar-user-email">Signed in</span>
+          <button type="button" class="sign-out-button" id="sign-out-button">Sign out</button>
+        </div>
+      </aside>
+
+      <button type="button" class="sidebar-backdrop" id="sidebar-backdrop" aria-label="Close navigation" hidden></button>
+
+      <div class="workspace-main">
+        <header class="workspace-header">
+          <div>
+            <p class="eyebrow" id="workspace-kicker">App shell</p>
+            <h2 id="workspace-title">Dashboard</h2>
+            <p id="workspace-subtitle">Operational visibility for water filtration systems, filters, PSI readings, maintenance, alerts, and reports.</p>
+          </div>
+          <span class="status-pill" id="workspace-mode-pill">Schema pending</span>
+        </header>
+
+        <section class="dashboard-view app-section is-active" id="section-dashboard">
+          <div class="metric-grid">
+            <article class="metric-card">
+              <span>System Health</span>
+              <strong>Not connected</strong>
+              <p>No filtration systems yet.</p>
+            </article>
+            <article class="metric-card">
+              <span>Filter Status</span>
+              <strong>Not connected</strong>
+              <p>No filters installed yet.</p>
+            </article>
+            <article class="metric-card">
+              <span>Latest PSI</span>
+              <strong>--</strong>
+              <p>No PSI readings yet.</p>
+            </article>
+            <article class="metric-card">
+              <span>Maintenance Due</span>
+              <strong>--</strong>
+              <p>No maintenance logs yet.</p>
+            </article>
+            <article class="metric-card">
+              <span>Open Alerts</span>
+              <strong>0</strong>
+              <p>No alerts yet.</p>
+            </article>
+            <article class="metric-card">
+              <span>Reports</span>
+              <strong>Pending</strong>
+              <p>Reports will appear after connected activity.</p>
+            </article>
+          </div>
+
+          <div class="dashboard-panels">
+            <article class="panel-card">
+              <div class="panel-heading">
+                <h3>Filtration systems</h3>
+                <span>Ready for schema</span>
+              </div>
+              <div class="empty-state">
+                <h4>No filtration systems yet.</h4>
+                <p>Add business locations or home properties, then connect systems once the database tables are available.</p>
+              </div>
+            </article>
+
+            <article class="panel-card">
+              <div class="panel-heading">
+                <h3>PSI logic</h3>
+                <span>Prepared helper</span>
+              </div>
+              <div class="psi-scale" aria-label="PSI status logic">
+                <span class="critical">Critical low</span>
+                <span class="warning">Warning</span>
+                <span class="healthy">Healthy range</span>
+                <span class="warning">High warning</span>
+              </div>
+              <p class="panel-copy">Healthy means PSI is inside the configured range, including values close to max. Low PSI becomes warning or critical. Values over max become warning for high pressure.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="app-section module-view" id="section-locations" hidden></section>
+        <section class="app-section module-view" id="section-systems" hidden></section>
+        <section class="app-section module-view" id="section-filters" hidden></section>
+        <section class="app-section module-view" id="section-psi" hidden></section>
+        <section class="app-section module-view" id="section-maintenance" hidden></section>
+        <section class="app-section module-view" id="section-alerts" hidden></section>
+        <section class="app-section module-view" id="section-reports" hidden></section>
+        <section class="app-section module-view" id="section-settings" hidden></section>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
