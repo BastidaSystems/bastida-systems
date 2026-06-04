@@ -824,6 +824,37 @@ h3 {
   gap: 0.75rem;
 }
 
+.group-list {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.group-card {
+  display: grid;
+  gap: 0.75rem;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  background: var(--surface-soft);
+  padding: 0.85rem;
+}
+
+.group-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.group-heading strong {
+  color: var(--ink-strong);
+}
+
+.group-heading span {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
 .record-item {
   display: grid;
   gap: 0.55rem;
@@ -1109,6 +1140,7 @@ h3 {
   .client-option,
   .module-view-header,
   .panel-heading,
+  .group-heading,
   .record-item-header {
     align-items: flex-start;
     flex-direction: column;

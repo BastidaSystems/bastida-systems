@@ -25,17 +25,17 @@
   const MODULES = {
     dashboard: {
       title: 'Dashboard',
-      subtitle: 'Live Client-prod visibility for systems, filters, PSI readings, maintenance, alerts, and reports.'
+      subtitle: 'Live visibility for homes, businesses, and multi-location filtration operations.'
     },
     locations: {
       index: '01',
       title: 'Locations / Properties',
-      subtitle: 'Business locations and residential properties attached to the active workspace.'
+      subtitle: 'Physical places for homes, rentals, stores, kitchens, hotel areas, casino areas, plazas, and commercial operations.'
     },
     systems: {
       index: '02',
       title: 'Systems',
-      subtitle: 'Create and monitor filtration systems, configured PSI ranges, and operating status.'
+      subtitle: 'Create and monitor whole-home, RO, ice, beverage, coffee, dishwashing, and main-line filtration systems.'
     },
     filters: {
       index: '03',
@@ -68,6 +68,59 @@
       subtitle: 'Client, workspace, auth, and product connection details.'
     }
   };
+
+  const LOCATION_TYPE_OPTIONS = [
+    ['kitchen', 'Kitchen'],
+    ['restaurant', 'Restaurant'],
+    ['bar', 'Bar'],
+    ['coffee_shop', 'Coffee shop'],
+    ['food_court', 'Food court'],
+    ['hotel_area', 'Hotel area'],
+    ['casino_area', 'Casino area'],
+    ['maintenance_room', 'Maintenance room'],
+    ['residential_unit', 'Residential unit'],
+    ['commercial_unit', 'Commercial unit'],
+    ['other', 'Other']
+  ];
+
+  const PROPERTY_TYPE_OPTIONS = [
+    ['house', 'House'],
+    ['apartment', 'Apartment'],
+    ['rental_property', 'Rental Property'],
+    ['multi_family', 'Multi-family'],
+    ['other', 'Other']
+  ];
+
+  const SYSTEM_TYPE_OPTIONS = [
+    ['whole_house_filter', 'Whole house filter'],
+    ['ro_system', 'RO system'],
+    ['ice_machine_filter', 'Ice machine filter'],
+    ['beverage_filter', 'Beverage filter'],
+    ['coffee_machine_filter', 'Coffee machine filter'],
+    ['dishwashing_filtration', 'Dishwashing filtration'],
+    ['main_water_line', 'Main water line'],
+    ['drinking_water_station', 'Drinking water station'],
+    ['other', 'Other']
+  ];
+
+  const FILTER_TYPE_OPTIONS = [
+    ['sediment', 'Sediment'],
+    ['carbon', 'Carbon'],
+    ['ro_membrane', 'RO membrane'],
+    ['post_carbon', 'Post carbon'],
+    ['scale_inhibitor', 'Scale inhibitor'],
+    ['uv', 'UV'],
+    ['other', 'Other']
+  ];
+
+  const MAINTENANCE_TYPE_OPTIONS = [
+    ['filter_replacement', 'Filter replacement'],
+    ['inspection', 'Inspection'],
+    ['cleaning', 'Cleaning'],
+    ['psi_check', 'PSI check'],
+    ['repair', 'Repair'],
+    ['other', 'Other']
+  ];
 
   const els = {};
 
@@ -807,6 +860,24 @@
     return data;
   }
 
+  async function insertRowFlexible(table, payload, optionalColumns) {
+    try {
+      return await insertRow(table, payload);
+    } catch (error) {
+      if (!isMissingColumnError(error) || !optionalColumns.length) throw error;
+      const fallbackPayload = { ...payload };
+      optionalColumns.forEach(column => {
+        delete fallbackPayload[column];
+      });
+      return insertRow(table, fallbackPayload);
+    }
+  }
+
+  function isMissingColumnError(error) {
+    const text = `${error.code || ''} ${error.message || ''} ${error.details || ''}`.toLowerCase();
+    return text.includes('pgrst204') || text.includes('column') || text.includes('could not find');
+  }
+
   async function updateRows(table, payload, matcher) {
     const client = initializeSupabase();
     let query = client.from(table).update(payload);
@@ -816,6 +887,42 @@
     const { data, error } = await query.select('*');
     if (error) throw error;
     return data || [];
+  }
+
+  async function createPlace(form) {
+    requireOwnerAdmin('Only owner/admin users can create locations or properties.');
+    const data = new FormData(form);
+    const workspace = requireActiveWorkspace();
+
+    if (workspace.mode === 'business') {
+      const payload = {
+        client_id: state.activeClient.id,
+        workspace_id: workspace.id,
+        company_id: state.records.companies[0]?.id || null,
+        name: stringValue(data, 'name'),
+        location_type: stringValue(data, 'location_type') || null,
+        address: stringValue(data, 'address') || null,
+        building: stringValue(data, 'building') || null,
+        floor: stringValue(data, 'floor') || null,
+        zone: stringValue(data, 'zone') || null
+      };
+
+      if (!payload.name) throw new Error('Location name is required.');
+      await insertRowFlexible('filtracore_locations', payload, ['location_type']);
+      return;
+    }
+
+    const payload = {
+      client_id: state.activeClient.id,
+      workspace_id: workspace.id,
+      name: stringValue(data, 'name'),
+      property_type: stringValue(data, 'property_type') || null,
+      address: stringValue(data, 'address') || null,
+      zone: stringValue(data, 'zone') || null
+    };
+
+    if (!payload.name) throw new Error('Property name is required.');
+    await insertRowFlexible('filtracore_properties', payload, ['zone']);
   }
 
   async function createSystem(form) {
@@ -843,8 +950,10 @@
 
     if (mode === 'business') {
       payload.location_id = stringValue(data, 'location_id') || null;
+      if (!payload.location_id) throw new Error('Select a location before creating a system.');
     } else {
       payload.property_id = stringValue(data, 'property_id') || null;
+      if (!payload.property_id) throw new Error('Select a property before creating a system.');
     }
 
     await insertRow('filtracore_systems', payload);
@@ -859,17 +968,18 @@
       workspace_id: workspace.id,
       system_id: stringValue(data, 'system_id'),
       filter_name: stringValue(data, 'filter_name'),
+      filter_type: stringValue(data, 'filter_type') || null,
       sku: stringValue(data, 'sku') || null,
       installed_at: stringValue(data, 'installed_at') || null,
       due_date: stringValue(data, 'due_date') || null,
       life_months: integerOrNull(data.get('life_months')),
-      status: stringValue(data, 'status') || 'active'
+      status: 'active'
     };
 
     if (!payload.system_id) throw new Error('Select a system before creating a filter.');
     if (!payload.filter_name) throw new Error('Filter name is required.');
 
-    await insertRow('filtracore_filters', payload);
+    await insertRowFlexible('filtracore_filters', payload, ['filter_type']);
   }
 
   async function createPsiReading(form) {
@@ -951,6 +1061,7 @@
 
     try {
       setBusy(button, true, 'Saving...');
+      if (action === 'create-place') await createPlace(form);
       if (action === 'create-system') await createSystem(form);
       if (action === 'create-filter') await createFilter(form);
       if (action === 'create-psi-reading') await createPsiReading(form);
@@ -1144,11 +1255,17 @@
     const stats = getDashboardStats();
     return `
       <div class="metric-grid">
-        ${metricCard('System Health', `${stats.healthySystems}/${stats.totalSystems}`, `${stats.warningSystems} warning - ${stats.criticalSystems} critical`)}
-        ${metricCard('Filter Status', String(stats.totalFilters), `${stats.overdueFilters} overdue filters`)}
+        ${metricCard(stats.placeLabel, String(stats.placeCount), stats.placeCount === 0 ? stats.placeEmptyText : 'Workspace places')}
+        ${metricCard('Total Systems', String(stats.totalSystems), stats.totalSystems === 0 ? 'Add your first filtration system' : 'Filtration systems in scope')}
+        ${metricCard('Healthy Systems', String(stats.healthySystems), 'Inside configured PSI range')}
+        ${metricCard('Warning Systems', String(stats.warningSystems), 'Needs review')}
+        ${metricCard('Critical Systems', String(stats.criticalSystems), 'Needs immediate attention')}
+        ${metricCard('Total Filters', String(stats.totalFilters), stats.totalFilters === 0 ? 'Add your first filter' : 'Installed filter records')}
+        ${metricCard('Filters Due Soon', String(stats.dueSoonFilters), 'Due within 30 days')}
+        ${metricCard('Overdue Filters', String(stats.overdueFilters), 'Past due date')}
         ${metricCard('Latest PSI', stats.latestPsiText, stats.latestPsiSubtext)}
-        ${metricCard('Maintenance Logs', String(stats.maintenanceLogs), 'Total logs in this workspace')}
         ${metricCard('Open Alerts', String(stats.openAlerts), stats.openAlerts === 0 ? 'No alerts yet.' : 'Needs review')}
+        ${metricCard('Maintenance Logs', String(stats.maintenanceLogs), stats.maintenanceLogs === 0 ? 'Add your first maintenance log' : 'Total logs in this workspace')}
         ${metricCard('Reports', String(stats.reports), stats.reports === 0 ? 'No reports yet.' : 'Reports available')}
       </div>
       <div class="dashboard-lists">
@@ -1164,10 +1281,10 @@
       <div class="dashboard-panels">
         <article class="panel-card">
           <div class="panel-heading">
-            <h3>Filtration systems</h3>
-            <span>${stats.totalSystems} total</span>
+            <h3>${stats.groupHeading}</h3>
+            <span>${stats.totalSystems} systems</span>
           </div>
-          ${renderSystemList(state.records.systems.slice(0, 5))}
+          ${renderGroupedSystems()}
         </article>
         <article class="panel-card">
           <div class="panel-heading">
@@ -1189,12 +1306,82 @@
   function renderLocationsSection() {
     const workspace = state.activeWorkspace;
     const isBusiness = workspace?.mode === 'business';
+    const count = isBusiness ? state.records.locations.length : state.records.properties.length;
     return `
-      ${renderSectionHeader('locations', isBusiness ? `${state.records.locations.length} locations` : `${state.records.properties.length} properties`)}
-      <div class="record-panel">
-        <h4>${isBusiness ? 'Business locations' : 'Home properties'}</h4>
-        ${isBusiness ? renderLocationList() : renderPropertyList()}
+      ${renderSectionHeader('locations', isBusiness ? `${count} locations` : `${count} properties`)}
+      <div class="module-grid">
+        ${renderPlaceForm(isBusiness)}
+        <div class="record-panel">
+          <h4>${isBusiness ? 'Locations' : 'Properties'}</h4>
+          ${isBusiness ? renderLocationList() : renderPropertyList()}
+        </div>
       </div>
+    `;
+  }
+
+  function renderPlaceForm(isBusiness) {
+    if (isBusiness) {
+      return `
+        <form class="module-form" data-action="create-place">
+          <h4>${state.records.locations.length ? 'Add location' : 'Add your first location'}</h4>
+          <label class="form-field">
+            <span>Location Name</span>
+            <input name="name" required placeholder="Location name">
+          </label>
+          <label class="form-field">
+            <span>Location Type</span>
+            <select name="location_type">
+              ${selectOptions(LOCATION_TYPE_OPTIONS, '', 'Select type')}
+            </select>
+          </label>
+          <div class="form-grid">
+            <label class="form-field">
+              <span>Address</span>
+              <input name="address" placeholder="Address">
+            </label>
+            <label class="form-field">
+              <span>Building</span>
+              <input name="building" placeholder="Building">
+            </label>
+            <label class="form-field">
+              <span>Floor</span>
+              <input name="floor" placeholder="Floor">
+            </label>
+            <label class="form-field">
+              <span>Zone</span>
+              <input name="zone" placeholder="Zone or area">
+            </label>
+          </div>
+          <button type="submit" class="primary-action">Save location</button>
+        </form>
+      `;
+    }
+
+    return `
+      <form class="module-form" data-action="create-place">
+        <h4>${state.records.properties.length ? 'Add property' : 'Add your first property'}</h4>
+        <label class="form-field">
+          <span>Property Name</span>
+          <input name="name" required placeholder="Property or home name">
+        </label>
+        <label class="form-field">
+          <span>Property Type</span>
+          <select name="property_type">
+            ${selectOptions(PROPERTY_TYPE_OPTIONS, '', 'Select type')}
+          </select>
+        </label>
+        <div class="form-grid">
+          <label class="form-field">
+            <span>Address Optional</span>
+            <input name="address" placeholder="Address">
+          </label>
+          <label class="form-field">
+            <span>Zone / Area Optional</span>
+            <input name="zone" placeholder="Zone or area">
+          </label>
+        </div>
+        <button type="submit" class="primary-action">Save property</button>
+      </form>
     `;
   }
 
@@ -1211,8 +1398,10 @@
           ${renderSystemParentField()}
           <div class="form-grid">
             <label class="form-field">
-              <span>Type</span>
-              <input name="system_type" placeholder="RO, carbon, softener">
+              <span>System Type</span>
+              <select name="system_type">
+                ${selectOptions(SYSTEM_TYPE_OPTIONS, '', 'Select type')}
+              </select>
             </label>
             <label class="form-field">
               <span>Brand</span>
@@ -1226,11 +1415,6 @@
               <span>Serial Number</span>
               <input name="serial_number" placeholder="Serial number">
             </label>
-            <label class="form-field">
-              <span>Install Date</span>
-              <input type="date" name="install_date">
-            </label>
-            <span></span>
             <label class="form-field">
               <span>PSI Min</span>
               <input type="number" name="psi_min" step="0.01" required placeholder="50">
@@ -1263,19 +1447,17 @@
           </label>
           <div class="form-grid">
             <label class="form-field">
+              <span>Filter Type</span>
+              <select name="filter_type">
+                ${selectOptions(FILTER_TYPE_OPTIONS, '', 'Select type')}
+              </select>
+            </label>
+            <label class="form-field">
               <span>SKU</span>
               <input name="sku" placeholder="SKU">
             </label>
             <label class="form-field">
-              <span>Status</span>
-              <select name="status">
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-                <option value="replaced">Replaced</option>
-              </select>
-            </label>
-            <label class="form-field">
-              <span>Installed At</span>
+              <span>Installed Date</span>
               <input type="date" name="installed_at">
             </label>
             <label class="form-field">
@@ -1334,8 +1516,10 @@
           ${renderFilterSelectField('filter_id', false)}
           <div class="form-grid">
             <label class="form-field">
-              <span>Type</span>
-              <input name="type" placeholder="Inspection, replacement, service">
+              <span>Maintenance Type</span>
+              <select name="type">
+                ${selectOptions(MAINTENANCE_TYPE_OPTIONS, '', 'Select type')}
+              </select>
             </label>
             <label class="form-field">
               <span>Technician</span>
@@ -1426,17 +1610,31 @@
     const filters = state.records.filters;
     const latest = state.records.psiReadings[0];
     const today = todayIso();
+    const soon = addDaysIso(30);
+    const isBusiness = state.activeWorkspace?.mode === 'business';
+    const placeCount = isBusiness ? state.records.locations.length : state.records.properties.length;
     const overdueFilters = filters.filter(filter => filter.due_date && filter.due_date < today && filter.status !== 'replaced').length;
+    const dueSoonFilters = filters.filter(filter => {
+      return filter.due_date
+        && filter.due_date >= today
+        && filter.due_date <= soon
+        && filter.status !== 'replaced';
+    }).length;
 
     return {
+      placeLabel: isBusiness ? 'Total Locations' : 'Total Properties',
+      placeCount,
+      placeEmptyText: isBusiness ? 'Add your first location' : 'Add your first property',
+      groupHeading: isBusiness ? 'Systems by location' : 'Systems by property',
       totalSystems: systems.length,
       healthySystems: systems.filter(system => system.status === 'healthy').length,
       warningSystems: systems.filter(system => system.status === 'warning').length,
       criticalSystems: systems.filter(system => system.status === 'critical').length,
       totalFilters: filters.length,
+      dueSoonFilters,
       overdueFilters,
       latestPsiText: latest ? `${latest.psi} PSI` : '--',
-      latestPsiSubtext: latest ? `${statusText(latest.status)} - ${formatDateTime(latest.reading_at)}` : 'No PSI readings yet.',
+      latestPsiSubtext: latest ? `${statusText(latest.status)} - ${formatDateTime(latest.reading_at)}` : 'Record your first PSI reading',
       openAlerts: state.records.alerts.length,
       maintenanceLogs: state.records.maintenanceLogs.length,
       reports: state.records.reports.length
@@ -1447,8 +1645,9 @@
     if (state.activeWorkspace?.mode === 'business') {
       return `
         <label class="form-field">
-          <span>Location</span>
-          <select name="location_id">
+          <span>Assign to Location</span>
+          <select name="location_id" required>
+            <option value="">Select location</option>
             ${state.records.locations.map(location => `<option value="${escapeHtml(location.id)}">${escapeHtml(location.name)}</option>`).join('')}
           </select>
         </label>
@@ -1457,8 +1656,9 @@
 
     return `
       <label class="form-field">
-        <span>Property</span>
-        <select name="property_id">
+        <span>Assign to Property</span>
+        <select name="property_id" required>
+          <option value="">Select property</option>
           ${state.records.properties.map(property => `<option value="${escapeHtml(property.id)}">${escapeHtml(property.name)}</option>`).join('')}
         </select>
       </label>
@@ -1489,19 +1689,59 @@
     `;
   }
 
+  function renderGroupedSystems() {
+    const isBusiness = state.activeWorkspace?.mode === 'business';
+    const places = isBusiness ? state.records.locations : state.records.properties;
+    const placeKey = isBusiness ? 'location_id' : 'property_id';
+    const placeEmptyTitle = isBusiness ? 'Add your first location' : 'Add your first property';
+
+    if (!places.length && !state.records.systems.length) {
+      return emptyState(placeEmptyTitle, 'Create the first place, then assign filtration systems to it.');
+    }
+
+    if (!state.records.systems.length) {
+      return emptyState('Add your first filtration system', 'Create a system to begin tracking filters and PSI readings.');
+    }
+
+    const placeGroups = places.map(place => ({
+      id: place.id,
+      name: place.name,
+      systems: state.records.systems.filter(system => system[placeKey] === place.id)
+    }));
+    const unassigned = state.records.systems.filter(system => !system[placeKey]);
+    if (unassigned.length) {
+      placeGroups.push({ id: 'unassigned', name: 'Unassigned systems', systems: unassigned });
+    }
+
+    return `
+      <div class="group-list">
+        ${placeGroups.map(group => `
+          <article class="group-card">
+            <div class="group-heading">
+              <strong>${escapeHtml(group.name)}</strong>
+              <span>${group.systems.length} systems</span>
+            </div>
+            ${group.systems.length ? renderSystemList(group.systems) : emptyState('Add your first filtration system', 'Assign a system to this place.')}
+          </article>
+        `).join('')}
+      </div>
+    `;
+  }
+
   function renderLocationList() {
-    if (!state.records.locations.length) return emptyState('No locations or properties yet.', 'Create locations during onboarding or future location management.');
+    if (!state.records.locations.length) return emptyState('Add your first location', 'Create a location before assigning filtration systems.');
     return `
       <div class="record-list">
         ${state.records.locations.map(location => `
           <article class="record-item">
             <div class="record-item-header">
               <strong>${escapeHtml(location.name)}</strong>
-              <span class="status-badge status-unknown">Location</span>
+              <span class="status-badge status-unknown">${escapeHtml(optionLabel(LOCATION_TYPE_OPTIONS, location.location_type, 'Location'))}</span>
             </div>
             <div class="record-meta">
               ${location.address ? `<span>${escapeHtml(location.address)}</span>` : ''}
               ${location.building ? `<span>${escapeHtml(location.building)}</span>` : ''}
+              ${location.floor ? `<span>Floor ${escapeHtml(location.floor)}</span>` : ''}
               ${location.zone ? `<span>${escapeHtml(location.zone)}</span>` : ''}
             </div>
           </article>
@@ -1511,17 +1751,18 @@
   }
 
   function renderPropertyList() {
-    if (!state.records.properties.length) return emptyState('No locations or properties yet.', 'Create a property during onboarding or future property management.');
+    if (!state.records.properties.length) return emptyState('Add your first property', 'Create a property before assigning filtration systems.');
     return `
       <div class="record-list">
         ${state.records.properties.map(property => `
           <article class="record-item">
             <div class="record-item-header">
               <strong>${escapeHtml(property.name)}</strong>
-              <span class="status-badge status-unknown">${escapeHtml(property.property_type || 'Property')}</span>
+              <span class="status-badge status-unknown">${escapeHtml(optionLabel(PROPERTY_TYPE_OPTIONS, property.property_type, 'Property'))}</span>
             </div>
             <div class="record-meta">
               ${property.address ? `<span>${escapeHtml(property.address)}</span>` : ''}
+              ${property.zone ? `<span>${escapeHtml(property.zone)}</span>` : ''}
             </div>
           </article>
         `).join('')}
@@ -1530,7 +1771,7 @@
   }
 
   function renderSystemList(systems) {
-    if (!systems.length) return emptyState('No filtration systems yet.', 'Create a system to begin tracking filters and PSI readings.');
+    if (!systems.length) return emptyState('Add your first filtration system', 'Create a system to begin tracking filters and PSI readings.');
     return `
       <div class="record-list">
         ${systems.map(system => `
@@ -1540,7 +1781,7 @@
               ${statusBadge(system.status || 'unknown')}
             </div>
             <div class="record-meta">
-              <span>${escapeHtml(system.system_type || 'System')}</span>
+              <span>${escapeHtml(optionLabel(SYSTEM_TYPE_OPTIONS, system.system_type, 'System'))}</span>
               <span>PSI ${valueOrDash(system.psi_min)}-${valueOrDash(system.psi_max)}</span>
               ${system.location_id ? `<span>${escapeHtml(locationName(system.location_id))}</span>` : ''}
               ${system.property_id ? `<span>${escapeHtml(propertyName(system.property_id))}</span>` : ''}
@@ -1552,7 +1793,7 @@
   }
 
   function renderFilterList(filters) {
-    if (!filters.length) return emptyState('No filters installed yet.', 'Create a filter record for a system.');
+    if (!filters.length) return emptyState('Add your first filter', 'Create a filter record for a system.');
     return `
       <div class="record-list">
         ${filters.map(filter => `
@@ -1563,6 +1804,7 @@
             </div>
             <div class="record-meta">
               <span>${escapeHtml(systemName(filter.system_id))}</span>
+              ${filter.filter_type ? `<span>${escapeHtml(optionLabel(FILTER_TYPE_OPTIONS, filter.filter_type, 'Filter'))}</span>` : ''}
               ${filter.sku ? `<span>SKU ${escapeHtml(filter.sku)}</span>` : ''}
               ${filter.installed_at ? `<span>Installed ${formatDate(filter.installed_at)}</span>` : ''}
               ${filter.due_date ? `<span>Due ${formatDate(filter.due_date)}</span>` : ''}
@@ -1574,7 +1816,7 @@
   }
 
   function renderPsiList(readings) {
-    if (!readings.length) return emptyState('No PSI readings yet.', 'Create a PSI reading from a system.');
+    if (!readings.length) return emptyState('Record your first PSI reading', 'Capture PSI from a configured system.');
     return `
       <div class="record-list">
         ${readings.map(reading => `
@@ -1596,13 +1838,13 @@
   }
 
   function renderMaintenanceList(logs) {
-    if (!logs.length) return emptyState('No maintenance logs yet.', 'Create a log when service work is performed.');
+    if (!logs.length) return emptyState('Add your first maintenance log', 'Create a log when service work is performed.');
     return `
       <div class="record-list">
         ${logs.map(log => `
           <article class="record-item">
             <div class="record-item-header">
-              <strong>${escapeHtml(log.type || 'Maintenance')}</strong>
+              <strong>${escapeHtml(optionLabel(MAINTENANCE_TYPE_OPTIONS, log.type, 'Maintenance'))}</strong>
               <span class="status-badge status-active">${formatDate(log.performed_at)}</span>
             </div>
             <div class="record-meta">
@@ -1881,6 +2123,12 @@
     return new Date().toISOString().slice(0, 10);
   }
 
+  function addDaysIso(days) {
+    const date = new Date();
+    date.setDate(date.getDate() + days);
+    return date.toISOString().slice(0, 10);
+  }
+
   function formatDate(value) {
     if (!value) return '--';
     return new Date(value).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
@@ -1901,6 +2149,20 @@
     return String(value || 'unknown')
       .replace(/_/g, ' ')
       .replace(/\b\w/g, char => char.toUpperCase());
+  }
+
+  function selectOptions(options, selectedValue, placeholder) {
+    const selected = String(selectedValue || '');
+    const placeholderMarkup = placeholder ? `<option value="">${escapeHtml(placeholder)}</option>` : '';
+    return placeholderMarkup + options.map(([value, label]) => `
+      <option value="${escapeHtml(value)}"${selected === value ? ' selected' : ''}>${escapeHtml(label)}</option>
+    `).join('');
+  }
+
+  function optionLabel(options, value, fallback) {
+    if (!value) return fallback;
+    const match = options.find(([optionValue]) => optionValue === value);
+    return match ? match[1] : statusText(value);
   }
 
   function escapeHtml(value) {
@@ -1950,6 +2212,7 @@
     setActiveClient,
     loadWorkspaces,
     setActiveWorkspace,
+    createPlace,
     createSystem,
     createFilter,
     createPsiReading,
