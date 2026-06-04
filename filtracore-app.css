@@ -963,6 +963,16 @@ h3 {
   gap: 0.5rem;
 }
 
+.record-actions,
+.form-edit-actions {
+  padding-top: 0.15rem;
+}
+
+.danger-action {
+  border-color: rgba(180, 35, 24, 0.18);
+  color: var(--danger);
+}
+
 .muted-note {
   color: var(--muted);
   font-size: 0.88rem;

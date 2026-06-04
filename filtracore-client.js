@@ -19,6 +19,7 @@
     activeSection: 'dashboard',
     authMode: 'signin',
     mobileDrawerOpen: false,
+    editing: null,
     records: createEmptyRecords()
   };
 
@@ -889,6 +890,38 @@
     return data || [];
   }
 
+  async function updateRowsFlexible(table, payload, matcher, optionalColumns) {
+    try {
+      return await updateRows(table, payload, matcher);
+    } catch (error) {
+      if (!isMissingColumnError(error) || !optionalColumns.length) throw error;
+      const fallbackPayload = { ...payload };
+      optionalColumns.forEach(column => {
+        delete fallbackPayload[column];
+      });
+      return updateRows(table, fallbackPayload, matcher);
+    }
+  }
+
+  async function deleteRows(table, matcher) {
+    const client = initializeSupabase();
+    let query = client.from(table).delete();
+    Object.entries(matcher).forEach(([key, value]) => {
+      query = query.eq(key, value);
+    });
+    const { error } = await query;
+    if (error) throw error;
+  }
+
+  function activeRecordMatcher(id) {
+    const workspace = requireActiveWorkspace();
+    return {
+      id,
+      client_id: state.activeClient.id,
+      workspace_id: workspace.id
+    };
+  }
+
   async function createPlace(form) {
     requireOwnerAdmin('Only owner/admin users can create locations or properties.');
     const data = new FormData(form);
@@ -923,6 +956,38 @@
 
     if (!payload.name) throw new Error('Property name is required.');
     await insertRowFlexible('filtracore_properties', payload, ['zone']);
+  }
+
+  async function updatePlace(form, recordId) {
+    requireOwnerAdmin('Only owner/admin users can edit locations or properties.');
+    const data = new FormData(form);
+    const workspace = requireActiveWorkspace();
+
+    if (workspace.mode === 'business') {
+      const payload = {
+        company_id: state.records.companies[0]?.id || null,
+        name: stringValue(data, 'name'),
+        location_type: stringValue(data, 'location_type') || null,
+        address: stringValue(data, 'address') || null,
+        building: stringValue(data, 'building') || null,
+        floor: stringValue(data, 'floor') || null,
+        zone: stringValue(data, 'zone') || null
+      };
+
+      if (!payload.name) throw new Error('Location name is required.');
+      await updateRowsFlexible('filtracore_locations', payload, activeRecordMatcher(recordId), ['location_type']);
+      return;
+    }
+
+    const payload = {
+      name: stringValue(data, 'name'),
+      property_type: stringValue(data, 'property_type') || null,
+      address: stringValue(data, 'address') || null,
+      zone: stringValue(data, 'zone') || null
+    };
+
+    if (!payload.name) throw new Error('Property name is required.');
+    await updateRowsFlexible('filtracore_properties', payload, activeRecordMatcher(recordId), ['zone']);
   }
 
   async function createSystem(form) {
@@ -961,6 +1026,39 @@
     await insertRow('filtracore_systems', payload);
   }
 
+  async function updateSystem(form, recordId) {
+    requireOwnerAdmin('Only owner/admin users can edit systems.');
+    const data = new FormData(form);
+    const workspace = requireActiveWorkspace();
+    const payload = {
+      name: stringValue(data, 'name'),
+      system_type: stringValue(data, 'system_type') || null,
+      brand: stringValue(data, 'brand') || null,
+      asset_reference: stringValue(data, 'asset_reference') || null,
+      model: stringValue(data, 'model') || null,
+      serial_number: stringValue(data, 'serial_number') || null,
+      equipment_photo_url: stringValue(data, 'equipment_photo_url') || null,
+      psi_min: numberOrNull(data.get('psi_min')),
+      psi_max: numberOrNull(data.get('psi_max'))
+    };
+
+    if (!payload.name) throw new Error('System name is required.');
+    if (payload.psi_min == null || payload.psi_max == null) throw new Error('PSI min and max are required.');
+    if (payload.psi_max < payload.psi_min) throw new Error('PSI max must be greater than or equal to PSI min.');
+
+    if (workspace.mode === 'business') {
+      payload.location_id = stringValue(data, 'location_id') || null;
+      payload.property_id = null;
+      if (!payload.location_id) throw new Error('Select a location before saving a system.');
+    } else {
+      payload.property_id = stringValue(data, 'property_id') || null;
+      payload.location_id = null;
+      if (!payload.property_id) throw new Error('Select a property before saving a system.');
+    }
+
+    await updateRows('filtracore_systems', payload, activeRecordMatcher(recordId));
+  }
+
   async function createFilter(form) {
     requireOwnerAdmin('Only owner/admin users can create filters.');
     const data = new FormData(form);
@@ -987,6 +1085,31 @@
     if (payload.filter_quantity < 1) throw new Error('Filter amount must be at least 1.');
 
     await insertRowFlexible('filtracore_filters', payload, ['filter_type']);
+  }
+
+  async function updateFilter(form, recordId) {
+    requireOwnerAdmin('Only owner/admin users can edit filters.');
+    const data = new FormData(form);
+    const rawFilterQuantity = integerOrNull(data.get('filter_quantity'));
+    const filterQuantity = rawFilterQuantity == null ? 1 : rawFilterQuantity;
+    const payload = {
+      system_id: stringValue(data, 'system_id'),
+      filter_name: stringValue(data, 'filter_name'),
+      filter_type: stringValue(data, 'filter_type') || null,
+      filter_quantity: filterQuantity,
+      filter_photo_url: stringValue(data, 'filter_photo_url') || null,
+      sku: stringValue(data, 'sku') || null,
+      installed_at: stringValue(data, 'installed_at') || null,
+      due_date: stringValue(data, 'due_date') || null,
+      life_months: integerOrNull(data.get('life_months')),
+      status: stringValue(data, 'status') || 'active'
+    };
+
+    if (!payload.system_id) throw new Error('Select a system before saving a filter.');
+    if (!payload.filter_name) throw new Error('Filter name is required.');
+    if (payload.filter_quantity < 1) throw new Error('Filter amount must be at least 1.');
+
+    await updateRowsFlexible('filtracore_filters', payload, activeRecordMatcher(recordId), ['filter_type']);
   }
 
   async function createPsiReading(form) {
@@ -1055,8 +1178,49 @@
     requireRole(['owner', 'admin', 'tech'], 'Only owner/admin/tech users can resolve alerts.');
     await updateRows('filtracore_alerts', { resolved_at: new Date().toISOString() }, {
       id: alertId,
-      client_id: state.activeClient.id
+      client_id: state.activeClient.id,
+      workspace_id: requireActiveWorkspace().id
     });
+  }
+
+  async function archiveFilter(filterId) {
+    requireOwnerAdmin('Only owner/admin users can archive filters.');
+    if (!window.confirm('Archive this filter? It will remain in history but stop appearing as an active filter.')) return;
+    await updateRows('filtracore_filters', { status: 'archived' }, activeRecordMatcher(filterId));
+    clearEditingIfMatches('filter', filterId);
+    await refreshWorkspace();
+  }
+
+  async function removeRecord(recordType, recordId) {
+    const configByType = {
+      location: {
+        table: 'filtracore_locations',
+        label: 'location',
+        permission: () => requireOwnerAdmin('Only owner/admin users can remove locations.')
+      },
+      property: {
+        table: 'filtracore_properties',
+        label: 'property',
+        permission: () => requireOwnerAdmin('Only owner/admin users can remove properties.')
+      },
+      system: {
+        table: 'filtracore_systems',
+        label: 'system / equipment',
+        permission: () => requireOwnerAdmin('Only owner/admin users can remove systems.')
+      },
+      psi: {
+        table: 'filtracore_psi_readings',
+        label: 'PSI reading',
+        permission: () => requireRole(['owner', 'admin', 'tech'], 'Only owner/admin/tech users can remove PSI readings.')
+      }
+    };
+    const item = configByType[recordType];
+    if (!item) throw new Error('Unsupported remove action.');
+    item.permission();
+    if (!window.confirm(`Remove this ${item.label}? This cannot be undone.`)) return;
+    await deleteRows(item.table, activeRecordMatcher(recordId));
+    clearEditingIfMatches(recordType, recordId);
+    await refreshWorkspace();
   }
 
   async function handleWorkspaceSubmit(event) {
@@ -1065,14 +1229,26 @@
     event.preventDefault();
     const action = form.dataset.action;
     const button = form.querySelector('button[type="submit"]');
+    const editType = form.dataset.editType;
+    const editId = form.dataset.editId;
 
     try {
       setBusy(button, true, 'Saving...');
-      if (action === 'create-place') await createPlace(form);
-      if (action === 'create-system') await createSystem(form);
-      if (action === 'create-filter') await createFilter(form);
+      if (action === 'create-place') {
+        if (editType === 'location' || editType === 'property') await updatePlace(form, editId);
+        else await createPlace(form);
+      }
+      if (action === 'create-system') {
+        if (editType === 'system') await updateSystem(form, editId);
+        else await createSystem(form);
+      }
+      if (action === 'create-filter') {
+        if (editType === 'filter') await updateFilter(form, editId);
+        else await createFilter(form);
+      }
       if (action === 'create-psi-reading') await createPsiReading(form);
       if (action === 'create-maintenance-log') await createMaintenanceLog(form);
+      state.editing = null;
       form.reset();
       await refreshWorkspace();
     } catch (error) {
@@ -1083,6 +1259,48 @@
   }
 
   async function handleWorkspaceClick(event) {
+    const editButton = event.target.closest('[data-edit-record]');
+    if (editButton) {
+      event.preventDefault();
+      startEditing(editButton.dataset.editRecord, editButton.dataset.recordId);
+      return;
+    }
+
+    const cancelButton = event.target.closest('[data-cancel-edit]');
+    if (cancelButton) {
+      event.preventDefault();
+      cancelEditing();
+      return;
+    }
+
+    const removeButton = event.target.closest('[data-remove-record]');
+    if (removeButton) {
+      event.preventDefault();
+      try {
+        setBusy(removeButton, true, 'Removing...');
+        await removeRecord(removeButton.dataset.removeRecord, removeButton.dataset.recordId);
+      } catch (error) {
+        showWorkspaceMessage(error.message || 'Could not remove record.');
+      } finally {
+        setBusy(removeButton, false);
+      }
+      return;
+    }
+
+    const archiveButton = event.target.closest('[data-archive-filter]');
+    if (archiveButton) {
+      event.preventDefault();
+      try {
+        setBusy(archiveButton, true, 'Archiving...');
+        await archiveFilter(archiveButton.dataset.archiveFilter);
+      } catch (error) {
+        showWorkspaceMessage(error.message || 'Could not archive filter.');
+      } finally {
+        setBusy(archiveButton, false);
+      }
+      return;
+    }
+
     const resolveButton = event.target.closest('[data-resolve-alert]');
     if (!resolveButton) return;
     event.preventDefault();
@@ -1328,118 +1546,124 @@
 
   function renderPlaceForm(isBusiness) {
     if (isBusiness) {
+      const record = editingRecord('location', state.records.locations);
       return `
-        <form class="module-form" data-action="create-place">
-          <h4>${state.records.locations.length ? 'Add location' : 'Add your first location'}</h4>
+        <form class="module-form" data-action="create-place"${editFormAttributes('location', record)}>
+          <h4>${record ? 'Edit location' : state.records.locations.length ? 'Add location' : 'Add your first location'}</h4>
           <label class="form-field">
             <span>Location Name</span>
-            <input name="name" required placeholder="Location name">
+            <input name="name" required placeholder="Location name" value="${escapeHtml(record?.name || '')}">
           </label>
           <label class="form-field">
             <span>Location Type</span>
             <select name="location_type">
-              ${selectOptions(LOCATION_TYPE_OPTIONS, '', 'Select type')}
+              ${selectOptions(LOCATION_TYPE_OPTIONS, record?.location_type || '', 'Select type')}
             </select>
           </label>
           <div class="form-grid">
             <label class="form-field">
               <span>Address</span>
-              <input name="address" placeholder="Address">
+              <input name="address" placeholder="Address" value="${escapeHtml(record?.address || '')}">
             </label>
             <label class="form-field">
               <span>Building</span>
-              <input name="building" placeholder="Building">
+              <input name="building" placeholder="Building" value="${escapeHtml(record?.building || '')}">
             </label>
             <label class="form-field">
               <span>Floor</span>
-              <input name="floor" placeholder="Floor">
+              <input name="floor" placeholder="Floor" value="${escapeHtml(record?.floor || '')}">
             </label>
             <label class="form-field">
               <span>Zone</span>
-              <input name="zone" placeholder="Zone or area">
+              <input name="zone" placeholder="Zone or area" value="${escapeHtml(record?.zone || '')}">
             </label>
           </div>
-          <button type="submit" class="primary-action">Save location</button>
+          <button type="submit" class="primary-action">${record ? 'Save changes' : 'Save location'}</button>
+          ${editActions(record)}
         </form>
       `;
     }
 
+    const record = editingRecord('property', state.records.properties);
     return `
-      <form class="module-form" data-action="create-place">
-        <h4>${state.records.properties.length ? 'Add property' : 'Add your first property'}</h4>
+      <form class="module-form" data-action="create-place"${editFormAttributes('property', record)}>
+        <h4>${record ? 'Edit property' : state.records.properties.length ? 'Add property' : 'Add your first property'}</h4>
         <label class="form-field">
           <span>Property Name</span>
-          <input name="name" required placeholder="Property or home name">
+          <input name="name" required placeholder="Property or home name" value="${escapeHtml(record?.name || '')}">
         </label>
         <label class="form-field">
           <span>Property Type</span>
           <select name="property_type">
-            ${selectOptions(PROPERTY_TYPE_OPTIONS, '', 'Select type')}
+            ${selectOptions(PROPERTY_TYPE_OPTIONS, record?.property_type || '', 'Select type')}
           </select>
         </label>
         <div class="form-grid">
           <label class="form-field">
             <span>Address Optional</span>
-            <input name="address" placeholder="Address">
+            <input name="address" placeholder="Address" value="${escapeHtml(record?.address || '')}">
           </label>
           <label class="form-field">
             <span>Zone / Area Optional</span>
-            <input name="zone" placeholder="Zone or area">
+            <input name="zone" placeholder="Zone or area" value="${escapeHtml(record?.zone || '')}">
           </label>
         </div>
-        <button type="submit" class="primary-action">Save property</button>
+        <button type="submit" class="primary-action">${record ? 'Save changes' : 'Save property'}</button>
+        ${editActions(record)}
       </form>
     `;
   }
 
   function renderSystemsSection() {
+    const record = editingRecord('system', state.records.systems);
     return `
       ${renderSectionHeader('systems', `${state.records.systems.length} systems`)}
       <div class="module-grid">
-        <form class="module-form" data-action="create-system">
-          <h4>Create system / equipment</h4>
+        <form class="module-form" data-action="create-system"${editFormAttributes('system', record)}>
+          <h4>${record ? 'Edit system / equipment' : 'Create system / equipment'}</h4>
           <label class="form-field">
             <span>Equipment / Machine Name</span>
-            <input name="name" required placeholder="Machine or system name">
+            <input name="name" required placeholder="Machine or system name" value="${escapeHtml(record?.name || '')}">
           </label>
-          ${renderSystemParentField()}
+          ${renderSystemParentField(record)}
           <div class="form-grid">
             <label class="form-field">
               <span>System Type</span>
               <select name="system_type">
-                ${selectOptions(SYSTEM_TYPE_OPTIONS, '', 'Select type')}
+                ${selectOptions(SYSTEM_TYPE_OPTIONS, record?.system_type || '', 'Select type')}
               </select>
             </label>
             <label class="form-field">
               <span>Brand</span>
-              <input name="brand" placeholder="Brand">
+              <input name="brand" placeholder="Brand" value="${escapeHtml(record?.brand || '')}">
             </label>
             <label class="form-field">
               <span>Reference / Model</span>
-              <input name="asset_reference" placeholder="Rootdef, asset ID, or reference">
+              <input name="asset_reference" placeholder="Rootdef, asset ID, or reference" value="${escapeHtml(record?.asset_reference || '')}">
             </label>
             <label class="form-field">
               <span>Model</span>
-              <input name="model" placeholder="Model">
+              <input name="model" placeholder="Model" value="${escapeHtml(record?.model || '')}">
             </label>
             <label class="form-field">
               <span>Serial number</span>
-              <input name="serial_number" placeholder="Serial number">
+              <input name="serial_number" placeholder="Serial number" value="${escapeHtml(record?.serial_number || '')}">
             </label>
             <label class="form-field">
               <span>Equipment photo URL</span>
-              <input type="url" name="equipment_photo_url" placeholder="https://...">
+              <input type="url" name="equipment_photo_url" placeholder="https://..." value="${escapeHtml(record?.equipment_photo_url || '')}">
             </label>
             <label class="form-field">
               <span>PSI Min</span>
-              <input type="number" name="psi_min" step="0.01" required placeholder="50">
+              <input type="number" name="psi_min" step="0.01" required placeholder="50" value="${escapeHtml(record?.psi_min ?? '')}">
             </label>
             <label class="form-field">
               <span>PSI Max</span>
-              <input type="number" name="psi_max" step="0.01" required placeholder="70">
+              <input type="number" name="psi_max" step="0.01" required placeholder="70" value="${escapeHtml(record?.psi_max ?? '')}">
             </label>
           </div>
-          <button type="submit" class="primary-action">Create system / equipment</button>
+          <button type="submit" class="primary-action">${record ? 'Save changes' : 'Create system / equipment'}</button>
+          ${editActions(record)}
         </form>
         <div class="record-panel">
           <h4>Systems / Equipment</h4>
@@ -1450,49 +1674,62 @@
   }
 
   function renderFiltersSection() {
+    const record = editingRecord('filter', state.records.filters);
     return `
       ${renderSectionHeader('filters', `${state.records.filters.length} filters`)}
       <div class="module-grid">
-        <form class="module-form" data-action="create-filter">
-          <h4>Create filter</h4>
-          ${renderSystemSelectField('system_id', true)}
+        <form class="module-form" data-action="create-filter"${editFormAttributes('filter', record)}>
+          <h4>${record ? 'Edit filter' : 'Create filter'}</h4>
+          ${renderSystemSelectField('system_id', true, record?.system_id || '')}
           <label class="form-field">
             <span>Filter type/name</span>
-            <input name="filter_name" required placeholder="Filter type/name">
+            <input name="filter_name" required placeholder="Filter type/name" value="${escapeHtml(record?.filter_name || '')}">
           </label>
           <div class="form-grid">
             <label class="form-field">
               <span>Filter Type</span>
               <select name="filter_type">
-                ${selectOptions(FILTER_TYPE_OPTIONS, '', 'Select type')}
+                ${selectOptions(FILTER_TYPE_OPTIONS, record?.filter_type || '', 'Select type')}
               </select>
             </label>
             <label class="form-field">
               <span>SKU</span>
-              <input name="sku" placeholder="SKU">
+              <input name="sku" placeholder="SKU" value="${escapeHtml(record?.sku || '')}">
             </label>
             <label class="form-field">
               <span>Installed Date</span>
-              <input type="date" name="installed_at">
+              <input type="date" name="installed_at" value="${escapeHtml(record?.installed_at || '')}">
             </label>
             <label class="form-field">
               <span>Due Date</span>
-              <input type="date" name="due_date">
+              <input type="date" name="due_date" value="${escapeHtml(record?.due_date || '')}">
             </label>
             <label class="form-field">
               <span>Life Months</span>
-              <input type="number" name="life_months" min="0" step="1">
+              <input type="number" name="life_months" min="0" step="1" value="${escapeHtml(record?.life_months ?? '')}">
             </label>
             <label class="form-field">
               <span>Filter amount</span>
-              <input type="number" name="filter_quantity" min="1" step="1" placeholder="1">
+              <input type="number" name="filter_quantity" min="1" step="1" placeholder="1" value="${escapeHtml(record?.filter_quantity ?? record?.filter_amount ?? '')}">
+            </label>
+            <label class="form-field">
+              <span>Status</span>
+              <select name="status">
+                ${selectOptions([
+                  ['active', 'Active'],
+                  ['inactive', 'Inactive'],
+                  ['replaced', 'Replaced'],
+                  ['archived', 'Archived']
+                ], record?.status || 'active')}
+              </select>
             </label>
             <label class="form-field form-field-wide">
               <span>Filter photo URL</span>
-              <input type="url" name="filter_photo_url" placeholder="https://...">
+              <input type="url" name="filter_photo_url" placeholder="https://..." value="${escapeHtml(record?.filter_photo_url || '')}">
             </label>
           </div>
-          <button type="submit" class="primary-action">Create filter</button>
+          <button type="submit" class="primary-action">${record ? 'Save changes' : 'Create filter'}</button>
+          ${editActions(record)}
         </form>
         <div class="record-panel">
           <h4>Filters</h4>
@@ -1664,14 +1901,14 @@
     };
   }
 
-  function renderSystemParentField() {
+  function renderSystemParentField(record) {
     if (state.activeWorkspace?.mode === 'business') {
       return `
         <label class="form-field">
           <span>Assign to Location</span>
           <select name="location_id" required>
             <option value="">Select location</option>
-            ${state.records.locations.map(location => `<option value="${escapeHtml(location.id)}">${escapeHtml(location.name)}</option>`).join('')}
+            ${state.records.locations.map(location => `<option value="${escapeHtml(location.id)}"${record?.location_id === location.id ? ' selected' : ''}>${escapeHtml(location.name)}</option>`).join('')}
           </select>
         </label>
       `;
@@ -1679,22 +1916,22 @@
 
     return `
       <label class="form-field">
-        <span>Assign to Property</span>
-        <select name="property_id" required>
-          <option value="">Select property</option>
-          ${state.records.properties.map(property => `<option value="${escapeHtml(property.id)}">${escapeHtml(property.name)}</option>`).join('')}
+          <span>Assign to Property</span>
+          <select name="property_id" required>
+            <option value="">Select property</option>
+          ${state.records.properties.map(property => `<option value="${escapeHtml(property.id)}"${record?.property_id === property.id ? ' selected' : ''}>${escapeHtml(property.name)}</option>`).join('')}
         </select>
       </label>
     `;
   }
 
-  function renderSystemSelectField(name, required) {
+  function renderSystemSelectField(name, required, selectedId = '') {
     return `
       <label class="form-field">
         <span>System / Equipment</span>
         <select name="${escapeHtml(name)}"${required ? ' required' : ''}>
           <option value="">Select system / equipment</option>
-          ${state.records.systems.map(system => `<option value="${escapeHtml(system.id)}">${escapeHtml(system.name)}</option>`).join('')}
+          ${state.records.systems.map(system => `<option value="${escapeHtml(system.id)}"${selectedId === system.id ? ' selected' : ''}>${escapeHtml(system.name)}</option>`).join('')}
         </select>
       </label>
     `;
@@ -1751,6 +1988,18 @@
     `;
   }
 
+  function recordActions(markup) {
+    return `<div class="inline-actions record-actions">${markup}</div>`;
+  }
+
+  function editButton(recordType, recordId) {
+    return `<button type="button" class="secondary-action compact-action" data-edit-record="${escapeHtml(recordType)}" data-record-id="${escapeHtml(recordId)}">Edit</button>`;
+  }
+
+  function removeButton(recordType, recordId, label = 'Remove') {
+    return `<button type="button" class="secondary-action compact-action danger-action" data-remove-record="${escapeHtml(recordType)}" data-record-id="${escapeHtml(recordId)}">${escapeHtml(label)}</button>`;
+  }
+
   function renderLocationList() {
     if (!state.records.locations.length) return emptyState('Add your first location', 'Create a location before assigning filtration systems.');
     return `
@@ -1767,6 +2016,7 @@
               ${location.floor ? `<span>Floor ${escapeHtml(location.floor)}</span>` : ''}
               ${location.zone ? `<span>${escapeHtml(location.zone)}</span>` : ''}
             </div>
+            ${recordActions(`${editButton('location', location.id)}${removeButton('location', location.id)}`)}
           </article>
         `).join('')}
       </div>
@@ -1787,6 +2037,7 @@
               ${property.address ? `<span>${escapeHtml(property.address)}</span>` : ''}
               ${property.zone ? `<span>${escapeHtml(property.zone)}</span>` : ''}
             </div>
+            ${recordActions(`${editButton('property', property.id)}${removeButton('property', property.id)}`)}
           </article>
         `).join('')}
       </div>
@@ -1814,6 +2065,7 @@
               ${system.property_id ? `<span>${escapeHtml(propertyName(system.property_id))}</span>` : ''}
             </div>
             ${renderPhotoPreview(system.equipment_photo_url, 'Equipment photo')}
+            ${recordActions(`${editButton('system', system.id)}${removeButton('system', system.id)}`)}
           </article>
         `).join('')}
       </div>
@@ -1839,6 +2091,10 @@
               ${filter.due_date ? `<span>Due ${formatDate(filter.due_date)}</span>` : ''}
             </div>
             ${renderPhotoPreview(filter.filter_photo_url, 'Filter photo')}
+            ${recordActions(`
+              ${editButton('filter', filter.id)}
+              ${filter.status === 'archived' ? '' : `<button type="button" class="secondary-action compact-action danger-action" data-archive-filter="${escapeHtml(filter.id)}">Archive</button>`}
+            `)}
           </article>
         `).join('')}
       </div>
@@ -1861,6 +2117,7 @@
               <span>${formatDateTime(reading.reading_at)}</span>
             </div>
             ${reading.notes ? `<p>${escapeHtml(reading.notes)}</p>` : ''}
+            ${recordActions(removeButton('psi', reading.id))}
           </article>
         `).join('')}
       </div>
@@ -1906,7 +2163,7 @@
               <span>${formatDateTime(alert.created_at)}</span>
             </div>
             ${alert.message ? `<p>${escapeHtml(alert.message)}</p>` : ''}
-            ${includeActions ? `<div class="inline-actions"><button type="button" class="secondary-action compact-action" data-resolve-alert="${escapeHtml(alert.id)}">Resolve</button></div>` : ''}
+            ${includeActions ? `<div class="inline-actions record-actions"><button type="button" class="secondary-action compact-action" data-resolve-alert="${escapeHtml(alert.id)}">Resolve alert</button></div>` : ''}
           </article>
         `).join('')}
       </div>
@@ -1992,6 +2249,53 @@
     }
     alert.textContent = message;
     alert.hidden = false;
+  }
+
+  function startEditing(recordType, recordId) {
+    state.editing = { type: recordType, id: recordId };
+    const section = sectionForRecordType(recordType);
+    if (section) state.activeSection = section;
+    renderSections();
+    switchSection(state.activeSection || 'dashboard', false);
+    const activeForm = document.querySelector('.app-section.is-active form[data-edit-id]');
+    if (activeForm) activeForm.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  }
+
+  function cancelEditing() {
+    state.editing = null;
+    renderSections();
+    switchSection(state.activeSection || 'dashboard', false);
+  }
+
+  function clearEditingIfMatches(recordType, recordId) {
+    if (state.editing?.type === recordType && state.editing.id === recordId) {
+      state.editing = null;
+    }
+  }
+
+  function sectionForRecordType(recordType) {
+    if (recordType === 'location' || recordType === 'property') return 'locations';
+    if (recordType === 'system') return 'systems';
+    if (recordType === 'filter') return 'filters';
+    if (recordType === 'psi') return 'psi';
+    return null;
+  }
+
+  function editingRecord(recordType, records) {
+    return state.editing?.type === recordType ? findById(records, state.editing.id) : null;
+  }
+
+  function editFormAttributes(recordType, record) {
+    return record ? ` data-edit-type="${escapeHtml(recordType)}" data-edit-id="${escapeHtml(record.id)}"` : '';
+  }
+
+  function editActions(record) {
+    if (!record) return '';
+    return `
+      <div class="form-edit-actions">
+        <button type="button" class="secondary-action compact-action" data-cancel-edit>Cancel edit</button>
+      </div>
+    `;
   }
 
   function requireActiveWorkspace() {
