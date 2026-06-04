@@ -936,8 +936,10 @@
       name: stringValue(data, 'name'),
       system_type: stringValue(data, 'system_type') || null,
       brand: stringValue(data, 'brand') || null,
+      asset_reference: stringValue(data, 'asset_reference') || null,
       model: stringValue(data, 'model') || null,
       serial_number: stringValue(data, 'serial_number') || null,
+      equipment_photo_url: stringValue(data, 'equipment_photo_url') || null,
       install_date: stringValue(data, 'install_date') || null,
       psi_min: numberOrNull(data.get('psi_min')),
       psi_max: numberOrNull(data.get('psi_max')),
@@ -963,13 +965,16 @@
     requireOwnerAdmin('Only owner/admin users can create filters.');
     const data = new FormData(form);
     const workspace = requireActiveWorkspace();
-    // TODO: persist filter quantity after schema migration.
+    const rawFilterQuantity = integerOrNull(data.get('filter_quantity'));
+    const filterQuantity = rawFilterQuantity == null ? 1 : rawFilterQuantity;
     const payload = {
       client_id: state.activeClient.id,
       workspace_id: workspace.id,
       system_id: stringValue(data, 'system_id'),
       filter_name: stringValue(data, 'filter_name'),
       filter_type: stringValue(data, 'filter_type') || null,
+      filter_quantity: filterQuantity,
+      filter_photo_url: stringValue(data, 'filter_photo_url') || null,
       sku: stringValue(data, 'sku') || null,
       installed_at: stringValue(data, 'installed_at') || null,
       due_date: stringValue(data, 'due_date') || null,
@@ -979,6 +984,7 @@
 
     if (!payload.system_id) throw new Error('Select a system before creating a filter.');
     if (!payload.filter_name) throw new Error('Filter name is required.');
+    if (payload.filter_quantity < 1) throw new Error('Filter amount must be at least 1.');
 
     await insertRowFlexible('filtracore_filters', payload, ['filter_type']);
   }
@@ -1410,11 +1416,19 @@
             </label>
             <label class="form-field">
               <span>Reference / Model</span>
-              <input name="model" placeholder="Rootdef, asset ID, or model">
+              <input name="asset_reference" placeholder="Rootdef, asset ID, or reference">
+            </label>
+            <label class="form-field">
+              <span>Model</span>
+              <input name="model" placeholder="Model">
             </label>
             <label class="form-field">
               <span>Serial number</span>
               <input name="serial_number" placeholder="Serial number">
+            </label>
+            <label class="form-field">
+              <span>Equipment photo URL</span>
+              <input type="url" name="equipment_photo_url" placeholder="https://...">
             </label>
             <label class="form-field">
               <span>PSI Min</span>
@@ -1471,7 +1485,11 @@
             </label>
             <label class="form-field">
               <span>Filter amount</span>
-              <input type="number" name="filter_amount" min="0" step="1" placeholder="Quantity">
+              <input type="number" name="filter_quantity" min="1" step="1" placeholder="1">
+            </label>
+            <label class="form-field form-field-wide">
+              <span>Filter photo URL</span>
+              <input type="url" name="filter_photo_url" placeholder="https://...">
             </label>
           </div>
           <button type="submit" class="primary-action">Create filter</button>
@@ -1788,11 +1806,14 @@
             <div class="record-meta">
               <span>${escapeHtml(optionLabel(SYSTEM_TYPE_OPTIONS, system.system_type, 'System'))}</span>
               <span>PSI ${valueOrDash(system.psi_min)}-${valueOrDash(system.psi_max)}</span>
-              ${system.model ? `<span>Reference ${escapeHtml(system.model)}</span>` : ''}
+              ${system.asset_reference ? `<span>Reference ${escapeHtml(system.asset_reference)}</span>` : ''}
+              ${system.brand ? `<span>Brand ${escapeHtml(system.brand)}</span>` : ''}
+              ${system.model ? `<span>Model ${escapeHtml(system.model)}</span>` : ''}
               ${system.serial_number ? `<span>Serial ${escapeHtml(system.serial_number)}</span>` : ''}
               ${system.location_id ? `<span>${escapeHtml(locationName(system.location_id))}</span>` : ''}
               ${system.property_id ? `<span>${escapeHtml(propertyName(system.property_id))}</span>` : ''}
             </div>
+            ${renderPhotoPreview(system.equipment_photo_url, 'Equipment photo')}
           </article>
         `).join('')}
       </div>
@@ -1812,11 +1833,12 @@
             <div class="record-meta">
               <span>${escapeHtml(systemName(filter.system_id))}</span>
               ${filter.filter_type ? `<span>${escapeHtml(optionLabel(FILTER_TYPE_OPTIONS, filter.filter_type, 'Filter'))}</span>` : ''}
-              ${filter.filter_amount != null ? `<span>Amount ${escapeHtml(filter.filter_amount)}</span>` : ''}
+              ${filterQuantityLabel(filter)}
               ${filter.sku ? `<span>SKU ${escapeHtml(filter.sku)}</span>` : ''}
               ${filter.installed_at ? `<span>Installed ${formatDate(filter.installed_at)}</span>` : ''}
               ${filter.due_date ? `<span>Due ${formatDate(filter.due_date)}</span>` : ''}
             </div>
+            ${renderPhotoPreview(filter.filter_photo_url, 'Filter photo')}
           </article>
         `).join('')}
       </div>
@@ -1908,6 +1930,21 @@
         `).join('')}
       </div>
     `;
+  }
+
+  function renderPhotoPreview(url, label) {
+    if (!isValidWebUrl(url)) return '';
+    return `
+      <a class="record-photo-link" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">
+        <img class="record-photo-thumb" src="${escapeHtml(url)}" alt="" onerror="this.hidden=true">
+        <span>${escapeHtml(label)}</span>
+      </a>
+    `;
+  }
+
+  function filterQuantityLabel(filter) {
+    const quantity = filter.filter_quantity ?? filter.filter_amount;
+    return quantity == null ? '' : `<span>Amount ${escapeHtml(quantity)}</span>`;
   }
 
   function emptyState(title, copy) {
@@ -2171,6 +2208,16 @@
     if (!value) return fallback;
     const match = options.find(([optionValue]) => optionValue === value);
     return match ? match[1] : statusText(value);
+  }
+
+  function isValidWebUrl(value) {
+    if (!value) return false;
+    try {
+      const url = new URL(value);
+      return ['http:', 'https:'].includes(url.protocol);
+    } catch (error) {
+      return false;
+    }
   }
 
   function escapeHtml(value) {

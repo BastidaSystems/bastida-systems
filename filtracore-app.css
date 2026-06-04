@@ -893,6 +893,29 @@ h3 {
   padding: 0 0.55rem;
 }
 
+.record-photo-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: fit-content;
+  max-width: 100%;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  background: var(--surface-soft);
+  color: var(--accent-strong);
+  padding: 0.4rem 0.6rem 0.4rem 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.record-photo-thumb {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 6px;
+  background: var(--line-soft);
+  object-fit: cover;
+}
+
 .status-badge {
   display: inline-flex;
   align-items: center;
