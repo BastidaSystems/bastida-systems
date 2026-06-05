@@ -335,7 +335,7 @@
 
     state.user = data.user || null;
     if (!data.session) {
-      showAlert(els.authMessage, 'Account created. Confirm your email, then sign in to access a Client-prod client.', 'success');
+      showAlert(els.authMessage, 'Account created. Confirm your email, then sign in to finish your FiltraCore setup.', 'success');
       return;
     }
 
@@ -574,6 +574,69 @@
     return clientRecord;
   }
 
+  async function createPersonalClientForOnboarding() {
+    if (!state.user) throw new Error('Sign in before starting FiltraCore setup.');
+    const client = initializeSupabase();
+    if (!client) throw new Error('Client-prod is not configured.');
+
+    const name = userDisplayName() || organizationNameFromEmail() || 'My FiltraCore Workspace';
+    const clientPayload = {
+      name,
+      client_type: 'business',
+      status: 'active',
+      created_by: state.user.id
+    };
+
+    let insertResult = await client
+      .from('clients')
+      .insert(clientPayload)
+      .select('id, name, legal_name, client_type, status, created_at')
+      .single();
+
+    if (insertResult.error && isMissingColumnError(insertResult.error)) {
+      const fallbackPayload = { ...clientPayload };
+      delete fallbackPayload.client_type;
+      insertResult = await client
+        .from('clients')
+        .insert(fallbackPayload)
+        .select('id, name, status, created_at')
+        .single();
+    }
+
+    if (insertResult.error) throw insertResult.error;
+
+    const newClient = insertResult.data;
+    const { error: membershipError } = await client
+      .from('client_users')
+      .insert({
+        client_id: newClient.id,
+        user_id: state.user.id,
+        role: 'owner',
+        status: 'active'
+      });
+
+    if (membershipError) throw membershipError;
+
+    const { error: productError } = await client
+      .from('client_products')
+      .insert({
+        client_id: newClient.id,
+        product_key: config.productKey || 'filtracore',
+        status: 'active'
+      });
+
+    if (productError) throw productError;
+
+    await loadUserClients();
+    return state.userClients.find(row => row.id === newClient.id) || {
+      ...newClient,
+      role: 'owner',
+      member_role: 'owner',
+      product_enabled: true,
+      product_status: 'active'
+    };
+  }
+
   async function setActiveClient(clientOrId) {
     const clientId = typeof clientOrId === 'string' ? clientOrId : clientOrId?.id;
     const clientRecord = state.userClients.find(row => row.id === clientId) || clientOrId;
@@ -668,8 +731,18 @@
         return;
       }
 
+      if (clients.length === 0) {
+        const clientRecord = await createPersonalClientForOnboarding();
+        await setActiveClient(clientRecord);
+        return;
+      }
+
       renderClientSelector();
     } catch (error) {
+      if (state.user) {
+        renderClientSelector(error.message || 'Could not start FiltraCore setup. Try again or contact support.');
+        return;
+      }
       renderAuthView();
       showAlert(els.authMessage, error.message || 'Could not load Client-prod access.');
     }
@@ -1379,8 +1452,8 @@
     if (state.userClients.length === 0) {
       els.clientList.insertAdjacentHTML('beforeend', `
         <div class="empty-state">
-          <h4>No Client-prod clients available.</h4>
-          <p>Your user is not an active member of any client. Add this user to client_users first, then return to FiltraCore.</p>
+          <h4>Setup could not start automatically.</h4>
+          <p>Sign out and sign in again. If this keeps happening, the Client-prod onboarding policy needs to be updated.</p>
         </div>
       `);
       return;
@@ -2427,6 +2500,20 @@
 
   function clientName(clientRecord) {
     return clientRecord?.name || clientRecord?.legal_name || 'Client';
+  }
+
+  function userDisplayName() {
+    return String(state.user?.user_metadata?.full_name || state.user?.user_metadata?.name || '').trim();
+  }
+
+  function organizationNameFromEmail() {
+    const email = String(state.user?.email || '').trim();
+    const localPart = email.split('@')[0] || '';
+    return localPart
+      .split(/[._-]+/)
+      .filter(Boolean)
+      .map(part => capitalize(part))
+      .join(' ');
   }
 
   function systemName(id) {
