@@ -3,273 +3,1214 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>David Ramirez Bastida | Founder Portfolio</title>
-  <meta name="description" content="Professional portfolio of David Ramirez Bastida, founder of Bastida Systems LLC, multimedia designer, UX/UI designer, software builder, and operations systems creator.">
+  <title>Bastida Systems</title>
   <link rel="icon" type="image/png" href="img/logo_bastida_sys.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Font (Manrope style) -->
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Manrope', sans-serif;
+      background-color: #0a0a0a;
+      letter-spacing: 0.02em;
+    }
+    html {
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+    body {
+      overflow-x: hidden;
+    }
+    .gradient-text {
+      background: linear-gradient(115deg, #ef4444 0%, #ef4444 28%, #fecaca 38%, #ffffff 48%, #ef4444 62%, #ffffff 78%, #ef4444 100%);
+      background-size: 260% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: block;
+      width: min(100%, 64rem);
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.22;
+      padding-bottom: 0.18em;
+      animation: diagonalColorSweep 5.5s ease-in-out infinite;
+    }
+
+    @keyframes diagonalColorSweep {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+  </style>
+  <style>
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.8s ease;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .fade-in:target {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .site-nav {
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .product-panel {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(75, 85, 99, 0.5);
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(239, 68, 68, 0.13), transparent 34%),
+        linear-gradient(145deg, rgba(17, 24, 39, 0.94), rgba(3, 7, 18, 0.92));
+      box-shadow: 0 28px 90px rgba(0, 0, 0, 0.32);
+      transition: border-color 220ms ease, transform 220ms ease, box-shadow 220ms ease;
+    }
+
+    .product-panel:hover {
+      transform: translateY(-4px);
+      border-color: rgba(239, 68, 68, 0.55);
+      box-shadow: 0 34px 110px rgba(0, 0, 0, 0.46);
+    }
+
+    .product-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.08) 48%, transparent 64%);
+      opacity: 0;
+      transform: translateX(-45%);
+      transition: opacity 220ms ease, transform 600ms ease;
+    }
+
+    .product-panel:hover::before {
+      opacity: 1;
+      transform: translateX(45%);
+    }
+
+    .product-preview {
+      position: relative;
+      min-height: 18rem;
+      border-top: 1px solid rgba(75, 85, 99, 0.55);
+      background: #05070c;
+    }
+
+    .product-preview img {
+      width: 100%;
+      height: 100%;
+      min-height: 18rem;
+      object-fit: cover;
+      object-position: left top;
+      filter: saturate(1.05) contrast(1.04);
+      opacity: 0.88;
+      transition: transform 420ms ease, opacity 220ms ease;
+    }
+
+    .product-panel:hover .product-preview img {
+      transform: scale(1.035);
+      opacity: 0.96;
+    }
+
+    .product-preview::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 38%, rgba(3, 7, 18, 0.94) 100%);
+      pointer-events: none;
+    }
+
+    .product-points {
+      display: grid;
+      gap: 0.65rem;
+      margin: 1.4rem 0 1.6rem;
+    }
+
+    .product-points li {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      color: #d1d5db;
+      font-size: 0.9rem;
+    }
+
+    .product-points li::before {
+      content: "";
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 999px;
+      background: #ef4444;
+      box-shadow: 0 0 16px rgba(239, 68, 68, 0.85);
+      flex: 0 0 auto;
+    }
+
+    .product-tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 2rem;
+      padding: 0.35rem 0.7rem;
+      border: 1px solid rgba(239, 68, 68, 0.24);
+      border-radius: 999px;
+      color: #9ca3af;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .product-panel--estrattiva {
+      background:
+        radial-gradient(circle at 74% 12%, rgba(205, 163, 90, 0.2), transparent 32%),
+        radial-gradient(circle at 18% 0%, rgba(13, 32, 61, 0.3), transparent 34%),
+        linear-gradient(145deg, rgba(12, 18, 29, 0.96), rgba(5, 7, 12, 0.94));
+    }
+
+    .product-panel--estrattiva:hover {
+      border-color: rgba(205, 163, 90, 0.62);
+    }
+
+    .product-panel--estrattiva .product-tag {
+      border-color: rgba(205, 163, 90, 0.38);
+    }
+
+    .product-panel--estrattiva .product-points li::before {
+      background: #cda35a;
+      box-shadow: 0 0 16px rgba(205, 163, 90, 0.72);
+    }
+
+    .product-panel--estrattiva .preview-caption span:last-child {
+      color: #d9b66f;
+    }
+
+    .product-panel--tallador {
+      background:
+        radial-gradient(circle at 78% 8%, rgba(184, 95, 62, 0.22), transparent 34%),
+        radial-gradient(circle at 12% 18%, rgba(217, 173, 97, 0.16), transparent 34%),
+        linear-gradient(145deg, rgba(24, 16, 10, 0.97), rgba(6, 5, 4, 0.94));
+    }
+
+    .product-panel--tallador:hover {
+      border-color: rgba(217, 173, 97, 0.62);
+    }
+
+    .product-panel--tallador .product-tag {
+      border-color: rgba(217, 173, 97, 0.38);
+    }
+
+    .product-panel--tallador .product-points li::before {
+      background: #d9ad61;
+      box-shadow: 0 0 16px rgba(217, 173, 97, 0.72);
+    }
+
+    .product-panel--tallador .preview-caption span:last-child {
+      color: #d9ad61;
+    }
+
+    .product-mark {
+      width: 2.75rem;
+      height: 2.75rem;
+      border-radius: 8px;
+      object-fit: cover;
+      background: #101827;
+    }
+
+    .product-mark--tallador {
+      display: inline-grid;
+      place-items: center;
+      border: 1px solid rgba(217, 173, 97, 0.58);
+      background: linear-gradient(145deg, rgba(217, 173, 97, 0.18), rgba(184, 95, 62, 0.12));
+      color: #f6dc9a;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+    }
+
+    .product-preview--center img {
+      object-position: center;
+    }
+
+    .preview-caption {
+      position: absolute;
+      left: 1.25rem;
+      right: 1.25rem;
+      bottom: 1.15rem;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      color: #f9fafb;
+      font-size: 0.92rem;
+      font-weight: 800;
+    }
+
+    .preview-caption span:last-child {
+      color: #ef4444;
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .hero-spotlight {
+      position: relative;
+      overflow: hidden;
+      min-height: auto;
+      padding: clamp(2.75rem, 5vw, 4.5rem) 1.5rem clamp(2.75rem, 4vw, 4rem);
+      background:
+        linear-gradient(128deg, #050607 0%, #0a0f16 46%, #062019 78%, #020304 100%);
+    }
+
+    .hero-watermark {
+      position: absolute;
+      left: 50%;
+      top: 48%;
+      width: min(32rem, 74vw);
+      opacity: 0.07;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      user-select: none;
+      z-index: 0;
+    }
+
+    .hero-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      width: min(1240px, 100%);
+      margin: 0 auto;
+      grid-template-columns: minmax(0, 0.9fr) minmax(24rem, 1fr);
+      gap: clamp(2rem, 4vw, 4rem);
+      align-items: center;
+    }
+
+    .hero-copy {
+      text-align: left;
+    }
+
+    .hero-brand-lockup {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.9rem;
+      margin-bottom: 1.25rem;
+      color: #ffffff;
+      letter-spacing: 0;
+    }
+
+    .hero-brand-lockup img {
+      width: 3rem;
+      height: 3rem;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      object-fit: contain;
+      background: rgba(255, 255, 255, 0.04);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+    }
+
+    .hero-brand-lockup strong,
+    .hero-brand-lockup small {
+      display: block;
+      letter-spacing: 0;
+    }
+
+    .hero-brand-lockup strong {
+      font-size: 0.95rem;
+      font-weight: 800;
+    }
+
+    .hero-brand-lockup small {
+      margin-top: 0.18rem;
+      color: #9ca3af;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .hero-title {
+      max-width: 46rem;
+      margin: 0 0 1.55rem;
+      padding: 0;
+      font-size: clamp(2.5rem, 4.25vw, 4rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .hero-copy .gradient-text {
+      width: min(100%, 46rem);
+      margin-left: 0;
+      margin-right: 0;
+    }
+
+    .hero-body {
+      width: min(100%, 42rem);
+    }
+
+    .hero-actions {
+      width: min(100%, 44rem);
+    }
+
+    .hero-copy .hero-actions {
+      justify-content: flex-start;
+      margin-top: 2rem;
+    }
+
+    .hero-system-points {
+      display: grid;
+      gap: 0.7rem;
+      width: min(100%, 41rem);
+      margin: 1.35rem 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .hero-system-points li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.7rem;
+      color: #d1d5db;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      letter-spacing: 0;
+    }
+
+    .hero-system-points li::before {
+      content: "";
+      flex: 0 0 auto;
+      width: 0.5rem;
+      height: 0.5rem;
+      margin-top: 0.52rem;
+      border-radius: 999px;
+      background: #ef4444;
+      box-shadow: 0 0 18px rgba(239, 68, 68, 0.82);
+    }
+
+    .lineops-showcase {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: flex-end;
+      gap: 0.8rem;
+      margin: 0;
+    }
+
+    .lineops-frame {
+      overflow: hidden;
+      width: min(100%, 36rem);
+      background: transparent;
+      filter: drop-shadow(0 30px 46px rgba(0, 0, 0, 0.42));
+    }
+
+    .lineops-frame img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      filter: saturate(1.04) contrast(1.03);
+    }
+
+    .lineops-caption {
+      display: none;
+    }
+
+    .lineops-store-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.62rem;
+      width: fit-content;
+      max-width: 100%;
+      min-height: 3.35rem;
+      padding: 0.48rem 0.9rem 0.5rem 0.72rem;
+      border: 1px solid rgba(255, 255, 255, 0.42);
+      border-radius: 8px;
+      background: #050607;
+      color: #ffffff;
+      text-align: left;
+      text-decoration: none;
+      box-shadow: 0 18px 42px rgba(0, 0, 0, 0.32);
+      transition: transform 220ms ease, box-shadow 220ms ease;
+    }
+
+    .lineops-store-badge:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 24px 54px rgba(0, 0, 0, 0.38);
+    }
+
+    .lineops-store-badge svg {
+      width: 1.78rem;
+      height: 1.78rem;
+      flex: 0 0 auto;
+      fill: currentColor;
+    }
+
+    .lineops-store-badge strong,
+    .lineops-store-badge small {
+      display: block;
+      letter-spacing: 0;
+    }
+
+    .lineops-store-badge strong {
+      font-size: 1.08rem;
+      font-weight: 800;
+      line-height: 1.02;
+    }
+
+    .lineops-store-badge small {
+      margin-bottom: 0.08rem;
+      color: rgba(255, 255, 255, 0.78);
+      font-size: 0.58rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .language-picker {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      min-height: 2.45rem;
+      padding: 0.28rem 0.35rem 0.28rem 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      background: #fff;
+      color: #4b5563;
+      font-size: 0.875rem;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+
+    .language-picker select {
+      min-width: 3.25rem;
+      border: 0;
+      border-radius: 6px;
+      background: #10182d;
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    @media (max-width: 640px) {
+      .gradient-text {
+        width: min(100%, 21rem);
+      }
+
+      .hero-spotlight {
+        padding: 2rem 1rem 3rem;
+      }
+
+      .hero-grid {
+        gap: 1.65rem;
+      }
+
+      .hero-title {
+        font-size: clamp(2.15rem, 11vw, 3rem);
+        line-height: 1.08;
+      }
+
+      .hero-brand-lockup {
+        margin-bottom: 1rem;
+      }
+
+      .hero-body {
+        width: min(100%, 20.5rem);
+        font-size: 1rem;
+        line-height: 1.65;
+      }
+
+      .hero-actions {
+        width: min(100%, 20.5rem);
+      }
+
+      .hero-system-points {
+        width: min(100%, 20.5rem);
+      }
+
+      .hero-grid .lineops-showcase {
+        order: -1;
+        align-items: center;
+        justify-content: center;
+        width: min(100%, 22rem);
+      }
+
+      .lineops-frame {
+        filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.34));
+      }
+
+      .lineops-store-badge {
+        min-height: 3.05rem;
+        padding: 0.44rem 0.78rem 0.46rem 0.66rem;
+      }
+
+      .lineops-store-badge svg {
+        width: 1.62rem;
+        height: 1.62rem;
+      }
+
+      #site-header nav {
+        align-items: flex-start;
+        gap: 0.8rem;
+        padding-top: 0.95rem !important;
+        padding-bottom: 0.95rem !important;
+      }
+
+      #site-header nav > div:last-child {
+        width: 100%;
+        justify-content: flex-start;
+        gap: 1rem;
+        overflow-x: auto;
+        padding-bottom: 0.1rem;
+      }
+
+      #site-header nav > div:last-child > a {
+        flex: 0 0 auto;
+      }
+
+      .language-picker {
+        padding: 0.22rem;
+        flex: 0 0 auto;
+      }
+
+      .language-picker span {
+        display: none;
+      }
+    }
+
+    @media print {
+      #site-header,
+      #site-header nav {
+        position: static !important;
+        top: auto !important;
+        z-index: auto !important;
+      }
+
+      #site-header nav {
+        break-after: avoid;
+      }
+
+      .fade-in {
+        opacity: 1 !important;
+        transform: none !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .product-preview,
+      .product-preview img {
+        min-height: 14rem;
+      }
+
+      .preview-caption {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.35rem;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-copy {
+        max-width: 48rem;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      .hero-copy .gradient-text {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .hero-brand-lockup,
+      .hero-copy .hero-actions {
+        justify-content: center;
+      }
+
+      .hero-system-points {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .lineops-showcase {
+        width: min(100%, 48rem);
+        margin: 0 auto;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .gradient-text {
+        animation: none;
+      }
+
+      .product-panel,
+      .product-panel::before,
+      .product-preview img {
+        transition: none;
+      }
+    }
+  </style>
 </head>
-<body>
-  <header class="site-header">
-    <a class="brand" href="#home" aria-label="David Ramirez Bastida home">
-      <img src="img/logo_bastida_sys.png" alt="Bastida Systems logo">
-      <span>David Bastida</span>
-    </a>
 
-    <nav class="nav-links" aria-label="Primary navigation">
-      <a href="#about" data-i18n="nav.about">About</a>
-      <a href="#projects" data-i18n="nav.projects">Projects</a>
-      <a href="#skills" data-i18n="nav.skills">Skills</a>
-      <a href="#contact" data-i18n="nav.contact">Contact</a>
-    </nav>
+<body class="text-white">
 
-    <div class="controls" aria-label="Portfolio controls">
-      <div class="segmented" aria-label="Language selector">
-        <button class="control-btn" type="button" data-lang="es">ES</button>
-        <button class="control-btn is-active" type="button" data-lang="en">EN</button>
+  <div id="site-header"></div>
+
+  <script>
+    const siteTranslations = {
+      en: {
+        'meta.title': 'Bastida Systems',
+        'nav.products': 'Work',
+        'nav.websites': 'Websites',
+        'nav.systems': 'Systems',
+        'nav.about': 'About',
+        'nav.privacy': 'Privacy',
+        'nav.contact': 'Contact',
+        'nav.language': 'Language',
+        'nav.languageSelector': 'Language selector',
+        'hero.brand': 'Bastida Systems',
+        'hero.brandMeta': 'Intelligent operations software',
+        'hero.heading': 'Bastida Systems Introduces LineOps ShiftRotation',
+        'hero.body': 'LineOps ShiftRotation is our new scheduling system for restaurants and service teams that need smarter weekly rotations, station coverage, and schedule control across mobile and desktop.',
+        'hero.point1': 'Smart rotation planning by station and shift',
+        'hero.point2': 'Saved weeks, templates, and quick adjustments',
+        'hero.point3': 'Mobile schedule access for active teams',
+        'hero.previewTitle': 'LineOps ShiftRotation',
+        'hero.previewMeta': 'New scheduling system',
+        'hero.storeKicker': 'Download on the',
+        'hero.storeName': 'App Store',
+        'hero.storeAria': 'Download LineOps ShiftRotation on the App Store',
+        'hero.explore': 'Explore Work',
+        'hero.websites': 'Website Packages',
+        'hero.systems': 'System Packages',
+        'products.heading': 'Products & Web Projects',
+        'products.intro': 'Software products and client websites built to support real operations, service businesses, and growing brands.',
+        'products.beoflow.tag': 'Kitchen operations',
+        'products.filtracore.body': 'Filtration operations platform for casinos, restaurants, and service teams. Track PSI, filter lifespan, maintenance, and stock readiness in real time.',
+        'products.beoflow.body': 'Kitchen operations platform for menus, inventory, production, staff, service planning, and daily execution.',
+        'products.beoflow.point1': 'Inventory, recipes, and menu control',
+        'products.beoflow.point2': 'Service planning and production visibility',
+        'products.beoflow.point3': 'Staff schedules, stations, and reports',
+        'products.beoflow.preview': 'Kitchen command center',
+        'products.filtracore.tag': 'Filter intelligence',
+        'products.filtracore.point1': 'PSI monitoring and pressure history',
+        'products.filtracore.point2': 'Filter lifecycle and due dates',
+        'products.filtracore.point3': 'Maintenance records and stock readiness',
+        'products.filtracore.preview': 'Filter operations view',
+        'products.estrattiva.tag': 'Client website',
+        'products.estrattiva.body': 'Informational website for professional consulting and advisory services, with responsive layout, branded welcome screen, contact cards, email, phone, and WhatsApp.',
+        'products.estrattiva.point1': 'Responsive business landing page',
+        'products.estrattiva.point2': 'Branded welcome experience',
+        'products.estrattiva.point3': 'Direct contact through phone, email, and WhatsApp',
+        'products.estrattiva.preview': 'Consulting website',
+        'products.tallador.tag': 'Art e-commerce',
+        'products.tallador.body': 'Premium e-commerce website for a Mexican wood-carving studio, presenting hand-painted sculptures, collections, custom commissions, cart, checkout, and contact flows.',
+        'products.tallador.point1': 'Collection storefront and product pages',
+        'products.tallador.point2': 'Custom commission storytelling',
+        'products.tallador.point3': 'Cart, checkout, and contact paths',
+        'products.tallador.preview': 'Artisan e-commerce',
+        'products.publishedStatus': 'Published site',
+        'products.previewStatus': 'Live workflow',
+        'products.learnMore': 'Learn More',
+        'products.openLogin': 'Open Login',
+        'products.visitSite': 'Visit Site',
+        'products.viewCode': 'View Code',
+        'contact.heading': 'Contact',
+        'contact.body': 'Interested in a product, a client website, or a custom intelligent system for your operation? Let’s connect.',
+        'footer.rights': '© 2026 Bastida Systems. All rights reserved.'
+      },
+      es: {
+        'meta.title': 'Bastida Systems',
+        'nav.products': 'Proyectos',
+        'nav.websites': 'Sitios Web',
+        'nav.systems': 'Sistemas',
+        'nav.about': 'Acerca de',
+        'nav.privacy': 'Privacidad',
+        'nav.contact': 'Contacto',
+        'nav.language': 'Idioma',
+        'nav.languageSelector': 'Selector de idioma',
+        'hero.brand': 'Bastida Systems',
+        'hero.brandMeta': 'Software inteligente para operaciones',
+        'hero.heading': 'Bastida Systems presenta LineOps ShiftRotation',
+        'hero.body': 'LineOps ShiftRotation es nuestro nuevo sistema de horarios para restaurantes y equipos de servicio que necesitan rotaciones semanales, cobertura por estación y control de turnos en móvil y escritorio.',
+        'hero.point1': 'Rotaciones inteligentes por estación y turno',
+        'hero.point2': 'Semanas guardadas, plantillas y ajustes rápidos',
+        'hero.point3': 'Horarios móviles para equipos activos',
+        'hero.previewTitle': 'LineOps ShiftRotation',
+        'hero.previewMeta': 'Nuevo sistema de horarios',
+        'hero.storeKicker': 'Descargar en',
+        'hero.storeName': 'App Store',
+        'hero.storeAria': 'Descargar LineOps ShiftRotation en App Store',
+        'hero.explore': 'Ver Proyectos',
+        'hero.websites': 'Precios Web',
+        'hero.systems': 'Precios Sistemas',
+        'products.heading': 'Productos y Sitios Web',
+        'products.intro': 'Productos de software y sitios web para apoyar operaciones reales, negocios de servicio y marcas en crecimiento.',
+        'products.beoflow.tag': 'Operación de cocina',
+        'products.filtracore.body': 'Plataforma de operación para filtración en casinos, restaurantes y equipos de servicio. Controla PSI, vida útil de filtros, mantenimiento y stock listo en tiempo real.',
+        'products.beoflow.body': 'Plataforma de operación de cocina para menús, inventario, producción, personal, planeación de servicio y ejecución diaria.',
+        'products.beoflow.point1': 'Control de inventario, recetas y menús',
+        'products.beoflow.point2': 'Planeación de servicio y visibilidad de producción',
+        'products.beoflow.point3': 'Horarios, estaciones y reportes',
+        'products.beoflow.preview': 'Centro de control de cocina',
+        'products.filtracore.tag': 'Inteligencia para filtros',
+        'products.filtracore.point1': 'Monitoreo PSI e historial de presión',
+        'products.filtracore.point2': 'Ciclo de vida de filtros y fechas de cambio',
+        'products.filtracore.point3': 'Mantenimiento y stock listo',
+        'products.filtracore.preview': 'Vista de operación de filtros',
+        'products.estrattiva.tag': 'Sitio de cliente',
+        'products.estrattiva.body': 'Sitio informativo para consultoría y asesoría profesional, con diseño responsivo, pantalla de bienvenida, tarjetas de contacto, correo, teléfonos y WhatsApp.',
+        'products.estrattiva.point1': 'Página de negocio responsiva',
+        'products.estrattiva.point2': 'Experiencia de bienvenida con marca',
+        'products.estrattiva.point3': 'Contacto directo por teléfono, correo y WhatsApp',
+        'products.estrattiva.preview': 'Sitio de consultoría',
+        'products.tallador.tag': 'E-commerce artesanal',
+        'products.tallador.body': 'Sitio e-commerce premium para un estudio mexicano de talla en madera, con esculturas pintadas a mano, colecciones, piezas por encargo, carrito, checkout y contacto.',
+        'products.tallador.point1': 'Catálogo de colecciones y páginas de producto',
+        'products.tallador.point2': 'Narrativa para piezas personalizadas',
+        'products.tallador.point3': 'Carrito, checkout y rutas de contacto',
+        'products.tallador.preview': 'E-commerce artesanal',
+        'products.publishedStatus': 'Sitio publicado',
+        'products.previewStatus': 'Flujo activo',
+        'products.learnMore': 'Ver Más',
+        'products.openLogin': 'Abrir Login',
+        'products.visitSite': 'Ver Sitio',
+        'products.viewCode': 'Ver Código',
+        'contact.heading': 'Contacto',
+        'contact.body': '¿Te interesa un producto, un sitio web para tu negocio o un sistema personalizado para tu operación? Conversemos.',
+        'footer.rights': '© 2026 Bastida Systems. Todos los derechos reservados.'
+      }
+    };
+
+    const languageStorageKey = 'site-language';
+    let activeLanguage = localStorage.getItem(languageStorageKey) || (navigator.language.startsWith('es') ? 'es' : 'en');
+
+    if (!siteTranslations[activeLanguage]) {
+      activeLanguage = 'en';
+    }
+
+    const translate = key => (
+      siteTranslations[activeLanguage][key] ||
+      siteTranslations.en[key] ||
+      ''
+    );
+
+    const applyLanguage = language => {
+      activeLanguage = siteTranslations[language] ? language : 'en';
+      document.documentElement.lang = activeLanguage;
+      document.title = translate('meta.title');
+      localStorage.setItem(languageStorageKey, activeLanguage);
+
+      document.querySelectorAll('[data-i18n]').forEach(element => {
+        element.textContent = translate(element.dataset.i18n);
+      });
+
+      document.querySelectorAll('[data-i18n-aria-label]').forEach(element => {
+        element.setAttribute('aria-label', translate(element.dataset.i18nAriaLabel));
+      });
+
+      const languageSelect = document.getElementById('language-select');
+      if (languageSelect) {
+        languageSelect.value = activeLanguage;
+      }
+    };
+
+    const languagePicker = `
+      <label class="language-picker">
+        <span data-i18n="nav.language">Language</span>
+        <select id="language-select" aria-label="Language selector" data-i18n-aria-label="nav.languageSelector">
+          <option value="en">EN</option>
+          <option value="es">ES</option>
+        </select>
+      </label>
+    `;
+
+    const sharedHeader = `
+      <nav class="flex justify-between items-center px-4 md:px-8 py-5 border-b border-gray-200 bg-white sticky top-0 z-50">
+        <div class="flex items-center gap-3">
+          <a href="index.html" class="flex items-center gap-3">
+            <img src="img/logo_bastida_sys.png" alt="Bastida Systems Logo" class="h-8 w-auto object-contain">
+            <span class="hidden md:inline text-base font-semibold tracking-[0.08em] text-black uppercase">Bastida Systems LLC</span>
+          </a>
+        </div>
+
+        <div class="flex items-center gap-4 md:gap-8 text-sm font-medium text-gray-600">
+          <a href="index.html#products" class="hover:text-black transition">Work</a>
+          <a href="websites.html" class="hover:text-black transition">Websites</a>
+          <a href="systems.html" class="hover:text-black transition">Systems</a>
+          <a href="about.html" class="hover:text-black transition">About</a>
+          <a href="index.html#contact" class="hover:text-black transition">Contact</a>
+        </div>
+      </nav>
+    `;
+
+    const headerTarget = document.getElementById('site-header');
+
+    const enhanceHeader = () => {
+      const navLinks = headerTarget.querySelector('nav > div:last-child');
+      if (!navLinks) return;
+
+      navLinks.classList.add('site-nav');
+
+      const navMap = {
+        'index.html#products': 'nav.products',
+        'websites.html': 'nav.websites',
+        'systems.html': 'nav.systems',
+        'about.html': 'nav.about',
+        'index.html#contact': 'nav.contact'
+      };
+
+      navLinks.querySelectorAll('a').forEach(link => {
+        const key = navMap[link.getAttribute('href')];
+        if (key) {
+          link.dataset.i18n = key;
+        }
+      });
+
+      if (!navLinks.querySelector('#language-select')) {
+        navLinks.insertAdjacentHTML('beforeend', languagePicker);
+      }
+
+      const languageSelect = document.getElementById('language-select');
+      if (languageSelect) {
+        languageSelect.addEventListener('change', event => {
+          applyLanguage(event.target.value);
+        });
+      }
+    };
+
+    fetch('header.html')
+      .then(response => {
+        if (!response.ok) throw new Error('header.html not found');
+        return response.text();
+      })
+      .then(html => {
+        headerTarget.innerHTML = html;
+        enhanceHeader();
+        applyLanguage(activeLanguage);
+      })
+      .catch(() => {
+        headerTarget.innerHTML = sharedHeader;
+        enhanceHeader();
+        applyLanguage(activeLanguage);
+      });
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        applyLanguage(activeLanguage);
+      });
+    } else {
+      applyLanguage(activeLanguage);
+    }
+  </script>
+
+  <!-- HERO -->
+  <section class="hero-spotlight fade-in">
+    <img src="img/logo_bastida_sys.png" alt="" class="hero-watermark" aria-hidden="true">
+
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <div class="hero-brand-lockup">
+          <img src="img/logo_bastida_sys.png" alt="" aria-hidden="true">
+          <span>
+            <strong data-i18n="hero.brand">Bastida Systems</strong>
+            <small data-i18n="hero.brandMeta">Intelligent operations software</small>
+          </span>
+        </div>
+
+        <h1 class="hero-title gradient-text" data-i18n="hero.heading">
+          Bastida Systems Introduces LineOps ShiftRotation
+        </h1>
+
+        <p class="hero-body text-lg text-gray-400 relative z-20" data-i18n="hero.body">
+          LineOps ShiftRotation is our new scheduling system for restaurants and service teams that need smarter weekly rotations, station coverage, and schedule control across mobile and desktop.
+        </p>
+
+        <ul class="hero-system-points" aria-label="LineOps ShiftRotation features">
+          <li data-i18n="hero.point1">Smart rotation planning by station and shift</li>
+          <li data-i18n="hero.point2">Saved weeks, templates, and quick adjustments</li>
+          <li data-i18n="hero.point3">Mobile schedule access for active teams</li>
+        </ul>
+
+        <div class="hero-actions flex flex-wrap justify-center gap-4 relative z-20">
+          <a href="#products" class="px-6 py-3 bg-white text-black rounded-full font-medium hover:opacity-80 transition duration-300 hover:scale-105 inline-block" data-i18n="hero.explore">
+            Explore Work
+          </a>
+          <a href="#contact" class="px-6 py-3 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105 inline-block" data-i18n="nav.contact">
+            Contact
+          </a>
+          <a href="websites.html" class="px-6 py-3 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105 inline-block" data-i18n="hero.websites">
+            Website Packages
+          </a>
+          <a href="systems.html" class="px-6 py-3 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105 inline-block" data-i18n="hero.systems">
+            System Packages
+          </a>
+        </div>
       </div>
-      <button class="theme-toggle" type="button" aria-label="Toggle light and dark theme">
-        <span data-i18n="theme.label">Dark</span>
-      </button>
+
+      <figure class="lineops-showcase">
+        <div class="lineops-frame">
+          <img src="img/lineops-devices.png" alt="LineOps ShiftRotation schedule preview on phone and tablet" fetchpriority="high">
+        </div>
+        <a class="lineops-store-badge" href="https://apps.apple.com/us/app/lineops-shiftrotation/id6767958380?l=es-MX" target="_blank" rel="noopener" aria-label="Download LineOps ShiftRotation on the App Store" data-i18n-aria-label="hero.storeAria">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M16.6 13.05c-.02-2.2 1.8-3.25 1.88-3.3-1.03-1.5-2.63-1.71-3.19-1.73-1.35-.14-2.64.8-3.32.8-.69 0-1.74-.78-2.86-.76-1.47.02-2.83.86-3.59 2.18-1.53 2.65-.39 6.58 1.1 8.74.73 1.05 1.6 2.23 2.74 2.19 1.1-.04 1.51-.71 2.84-.71 1.32 0 1.7.71 2.86.69 1.18-.02 1.93-1.07 2.65-2.12.84-1.22 1.18-2.4 1.2-2.46-.03-.01-2.29-.88-2.31-3.52ZM14.4 6.6c.6-.72 1-1.72.89-2.72-.86.03-1.9.57-2.52 1.29-.55.64-1.03 1.66-.9 2.64.96.07 1.94-.49 2.53-1.21Z"/>
+          </svg>
+          <span>
+            <small data-i18n="hero.storeKicker">Download on the</small>
+            <strong data-i18n="hero.storeName">App Store</strong>
+          </span>
+        </a>
+      </figure>
     </div>
-  </header>
 
-  <main>
-    <section class="hero section" id="home">
-      <div class="hero-copy reveal">
-        <h1>David Ramirez Bastida</h1>
-        <p class="hero-title" data-i18n="hero.title">Founder & CEO of Bastida Systems · Multimedia Designer · Intelligent Operations Systems Builder</p>
-        <p class="hero-subtitle" data-i18n="hero.subtitle">I design, develop, and build digital systems that solve real operational problems in hospitality, casinos, restaurants, and business workflows.</p>
-        <div class="hero-actions">
-          <a class="btn primary" href="#projects" data-i18n="hero.projects">View Projects</a>
-          <a class="btn secondary" href="#contact" data-i18n="hero.contact">Contact</a>
-          <a class="btn ghost" href="assets/docs/David_Bastida_CV_2026.pdf" download data-i18n="hero.cv">Download CV</a>
-        </div>
+  </section>
+
+  <!-- PRODUCTS -->
+  <section id="products" class="px-6 md:px-8 py-24 border-t border-gray-800 fade-in">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-12">
+        <h2 class="text-3xl md:text-4xl font-semibold" data-i18n="products.heading">Products & Web Projects</h2>
+        <p class="text-gray-400 max-w-2xl leading-7" data-i18n="products.intro">
+          Software products and client websites built to support real operations, service businesses, and growing brands.
+        </p>
       </div>
 
-      <aside class="hero-panel reveal" aria-label="Founder profile summary">
-        <div class="profile-card">
-          <div>
-            <span class="profile-label" data-i18n="hero.panelLabel">Current focus</span>
-            <h2>Bastida Systems LLC</h2>
+      <div class="grid gap-6 lg:grid-cols-2 xl:grid-cols-4">
+        <article class="product-panel">
+          <div class="relative z-10 p-6 md:p-8">
+            <div class="flex flex-wrap items-start justify-between gap-4 mb-7">
+              <div class="flex items-center gap-4">
+                <img src="img/logobeoflow.png" alt="Beoflow Logo" class="h-10 w-12 object-contain">
+                <div>
+                  <h3 class="text-2xl md:text-3xl font-semibold">Beoflow</h3>
+                </div>
+              </div>
+              <span class="product-tag" data-i18n="products.beoflow.tag">Kitchen operations</span>
+            </div>
+
+            <p class="text-gray-300 leading-7" data-i18n="products.beoflow.body">
+              Kitchen operations platform for menus, inventory, production, staff, service planning, and daily execution.
+            </p>
+
+            <ul class="product-points" aria-label="Beoflow features">
+              <li data-i18n="products.beoflow.point1">Inventory, recipes, and menu control</li>
+              <li data-i18n="products.beoflow.point2">Service planning and production visibility</li>
+              <li data-i18n="products.beoflow.point3">Staff schedules, stations, and reports</li>
+            </ul>
+
+            <div class="flex flex-wrap gap-3">
+              <a href="beoflow.html" class="px-5 py-2 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105 inline-block" data-i18n="products.learnMore">
+                Learn More
+              </a>
+              <a href="https://beoflow-api.onrender.com/" class="px-5 py-2 bg-white text-black rounded-full font-medium hover:opacity-80 transition duration-300 hover:scale-105 inline-block" data-i18n="products.openLogin">
+                Open Login
+              </a>
+            </div>
           </div>
-          <p data-i18n="hero.panelText">Building practical SaaS products, operational tools, visual systems, and AI-assisted workflows for real business environments.</p>
-          <div class="profile-grid">
-            <span>FiltraCore</span>
-            <span>BeoFlow</span>
-            <span>Shift Rotation</span>
-            <span>La Apertura</span>
-          </div>
-        </div>
-      </aside>
-    </section>
 
-    <section class="section split-section" id="about">
-      <div class="section-heading reveal">
-        <span class="section-number">01</span>
-        <h2 data-i18n="about.heading">About</h2>
-      </div>
-      <div class="section-body reveal">
-        <p data-i18n="about.body1">I am David Ramirez Bastida, founder of Bastida Systems LLC. My work combines multimedia design, UX/UI, software development, real-world operations, and AI-assisted tools to create practical systems that solve problems inside real businesses. My approach comes from direct experience in hospitality, casino, and kitchen environments, where manual processes, lack of traceability, and operational disorder can create losses, delays, and risks.</p>
-        <p data-i18n="about.body2">Through Bastida Systems, I develop products such as FiltraCore, BeoFlow, Shift Rotation, and La Apertura, combining design, technology, and business vision to build solutions with real value.</p>
-      </div>
-    </section>
-
-    <section class="section" id="projects">
-      <div class="section-heading wide reveal">
-        <span class="section-number">02</span>
-        <h2 data-i18n="projects.heading">Projects</h2>
-      </div>
-
-      <div class="project-grid">
-        <article class="project-card reveal">
-          <img src="img/filtracore-dashboard.jpeg" alt="FiltraCore dashboard interface">
-          <div class="project-content">
-            <h3>FiltraCore</h3>
-            <p data-i18n="projects.filtracore">An intelligent filtration management system designed for hospitality, casinos, restaurants, and industrial operations. It helps register machines, monitor PSI, track filter lifespan, schedule maintenance, and improve operational compliance.</p>
-            <div class="tags">
-              <span>SaaS</span><span>Operations</span><span>Hospitality</span><span>Filtration</span><span>UX/UI</span><span>Compliance</span>
+          <div class="product-preview">
+            <img src="img/beoflow-dashboard.jpeg" alt="Beoflow dashboard preview">
+            <div class="preview-caption">
+              <span data-i18n="products.beoflow.preview">Kitchen command center</span>
+              <span data-i18n="products.previewStatus">Live workflow</span>
             </div>
           </div>
         </article>
 
-        <article class="project-card reveal">
-          <img src="img/beoflow-dashboard.jpeg" alt="BeoFlow dashboard interface">
-          <div class="project-content">
-            <h3>BeoFlow</h3>
-            <p data-i18n="projects.beoflow">An operational platform for restaurant, banquet, and internal workflow management, focused on inventory, recipes, events, cost analysis, shift readiness, and operational consistency.</p>
-            <div class="tags">
-              <span>Operations</span><span>Restaurant Tech</span><span>Inventory</span><span>Workflow</span><span>UX/UI</span>
+        <article class="product-panel">
+          <div class="relative z-10 p-6 md:p-8">
+            <div class="flex flex-wrap items-start justify-between gap-4 mb-7">
+              <div class="flex items-center gap-4">
+                <img src="img/LOGO_FILTRACOREXCODE.png" alt="FiltraCore Logo" class="h-10 w-10 object-contain">
+                <div>
+                  <h3 class="text-2xl md:text-3xl font-semibold">FiltraCore</h3>
+                </div>
+              </div>
+              <span class="product-tag" data-i18n="products.filtracore.tag">Filter intelligence</span>
+            </div>
+
+            <p class="text-gray-300 leading-7" data-i18n="products.filtracore.body">
+              Filtration operations platform for casinos, restaurants, and service teams. Track PSI, filter lifespan, maintenance, and stock readiness in real time.
+            </p>
+
+            <ul class="product-points" aria-label="FiltraCore features">
+              <li data-i18n="products.filtracore.point1">PSI monitoring and pressure history</li>
+              <li data-i18n="products.filtracore.point2">Filter lifecycle and due dates</li>
+              <li data-i18n="products.filtracore.point3">Maintenance records and stock readiness</li>
+            </ul>
+
+            <div class="flex flex-wrap gap-3">
+              <a href="filtracore.html" class="px-5 py-2 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105 inline-block" data-i18n="products.learnMore">
+                Learn More
+              </a>
+              <a href="https://filtracore-v2-api.onrender.com/" class="px-5 py-2 bg-white text-black rounded-full font-medium hover:opacity-80 transition duration-300 hover:scale-105 inline-block" data-i18n="products.openLogin">
+                Open Login
+              </a>
+            </div>
+          </div>
+
+          <div class="product-preview">
+            <img src="img/filtracore-dashboard.jpeg" alt="FiltraCore dashboard preview">
+            <div class="preview-caption">
+              <span data-i18n="products.filtracore.preview">Filter operations view</span>
+              <span data-i18n="products.previewStatus">Live workflow</span>
             </div>
           </div>
         </article>
 
-        <article class="project-card reveal">
-          <img src="img/lineops-devices.png" alt="Shift Rotation operational scheduling devices">
-          <div class="project-content">
-            <h3>Shift Rotation</h3>
-            <p data-i18n="projects.shift">An app for organizing schedules, rotations, assignments, and shift coordination, designed for operational teams, restaurants, and casinos.</p>
-            <div class="tags">
-              <span>iOS</span><span>Scheduling</span><span>Operations</span><span>Apple Watch</span><span>Productivity</span>
+        <article class="product-panel product-panel--estrattiva">
+          <div class="relative z-10 p-6 md:p-8">
+            <div class="flex flex-wrap items-start justify-between gap-4 mb-7">
+              <div class="flex items-center gap-4">
+                <img src="img/estrattiva-mark.png" alt="Estrattiva Logo" class="product-mark">
+                <div>
+                  <h3 class="text-2xl md:text-3xl font-semibold">Estrattiva</h3>
+                </div>
+              </div>
+              <span class="product-tag" data-i18n="products.estrattiva.tag">Client website</span>
+            </div>
+
+            <p class="text-gray-300 leading-7" data-i18n="products.estrattiva.body">
+              Informational website for professional consulting and advisory services, with responsive layout, branded welcome screen, contact cards, email, phone, and WhatsApp.
+            </p>
+
+            <ul class="product-points" aria-label="Estrattiva features">
+              <li data-i18n="products.estrattiva.point1">Responsive business landing page</li>
+              <li data-i18n="products.estrattiva.point2">Branded welcome experience</li>
+              <li data-i18n="products.estrattiva.point3">Direct contact through phone, email, and WhatsApp</li>
+            </ul>
+
+            <div class="flex flex-wrap gap-3">
+              <a href="https://bastidadavid.github.io/ESTRATIVA/" target="_blank" rel="noopener" class="px-5 py-2 bg-white text-black rounded-full font-medium hover:opacity-80 transition duration-300 hover:scale-105 inline-block" data-i18n="products.visitSite">
+                Visit Site
+              </a>
+              <a href="https://github.com/BastidaDavid/ESTRATIVA" target="_blank" rel="noopener" class="px-5 py-2 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105 inline-block" data-i18n="products.viewCode">
+                View Code
+              </a>
+            </div>
+          </div>
+
+          <div class="product-preview product-preview--center">
+            <img src="img/estrattiva-preview.png" alt="Estrattiva website preview">
+            <div class="preview-caption">
+              <span data-i18n="products.estrattiva.preview">Consulting website</span>
+              <span data-i18n="products.publishedStatus">Published site</span>
             </div>
           </div>
         </article>
 
-        <article class="project-card reveal">
-          <img src="img/la-apertura-preview.png" alt="La Apertura interactive narrative preview">
-          <div class="project-content">
-            <h3>La Apertura</h3>
-            <p data-i18n="projects.apertura">An interactive narrative and game project in development, combining creative direction, character design, concept art, emotional atmosphere, and connected digital experiences.</p>
-            <div class="tags">
-              <span>Game Design</span><span>Creative Direction</span><span>Unity</span><span>Storytelling</span><span>Concept Art</span>
+        <article class="product-panel product-panel--tallador">
+          <div class="relative z-10 p-6 md:p-8">
+            <div class="flex flex-wrap items-start justify-between gap-4 mb-7">
+              <div class="flex items-center gap-4">
+                <span class="product-mark product-mark--tallador" aria-hidden="true">MJ</span>
+                <div>
+                  <h3 class="text-2xl md:text-3xl font-semibold">Tallador de Sueños</h3>
+                </div>
+              </div>
+              <span class="product-tag" data-i18n="products.tallador.tag">Art e-commerce</span>
+            </div>
+
+            <p class="text-gray-300 leading-7" data-i18n="products.tallador.body">
+              Premium e-commerce website for a Mexican wood-carving studio, presenting hand-painted sculptures, collections, custom commissions, cart, checkout, and contact flows.
+            </p>
+
+            <ul class="product-points" aria-label="Tallador de Sueños features">
+              <li data-i18n="products.tallador.point1">Collection storefront and product pages</li>
+              <li data-i18n="products.tallador.point2">Custom commission storytelling</li>
+              <li data-i18n="products.tallador.point3">Cart, checkout, and contact paths</li>
+            </ul>
+
+            <div class="flex flex-wrap gap-3">
+              <a href="https://tallador-de-suenos.onrender.com/" target="_blank" rel="noopener" class="px-5 py-2 bg-white text-black rounded-full font-medium hover:opacity-80 transition duration-300 hover:scale-105 inline-block" data-i18n="products.visitSite">
+                Visit Site
+              </a>
+              <a href="https://github.com/BastidaDavid/tallador-de-suenos" target="_blank" rel="noopener" class="px-5 py-2 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105 inline-block" data-i18n="products.viewCode">
+                View Code
+              </a>
+            </div>
+          </div>
+
+          <div class="product-preview product-preview--center">
+            <img src="img/tallador-preview.jpg" alt="Tallador de Sueños website preview">
+            <div class="preview-caption">
+              <span data-i18n="products.tallador.preview">Artisan e-commerce</span>
+              <span data-i18n="products.publishedStatus">Published site</span>
             </div>
           </div>
         </article>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section class="section" id="skills">
-      <div class="section-heading wide reveal">
-        <span class="section-number">03</span>
-        <h2 data-i18n="skills.heading">Skills</h2>
-      </div>
-      <div class="skills-grid">
-        <article class="skill-block reveal">
-          <h3 data-i18n="skills.design">Design</h3>
-          <ul>
-            <li>Multimedia Design</li>
-            <li>UX/UI Design</li>
-            <li>Figma</li>
-            <li>Adobe Illustrator</li>
-            <li>Adobe After Effects</li>
-            <li>Adobe XD</li>
-            <li>Branding</li>
-            <li>Motion Graphics</li>
-            <li>Visual Storytelling</li>
-          </ul>
-        </article>
-        <article class="skill-block reveal">
-          <h3 data-i18n="skills.visual">3D / Visual</h3>
-          <ul>
-            <li>Blender</li>
-            <li>Maya</li>
-            <li>Unreal Engine</li>
-            <li>Cinematic Design</li>
-            <li>VFX</li>
-            <li>3D Modeling</li>
-            <li>Real-time Rendering</li>
-          </ul>
-        </article>
-        <article class="skill-block reveal">
-          <h3 data-i18n="skills.software">Software / Technology</h3>
-          <ul>
-            <li>HTML</li>
-            <li>CSS</li>
-            <li>JavaScript</li>
-            <li>Supabase</li>
-            <li>GitHub</li>
-            <li>Git</li>
-            <li>AI-assisted development</li>
-            <li>SaaS product building</li>
-            <li>Web systems</li>
-          </ul>
-        </article>
-        <article class="skill-block reveal">
-          <h3 data-i18n="skills.operations">Operations / Business</h3>
-          <ul>
-            <li>Hospitality operations</li>
-            <li>Casino operations</li>
-            <li>Kitchen workflows</li>
-            <li>Maintenance workflows</li>
-            <li>Product strategy</li>
-            <li>Startup development</li>
-            <li>Client demos</li>
-            <li>Operational documentation</li>
-          </ul>
-        </article>
-      </div>
-    </section>
+  <!-- CONTACT -->
+  <section id="contact" class="px-8 py-20 border-t border-gray-800 fade-in">
+    <h2 class="text-3xl font-semibold mb-8" data-i18n="contact.heading">Contact</h2>
+    <p class="text-gray-400 max-w-2xl leading-8 mb-6" data-i18n="contact.body">
+      Interested in a product, a client website, or a custom intelligent system for your operation? Let’s connect.
+    </p>
+    <div class="flex flex-col items-start gap-4">
+      <a href="mailto:bastidasystems@gmail.com" class="inline-block px-6 py-3 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105">
+        bastidasystems@gmail.com
+      </a>
 
-    <section class="section split-section" id="experience">
-      <div class="section-heading reveal">
-        <span class="section-number">04</span>
-        <h2 data-i18n="experience.heading">Experience</h2>
-      </div>
-      <div class="timeline reveal">
-        <article>
-          <span>2025 - Present</span>
-          <h3>Founder & CEO — Bastida Systems LLC</h3>
-          <p data-i18n="experience.founder">Founder of a technology company focused on building intelligent operational systems for real businesses. I develop SaaS products, prototypes, interfaces, documentation, presentations, and product strategies.</p>
-        </article>
-        <article>
-          <span data-i18n="experience.opsDate">Direct operations background</span>
-          <h3>Hospitality / Casino Operations</h3>
-          <p data-i18n="experience.ops">Direct experience in casino, kitchen, and hospitality environments, understanding real operational processes, maintenance needs, work timing, and problems current systems do not solve.</p>
-        </article>
-        <article>
-          <span data-i18n="experience.designDate">Creative and academic background</span>
-          <h3>Multimedia Design Background</h3>
-          <p data-i18n="experience.design">Education and experience in multimedia design, creative tools, visual production, UX/UI, 3D, motion graphics, and digital experience development.</p>
-        </article>
-      </div>
-    </section>
+      <a href="tel:+17020000000" class="inline-block px-6 py-3 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105">
+        +1 (702) 661-7149
+      </a>
+    </div>
+  </section>
 
-    <section class="section" id="certifications">
-      <div class="section-heading wide reveal">
-        <span class="section-number">05</span>
-        <h2 data-i18n="certs.heading">Certifications & Education</h2>
-      </div>
-      <div class="cert-grid">
-        <article class="cert-card reveal">
-          <h3>Learn2Serve Food Safety Management Principles</h3>
-          <p><strong data-i18n="certs.issuer">Issuing organization</strong>: 360training / Learn2Serve</p>
-          <p><strong data-i18n="certs.date">Date</strong>: 04/09/2026</p>
-          <p><strong data-i18n="certs.status">Status</strong>: <span data-i18n="certs.verified">Verified from certificate file</span></p>
-          <a href="assets/docs/Learn2Serve_Food_Safety_Management_Principles.pdf" target="_blank" rel="noopener" data-i18n="certs.open">Open credential file</a>
-        </article>
-        <article class="cert-card reveal">
-          <h3 data-i18n="certs.educationTitle">Multimedia Design</h3>
-          <p><strong data-i18n="certs.issuer">Issuing organization</strong>: Universidad Anahuac</p>
-          <p><strong data-i18n="certs.date">Date</strong>: 2021 - Present</p>
-          <p><strong data-i18n="certs.status">Status</strong>: <span data-i18n="certs.progress">In progress, confirmed in CV file</span></p>
-        </article>
-      </div>
-    </section>
+  <!-- FOOTER -->
+  <footer class="px-8 py-10 border-t border-gray-800 text-gray-500 text-sm text-center">
 
-    <section class="section company-section" id="company">
-      <div class="section-heading reveal">
-        <span class="section-number">06</span>
-        <h2>Bastida Systems</h2>
-      </div>
-      <div class="company-copy reveal">
-        <p data-i18n="company.body">Bastida Systems LLC builds intelligent systems for real operations. The vision is to create tools that modernize processes that have relied for years on paper, spreadsheets, informal messages, or manual tracking. The company combines design, AI, software, and operational experience to create useful, scalable, and easy-to-adopt products.</p>
-      </div>
-    </section>
+    <div class="flex justify-center gap-6 mb-4 text-gray-400">
+      <a href="index.html#products" class="hover:text-white transition" data-i18n="nav.products">Work</a>
+      <a href="websites.html" class="hover:text-white transition" data-i18n="nav.websites">Websites</a>
+      <a href="systems.html" class="hover:text-white transition" data-i18n="nav.systems">Systems</a>
+      <a href="about.html" class="hover:text-white transition" data-i18n="nav.about">About</a>
+      <a href="index.html#contact" class="hover:text-white transition" data-i18n="nav.contact">Contact</a>
+      <a href="privacy.html" class="hover:text-white transition" data-i18n="nav.privacy">Privacy</a>
+    </div>
 
-    <section class="section contact-section" id="contact">
-      <div class="contact-copy reveal">
-        <span class="section-number">07</span>
-        <h2 data-i18n="contact.heading">Contact</h2>
-        <p data-i18n="contact.body">Want to collaborate, invest, hire, or learn more about my projects?</p>
-      </div>
-      <div class="contact-card reveal">
-        <a href="mailto:davidrramirez61@gmail.com">davidrramirez61@gmail.com</a>
-        <a href="https://bastidasystems.com">bastidasystems.com</a>
-        <span>GitHub</span>
-        <span>LinkedIn</span>
-        <span>Las Vegas, Nevada</span>
-        <span>Bastida Systems LLC</span>
-      </div>
-    </section>
-  </main>
+    <p data-i18n="footer.rights">© 2026 Bastida Systems. All rights reserved.</p>
 
-  <footer>
-    <span>David Ramirez Bastida</span>
-    <span>Bastida Systems LLC</span>
   </footer>
 
-  <script src="script.js"></script>
+  <script>
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    });
+
+    document.querySelectorAll('.fade-in').forEach(el => {
+      observer.observe(el);
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        el.classList.add('visible');
+      }
+    });
+  </script>
+
 </body>
 </html>
