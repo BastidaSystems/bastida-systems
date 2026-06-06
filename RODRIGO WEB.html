@@ -1,0 +1,1383 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Restaurant Ops — Recetas, Menú, Inventario, Horarios</title>
+  <meta name="description" content="Recetas con costeo estilo Excel + menú principal + inventario vinculado. Todo en un HTML." />
+
+  <style>
+    :root{
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --panel2:#fbfbfc;
+      --ink: #121826;
+      --muted:#5c677d;
+      --line:#e6e9ef;
+      --line2:#d9dee8;
+
+      --accent:#2f6fed;
+      --accent2:#00a6a6;
+      --warn:#ffb020;
+      --ok:#38c172;
+
+      --shadow: 0 14px 30px rgba(18,24,38,.08);
+      --shadow2: 0 8px 18px rgba(18,24,38,.06);
+
+      --r: 16px;
+      --r2: 22px;
+      --max: 1180px;
+      --gap: 14px;
+
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background: radial-gradient(1000px 600px at 12% 10%, rgba(47,111,237,.09), transparent 55%),
+                  radial-gradient(900px 600px at 90% 20%, rgba(0,166,166,.08), transparent 55%),
+                  var(--bg);
+      color:var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      overflow-x:hidden;
+    }
+
+    .wrap{max-width:var(--max); margin:0 auto; padding:18px 16px 60px}
+
+    .topbar{
+      position:sticky; top:0; z-index:50;
+      background: rgba(246,247,249,.85);
+      backdrop-filter: blur(10px);
+      border-bottom:1px solid var(--line);
+    }
+    .top{
+      max-width:var(--max); margin:0 auto;
+      padding:12px 16px;
+      display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap;
+    }
+
+    .brand{display:flex; gap:12px; align-items:center}
+    .brand img{
+      width:44px; height:44px; object-fit:cover;
+      border-radius:14px; border:1px solid var(--line);
+      background:#fff;
+      box-shadow: var(--shadow2);
+    }
+    .brand h1{margin:0; font-size:15px; letter-spacing:.2px}
+    .brand p{margin:2px 0 0; font-size:12.5px; color:var(--muted); font-weight:650}
+
+    .actions{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.8);
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:12.5px;
+      font-weight:750;
+      color:var(--muted);
+      box-shadow: var(--shadow2);
+    }
+    .btn{
+      border:1px solid var(--line2);
+      background: #fff;
+      color:var(--ink);
+      padding:9px 12px;
+      border-radius:999px;
+      font-weight:850;
+      cursor:pointer;
+      transition:.15s ease;
+      box-shadow: var(--shadow2);
+      display:inline-flex; align-items:center; gap:10px;
+    }
+    .btn:hover{transform: translateY(-1px)}
+    .btn.primary{
+      border-color: rgba(47,111,237,.22);
+      background: linear-gradient(135deg, rgba(47,111,237,.12), rgba(47,111,237,.06));
+    }
+    .btn.warn{
+      border-color: rgba(255,176,32,.30);
+      background: linear-gradient(135deg, rgba(255,176,32,.16), rgba(255,176,32,.06));
+    }
+    .btn.danger{
+      border-color: rgba(255,77,109,.25);
+      background: linear-gradient(135deg, rgba(255,77,109,.10), rgba(255,77,109,.05));
+    }
+
+    .tabs{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px}
+    .tab{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.75);
+      border-radius:999px;
+      padding:10px 12px;
+      font-weight:900;
+      font-size:12.5px;
+      cursor:pointer;
+      display:flex; align-items:center; gap:10px;
+      transition:.15s ease;
+      box-shadow: var(--shadow2);
+    }
+    .tab[aria-selected="true"]{
+      border-color: rgba(47,111,237,.28);
+      background: linear-gradient(135deg, rgba(47,111,237,.14), rgba(0,166,166,.08));
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.35fr .65fr;
+      gap: var(--gap);
+      margin-top: 14px;
+      align-items:start;
+    }
+    @media (max-width: 980px){ .grid{grid-template-columns:1fr} }
+
+    .card{
+      background: var(--panel);
+      border:1px solid var(--line);
+      border-radius: var(--r2);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .cardHeader{
+      padding: 14px 14px 10px;
+      border-bottom:1px solid var(--line);
+      display:flex; justify-content:space-between; gap:10px; align-items:flex-start;
+    }
+    .cardHeader h2{margin:0; font-size:15px}
+    .cardHeader p{margin:4px 0 0; color:var(--muted); font-weight:650; font-size:12.5px; line-height:1.45}
+    .cardBody{padding: 14px}
+
+    .row{display:grid; grid-template-columns: repeat(12,1fr); gap:12px}
+    .col-12{grid-column: span 12}
+    .col-8{grid-column: span 8}
+    .col-6{grid-column: span 6}
+    .col-4{grid-column: span 4}
+    .col-3{grid-column: span 3}
+    .col-2{grid-column: span 2}
+    @media (max-width: 820px){ .col-8,.col-6,.col-4,.col-3,.col-2{grid-column: span 12} }
+
+    label{display:block; margin:0 0 6px; font-size:12px; font-weight:900; color:var(--muted)}
+    input, select, textarea{
+      width:100%;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border:1px solid var(--line2);
+      background: #fff;
+      color: var(--ink);
+      outline:none;
+      font-weight:700;
+    }
+    textarea{min-height:92px; resize:vertical}
+    input:focus, select:focus, textarea:focus{
+      border-color: rgba(47,111,237,.35);
+      box-shadow: 0 0 0 4px rgba(47,111,237,.12);
+    }
+    .hint{margin-top:6px; font-size:12px; color:var(--muted); line-height:1.4}
+
+    .sheet{
+      border:1px solid var(--line);
+      border-radius: 18px;
+      overflow:hidden;
+      background: var(--panel2);
+    }
+    .sheetTop{
+      display:grid;
+      grid-template-columns: 220px 1fr 320px;
+      gap: 0;
+      border-bottom:1px solid var(--line);
+      background:#fff;
+    }
+    @media (max-width: 980px){
+      .sheetTop{grid-template-columns:1fr}
+    }
+    .sheetBox{
+      padding: 12px;
+      border-right:1px solid var(--line);
+    }
+    .sheetBox:last-child{border-right:none}
+    .sheetLogo{
+      display:flex; align-items:center; gap:12px;
+    }
+    .sheetLogo img{
+      width:54px; height:54px; border-radius:16px; object-fit:cover;
+      border:1px solid var(--line);
+      background:#fff;
+    }
+    .sheetLogo b{display:block; font-size:12.5px}
+    .sheetLogo span{display:block; font-size:12px; color:var(--muted); margin-top:2px}
+
+    .metaGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    .metaItem{
+      border:1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255,255,255,.85);
+      padding:10px;
+      font-size:12.5px;
+      display:flex; justify-content:space-between; gap:10px;
+    }
+    .metaItem b{font-weight:900}
+    .metaItem span{color:var(--muted); font-weight:750}
+
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      border:1px solid var(--line);
+      border-radius: 16px;
+      overflow:hidden;
+      background:#fff;
+    }
+    th, td{
+      padding:10px 10px;
+      border-bottom:1px solid var(--line);
+      font-size:13px;
+      vertical-align:top;
+    }
+    th{
+      background: rgba(246,247,249,.85);
+      color: rgba(18,24,38,.85);
+      font-weight:900;
+      position:sticky; top:0;
+      z-index:2;
+      white-space:nowrap;
+    }
+    tr:last-child td{border-bottom:none}
+    .right{text-align:right}
+    .mono{font-family:var(--mono); font-weight:900}
+    .muted{color:var(--muted)}
+
+    .totals{
+      border:1px solid var(--line);
+      border-radius: 16px;
+      overflow:hidden;
+      background:#fff;
+    }
+    .trow{
+      display:grid;
+      grid-template-columns: 1fr 160px;
+      gap:0;
+      border-bottom:1px solid var(--line);
+    }
+    .trow:last-child{border-bottom:none}
+    .trow > div{padding:10px 12px; font-size:13px}
+    .tlabel{font-weight:900; color:rgba(18,24,38,.85)}
+    .tval{border-left:1px solid var(--line); text-align:right; font-family:var(--mono); font-weight:900}
+
+    .band-gray{background: #f3f5f9;}
+    .band-blue{background: rgba(47,111,237,.10);}
+    .band-teal{background: rgba(0,166,166,.08);}
+    .band-warn{background: rgba(255,176,32,.12);}
+    .band-ok{background: rgba(56,193,114,.10);}
+
+    .photoGrid{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .photo{
+      border:1px solid var(--line);
+      border-radius: 18px;
+      overflow:hidden;
+      background:#fff;
+      box-shadow: var(--shadow2);
+    }
+    .photo img{width:100%; height:160px; object-fit:cover; display:block}
+    .photo .cap{padding:10px 10px; font-size:12.5px; color:var(--muted); font-weight:750}
+
+    .miniBtn{
+      border:1px solid var(--line2);
+      background:#fff;
+      border-radius: 999px;
+      padding:7px 10px;
+      cursor:pointer;
+      font-weight:900;
+      font-size:12px;
+      transition:.15s ease;
+      white-space:nowrap;
+    }
+    .miniBtn:hover{transform: translateY(-1px)}
+    .miniBtn.danger{border-color: rgba(255,77,109,.25); background: rgba(255,77,109,.06)}
+    .miniBtn.ok{border-color: rgba(56,193,114,.25); background: rgba(56,193,114,.06)}
+    .miniBtn.soft{border-color: rgba(47,111,237,.22); background: rgba(47,111,237,.06)}
+
+    .chip{
+      display:inline-flex; align-items:center; gap:8px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.8);
+      border-radius:999px;
+      padding:8px 10px;
+      font-size:12px;
+      font-weight:850;
+      color:var(--muted);
+      box-shadow: var(--shadow2);
+      white-space:nowrap;
+    }
+
+    .toolbar{
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between;
+      margin-top:10px;
+    }
+    .search{
+      min-width: 240px;
+      flex: 1;
+      max-width: 420px;
+      display:flex; align-items:center; gap:10px;
+      border:1px solid var(--line2);
+      background:#fff;
+      border-radius: 999px;
+      padding: 10px 12px;
+      box-shadow: var(--shadow2);
+    }
+    .search input{
+      border:none; outline:none;
+      padding:0; margin:0;
+      background:transparent;
+      font-weight:750;
+    }
+
+    .hidden{display:none !important}
+
+    .toast{
+      position:fixed; right:16px; bottom:16px; z-index:80;
+      max-width:min(420px, calc(100vw - 32px));
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.92);
+      border-radius: 18px;
+      padding: 12px 12px;
+      box-shadow: var(--shadow);
+      display:none;
+    }
+    .toast.show{display:block}
+    .toast b{display:block}
+    .toast span{display:block; margin-top:4px; color:var(--muted); font-weight:650; font-size:12.5px; line-height:1.4}
+  </style>
+</head>
+
+<body>
+  <div class="topbar">
+    <div class="top">
+      <div class="brand">
+        <img src="IMG/logo.png" alt="Logo" onerror="this.style.display='none'">
+        <div>
+          <h1>Restaurant Ops (Light)</h1>
+          <p>Recetas + Menú principal + Inventario vinculado • Todo en gris claro</p>
+        </div>
+      </div>
+
+      <div class="actions">
+        <div class="pill" title="Se guarda en tu navegador">
+          <span>💾</span><span>Auto-guardado</span><span class="mono" id="saveStatus">OK</span>
+        </div>
+        <button class="btn primary" id="exportBtn">Exportar</button>
+        <button class="btn warn" id="importBtn">Importar</button>
+        <button class="btn danger" id="resetBtn">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-tab="recipes">📋 Hoja Receta/Costeo</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="menu">📒 Menú principal</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="inventory">📦 Inventario</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="production">🏭 Producción/Ventas</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="schedule">🗓️ Horarios</button>
+    </div>
+
+    <!-- ====================== RECIPES ====================== -->
+    <section id="tab-recipes" style="margin-top:14px">
+      <div class="grid">
+        <div class="card">
+          <div class="cardHeader">
+            <div>
+              <h2>Hoja de Receta / Costeo (estilo Excel)</h2>
+              <p>Agrega ingredientes desde Inventario → calcula costo, merma, IVA y precio sugerido. Luego: “Guardar al Menú”.</p>
+            </div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end">
+              <span class="pill">🧾 Costo/porción: <span class="mono" id="costPer">$0.00</span></span>
+              <button class="btn primary" id="saveToMenuBtn">Guardar receta al Menú</button>
+            </div>
+          </div>
+
+          <div class="cardBody">
+
+            <div class="sheet">
+              <div class="sheetTop">
+                <div class="sheetBox">
+                  <div class="sheetLogo">
+                    <img src="IMG/chef.jpg" alt="Chef" onerror="this.style.display='none'">
+                    <div>
+                      <b id="restName">GRAND FIESTA AMERICANA</b>
+                      <span class="muted">Hoja de costeo — simple & entendible</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="sheetBox">
+                  <div class="row">
+                    <div class="col-12">
+                      <label>Nombre de receta</label>
+                      <input id="rName" placeholder="Ej. Ensalada César" />
+                    </div>
+
+                    <div class="col-6">
+                      <label>Sección del menú (categoría)</label>
+                      <select id="rSection">
+                        <option value="ENSALADAS">ENSALADAS</option>
+                        <option value="ENTRANTES">ENTRANTES</option>
+                        <option value="SOPAS">SOPAS</option>
+                        <option value="TACOS">TACOS</option>
+                        <option value="HAMBURGUESAS">HAMBURGUESAS</option>
+                        <option value="PIZZAS">PIZZAS</option>
+                        <option value="CARNES">CARNES</option>
+                        <option value="MARISCOS">MARISCOS</option>
+                        <option value="POSTRES">POSTRES</option>
+                        <option value="BEBIDAS">BEBIDAS</option>
+                        <option value="OTROS">OTROS</option>
+                      </select>
+                      <div class="hint">Esto se verá en el “Menú principal”.</div>
+                    </div>
+
+                    <div class="col-3">
+                      <label>Folio / ID</label>
+                      <input id="rNum" type="number" min="1" step="1" value="1" />
+                    </div>
+
+                    <div class="col-3">
+                      <label>PAX / Porciones</label>
+                      <input id="rYield" type="number" min="1" step="1" value="10" />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="sheetBox">
+                  <div class="metaGrid">
+                    <div class="metaItem"><b>Rendimiento</b><span><span class="mono" id="yieldLbl">10</span> porciones</span></div>
+                    <div class="metaItem"><b>Merma %</b><span><span class="mono" id="wastePctLbl">10</span>%</span></div>
+                    <div class="metaItem"><b>IVA %</b><span><span class="mono" id="ivaPctLbl">16</span>%</span></div>
+                    <div class="metaItem"><b>Factor venta</b><span><span class="mono" id="factorLbl">1.00</span></span></div>
+                  </div>
+                  <div class="hint" style="margin-top:10px">Ajusta merma/IVA/factor abajo en “Totales”.</div>
+                </div>
+              </div>
+
+              <div style="padding:12px">
+                <div class="row">
+                  <div class="col-12">
+                    <label>Ingredientes</label>
+                    <div style="max-height:360px; overflow:auto">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Código</th>
+                            <th class="right">Cantidad</th>
+                            <th>Unidad</th>
+                            <th>Ingrediente</th>
+                            <th class="right">Costo unit.</th>
+                            <th class="right">Costo</th>
+                            <th class="right">Acción</th>
+                          </tr>
+                        </thead>
+                        <tbody id="ingBody"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row" style="margin-top:12px">
+                  <div class="col-4">
+                    <label>Selecciona insumo (Inventario)</label>
+                    <select id="ingItem"></select>
+                    <div class="hint">Si no aparece, créalo en Inventario.</div>
+                  </div>
+                  <div class="col-2">
+                    <label>Cantidad</label>
+                    <input id="ingQty" type="number" min="0" step="0.01" placeholder="Ej. 250" />
+                  </div>
+                  <div class="col-2">
+                    <label>Código (opcional)</label>
+                    <input id="ingCode" placeholder="Ej. 0128" />
+                  </div>
+                  <div class="col-2">
+                    <label>Unidad (auto)</label>
+                    <input id="ingUnit" placeholder="g/ml/pz" disabled />
+                  </div>
+                  <div class="col-2" style="display:flex; align-items:flex-end">
+                    <button class="btn primary" style="width:100%" id="addIngBtn">Agregar</button>
+                  </div>
+                </div>
+
+                <div class="row" style="margin-top:12px">
+                  <div class="col-8">
+                    <label>Procedimientos</label>
+                    <textarea id="rProc" placeholder="Escribe el procedimiento (pasos cortos y claros)."></textarea>
+                  </div>
+
+                  <div class="col-4">
+                    <label>Totales</label>
+                    <div class="totals">
+                      <div class="trow band-gray">
+                        <div class="tlabel">Suma</div>
+                        <div class="tval" id="tSum">$0.00</div>
+                      </div>
+
+                      <div class="trow band-warn">
+                        <div class="tlabel">Merma <div class="muted" style="font-weight:750; font-size:12px">%</div></div>
+                        <div class="tval">
+                          <input id="wastePct" type="number" min="0" max="90" step="0.5" value="10"
+                                 style="text-align:right; font-family:var(--mono); font-weight:900; padding:8px 10px; border-radius:12px;">
+                        </div>
+                      </div>
+
+                      <div class="trow band-gray">
+                        <div class="tlabel">Costo + merma</div>
+                        <div class="tval" id="tCostPlusWaste">$0.00</div>
+                      </div>
+
+                      <div class="trow band-teal">
+                        <div class="tlabel">Factor de venta</div>
+                        <div class="tval">
+                          <input id="saleFactor" type="number" min="0.5" max="10" step="0.05" value="1.00"
+                                 style="text-align:right; font-family:var(--mono); font-weight:900; padding:8px 10px; border-radius:12px;">
+                        </div>
+                      </div>
+
+                      <div class="trow band-blue">
+                        <div class="tlabel">Precio sugerido (sin IVA)</div>
+                        <div class="tval" id="tSuggestedNoIva">$0.00</div>
+                      </div>
+
+                      <div class="trow band-warn">
+                        <div class="tlabel">IVA <div class="muted" style="font-weight:750; font-size:12px">%</div></div>
+                        <div class="tval">
+                          <input id="ivaPct" type="number" min="0" max="30" step="0.5" value="16"
+                                 style="text-align:right; font-family:var(--mono); font-weight:900; padding:8px 10px; border-radius:12px;">
+                        </div>
+                      </div>
+
+                      <div class="trow band-ok">
+                        <div class="tlabel">Precio sugerido (con IVA)</div>
+                        <div class="tval" id="tSuggestedWithIva">$0.00</div>
+                      </div>
+
+                      <div class="trow band-gray">
+                        <div class="tlabel">Costo por porción</div>
+                        <div class="tval" id="tCostPer">$0.00</div>
+                      </div>
+                    </div>
+
+                    <div class="hint" style="margin-top:10px">
+                      Guardar al Menú crea/actualiza el platillo en la tabla principal.
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="cardHeader">
+            <div>
+              <h2>Observaciones & Fotos</h2>
+              <p>Notas del chef / alérgenos / presentación.</p>
+            </div>
+            <span class="pill">🖼️ IMG/</span>
+          </div>
+          <div class="cardBody">
+            <label>Observaciones</label>
+            <textarea id="obs" placeholder="Notas del chef, alérgenos, presentación, servicio..."></textarea>
+
+            <div style="margin-top:12px">
+              <label>Galería (ejemplo)</label>
+              <div class="photoGrid">
+                <div class="photo">
+                  <img src="IMG/food1.jpg" alt="Foto 1" onerror="this.style.display='none'">
+                  <div class="cap">Foto 1 — plating</div>
+                </div>
+                <div class="photo">
+                  <img src="IMG/food2.jpg" alt="Foto 2" onerror="this.style.display='none'">
+                  <div class="cap">Foto 2 — mise en place</div>
+                </div>
+                <div class="photo">
+                  <img src="IMG/food3.jpg" alt="Foto 3" onerror="this.style.display='none'">
+                  <div class="cap">Foto 3 — empaque/servicio</div>
+                </div>
+                <div class="photo">
+                  <img src="IMG/food4.jpg" alt="Foto 4" onerror="this.style.display='none'">
+                  <div class="cap">Foto 4 — ticket/costo</div>
+                </div>
+              </div>
+              <div class="hint">Cambia nombres/archivos según tu carpeta.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================== MENU ====================== -->
+    <section id="tab-menu" class="hidden" style="margin-top:14px">
+      <div class="card">
+        <div class="cardHeader">
+          <div>
+            <h2>Menú principal (como tu tabla)</h2>
+            <p>Se llena al presionar “Guardar receta al Menú”. Puedes abrir/duplicar/borrar.</p>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end">
+            <span class="chip">Empresa: <span class="mono" id="menuCompany">GRAND FIESTA AMERICANA</span></span>
+            <span class="chip">Actualización: <span class="mono" id="menuDate">—</span></span>
+          </div>
+        </div>
+
+        <div class="cardBody">
+          <div class="toolbar">
+            <div class="chip">Platillos: <span class="mono" id="menuCount">0</span></div>
+            <div class="search" role="search" aria-label="Buscar en menú">
+              <span style="font-weight:900; opacity:.65">⌕</span>
+              <input id="menuSearch" type="search" placeholder="Buscar receta, sección, folio..." />
+            </div>
+          </div>
+
+          <div style="margin-top:12px; max-height:640px; overflow:auto">
+            <table>
+              <thead>
+                <tr>
+                  <th>FOLIO</th>
+                  <th>SECCIÓN</th>
+                  <th>NOMBRE</th>
+                  <th class="right">COSTO</th>
+                  <th class="right">VENTA CON IVA</th>
+                  <th class="right">VENTA SIN IVA</th>
+                  <th class="right">%COSTO</th>
+                  <th class="right">%BRUT</th>
+                  <th class="right">MARGEN</th>
+                  <th class="right">FACTO R DE</th>
+                  <th class="right">ACCIONES</th>
+                </tr>
+              </thead>
+              <tbody id="menuBody"></tbody>
+            </table>
+          </div>
+
+          <div class="hint" style="margin-top:10px">
+            Nota: Por defecto “Venta sin IVA” sale del precio sugerido (sin IVA). Si quieres, después te agrego “Precio manual” y que recalcule %costo/margen.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================== INVENTORY ====================== -->
+    <section id="tab-inventory" class="hidden" style="margin-top:14px">
+      <div class="grid">
+        <div class="card">
+          <div class="cardHeader">
+            <div>
+              <h2>Inventario (simple)</h2>
+              <p>Unidad compra → unidad uso (conversión). Costo/uso se usa para el costeo.</p>
+            </div>
+            <span class="pill">Vinculado</span>
+          </div>
+          <div class="cardBody">
+            <div class="row">
+              <div class="col-6">
+                <label>Nombre</label>
+                <input id="iName" placeholder="Ej. Lechuga romana" />
+              </div>
+              <div class="col-6">
+                <label>Categoría</label>
+                <input id="iCat" placeholder="Ej. Verduras" />
+              </div>
+
+              <div class="col-4">
+                <label>Unidad compra</label>
+                <input id="iBuyUnit" value="kg" />
+              </div>
+              <div class="col-4">
+                <label>Unidad uso</label>
+                <input id="iUseUnit" value="g" />
+              </div>
+              <div class="col-4">
+                <label>Conversión (compra→uso)</label>
+                <input id="iConv" type="number" min="0.01" step="0.01" value="1000" />
+              </div>
+
+              <div class="col-4">
+                <label>Costo compra ($)</label>
+                <input id="iCostBuy" type="number" min="0" step="0.01" placeholder="Ej. 12.50" />
+              </div>
+              <div class="col-4">
+                <label>Stock (unidad uso)</label>
+                <input id="iStock" type="number" min="0" step="0.01" placeholder="Ej. 5000" />
+              </div>
+              <div class="col-4">
+                <label>Mínimo (unidad uso)</label>
+                <input id="iMin" type="number" min="0" step="0.01" placeholder="Ej. 1500" />
+              </div>
+
+              <div class="col-12" style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end">
+                <button class="btn" id="iSaveBtn">Guardar insumo</button>
+              </div>
+            </div>
+
+            <div style="margin-top:14px">
+              <label>Inventario actual</label>
+              <div style="max-height:520px; overflow:auto">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Insumo</th>
+                      <th class="right">Stock</th>
+                      <th class="right">Mín</th>
+                      <th class="right">Costo/uso</th>
+                      <th class="right">Acción</th>
+                    </tr>
+                  </thead>
+                  <tbody id="invBody"></tbody>
+                </table>
+              </div>
+              <div class="hint">Costo/uso = costo compra ÷ conversión.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="cardHeader">
+            <div>
+              <h2>Ayuda rápida</h2>
+              <p>Para que el costeo sea “como Excel”.</p>
+            </div>
+          </div>
+          <div class="cardBody">
+            <div class="hint">
+              <b>Ejemplo:</b><br>
+              Compra: 1 kg queso = $10.00<br>
+              Uso: g con conversión 1000<br>
+              → costo por g = $10.00 / 1000 = $0.01/g<br><br>
+              En receta si usas 50g = $0.50
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================== PLACEHOLDERS ====================== -->
+    <section id="tab-production" class="hidden" style="margin-top:14px">
+      <div class="card">
+        <div class="cardHeader">
+          <div>
+            <h2>Producción / Ventas</h2>
+            <p>Después lo conectamos para que descuente inventario al vender porciones.</p>
+          </div>
+        </div>
+        <div class="cardBody"><div class="hint">Módulo en construcción.</div></div>
+      </div>
+    </section>
+
+    <section id="tab-schedule" class="hidden" style="margin-top:14px">
+      <div class="card">
+        <div class="cardHeader">
+          <div>
+            <h2>Horarios</h2>
+            <p>Después agregamos plantilla semanal y exportación.</p>
+          </div>
+        </div>
+        <div class="cardBody"><div class="hint">Módulo en construcción.</div></div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <b id="toastTitle">Listo</b>
+    <span id="toastMsg">—</span>
+  </div>
+
+  <input type="file" id="fileInput" accept="application/json" class="hidden" />
+
+  <script>
+    const LS = "restaurant_ops_light_v2_menu";
+    const $ = (id)=>document.getElementById(id);
+
+    const money = (n)=> Number(n||0).toLocaleString(undefined,{style:"currency",currency:"USD"});
+    const pct = (n)=> (isFinite(n) ? (Number(n).toFixed(0) + "%") : "—");
+    const fmt = (n)=> Number(n||0).toLocaleString(undefined,{maximumFractionDigits:2});
+    const uid = (p)=> p+"_"+Math.random().toString(16).slice(2)+Date.now().toString(16);
+
+    function toast(title,msg){
+      $("toastTitle").textContent = title;
+      $("toastMsg").textContent = msg;
+      const t = $("toast");
+      t.classList.add("show");
+      setTimeout(()=>t.classList.remove("show"), 2400);
+    }
+
+    const DEFAULT = {
+      company: "GRAND FIESTA AMERICANA",
+      items: [
+        {id:uid("itm"), code:"0130", name:"Lechuga", cat:"Verduras", buyUnit:"kg", useUnit:"g", conv:1000, costBuy:3.50, stock:4000, min:1200},
+        {id:uid("itm"), code:"0128", name:"Aderezo", cat:"Salsas", buyUnit:"lt", useUnit:"ml", conv:1000, costBuy:9.00, stock:2500, min:800},
+        {id:uid("itm"), code:"0106", name:"Queso", cat:"Lácteos", buyUnit:"kg", useUnit:"g", conv:1000, costBuy:12.00, stock:1500, min:600},
+        {id:uid("itm"), code:"0173", name:"Croutones", cat:"Secos", buyUnit:"kg", useUnit:"g", conv:1000, costBuy:5.00, stock:1800, min:500},
+      ],
+      recipe: {
+        name:"Ensalada César",
+        section:"ENSALADAS",
+        num:1,
+        yield:10,
+        proc:"",
+        obs:"",
+        wastePct:10,
+        ivaPct:16,
+        saleFactor:1.00,
+        ingredients: []
+      },
+      menu: [] // items generated from saved recipes
+    };
+
+    let state = load();
+    let menuQuery = "";
+
+    function load(){
+      try{
+        const raw = localStorage.getItem(LS);
+        if(!raw) return structuredClone(DEFAULT);
+        const p = JSON.parse(raw);
+        return {
+          company: p.company || DEFAULT.company,
+          items: Array.isArray(p.items) ? p.items : [],
+          recipe: p.recipe || structuredClone(DEFAULT.recipe),
+          menu: Array.isArray(p.menu) ? p.menu : []
+        };
+      }catch{
+        return structuredClone(DEFAULT);
+      }
+    }
+    function save(){
+      localStorage.setItem(LS, JSON.stringify(state));
+      $("saveStatus").textContent = "OK";
+    }
+    function setDirty(){
+      $("saveStatus").textContent = "…";
+      save();
+    }
+
+    function escapeHtml(s){
+      return String(s??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+    }
+
+    function costPerUse(item){
+      const conv = Number(item.conv||0);
+      const cb = Number(item.costBuy||0);
+      if(conv<=0) return 0;
+      return cb/conv;
+    }
+    function findItem(id){ return state.items.find(x=>x.id===id); }
+
+    /* Tabs */
+    const tabBtns = Array.from(document.querySelectorAll(".tab"));
+    function goTab(name){
+      tabBtns.forEach(b=> b.setAttribute("aria-selected", b.dataset.tab===name ? "true":"false"));
+      ["recipes","menu","inventory","production","schedule"].forEach(t=>{
+        const el = $("tab-"+t);
+        if(!el) return;
+        el.classList.toggle("hidden", t!==name);
+      });
+      renderAll();
+      window.scrollTo({top:0, behavior:"smooth"});
+    }
+    tabBtns.forEach(b=> b.addEventListener("click", ()=>goTab(b.dataset.tab)));
+
+    /* Inventory */
+    function renderInventory(){
+      const tb = $("invBody");
+      tb.innerHTML = "";
+      if(!state.items.length){
+        tb.innerHTML = `<tr><td colspan="5" class="muted">Sin insumos.</td></tr>`;
+        return;
+      }
+      state.items
+        .slice()
+        .sort((a,b)=> (a.name||"").localeCompare(b.name||""))
+        .forEach(it=>{
+          const cpu = costPerUse(it);
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>
+              <div style="font-weight:900">${escapeHtml(it.name)}</div>
+              <div class="muted" style="font-size:12px">${escapeHtml(it.cat||"")} • ${escapeHtml(it.buyUnit)}→${escapeHtml(it.useUnit)} (conv ${fmt(it.conv)}) • código: <span class="mono">${escapeHtml(it.code||"—")}</span></div>
+            </td>
+            <td class="right"><span class="mono">${fmt(it.stock)}</span> <span class="muted">${escapeHtml(it.useUnit)}</span></td>
+            <td class="right"><span class="mono">${fmt(it.min)}</span></td>
+            <td class="right"><span class="mono">${money(cpu)}</span></td>
+            <td class="right">
+              <button class="miniBtn danger" data-del="${it.id}">Borrar</button>
+            </td>
+          `;
+          tb.appendChild(tr);
+        });
+
+      tb.querySelectorAll("button[data-del]").forEach(btn=>{
+        btn.addEventListener("click", ()=>{
+          const id = btn.dataset.del;
+          const used = state.recipe.ingredients.some(x=>x.itemId===id);
+          if(used){ toast("No se puede borrar","Ese insumo está en la receta. Quítalo primero."); return; }
+          state.items = state.items.filter(x=>x.id!==id);
+          setDirty();
+          toast("Eliminado","Insumo borrado.");
+          renderAll();
+        });
+      });
+    }
+
+    function fillInventorySelect(){
+      const sel = $("ingItem");
+      sel.innerHTML = "";
+      if(!state.items.length){
+        const o = document.createElement("option");
+        o.value = "";
+        o.textContent = "Primero crea un insumo en Inventario";
+        sel.appendChild(o);
+        return;
+      }
+      const placeholder = document.createElement("option");
+      placeholder.value = "";
+      placeholder.textContent = "Selecciona insumo";
+      sel.appendChild(placeholder);
+
+      state.items
+        .slice()
+        .sort((a,b)=> (a.name||"").localeCompare(b.name||""))
+        .forEach(it=>{
+          const o = document.createElement("option");
+          o.value = it.id;
+          const cpu = costPerUse(it);
+          o.textContent = `${it.name} (${it.useUnit}) • ${money(cpu)}/${it.useUnit}`;
+          sel.appendChild(o);
+        });
+    }
+
+    /* Recipe sheet */
+    function renderRecipeSheet(){
+      $("restName").textContent = state.company;
+      $("menuCompany").textContent = state.company;
+
+      $("rName").value = state.recipe.name || "";
+      $("rSection").value = state.recipe.section || "OTROS";
+      $("rNum").value = state.recipe.num ?? 1;
+      $("rYield").value = state.recipe.yield ?? 10;
+      $("rProc").value = state.recipe.proc || "";
+      $("obs").value = state.recipe.obs || "";
+
+      $("wastePct").value = state.recipe.wastePct ?? 10;
+      $("ivaPct").value = state.recipe.ivaPct ?? 16;
+      $("saleFactor").value = state.recipe.saleFactor ?? 1.00;
+
+      $("yieldLbl").textContent = String(state.recipe.yield ?? 10);
+      $("wastePctLbl").textContent = String(state.recipe.wastePct ?? 10);
+      $("ivaPctLbl").textContent = String(state.recipe.ivaPct ?? 16);
+      $("factorLbl").textContent = Number(state.recipe.saleFactor ?? 1).toFixed(2);
+
+      const tb = $("ingBody");
+      tb.innerHTML = "";
+
+      if(!state.recipe.ingredients.length){
+        tb.innerHTML = `<tr><td colspan="7" class="muted">Sin ingredientes. Agrega desde “Selecciona insumo”.</td></tr>`;
+      } else {
+        state.recipe.ingredients.forEach((ing)=>{
+          const item = findItem(ing.itemId);
+          const name = item ? item.name : "(insumo eliminado)";
+          const unit = item ? item.useUnit : "";
+          const cpu = item ? costPerUse(item) : 0;
+          const cost = item ? (Number(ing.qty||0) * cpu) : 0;
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td><span class="mono">${escapeHtml(ing.code|| item?.code || "—")}</span></td>
+            <td class="right"><span class="mono">${fmt(ing.qty)}</span></td>
+            <td>${escapeHtml(unit || ing.unit || "")}</td>
+            <td><b>${escapeHtml(name)}</b></td>
+            <td class="right"><span class="mono">${money(cpu)}</span></td>
+            <td class="right"><span class="mono">${money(cost)}</span></td>
+            <td class="right">
+              <button class="miniBtn danger" data-rm="${ing.id}">Quitar</button>
+            </td>
+          `;
+          tb.appendChild(tr);
+        });
+
+        tb.querySelectorAll("button[data-rm]").forEach(btn=>{
+          btn.addEventListener("click", ()=>{
+            const id = btn.dataset.rm;
+            state.recipe.ingredients = state.recipe.ingredients.filter(x=>x.id!==id);
+            setDirty();
+            computeTotals();
+            renderAll();
+          });
+        });
+      }
+
+      computeTotals();
+    }
+
+    function computeTotals(){
+      const sum = state.recipe.ingredients.reduce((acc, ing)=>{
+        const item = findItem(ing.itemId);
+        if(!item) return acc;
+        const cpu = costPerUse(item);
+        return acc + (Number(ing.qty||0) * cpu);
+      }, 0);
+
+      const wastePct = Number(state.recipe.wastePct||0);
+      const ivaPct = Number(state.recipe.ivaPct||0);
+      const factor = Number(state.recipe.saleFactor||1);
+
+      const costPlusWaste = sum * (1 + (wastePct/100));
+      const suggestedNoIva = costPlusWaste * factor;
+      const suggestedWithIva = suggestedNoIva * (1 + (ivaPct/100));
+
+      const y = Math.max(1, Number(state.recipe.yield||1));
+      const costPer = costPlusWaste / y;
+
+      $("tSum").textContent = money(sum);
+      $("tCostPlusWaste").textContent = money(costPlusWaste);
+      $("tSuggestedNoIva").textContent = money(suggestedNoIva);
+      $("tSuggestedWithIva").textContent = money(suggestedWithIva);
+      $("tCostPer").textContent = money(costPer);
+      $("costPer").textContent = money(costPer);
+
+      return { sum, costPlusWaste, suggestedNoIva, suggestedWithIva, costPer, wastePct, ivaPct, factor, yield: y };
+    }
+
+    /* Add ingredient */
+    $("ingItem").addEventListener("change", ()=>{
+      const id = $("ingItem").value;
+      const it = findItem(id);
+      $("ingUnit").value = it ? it.useUnit : "";
+      $("ingCode").value = it ? (it.code||"") : "";
+    });
+
+    $("addIngBtn").addEventListener("click", ()=>{
+      const itemId = $("ingItem").value;
+      const qty = Number($("ingQty").value||0);
+      if(!itemId){ toast("Falta","Selecciona un insumo."); return; }
+      if(qty<=0){ toast("Cantidad inválida","La cantidad debe ser > 0."); return; }
+      const it = findItem(itemId);
+      if(!it){ toast("Error","Insumo no encontrado."); return; }
+
+      state.recipe.ingredients.push({
+        id: uid("ing"),
+        itemId,
+        qty,
+        unit: it.useUnit,
+        code: ($("ingCode").value||"").trim()
+      });
+
+      $("ingQty").value = "";
+      setDirty();
+      toast("Agregado","Ingrediente agregado a la hoja.");
+      renderAll();
+    });
+
+    /* Bind recipe inputs */
+    function bindRecipeInputs(){
+      const sync = ()=>{
+        state.recipe.name = $("rName").value.trim();
+        state.recipe.section = $("rSection").value;
+        state.recipe.num = Number($("rNum").value||1);
+        state.recipe.yield = Number($("rYield").value||10);
+        state.recipe.proc = $("rProc").value;
+        state.recipe.obs = $("obs").value;
+
+        state.recipe.wastePct = Number($("wastePct").value||0);
+        state.recipe.ivaPct = Number($("ivaPct").value||0);
+        state.recipe.saleFactor = Number($("saleFactor").value||1);
+
+        $("yieldLbl").textContent = String(state.recipe.yield);
+        $("wastePctLbl").textContent = String(state.recipe.wastePct);
+        $("ivaPctLbl").textContent = String(state.recipe.ivaPct);
+        $("factorLbl").textContent = state.recipe.saleFactor.toFixed(2);
+
+        setDirty();
+        computeTotals();
+      };
+
+      ["rName","rSection","rNum","rYield","rProc","obs","wastePct","ivaPct","saleFactor"].forEach(id=>{
+        $(id).addEventListener("input", sync);
+        $(id).addEventListener("change", sync);
+      });
+    }
+
+    /* Save to Menu */
+    function nowStamp(){
+      const d = new Date();
+      const dd = String(d.getDate()).padStart(2,"0");
+      const mm = String(d.getMonth()+1).padStart(2,"0");
+      const yy = String(d.getFullYear());
+      const hh = String(d.getHours()).padStart(2,"0");
+      const mi = String(d.getMinutes()).padStart(2,"0");
+      return {date:`${dd}/${mm}/${yy}`, time:`${hh}:${mi}`};
+    }
+
+    function recipeToMenuRow(){
+      const t = computeTotals();
+      const folio = String(state.recipe.num || 0);
+      const name = state.recipe.name || "Sin nombre";
+      const section = state.recipe.section || "OTROS";
+
+      const cost = t.costPlusWaste;
+      const saleNoIva = t.suggestedNoIva;
+      const saleWithIva = t.suggestedWithIva;
+
+      const pctCost = (saleNoIva>0) ? (cost/saleNoIva*100) : NaN;
+      const pctBrut = (isFinite(pctCost)) ? (100 - pctCost) : NaN;
+      const margin = saleNoIva - cost;
+      const factor = (cost>0) ? (saleNoIva / cost) : NaN;
+
+      return {
+        id: uid("menu"),
+        folio,
+        section,
+        name,
+        cost,
+        saleWithIva,
+        saleNoIva,
+        pctCost,
+        pctBrut,
+        margin,
+        factor,
+
+        // snapshot de receta para abrirla después
+        recipeSnapshot: structuredClone(state.recipe),
+
+        updatedAt: nowStamp().date
+      };
+    }
+
+    function upsertMenuItem(row){
+      const key = String(row.folio);
+      const idx = state.menu.findIndex(x => String(x.folio) === key);
+      if(idx >= 0){
+        // mantener id estable, actualizar datos + snapshot
+        const keepId = state.menu[idx].id;
+        state.menu[idx] = {...row, id: keepId};
+        return "updated";
+      }
+      state.menu.push(row);
+      return "added";
+    }
+
+    $("saveToMenuBtn").addEventListener("click", ()=>{
+      if(!state.recipe.name || !state.recipe.name.trim()){
+        toast("Falta", "Pon el nombre de la receta antes de guardarla al menú.");
+        return;
+      }
+      if(!state.recipe.ingredients.length){
+        toast("Falta", "Agrega al menos 1 ingrediente para costear.");
+        return;
+      }
+      const row = recipeToMenuRow();
+      const action = upsertMenuItem(row);
+      setDirty();
+      toast("Menú", action === "added" ? "Receta agregada al menú." : "Receta actualizada en el menú.");
+      goTab("menu");
+    });
+
+    /* Menu render */
+    $("menuSearch").addEventListener("input", (e)=>{
+      menuQuery = (e.target.value || "").toLowerCase().trim();
+      renderMenu();
+    });
+
+    function renderMenu(){
+      const tb = $("menuBody");
+      tb.innerHTML = "";
+
+      const {date} = nowStamp();
+      $("menuDate").textContent = date;
+
+      const list = state.menu
+        .slice()
+        .sort((a,b)=> (a.section||"").localeCompare(b.section||"") || (a.name||"").localeCompare(b.name||""));
+
+      const filtered = list.filter(x=>{
+        if(!menuQuery) return true;
+        const hay = `${x.folio} ${x.section} ${x.name}`.toLowerCase();
+        return hay.includes(menuQuery);
+      });
+
+      $("menuCount").textContent = String(filtered.length);
+
+      if(!filtered.length){
+        tb.innerHTML = `<tr><td colspan="11" class="muted">Sin platillos en el menú. Ve a “Hoja Receta/Costeo” y presiona “Guardar receta al Menú”.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach(row=>{
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+          <td><span class="mono">${escapeHtml(row.folio)}</span></td>
+          <td><b>${escapeHtml(row.section||"")}</b></td>
+          <td>
+            <div style="font-weight:900">${escapeHtml(row.name||"")}</div>
+            <div class="muted" style="font-size:12px">Actualizado: <span class="mono">${escapeHtml(row.updatedAt||"—")}</span></div>
+          </td>
+          <td class="right"><span class="mono">${money(row.cost)}</span></td>
+          <td class="right"><span class="mono">${money(row.saleWithIva)}</span></td>
+          <td class="right"><span class="mono">${money(row.saleNoIva)}</span></td>
+          <td class="right"><span class="mono">${isFinite(row.pctCost) ? pct(row.pctCost) : "—"}</span></td>
+          <td class="right"><span class="mono">${isFinite(row.pctBrut) ? pct(row.pctBrut) : "—"}</span></td>
+          <td class="right"><span class="mono">${money(row.margin)}</span></td>
+          <td class="right"><span class="mono">${isFinite(row.factor) ? row.factor.toFixed(2) : "—"}</span></td>
+          <td class="right">
+            <button class="miniBtn soft" data-open="${row.id}">Abrir</button>
+            <button class="miniBtn ok" data-dup="${row.id}">Duplicar</button>
+            <button class="miniBtn danger" data-del="${row.id}">Borrar</button>
+          </td>
+        `;
+        tb.appendChild(tr);
+      });
+
+      tb.querySelectorAll("button[data-open]").forEach(btn=>{
+        btn.addEventListener("click", ()=>{
+          const id = btn.dataset.open;
+          const row = state.menu.find(x=>x.id===id);
+          if(!row){ toast("Error","No se encontró el platillo."); return; }
+          state.recipe = structuredClone(row.recipeSnapshot);
+          setDirty();
+          toast("Receta", "Cargada desde Menú.");
+          goTab("recipes");
+        });
+      });
+
+      tb.querySelectorAll("button[data-dup]").forEach(btn=>{
+        btn.addEventListener("click", ()=>{
+          const id = btn.dataset.dup;
+          const row = state.menu.find(x=>x.id===id);
+          if(!row){ toast("Error","No se encontró el platillo."); return; }
+          const copy = structuredClone(row);
+          copy.id = uid("menu");
+          // nuevo folio auto (max + 1)
+          const maxF = state.menu.reduce((m,x)=> Math.max(m, Number(x.folio||0)), 0);
+          copy.folio = String(maxF + 1);
+          copy.updatedAt = nowStamp().date;
+          // también el snapshot cambia folio
+          copy.recipeSnapshot.num = Number(copy.folio);
+          state.menu.push(copy);
+          setDirty();
+          toast("Duplicado","Se creó un nuevo platillo con folio " + copy.folio);
+          renderMenu();
+        });
+      });
+
+      tb.querySelectorAll("button[data-del]").forEach(btn=>{
+        btn.addEventListener("click", ()=>{
+          const id = btn.dataset.del;
+          const row = state.menu.find(x=>x.id===id);
+          if(!row) return;
+          const ok = confirm(`¿Borrar "${row.name}" del menú?`);
+          if(!ok) return;
+          state.menu = state.menu.filter(x=>x.id!==id);
+          setDirty();
+          toast("Menú","Platillo borrado.");
+          renderMenu();
+        });
+      });
+    }
+
+    /* Inventory save */
+    $("iSaveBtn").addEventListener("click", ()=>{
+      const name = $("iName").value.trim();
+      if(!name){ toast("Falta","Nombre del insumo."); return; }
+      const item = {
+        id: uid("itm"),
+        code: "",
+        name,
+        cat: $("iCat").value.trim(),
+        buyUnit: $("iBuyUnit").value.trim() || "u",
+        useUnit: $("iUseUnit").value.trim() || "u",
+        conv: Number($("iConv").value||0),
+        costBuy: Number($("iCostBuy").value||0),
+        stock: Number($("iStock").value||0),
+        min: Number($("iMin").value||0),
+      };
+      if(item.conv<=0){ toast("Conversión inválida","Debe ser > 0."); return; }
+      state.items.push(item);
+
+      $("iName").value=""; $("iCat").value="";
+      $("iCostBuy").value=""; $("iStock").value=""; $("iMin").value="";
+      setDirty();
+      toast("Guardado","Insumo guardado.");
+      renderAll();
+    });
+
+    /* Export / Import / Reset */
+    $("exportBtn").addEventListener("click", ()=>{
+      const blob = new Blob([JSON.stringify(state,null,2)], {type:"application/json"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "restaurant_ops_light_menu.json";
+      a.click();
+      URL.revokeObjectURL(url);
+      toast("Exportado","Se descargó el JSON.");
+    });
+
+    $("importBtn").addEventListener("click", ()=> $("fileInput").click());
+    $("fileInput").addEventListener("change", async (e)=>{
+      const f = e.target.files?.[0];
+      if(!f) return;
+      try{
+        const txt = await f.text();
+        const p = JSON.parse(txt);
+        state = {
+          company: p.company || DEFAULT.company,
+          items: Array.isArray(p.items)? p.items : [],
+          recipe: p.recipe || structuredClone(DEFAULT.recipe),
+          menu: Array.isArray(p.menu)? p.menu : []
+        };
+        save();
+        toast("Importado","Datos cargados.");
+        renderAll();
+      }catch{
+        toast("Error","No se pudo importar.");
+      }finally{
+        $("fileInput").value="";
+      }
+    });
+
+    $("resetBtn").addEventListener("click", ()=>{
+      const ok = confirm("¿Seguro? Esto borra todo en este navegador.");
+      if(!ok) return;
+      localStorage.removeItem(LS);
+      state = structuredClone(DEFAULT);
+      save();
+      toast("Reset","Datos reiniciados.");
+      renderAll();
+    });
+
+    function renderAll(){
+      $("saveStatus").textContent = "OK";
+      $("menuCompany").textContent = state.company;
+
+      fillInventorySelect();
+      renderRecipeSheet();
+      renderInventory();
+      renderMenu();
+    }
+
+    // init
+    bindRecipeInputs();
+    goTab("recipes");
+    renderAll();
+  </script>
+</body>
+</html>
