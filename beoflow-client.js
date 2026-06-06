@@ -98,19 +98,7 @@ const MODULE_SECTIONS = {
     metaFields: ['recipe_number', 'category', 'pax', 'yield_quantity', 'yield_unit', 'total_cost', 'waste_cost', 'suggested_sale_price', 'manual_sale_price', 'cost_percentage', 'margin_percentage', 'profit'],
     detailFields: ['procedure', 'notes'],
     fields: [
-      { name: 'name', label: 'Recipe Name', type: 'text', required: true },
-      { name: 'category', label: 'Category', type: 'text' },
-      { name: 'recipe_number', label: 'Recipe Number', type: 'text' },
-      { name: 'pax', label: 'Pax', type: 'number', min: '0', step: '1' },
-      { name: 'yield_quantity', label: 'Yield / Rendimiento', type: 'number', min: '0', step: '0.01' },
-      { name: 'yield_unit', label: 'Yield Unit', type: 'text', placeholder: 'portions, lb, oz, trays' },
-      { name: 'manual_sale_price', label: 'Manual Sale Price', type: 'number', min: '0', step: '0.01' },
-      { name: 'prep_time', label: 'Prep Time', type: 'text' },
-      { name: 'procedure', label: 'Procedure', type: 'textarea', wide: true },
-      { name: 'notes', label: 'Notes', type: 'textarea', wide: true },
-      { name: 'responsible', label: 'Responsible', type: 'text' },
-      { name: 'photo_url', label: 'Photo URL', type: 'url' },
-      { name: 'status', label: 'Status', type: 'text', defaultValue: 'active' }
+      { name: 'name', label: 'Recipe Name', type: 'text', required: true, wide: true }
     ]
   },
   subrecipes: {
@@ -505,6 +493,29 @@ function formatLabel(value) {
     .replace(/\b\w/g, letter => letter.toUpperCase());
 }
 
+function renderIcon(name, extraClass = '') {
+  const icons = {
+    add: '<path d="M12 5v14M5 12h14"></path>',
+    alert: '<path d="M12 9v4"></path><path d="M12 17h.01"></path><path d="M10.3 3.9 2.6 17.1A2 2 0 0 0 4.3 20h15.4a2 2 0 0 0 1.7-2.9L13.7 3.9a2 2 0 0 0-3.4 0Z"></path>',
+    box: '<path d="m21 8-9-5-9 5 9 5 9-5Z"></path><path d="M3 8v8l9 5 9-5V8"></path><path d="M12 13v8"></path>',
+    check: '<path d="m4 12 5 5L20 6"></path>',
+    close: '<path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>',
+    leaf: '<path d="M5 21c8-1 15-8 16-16-8 1-15 8-16 16Z"></path><path d="M5 21c0-5 4-9 9-9"></path>',
+    package: '<path d="M16.5 9.4 7.5 4.2"></path><path d="M21 16V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.7Z"></path><path d="M3.3 7 12 12l8.7-5"></path><path d="M12 22V12"></path>',
+    save: '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"></path><path d="M17 21v-8H7v8"></path><path d="M7 3v5h8"></path>',
+    search: '<circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path>',
+    tag: '<path d="M20.6 13.2 13.2 20.6a2 2 0 0 1-2.8 0L3 13.2V3h10.2l7.4 7.4a2 2 0 0 1 0 2.8Z"></path><path d="M7.5 7.5h.01"></path>',
+    trash: '<path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path>'
+  };
+  const body = icons[name] || icons.box;
+  const classAttr = extraClass ? ` ${extraClass}` : '';
+  return `<svg class="ui-icon${classAttr}" viewBox="0 0 24 24" aria-hidden="true">${body}</svg>`;
+}
+
+function renderIconLabel(iconName, label, extraClass = '') {
+  return `${renderIcon(iconName, extraClass)}<span>${escapeHtml(label)}</span>`;
+}
+
 function formatMoney(value) {
   const numberValue = Number(value);
   if (!Number.isFinite(numberValue)) return '';
@@ -739,6 +750,57 @@ function findInventoryIngredientByCode(code, excludeId = null) {
     String(item.id) !== String(excludeId || '')
     && normalizeInventoryCode(item.item_code) === normalizedCode
   )) || null;
+}
+
+function getInventoryIconName(recordOrCategory) {
+  const category = typeof recordOrCategory === 'string'
+    ? recordOrCategory
+    : recordOrCategory?.category;
+  const normalized = String(category || '').toLowerCase();
+  if (/produce|verdura|vegetable|fruit|fruta|leaf|herb/.test(normalized)) return 'leaf';
+  if (/meat|carne|protein|proteina|beef|chicken|pork|fish|seafood/.test(normalized)) return 'package';
+  if (/dairy|lacteo|milk|cheese|cream/.test(normalized)) return 'package';
+  if (/dry|seco|grain|flour|spice|pantry/.test(normalized)) return 'box';
+  if (/drink|beverage|bebida|juice|water|wine|beer/.test(normalized)) return 'package';
+  if (/frozen|congelado|ice/.test(normalized)) return 'package';
+  if (/clean|supply|supplies|limpieza/.test(normalized)) return 'tag';
+  return 'box';
+}
+
+function getIngredientInventoryStatus(ingredient) {
+  const normalized = normalizeRecipeIngredient(ingredient);
+  if (!normalized) return { connected: false, label: 'Not in inventory', icon: 'alert', className: 'is-missing' };
+  if (normalized.itemType === 'subrecipe') {
+    return { connected: Boolean(normalized.subrecipeId), label: 'Subrecipe', icon: 'box', className: 'is-subrecipe' };
+  }
+
+  const byId = normalized.inventoryItemId
+    ? getInventoryOptions().find(item => String(item.id) === String(normalized.inventoryItemId))
+    : null;
+  const byName = byId || findMatchingInventoryIngredient(normalized.ingredientName);
+  const byCode = byName || findInventoryIngredientByCode(normalized.itemCode);
+  const matchedItem = byId || byName || byCode;
+  if (matchedItem) {
+    return { connected: true, label: 'In inventory', icon: 'check', className: 'is-connected', item: matchedItem };
+  }
+
+  return { connected: false, label: 'Not in inventory', icon: 'alert', className: 'is-missing' };
+}
+
+function createInventoryCodeFromName(name) {
+  const base = normalizeInventoryCode(
+    String(name || 'ITEM')
+      .replace(/[^a-z0-9]+/gi, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 18)
+  ) || 'ITEM';
+  let code = base;
+  let index = 1;
+  while (findInventoryIngredientByCode(code)) {
+    index += 1;
+    code = `${base}-${index}`;
+  }
+  return code;
 }
 
 function requireNonNegativeNumber(value, label, { allowNull = true } = {}) {
@@ -1706,6 +1768,9 @@ function renderRecordCard(section, record) {
   const moduleConfig = getModuleConfig(section);
   const title = getRecordTitle(section, record);
   const status = record?.[moduleConfig.badgeField] || 'active';
+  const titleIconHtml = section === 'inventory'
+    ? `<span class="record-title-icon" title="${escapeHtml(record.category || 'Inventory item')}">${renderIcon(getInventoryIconName(record))}</span>`
+    : '';
   const metaHtml = (moduleConfig.metaFields || [])
     .map(fieldName => formatRecordValue(fieldName, getRecordDisplayValue(section, fieldName, record)))
     .filter(Boolean)
@@ -1732,7 +1797,7 @@ function renderRecordCard(section, record) {
     <article class="record-card">
       <div class="record-card-main">
         <div class="record-title-row">
-          <h4>${escapeHtml(title)}</h4>
+          <h4>${titleIconHtml}${escapeHtml(title)}</h4>
           <div class="record-badges">
             ${lowStockHtml}
             <span class="status-badge">${escapeHtml(formatRecordValue('status', status))}</span>
@@ -1872,8 +1937,8 @@ function renderSpecialRecordActions(section, record) {
   if (section !== 'inventory') return '';
 
   return `
-    <button type="button" class="secondary-action" data-module-action="use-in-recipe" data-section="inventory" data-record-id="${escapeHtml(record.id)}">Use in recipe</button>
-    <button type="button" class="secondary-action" data-module-action="add-to-recipe" data-section="inventory" data-record-id="${escapeHtml(record.id)}">Add to recipe</button>
+    <button type="button" class="secondary-action icon-action" data-module-action="use-in-recipe" data-section="inventory" data-record-id="${escapeHtml(record.id)}">${renderIconLabel('add', 'Use in recipe')}</button>
+    <button type="button" class="secondary-action icon-action" data-module-action="add-to-recipe" data-section="inventory" data-record-id="${escapeHtml(record.id)}">${renderIconLabel('box', 'Add to recipe')}</button>
   `;
 }
 
@@ -2045,14 +2110,16 @@ function renderRecipeIngredientRows() {
 
   return `
     <div class="recipe-ingredient-list">
+      <div class="recipe-ingredient-table-head">
+        <span>Ingredient</span>
+        <span>Qty</span>
+        <span>Unit</span>
+        <span>Inventory</span>
+        <span></span>
+      </div>
       ${state.recipeIngredientsDraft.map((ingredient, index) => `
         <div class="recipe-ingredient-row" data-ingredient-index="${index}">
-          <div>
-            <strong>${escapeHtml([ingredient.itemCode, ingredient.ingredientName].filter(Boolean).join(' - '))}</strong>
-            <span>${escapeHtml(ingredient.itemType === 'subrecipe' ? 'Subrecipe' : 'Inventory input')}</span>
-            <span>${escapeHtml(formatMoney(ingredient.packagePrice))} / ${escapeHtml(ingredient.packageQuantity || 0)} ${escapeHtml(ingredient.packageUnit || ingredient.unit || '')}</span>
-            <span>${escapeHtml(formatLabel(ingredient.validationStatus))}</span>
-          </div>
+          ${renderRecipeIngredientNameCell(ingredient, index)}
           <label>
             <span>Qty</span>
             <input type="number" min="0" step="0.01" value="${escapeHtml(ingredient.quantity)}" data-recipe-ingredient-quantity="${index}">
@@ -2061,10 +2128,42 @@ function renderRecipeIngredientRows() {
             <span>Unit</span>
             <input type="text" value="${escapeHtml(ingredient.unit)}" data-recipe-ingredient-unit="${index}">
           </label>
-          <strong>${escapeHtml(formatMoney(calculateLineCostFromIngredient(ingredient)))}</strong>
-          <button type="button" class="modal-icon-button" data-recipe-ingredient-remove="${index}">Remove</button>
+          ${renderRecipeInventoryStatusCell(ingredient, index)}
+          <button type="button" class="modal-icon-button icon-only-button" data-recipe-ingredient-remove="${index}" title="Remove ingredient" aria-label="Remove ingredient">${renderIcon('trash')}</button>
         </div>
       `).join('')}
+    </div>
+  `;
+}
+
+function renderRecipeIngredientNameCell(ingredient, index) {
+  const status = getIngredientInventoryStatus(ingredient);
+  const subtitle = ingredient.itemType === 'subrecipe'
+    ? 'Subrecipe'
+    : status.item?.item_code || ingredient.itemCode || 'Ingredient';
+
+  return `
+    <label class="recipe-ingredient-name-field">
+      <span>Ingredient</span>
+      <input type="text" value="${escapeHtml(ingredient.ingredientName)}" placeholder="Ingredient name" data-recipe-ingredient-name="${index}">
+      <small>${escapeHtml(subtitle)}</small>
+    </label>
+  `;
+}
+
+function renderRecipeInventoryStatusCell(ingredient, index) {
+  const status = getIngredientInventoryStatus(ingredient);
+  const actionHtml = status.connected || ingredient.itemType === 'subrecipe'
+    ? ''
+    : `<button type="button" class="secondary-action compact-icon-action" data-recipe-ingredient-add-inventory="${index}" title="Add to inventory">${renderIconLabel('box', 'Add')}</button>`;
+
+  return `
+    <div class="inventory-status-cell">
+      <span class="inventory-status-pill ${escapeHtml(status.className)}" title="${escapeHtml(status.label)}">
+        ${renderIcon(status.icon)}
+        <span>${escapeHtml(status.label)}</span>
+      </span>
+      ${actionHtml}
     </div>
   `;
 }
@@ -2117,17 +2216,18 @@ function renderRecipeIngredientBuilder() {
   const searchValue = state.recipeIngredientSearch;
   const quickPanelHidden = state.recipeQuickIngredientOpen ? '' : ' hidden';
   const isSubrecipeModal = state.modalSection === 'subrecipes';
+  const isRecipeModal = state.modalSection === 'recipes';
 
   return `
     <section class="recipe-ingredient-builder form-field-wide" data-recipe-ingredient-builder>
       <div class="recipe-builder-heading">
-        <span>${isSubrecipeModal ? 'Subrecipe Ingredients' : 'Recipe Ingredients'}</span>
-        <p>Add inputs by inventory code. If the code does not exist, create the input without leaving this form.</p>
+        <span>${isSubrecipeModal ? 'Subrecipe Ingredients' : 'Ingredients'}</span>
+        ${isRecipeModal ? '' : '<p>Add inputs by inventory code. If the code does not exist, create the input without leaving this form.</p>'}
       </div>
 
       <div class="recipe-ingredient-picker">
         <label class="form-field">
-          <span>Input code</span>
+          <span>${renderIconLabel('search', 'Find inventory')}</span>
           <input type="search" id="recipe-ingredient-search" value="${escapeHtml(searchValue)}" placeholder="Type code or search inventory">
         </label>
         <label class="form-field">
@@ -2140,14 +2240,17 @@ function renderRecipeIngredientBuilder() {
           <span>Quantity</span>
           <input type="number" id="recipe-ingredient-add-quantity" min="0" step="0.01" value="1">
         </label>
-        <button type="button" class="secondary-action" id="recipe-add-selected-ingredient">Add by Code</button>
+        <button type="button" class="secondary-action icon-action" id="recipe-add-selected-ingredient">${renderIconLabel('add', 'Add selected')}</button>
       </div>
 
       ${renderSubrecipePicker()}
 
-      <button type="button" class="text-action recipe-quick-add-toggle" id="recipe-quick-add-ingredient">+ Add new ingredient to inventory</button>
+      <div class="recipe-builder-actions">
+        <button type="button" class="primary-action icon-action" id="recipe-add-blank-ingredient">${renderIconLabel('add', 'Add Ingredient')}</button>
+        ${isRecipeModal ? '' : `<button type="button" class="text-action recipe-quick-add-toggle" id="recipe-quick-add-ingredient">${renderIconLabel('box', 'Add new ingredient to inventory')}</button>`}
+      </div>
 
-      <div class="recipe-quick-add-panel"${quickPanelHidden}>
+      <div class="recipe-quick-add-panel"${isRecipeModal ? ' hidden' : quickPanelHidden}>
         <div class="form-field-wide" data-quick-ingredient-duplicate-suggestion>
           ${renderInventoryDuplicateSuggestion(searchValue, null, { compact: true })}
         </div>
@@ -2198,7 +2301,7 @@ function renderRecipeIngredientBuilder() {
       </div>
 
       ${renderRecipeIngredientRows()}
-      ${renderRecipeCostSummary()}
+      ${isRecipeModal ? '' : renderRecipeCostSummary()}
     </section>
   `;
 }
@@ -2225,15 +2328,17 @@ function refreshRecipeCostSummary() {
 }
 
 function addRecipeIngredientToDraft(ingredient) {
-  if (!ingredient?.inventoryItemId && !ingredient?.subrecipeId) {
-    throw new Error('Choose a valid inventory ingredient or subrecipe.');
+  if (!ingredient?.inventoryItemId && !ingredient?.subrecipeId && !ingredient?.ingredientName) {
+    throw new Error('Choose or name an ingredient first.');
   }
 
-  const existingIndex = state.recipeIngredientsDraft.findIndex(item => (
-    ingredient.itemType === 'subrecipe'
+  const existingIndex = ingredient.inventoryItemId || ingredient.subrecipeId
+    ? state.recipeIngredientsDraft.findIndex(item => (
+      ingredient.itemType === 'subrecipe'
       ? String(item.subrecipeId) === String(ingredient.subrecipeId)
       : String(item.inventoryItemId) === String(ingredient.inventoryItemId)
-  ));
+    ))
+    : -1;
 
   if (existingIndex >= 0) {
     const existing = state.recipeIngredientsDraft[existingIndex];
@@ -2246,6 +2351,60 @@ function addRecipeIngredientToDraft(ingredient) {
   }
 
   state.recipeIngredientsDraft.push(ingredient);
+}
+
+function addBlankRecipeIngredient() {
+  state.recipeIngredientsDraft.push(normalizeRecipeIngredient({
+    itemType: 'inventory',
+    ingredientName: '',
+    quantity: 1,
+    unit: '',
+    packagePrice: null,
+    packageQuantity: 1,
+    validationStatus: 'not_found'
+  }));
+  refreshRecipeIngredientBuilder();
+}
+
+async function addRecipeIngredientRowToInventory(index) {
+  const draftIngredient = state.recipeIngredientsDraft[Number(index)];
+  if (!draftIngredient) throw new Error('Choose a valid recipe ingredient.');
+  const ingredient = normalizeRecipeIngredient(draftIngredient);
+  const name = String(ingredient.ingredientName || '').trim();
+  if (!name) throw new Error('Ingredient name is required before adding it to inventory.');
+
+  const duplicate = findMatchingInventoryIngredient(name);
+  if (duplicate) {
+    state.recipeIngredientsDraft[Number(index)] = createRecipeIngredientFromInventory(duplicate, ingredient.quantity || 1);
+    state.recipeIngredientsDraft[Number(index)].unit = ingredient.unit || getInventoryBaseUnit(duplicate);
+    refreshRecipeIngredientBuilder();
+    showToast(`${duplicate.name} connected from inventory.`);
+    return duplicate;
+  }
+
+  const payload = {
+    item_code: createInventoryCodeFromName(name),
+    name,
+    category: null,
+    base_unit: ingredient.unit || 'each',
+    unit: ingredient.unit || 'each',
+    package_quantity: 1,
+    package_unit: ingredient.unit || 'each',
+    package_price: 0,
+    current_stock: 0,
+    minimum_stock: 0,
+    cost_per_unit: 0,
+    supplier: null,
+    status: 'active'
+  };
+
+  const createdIngredient = await createRecord(MODULE_SECTIONS.inventory.table, payload);
+  await loadModuleData('inventory');
+  state.recipeIngredientsDraft[Number(index)] = createRecipeIngredientFromInventory(createdIngredient, ingredient.quantity || 1);
+  state.recipeIngredientsDraft[Number(index)].unit = ingredient.unit || getInventoryBaseUnit(createdIngredient);
+  refreshRecipeIngredientBuilder();
+  showToast(`${createdIngredient.name} added to inventory and connected.`);
+  return createdIngredient;
 }
 
 async function loadInventoryOptionsForRecipe() {
@@ -2323,13 +2482,25 @@ function openModuleModal(section, record = null, options = {}) {
   }
 
   showAlert(els['module-form-message'], '');
-  els['module-modal-title'].textContent = record
-    ? `Edit ${moduleConfig.singular}`
-    : moduleConfig.action;
+  els['module-modal-title'].textContent = section === 'recipes'
+    ? (record ? 'Edit Recipe' : 'New Recipe')
+    : record
+      ? `Edit ${moduleConfig.singular}`
+      : moduleConfig.action;
   els['module-modal-subtitle'].textContent = record
     ? `Update this ${moduleConfig.singular} for ${state.activeClient?.name || 'this workspace'}.`
     : `Create a new ${moduleConfig.singular} for ${state.activeClient?.name || 'this workspace'}.`;
-  els['module-save-button'].textContent = record ? 'Save Changes' : moduleConfig.action;
+  if (section === 'recipes') {
+    els['module-save-button'].innerHTML = renderIconLabel('save', 'Save Recipe');
+    els['module-save-button'].classList.add('icon-action');
+    els['module-modal-close'].innerHTML = renderIconLabel('close', 'Close');
+    els['module-modal-close'].classList.add('icon-action');
+  } else {
+    els['module-save-button'].textContent = record ? 'Save Changes' : moduleConfig.action;
+    els['module-save-button'].classList.remove('icon-action');
+    els['module-modal-close'].textContent = 'Close';
+    els['module-modal-close'].classList.remove('icon-action');
+  }
   const baseFieldsHtml = moduleConfig.fields
     .map(field => renderFormField(field, record))
     .join('');
@@ -2416,18 +2587,30 @@ function buildModulePayload(section) {
   }
 
   if (isCostingRecipeSection(section)) {
-    const normalizedIngredients = state.recipeIngredientsDraft.map(normalizeRecipeIngredient).filter(Boolean);
+    const normalizedIngredients = state.recipeIngredientsDraft
+      .map(normalizeRecipeIngredient)
+      .filter(ingredient => (
+        ingredient
+        && (
+          ingredient.ingredientName
+          || ingredient.inventoryItemId
+          || ingredient.subrecipeId
+        )
+      ));
     if (normalizedIngredients.length === 0) {
       throw new Error(`Add at least one inventory input before saving this ${MODULE_SECTIONS[section].singular}.`);
     }
 
     normalizedIngredients.forEach(ingredient => {
+      if (!String(ingredient.ingredientName || '').trim()) {
+        throw new Error('Every ingredient needs a name before saving.');
+      }
       if (Number(ingredient.quantity) < 0) {
         throw new Error(`${ingredient.ingredientName || 'Ingredient'} quantity cannot be negative.`);
       }
     });
 
-    Object.assign(payload, calculateRecipeCostFields(payload, normalizedIngredients));
+    Object.assign(payload, calculateRecipeCostFields({ ...state.editingRecord, ...payload }, normalizedIngredients));
   }
 
   if (section === 'menu') {
@@ -3733,6 +3916,24 @@ function bindEvents() {
       });
     }
 
+    const nameIndex = event.target.dataset.recipeIngredientName;
+    if (nameIndex !== undefined) {
+      const draftIngredient = state.recipeIngredientsDraft[Number(nameIndex)];
+      if (!draftIngredient) return;
+      const name = event.target.value;
+      const connectedStatus = getIngredientInventoryStatus({ ...draftIngredient, ingredientName: name });
+      state.recipeIngredientsDraft[Number(nameIndex)] = normalizeRecipeIngredient({
+        ...draftIngredient,
+        ingredientName: name,
+        inventoryItemId: connectedStatus.item?.id || draftIngredient.inventoryItemId || '',
+        itemCode: connectedStatus.item?.item_code || draftIngredient.itemCode || '',
+        packagePrice: connectedStatus.item ? getInventoryPackagePrice(connectedStatus.item) : draftIngredient.packagePrice,
+        packageQuantity: connectedStatus.item ? getInventoryPackageQuantity(connectedStatus.item) : draftIngredient.packageQuantity,
+        packageUnit: connectedStatus.item ? getInventoryPackageUnit(connectedStatus.item) : draftIngredient.packageUnit,
+        validationStatus: connectedStatus.connected ? validateInventoryIngredientForRecipe(connectedStatus.item, draftIngredient.quantity).status : 'not_found'
+      });
+    }
+
     if (
       (
         ['yield_quantity', 'yield_unit', 'portion_count'].includes(event.target.name)
@@ -3745,6 +3946,12 @@ function bindEvents() {
   });
 
   els['module-form-fields'].addEventListener('change', event => {
+    const nameIndex = event.target.dataset.recipeIngredientName;
+    if (nameIndex !== undefined) {
+      refreshRecipeIngredientBuilder();
+      return;
+    }
+
     const quantityIndex = event.target.dataset.recipeIngredientQuantity;
     if (quantityIndex === undefined) return;
 
@@ -3765,7 +3972,10 @@ function bindEvents() {
   });
 
   els['module-form-fields'].addEventListener('click', async event => {
-    if (event.target.id === 'recipe-add-selected-ingredient') {
+    const clickedButton = event.target.closest('button');
+    if (!clickedButton) return;
+
+    if (clickedButton.id === 'recipe-add-selected-ingredient') {
       try {
         addSelectedRecipeIngredient();
       } catch (error) {
@@ -3774,7 +3984,7 @@ function bindEvents() {
       return;
     }
 
-    if (event.target.id === 'recipe-add-selected-subrecipe') {
+    if (clickedButton.id === 'recipe-add-selected-subrecipe') {
       try {
         addSelectedRecipeSubrecipe();
       } catch (error) {
@@ -3783,20 +3993,25 @@ function bindEvents() {
       return;
     }
 
-    if (event.target.id === 'recipe-quick-add-ingredient') {
+    if (clickedButton.id === 'recipe-add-blank-ingredient') {
+      addBlankRecipeIngredient();
+      return;
+    }
+
+    if (clickedButton.id === 'recipe-quick-add-ingredient') {
       state.recipeQuickIngredientOpen = true;
       refreshRecipeIngredientBuilder();
       document.getElementById('quick-ingredient-name')?.focus();
       return;
     }
 
-    if (event.target.id === 'recipe-cancel-quick-ingredient') {
+    if (clickedButton.id === 'recipe-cancel-quick-ingredient') {
       state.recipeQuickIngredientOpen = false;
       refreshRecipeIngredientBuilder();
       return;
     }
 
-    if (event.target.id === 'recipe-save-quick-ingredient') {
+    if (clickedButton.id === 'recipe-save-quick-ingredient') {
       setLoading(true);
       showAlert(els['module-form-message'], '');
       try {
@@ -3809,14 +4024,28 @@ function bindEvents() {
       return;
     }
 
-    const removeIndex = event.target.dataset.recipeIngredientRemove;
+    const addInventoryIndex = clickedButton.dataset.recipeIngredientAddInventory;
+    if (addInventoryIndex !== undefined) {
+      setLoading(true);
+      showAlert(els['module-form-message'], '');
+      try {
+        await addRecipeIngredientRowToInventory(addInventoryIndex);
+      } catch (error) {
+        showAlert(els['module-form-message'], error.message || 'Unable to add ingredient to inventory.');
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
+    const removeIndex = clickedButton.dataset.recipeIngredientRemove;
     if (removeIndex !== undefined) {
       state.recipeIngredientsDraft.splice(Number(removeIndex), 1);
       refreshRecipeIngredientBuilder();
       return;
     }
 
-    const useExistingIngredientId = event.target.dataset.useExistingIngredient;
+    const useExistingIngredientId = clickedButton.dataset.useExistingIngredient;
     if (useExistingIngredientId) {
       const ingredient = getInventoryOptions().find(item => String(item.id) === String(useExistingIngredientId));
       if (!ingredient) return;
