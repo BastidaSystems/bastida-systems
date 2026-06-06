@@ -223,6 +223,66 @@
       color: #d9ad61;
     }
 
+    .product-panel--lineops {
+      background:
+        radial-gradient(circle at 76% 8%, rgba(96, 165, 250, 0.24), transparent 34%),
+        radial-gradient(circle at 12% 12%, rgba(239, 68, 68, 0.12), transparent 34%),
+        linear-gradient(145deg, rgba(8, 17, 34, 0.97), rgba(3, 6, 14, 0.94));
+    }
+
+    .product-panel--lineops:hover {
+      border-color: rgba(96, 165, 250, 0.62);
+    }
+
+    .product-panel--lineops .product-tag {
+      border-color: rgba(96, 165, 250, 0.38);
+    }
+
+    .product-panel--lineops .product-points li::before {
+      background: #60a5fa;
+      box-shadow: 0 0 16px rgba(96, 165, 250, 0.72);
+    }
+
+    .product-panel--lineops .preview-caption span:last-child {
+      color: #60a5fa;
+    }
+
+    .product-panel--cocofilms {
+      background:
+        radial-gradient(circle at 74% 10%, rgba(255, 255, 255, 0.18), transparent 32%),
+        radial-gradient(circle at 18% 0%, rgba(120, 120, 120, 0.14), transparent 34%),
+        linear-gradient(145deg, rgba(14, 14, 16, 0.98), rgba(3, 3, 4, 0.95));
+    }
+
+    .product-panel--cocofilms:hover {
+      border-color: rgba(255, 255, 255, 0.58);
+    }
+
+    .product-panel--cocofilms .product-tag {
+      border-color: rgba(255, 255, 255, 0.32);
+    }
+
+    .product-panel--cocofilms .product-points li::before {
+      background: #f9fafb;
+      box-shadow: 0 0 16px rgba(255, 255, 255, 0.65);
+    }
+
+    .product-panel--cocofilms .preview-caption span:last-child {
+      color: #f9fafb;
+    }
+
+    .product-app-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .product-app-link svg {
+      width: 1rem;
+      height: 1rem;
+      fill: currentColor;
+    }
+
     .product-mark {
       width: 2.75rem;
       height: 2.75rem;
@@ -242,8 +302,25 @@
       letter-spacing: 0.08em;
     }
 
+    .product-mark--cocofilms {
+      display: inline-grid;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.42);
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04));
+      color: #ffffff;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+    }
+
     .product-preview--center img {
       object-position: center;
+    }
+
+    .product-preview--contain img {
+      object-fit: contain;
+      object-position: center;
+      padding: 1.25rem;
     }
 
     .preview-caption {
@@ -504,6 +581,85 @@
       cursor: pointer;
     }
 
+    .collaboration-card {
+      position: relative;
+      overflow: hidden;
+      min-height: 100%;
+      border: 1px solid rgba(75, 85, 99, 0.58);
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 84% 0%, rgba(239, 68, 68, 0.1), transparent 34%),
+        linear-gradient(145deg, rgba(17, 24, 39, 0.94), rgba(3, 7, 18, 0.94));
+      box-shadow: 0 20px 70px rgba(0, 0, 0, 0.25);
+      transition: border-color 220ms ease, transform 220ms ease, box-shadow 220ms ease;
+    }
+
+    .collaboration-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(239, 68, 68, 0.48);
+      box-shadow: 0 28px 90px rgba(0, 0, 0, 0.38);
+    }
+
+    .collaboration-mark {
+      display: inline-grid;
+      place-items: center;
+      width: 3rem;
+      height: 3rem;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: 8px;
+      background: rgba(239, 68, 68, 0.08);
+      color: #f9fafb;
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      object-fit: contain;
+    }
+
+    .collaboration-status {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      min-height: 1.85rem;
+      padding: 0.28rem 0.65rem;
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      border-radius: 999px;
+      color: #9ca3af;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .collaboration-owner {
+      display: grid;
+      gap: 0.25rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid rgba(75, 85, 99, 0.42);
+    }
+
+    .collaboration-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      width: fit-content;
+      color: #ffffff;
+      font-size: 0.88rem;
+      font-weight: 700;
+      transition: color 180ms ease;
+    }
+
+    .collaboration-link:hover {
+      color: #ef4444;
+    }
+
+    .collaboration-note {
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 16% 0%, rgba(239, 68, 68, 0.14), transparent 32%),
+        rgba(3, 7, 18, 0.72);
+    }
+
     @media (max-width: 640px) {
       .gradient-text {
         width: min(100%, 21rem);
@@ -662,7 +818,8 @@
 
       .product-panel,
       .product-panel::before,
-      .product-preview img {
+      .product-preview img,
+      .collaboration-card {
         transition: none;
       }
     }
@@ -682,6 +839,7 @@
         'nav.systems': 'Systems',
         'nav.about': 'About',
         'nav.privacy': 'Privacy',
+        'nav.portal': 'Client Portal',
         'nav.contact': 'Contact',
         'nav.language': 'Language',
         'nav.languageSelector': 'Language selector',
@@ -700,8 +858,9 @@
         'hero.explore': 'Explore Work',
         'hero.websites': 'Website Packages',
         'hero.systems': 'System Packages',
-        'products.heading': 'Products & Web Projects',
+        'products.heading': 'Products, Apps & Web Projects',
         'products.intro': 'Software products and client websites built to support real operations, service businesses, and growing brands.',
+        'products.appStore': 'App Store',
         'products.beoflow.tag': 'Kitchen operations',
         'products.filtracore.body': 'Filtration operations platform for casinos, restaurants, and service teams. Track PSI, filter lifespan, maintenance, and stock readiness in real time.',
         'products.beoflow.body': 'Kitchen operations platform for menus, inventory, production, staff, service planning, and daily execution.',
@@ -714,6 +873,14 @@
         'products.filtracore.point2': 'Filter lifecycle and due dates',
         'products.filtracore.point3': 'Maintenance records and stock readiness',
         'products.filtracore.preview': 'Filter operations view',
+        'products.filtracore.appStoreAria': 'Download FiltraCore on the App Store',
+        'products.lineops.tag': 'Scheduling app',
+        'products.lineops.body': 'Native scheduling app for restaurants and service teams that need weekly rotations, station coverage, templates, and mobile schedule access.',
+        'products.lineops.point1': 'Weekly shift rotation planning',
+        'products.lineops.point2': 'Station coverage and saved templates',
+        'products.lineops.point3': 'Published on the App Store',
+        'products.lineops.preview': 'Shift scheduling app',
+        'products.lineops.appStoreAria': 'Download LineOps ShiftRotation on the App Store',
         'products.estrattiva.tag': 'Client website',
         'products.estrattiva.body': 'Informational website for professional consulting and advisory services, with responsive layout, branded welcome screen, contact cards, email, phone, and WhatsApp.',
         'products.estrattiva.point1': 'Responsive business landing page',
@@ -726,12 +893,36 @@
         'products.tallador.point2': 'Custom commission storytelling',
         'products.tallador.point3': 'Cart, checkout, and contact paths',
         'products.tallador.preview': 'Artisan e-commerce',
+        'products.cocofilms.tag': 'Film studio website',
+        'products.cocofilms.body': 'Premium website for CocoFilms, a photography and cinematic video production studio with a luxury dark portfolio experience.',
+        'products.cocofilms.point1': 'Cinematic hero and portfolio gallery',
+        'products.cocofilms.point2': 'Booking/contact flow for sessions',
+        'products.cocofilms.point3': 'Responsive luxury visual system',
+        'products.cocofilms.preview': 'Cinematic production site',
+        'products.appStatus': 'Published app',
         'products.publishedStatus': 'Published site',
         'products.previewStatus': 'Live workflow',
         'products.learnMore': 'Learn More',
         'products.openLogin': 'Open Login',
         'products.visitSite': 'Visit Site',
         'products.viewCode': 'View Code',
+        'collab.heading': 'Companies & Collaborations',
+        'collab.intro': 'Companies and founders working with Bastida Systems across operations software, client websites, scheduling, e-commerce, and production brands.',
+        'collab.portalCta': 'Open Client Portal',
+        'collab.privateNoteTitle': 'Private dashboard details stay behind login.',
+        'collab.privateNoteBody': 'The public website shows only the ecosystem. Each company dashboard is available only to authorized owners inside the client portal.',
+        'collab.ownerLabel': 'CEO / Owner',
+        'collab.website': 'Website',
+        'collab.filtracore.description': 'Filtration operations platform for PSI monitoring, filter lifecycle tracking, maintenance readiness, and reporting.',
+        'collab.beoflow.description': 'Kitchen operations platform for menu control, inventory, production planning, staff coordination, and service execution.',
+        'collab.lineops.description': 'Scheduling app for shift rotations, station coverage, weekly templates, and mobile schedule access.',
+        'collab.estrativa.description': 'Professional consulting and advisory collaboration with a responsive public website and direct contact experience.',
+        'collab.cocofilms.description': 'Photography and cinematic video production studio presented through a premium dark portfolio website.',
+        'collab.tallador.description': 'Artisan e-commerce collaboration for hand-painted wood sculptures, custom commissions, cart, checkout, and contact flow.',
+        'collab.status.activePlatform': 'Active platform',
+        'collab.status.publishedApp': 'Published app',
+        'collab.status.publishedSite': 'Published site',
+        'collab.status.collaboration': 'Collaboration',
         'contact.heading': 'Contact',
         'contact.body': 'Interested in a product, a client website, or a custom intelligent system for your operation? Let’s connect.',
         'footer.rights': '© 2026 Bastida Systems. All rights reserved.'
@@ -743,6 +934,7 @@
         'nav.systems': 'Sistemas',
         'nav.about': 'Acerca de',
         'nav.privacy': 'Privacidad',
+        'nav.portal': 'Portal de Clientes',
         'nav.contact': 'Contacto',
         'nav.language': 'Idioma',
         'nav.languageSelector': 'Selector de idioma',
@@ -761,8 +953,9 @@
         'hero.explore': 'Ver Proyectos',
         'hero.websites': 'Precios Web',
         'hero.systems': 'Precios Sistemas',
-        'products.heading': 'Productos y Sitios Web',
+        'products.heading': 'Productos, Apps y Sitios Web',
         'products.intro': 'Productos de software y sitios web para apoyar operaciones reales, negocios de servicio y marcas en crecimiento.',
+        'products.appStore': 'App Store',
         'products.beoflow.tag': 'Operación de cocina',
         'products.filtracore.body': 'Plataforma de operación para filtración en casinos, restaurantes y equipos de servicio. Controla PSI, vida útil de filtros, mantenimiento y stock listo en tiempo real.',
         'products.beoflow.body': 'Plataforma de operación de cocina para menús, inventario, producción, personal, planeación de servicio y ejecución diaria.',
@@ -775,6 +968,14 @@
         'products.filtracore.point2': 'Ciclo de vida de filtros y fechas de cambio',
         'products.filtracore.point3': 'Mantenimiento y stock listo',
         'products.filtracore.preview': 'Vista de operación de filtros',
+        'products.filtracore.appStoreAria': 'Descargar FiltraCore en App Store',
+        'products.lineops.tag': 'App de horarios',
+        'products.lineops.body': 'App nativa de horarios para restaurantes y equipos de servicio que necesitan rotaciones semanales, cobertura por estación, plantillas y acceso móvil.',
+        'products.lineops.point1': 'Planeación semanal de rotaciones',
+        'products.lineops.point2': 'Cobertura por estación y plantillas guardadas',
+        'products.lineops.point3': 'Publicada en App Store',
+        'products.lineops.preview': 'App de horarios',
+        'products.lineops.appStoreAria': 'Descargar LineOps ShiftRotation en App Store',
         'products.estrattiva.tag': 'Sitio de cliente',
         'products.estrattiva.body': 'Sitio informativo para consultoría y asesoría profesional, con diseño responsivo, pantalla de bienvenida, tarjetas de contacto, correo, teléfonos y WhatsApp.',
         'products.estrattiva.point1': 'Página de negocio responsiva',
@@ -787,12 +988,36 @@
         'products.tallador.point2': 'Narrativa para piezas personalizadas',
         'products.tallador.point3': 'Carrito, checkout y rutas de contacto',
         'products.tallador.preview': 'E-commerce artesanal',
+        'products.cocofilms.tag': 'Sitio para productora',
+        'products.cocofilms.body': 'Sitio premium para CocoFilms, estudio de fotografía y producción cinematográfica con una experiencia de portafolio oscura y elegante.',
+        'products.cocofilms.point1': 'Hero cinematográfico y galería de portafolio',
+        'products.cocofilms.point2': 'Flujo de reserva/contacto para sesiones',
+        'products.cocofilms.point3': 'Sistema visual responsivo de lujo',
+        'products.cocofilms.preview': 'Sitio de producción cinematográfica',
+        'products.appStatus': 'App publicada',
         'products.publishedStatus': 'Sitio publicado',
         'products.previewStatus': 'Flujo activo',
         'products.learnMore': 'Ver Más',
         'products.openLogin': 'Abrir Login',
         'products.visitSite': 'Ver Sitio',
         'products.viewCode': 'Ver Código',
+        'collab.heading': 'Empresas y Colaboraciones',
+        'collab.intro': 'Empresas y fundadores que trabajan con Bastida Systems en software operativo, sitios web, horarios, e-commerce y marcas de producción.',
+        'collab.portalCta': 'Abrir Portal de Clientes',
+        'collab.privateNoteTitle': 'Los detalles privados del dashboard quedan detrás del login.',
+        'collab.privateNoteBody': 'El sitio público solo muestra el ecosistema. Cada dashboard de empresa está disponible únicamente para dueños autorizados dentro del portal de clientes.',
+        'collab.ownerLabel': 'CEO / Dueño',
+        'collab.website': 'Sitio Web',
+        'collab.filtracore.description': 'Plataforma de filtración para monitoreo PSI, ciclo de vida de filtros, mantenimiento listo y reportes.',
+        'collab.beoflow.description': 'Plataforma de operación de cocina para control de menús, inventario, producción, coordinación de personal y ejecución de servicio.',
+        'collab.lineops.description': 'App de horarios para rotaciones de turnos, cobertura por estación, plantillas semanales y acceso móvil.',
+        'collab.estrativa.description': 'Colaboración de consultoría y asesoría profesional con sitio público responsivo y experiencia de contacto directa.',
+        'collab.cocofilms.description': 'Estudio de fotografía y producción cinematográfica presentado con un sitio de portafolio oscuro y premium.',
+        'collab.tallador.description': 'Colaboración e-commerce artesanal para esculturas de madera pintadas a mano, piezas por encargo, carrito, checkout y contacto.',
+        'collab.status.activePlatform': 'Plataforma activa',
+        'collab.status.publishedApp': 'App publicada',
+        'collab.status.publishedSite': 'Sitio publicado',
+        'collab.status.collaboration': 'Colaboración',
         'contact.heading': 'Contacto',
         'contact.body': '¿Te interesa un producto, un sitio web para tu negocio o un sistema personalizado para tu operación? Conversemos.',
         'footer.rights': '© 2026 Bastida Systems. Todos los derechos reservados.'
@@ -856,6 +1081,7 @@
           <a href="websites.html" class="hover:text-black transition">Websites</a>
           <a href="systems.html" class="hover:text-black transition">Systems</a>
           <a href="about.html" class="hover:text-black transition">About</a>
+          <a href="portal.html" class="hover:text-black transition">Client Portal</a>
           <a href="index.html#contact" class="hover:text-black transition">Contact</a>
         </div>
       </nav>
@@ -874,6 +1100,7 @@
         'websites.html': 'nav.websites',
         'systems.html': 'nav.systems',
         'about.html': 'nav.about',
+        'portal.html': 'nav.portal',
         'index.html#contact': 'nav.contact'
       };
 
@@ -987,7 +1214,7 @@
   <section id="products" class="px-6 md:px-8 py-24 border-t border-gray-800 fade-in">
     <div class="max-w-7xl mx-auto">
       <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-12">
-        <h2 class="text-3xl md:text-4xl font-semibold" data-i18n="products.heading">Products & Web Projects</h2>
+        <h2 class="text-3xl md:text-4xl font-semibold" data-i18n="products.heading">Products, Apps & Web Projects</h2>
         <p class="text-gray-400 max-w-2xl leading-7" data-i18n="products.intro">
           Software products and client websites built to support real operations, service businesses, and growing brands.
         </p>
@@ -1020,7 +1247,7 @@
               <a href="beoflow.html" class="px-5 py-2 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105 inline-block" data-i18n="products.learnMore">
                 Learn More
               </a>
-              <a href="https://beoflow-api.onrender.com/" class="px-5 py-2 bg-white text-black rounded-full font-medium hover:opacity-80 transition duration-300 hover:scale-105 inline-block" data-i18n="products.openLogin">
+              <a href="beoflow-app.html" class="px-5 py-2 bg-white text-black rounded-full font-medium hover:opacity-80 transition duration-300 hover:scale-105 inline-block" data-i18n="products.openLogin">
                 Open Login
               </a>
             </div>
@@ -1061,8 +1288,14 @@
               <a href="filtracore.html" class="px-5 py-2 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105 inline-block" data-i18n="products.learnMore">
                 Learn More
               </a>
-              <a href="https://filtracore-v2-api.onrender.com/" class="px-5 py-2 bg-white text-black rounded-full font-medium hover:opacity-80 transition duration-300 hover:scale-105 inline-block" data-i18n="products.openLogin">
+              <a href="filtracore-app.html" class="px-5 py-2 bg-white text-black rounded-full font-medium hover:opacity-80 transition duration-300 hover:scale-105 inline-block" data-i18n="products.openLogin">
                 Open Login
+              </a>
+              <a href="https://apps.apple.com/us/app/filtracore/id6767891950" target="_blank" rel="noopener" class="product-app-link px-5 py-2 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105" aria-label="Download FiltraCore on the App Store" data-i18n-aria-label="products.filtracore.appStoreAria">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M16.6 13.05c-.02-2.2 1.8-3.25 1.88-3.3-1.03-1.5-2.63-1.71-3.19-1.73-1.35-.14-2.64.8-3.32.8-.69 0-1.74-.78-2.86-.76-1.47.02-2.83.86-3.59 2.18-1.53 2.65-.39 6.58 1.1 8.74.73 1.05 1.6 2.23 2.74 2.19 1.1-.04 1.51-.71 2.84-.71 1.32 0 1.7.71 2.86.69 1.18-.02 1.93-1.07 2.65-2.12.84-1.22 1.18-2.4 1.2-2.46-.03-.01-2.29-.88-2.31-3.52ZM14.4 6.6c.6-.72 1-1.72.89-2.72-.86.03-1.9.57-2.52 1.29-.55.64-1.03 1.66-.9 2.64.96.07 1.94-.49 2.53-1.21Z"></path>
+                </svg>
+                <span data-i18n="products.appStore">App Store</span>
               </a>
             </div>
           </div>
@@ -1072,6 +1305,47 @@
             <div class="preview-caption">
               <span data-i18n="products.filtracore.preview">Filter operations view</span>
               <span data-i18n="products.previewStatus">Live workflow</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="product-panel product-panel--lineops">
+          <div class="relative z-10 p-6 md:p-8">
+            <div class="flex flex-wrap items-start justify-between gap-4 mb-7">
+              <div class="flex items-center gap-4">
+                <img src="img/linopsmark.png" alt="LineOps Logo" class="product-mark">
+                <div>
+                  <h3 class="text-2xl md:text-3xl font-semibold">LineOps</h3>
+                </div>
+              </div>
+              <span class="product-tag" data-i18n="products.lineops.tag">Scheduling app</span>
+            </div>
+
+            <p class="text-gray-300 leading-7" data-i18n="products.lineops.body">
+              Native scheduling app for restaurants and service teams that need weekly rotations, station coverage, templates, and mobile schedule access.
+            </p>
+
+            <ul class="product-points" aria-label="LineOps features">
+              <li data-i18n="products.lineops.point1">Weekly shift rotation planning</li>
+              <li data-i18n="products.lineops.point2">Station coverage and saved templates</li>
+              <li data-i18n="products.lineops.point3">Published on the App Store</li>
+            </ul>
+
+            <div class="flex flex-wrap gap-3">
+              <a href="https://apps.apple.com/us/app/lineops-shiftrotation/id6767958380?l=es-MX" target="_blank" rel="noopener" class="product-app-link px-5 py-2 bg-white text-black rounded-full font-medium hover:opacity-80 transition duration-300 hover:scale-105" aria-label="Download LineOps ShiftRotation on the App Store" data-i18n-aria-label="products.lineops.appStoreAria">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M16.6 13.05c-.02-2.2 1.8-3.25 1.88-3.3-1.03-1.5-2.63-1.71-3.19-1.73-1.35-.14-2.64.8-3.32.8-.69 0-1.74-.78-2.86-.76-1.47.02-2.83.86-3.59 2.18-1.53 2.65-.39 6.58 1.1 8.74.73 1.05 1.6 2.23 2.74 2.19 1.1-.04 1.51-.71 2.84-.71 1.32 0 1.7.71 2.86.69 1.18-.02 1.93-1.07 2.65-2.12.84-1.22 1.18-2.4 1.2-2.46-.03-.01-2.29-.88-2.31-3.52ZM14.4 6.6c.6-.72 1-1.72.89-2.72-.86.03-1.9.57-2.52 1.29-.55.64-1.03 1.66-.9 2.64.96.07 1.94-.49 2.53-1.21Z"></path>
+                </svg>
+                <span data-i18n="products.appStore">App Store</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="product-preview product-preview--contain">
+            <img src="img/lineops-devices.png" alt="LineOps ShiftRotation app preview on phone and tablet">
+            <div class="preview-caption">
+              <span data-i18n="products.lineops.preview">Shift scheduling app</span>
+              <span data-i18n="products.appStatus">Published app</span>
             </div>
           </div>
         </article>
@@ -1157,6 +1431,190 @@
             </div>
           </div>
         </article>
+
+        <article class="product-panel product-panel--cocofilms">
+          <div class="relative z-10 p-6 md:p-8">
+            <div class="flex flex-wrap items-start justify-between gap-4 mb-7">
+              <div class="flex items-center gap-4">
+                <span class="product-mark product-mark--cocofilms" aria-hidden="true">CF</span>
+                <div>
+                  <h3 class="text-2xl md:text-3xl font-semibold">CocoFilms</h3>
+                </div>
+              </div>
+              <span class="product-tag" data-i18n="products.cocofilms.tag">Film studio website</span>
+            </div>
+
+            <p class="text-gray-300 leading-7" data-i18n="products.cocofilms.body">
+              Premium website for CocoFilms, a photography and cinematic video production studio with a luxury dark portfolio experience.
+            </p>
+
+            <ul class="product-points" aria-label="CocoFilms features">
+              <li data-i18n="products.cocofilms.point1">Cinematic hero and portfolio gallery</li>
+              <li data-i18n="products.cocofilms.point2">Booking/contact flow for sessions</li>
+              <li data-i18n="products.cocofilms.point3">Responsive luxury visual system</li>
+            </ul>
+
+            <div class="flex flex-wrap gap-3">
+              <a href="https://bastidadavid.github.io/Cocofilms/" target="_blank" rel="noopener" class="px-5 py-2 bg-white text-black rounded-full font-medium hover:opacity-80 transition duration-300 hover:scale-105 inline-block" data-i18n="products.visitSite">
+                Visit Site
+              </a>
+            </div>
+          </div>
+
+          <div class="product-preview product-preview--center">
+            <img src="img/cocofilms-preview.jpg" alt="CocoFilms cinematic website preview">
+            <div class="preview-caption">
+              <span data-i18n="products.cocofilms.preview">Cinematic production site</span>
+              <span data-i18n="products.publishedStatus">Published site</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPANIES & COLLABORATIONS -->
+  <section id="collaborations" class="px-6 md:px-8 py-24 border-t border-gray-800 fade-in">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex flex-col gap-5 md:flex-row md:items-end md:justify-between mb-12">
+        <div>
+          <h2 class="text-3xl md:text-4xl font-semibold" data-i18n="collab.heading">Companies & Collaborations</h2>
+          <p class="text-gray-400 max-w-3xl leading-7 mt-4" data-i18n="collab.intro">
+            Companies and founders working with Bastida Systems across operations software, client websites, scheduling, e-commerce, and production brands.
+          </p>
+        </div>
+        <a href="portal.html" class="px-5 py-2 bg-white text-black rounded-full font-medium hover:opacity-80 transition duration-300 hover:scale-105 inline-block" data-i18n="collab.portalCta">
+          Open Client Portal
+        </a>
+      </div>
+
+      <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        <article class="collaboration-card p-6">
+          <div class="flex items-start justify-between gap-4 mb-7">
+            <div class="flex items-center gap-4">
+              <img src="img/LOGO_FILTRACOREXCODE.png" alt="FiltraCore logo" class="collaboration-mark">
+              <div>
+                <h3 class="text-2xl font-semibold">FiltraCore</h3>
+                <span class="text-sm text-gray-500" data-i18n="collab.ownerLabel">CEO / Owner</span>
+              </div>
+            </div>
+            <span class="collaboration-status" data-i18n="collab.status.activePlatform">Active platform</span>
+          </div>
+          <div class="collaboration-owner mb-5">
+            <strong class="text-white">David Bastida</strong>
+          </div>
+          <p class="text-gray-300 leading-7 mb-6" data-i18n="collab.filtracore.description">
+            Filtration operations platform for PSI monitoring, filter lifecycle tracking, maintenance readiness, and reporting.
+          </p>
+          <a href="filtracore.html" class="collaboration-link" data-i18n="collab.website">Website</a>
+        </article>
+
+        <article class="collaboration-card p-6">
+          <div class="flex items-start justify-between gap-4 mb-7">
+            <div class="flex items-center gap-4">
+              <img src="img/logobeoflow.png" alt="BEOFlow logo" class="collaboration-mark">
+              <div>
+                <h3 class="text-2xl font-semibold">BEOFlow</h3>
+                <span class="text-sm text-gray-500" data-i18n="collab.ownerLabel">CEO / Owner</span>
+              </div>
+            </div>
+            <span class="collaboration-status" data-i18n="collab.status.activePlatform">Active platform</span>
+          </div>
+          <div class="collaboration-owner mb-5">
+            <strong class="text-white">Rodrigo Bastida</strong>
+          </div>
+          <p class="text-gray-300 leading-7 mb-6" data-i18n="collab.beoflow.description">
+            Kitchen operations platform for menu control, inventory, production planning, staff coordination, and service execution.
+          </p>
+          <a href="beoflow.html" class="collaboration-link" data-i18n="collab.website">Website</a>
+        </article>
+
+        <article class="collaboration-card p-6">
+          <div class="flex items-start justify-between gap-4 mb-7">
+            <div class="flex items-center gap-4">
+              <img src="img/linopsmark.png" alt="LineOps logo" class="collaboration-mark">
+              <div>
+                <h3 class="text-2xl font-semibold">LineOps</h3>
+                <span class="text-sm text-gray-500" data-i18n="collab.ownerLabel">CEO / Owner</span>
+              </div>
+            </div>
+            <span class="collaboration-status" data-i18n="collab.status.publishedApp">Published app</span>
+          </div>
+          <div class="collaboration-owner mb-5">
+            <strong class="text-white">David Bastida</strong>
+          </div>
+          <p class="text-gray-300 leading-7 mb-6" data-i18n="collab.lineops.description">
+            Scheduling app for shift rotations, station coverage, weekly templates, and mobile schedule access.
+          </p>
+          <a href="https://apps.apple.com/us/app/lineops-shiftrotation/id6767958380?l=es-MX" target="_blank" rel="noopener" class="collaboration-link" data-i18n="collab.website">Website</a>
+        </article>
+
+        <article class="collaboration-card p-6">
+          <div class="flex items-start justify-between gap-4 mb-7">
+            <div class="flex items-center gap-4">
+              <img src="img/estrattiva-mark.png" alt="Estrativa logo" class="collaboration-mark">
+              <div>
+                <h3 class="text-2xl font-semibold">Estrativa</h3>
+                <span class="text-sm text-gray-500" data-i18n="collab.ownerLabel">CEO / Owner</span>
+              </div>
+            </div>
+            <span class="collaboration-status" data-i18n="collab.status.publishedSite">Published site</span>
+          </div>
+          <div class="collaboration-owner mb-5">
+            <strong class="text-white">Blanca Gordon</strong>
+          </div>
+          <p class="text-gray-300 leading-7 mb-6" data-i18n="collab.estrativa.description">
+            Professional consulting and advisory collaboration with a responsive public website and direct contact experience.
+          </p>
+          <a href="https://bastidadavid.github.io/ESTRATIVA/" target="_blank" rel="noopener" class="collaboration-link" data-i18n="collab.website">Website</a>
+        </article>
+
+        <article class="collaboration-card p-6">
+          <div class="flex items-start justify-between gap-4 mb-7">
+            <div class="flex items-center gap-4">
+              <span class="collaboration-mark" aria-hidden="true">CF</span>
+              <div>
+                <h3 class="text-2xl font-semibold">CocoFilms</h3>
+                <span class="text-sm text-gray-500" data-i18n="collab.ownerLabel">CEO / Owner</span>
+              </div>
+            </div>
+            <span class="collaboration-status" data-i18n="collab.status.publishedSite">Published site</span>
+          </div>
+          <div class="collaboration-owner mb-5">
+            <strong class="text-white">Rafael Amezquita</strong>
+          </div>
+          <p class="text-gray-300 leading-7 mb-6" data-i18n="collab.cocofilms.description">
+            Photography and cinematic video production studio presented through a premium dark portfolio website.
+          </p>
+          <a href="https://bastidadavid.github.io/Cocofilms/" target="_blank" rel="noopener" class="collaboration-link" data-i18n="collab.website">Website</a>
+        </article>
+
+        <article class="collaboration-card p-6">
+          <div class="flex items-start justify-between gap-4 mb-7">
+            <div class="flex items-center gap-4">
+              <span class="collaboration-mark" aria-hidden="true">TS</span>
+              <div>
+                <h3 class="text-2xl font-semibold">Tallador de Sueños</h3>
+                <span class="text-sm text-gray-500" data-i18n="collab.ownerLabel">CEO / Owner</span>
+              </div>
+            </div>
+            <span class="collaboration-status" data-i18n="collab.status.publishedSite">Published site</span>
+          </div>
+          <div class="collaboration-owner mb-5">
+            <strong class="text-white">Jiménez Isaías</strong>
+          </div>
+          <p class="text-gray-300 leading-7 mb-6" data-i18n="collab.tallador.description">
+            Artisan e-commerce collaboration for hand-painted wood sculptures, custom commissions, cart, checkout, and contact flow.
+          </p>
+          <a href="https://tallador-de-suenos.onrender.com/" target="_blank" rel="noopener" class="collaboration-link" data-i18n="collab.website">Website</a>
+        </article>
+      </div>
+
+      <div class="collaboration-note mt-8 p-6 md:p-8">
+        <h3 class="text-xl font-semibold mb-3" data-i18n="collab.privateNoteTitle">Private dashboard details stay behind login.</h3>
+        <p class="text-gray-400 leading-7 max-w-4xl" data-i18n="collab.privateNoteBody">
+          The public website shows only the ecosystem. Each company dashboard is available only to authorized owners inside the client portal.
+        </p>
       </div>
     </div>
   </section>
@@ -1186,6 +1644,7 @@
       <a href="websites.html" class="hover:text-white transition" data-i18n="nav.websites">Websites</a>
       <a href="systems.html" class="hover:text-white transition" data-i18n="nav.systems">Systems</a>
       <a href="about.html" class="hover:text-white transition" data-i18n="nav.about">About</a>
+      <a href="portal.html" class="hover:text-white transition" data-i18n="nav.portal">Client Portal</a>
       <a href="index.html#contact" class="hover:text-white transition" data-i18n="nav.contact">Contact</a>
       <a href="privacy.html" class="hover:text-white transition" data-i18n="nav.privacy">Privacy</a>
     </div>
