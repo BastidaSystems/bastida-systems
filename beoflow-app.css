@@ -533,7 +533,7 @@ h1 {
 
 .workspace-header h2 {
   margin: 0 0 0.35rem;
-  color: var(--ink-strong);
+  color: var(--accent-strong);
   font-size: clamp(2rem, 4vw, 3.25rem);
   line-height: 1;
   font-weight: 800;
