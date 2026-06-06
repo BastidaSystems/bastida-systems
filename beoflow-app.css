@@ -569,7 +569,7 @@ h1 {
 .workspace-control strong {
   display: block;
   margin-top: 0.2rem;
-  color: var(--ink-strong);
+  color: var(--accent-strong);
   font-size: 1rem;
 }
 
@@ -587,6 +587,10 @@ h1 {
   color: var(--ink-strong);
   font-size: 2rem;
   line-height: 1.1;
+}
+
+.dashboard-heading h3 {
+  color: var(--accent-strong);
 }
 
 .client-list {
