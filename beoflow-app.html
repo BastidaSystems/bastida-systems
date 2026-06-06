@@ -6,10 +6,10 @@
   <title>Beoflow App | Bastida Systems</title>
   <link rel="icon" type="image/png" href="img/logobeoflow.png">
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="beoflow-app.css?v=mvp-modules-20260603">
+  <link rel="stylesheet" href="beoflow-app.css?v=kitchen-costing-empty-20260606">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="beoflow-client-config.js?v=client-prod-recovery-20260603"></script>
-  <script src="beoflow-client.js?v=mvp-modules-20260603" defer></script>
+  <script src="beoflow-client.js?v=kitchen-costing-empty-20260606" defer></script>
 </head>
 <body class="beoflow-app-shell">
   <main class="beoflow-app" data-testid="beoflow-app">
@@ -234,6 +234,7 @@
           <button type="button" class="sidebar-link" data-section="events">Events</button>
           <button type="button" class="sidebar-link" data-section="menu">Menu</button>
           <button type="button" class="sidebar-link" data-section="recipes">Recipes</button>
+          <button type="button" class="sidebar-link" data-section="subrecipes">Subrecipes</button>
           <button type="button" class="sidebar-link" data-section="inventory">Inventory</button>
           <button type="button" class="sidebar-link" data-section="production">Production</button>
           <button type="button" class="sidebar-link" data-section="staff">Staff</button>
@@ -248,7 +249,7 @@
       </aside>
 
       <section class="workspace-main">
-        <header class="workspace-header">
+        <header class="workspace-header" id="workspace-header">
           <div>
             <p class="eyebrow">Beoflow Workspace</p>
             <h2 id="workspace-title">Beoflow</h2>
@@ -297,6 +298,11 @@
               <span>Recipes</span>
               <strong data-count-section="recipes">0</strong>
               <p>No recipes yet</p>
+            </button>
+            <button type="button" class="module-card" data-section="subrecipes">
+              <span>Subrecipes</span>
+              <strong data-count-section="subrecipes">0</strong>
+              <p>No subrecipes yet</p>
             </button>
             <button type="button" class="module-card" data-section="inventory">
               <span>Inventory</span>
@@ -418,6 +424,14 @@
                 <option value="company">Company</option>
                 <option value="other">Other</option>
               </select>
+            </label>
+            <label class="form-field">
+              <span>Default waste percentage</span>
+              <input type="number" id="workspace-settings-waste" min="0" step="0.01" value="10">
+            </label>
+            <label class="form-field">
+              <span>Food factor</span>
+              <input type="number" id="workspace-settings-factor" min="0" step="0.01" value="1">
             </label>
           </div>
           <div class="modal-actions">

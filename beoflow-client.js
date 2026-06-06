@@ -5,6 +5,9 @@ const missingAnonKeyValues = new Set([
   'PASTE_CLIENT_PROD_ANON_PUBLIC_KEY_HERE'
 ]);
 
+const DEFAULT_WASTE_PERCENTAGE = 0.1;
+const DEFAULT_FOOD_FACTOR = 1;
+
 const state = {
   supabase: null,
   user: null,
@@ -17,6 +20,11 @@ const state = {
   reportsData: null,
   modalSection: null,
   editingRecord: null,
+  recipeIngredientsDraft: [],
+  recipeIngredientSearch: '',
+  recipeQuickIngredientOpen: false,
+  recipeLinkIngredient: null,
+  subrecipeSearch: '',
   mobileDrawerOpen: false,
   onboardingMode: 'first',
   authMode: 'signin',
@@ -54,23 +62,24 @@ const MODULE_SECTIONS = {
   },
   menu: {
     title: 'Menu',
-    subtitle: 'Build menus for restaurants, events, and recurring service operations.',
+    subtitle: 'Link menu items to recipes and track selling price, cost, margin, and profit.',
     emptyTitle: 'No menu items yet.',
-    emptyCopy: 'Add your first menu item to organize offerings.',
-    action: 'Add Menu Item',
+    emptyCopy: 'Add your first menu item once a recipe is ready.',
+    action: 'New Menu Item',
     singular: 'menu item',
     plural: 'menu items',
     table: 'beoflow_menu_items',
     index: '02',
     titleField: 'name',
     badgeField: 'status',
-    metaFields: ['category', 'price'],
-    detailFields: ['description'],
+    metaFields: ['category', 'sale_price', 'recipe_cost', 'cost_percentage', 'margin_percentage', 'profit', 'price_cost_ratio'],
+    detailFields: ['recipe_name', 'notes'],
     fields: [
       { name: 'name', label: 'Item Name', type: 'text', required: true },
+      { name: 'recipe_id', label: 'Linked Recipe', type: 'recipe-select' },
       { name: 'category', label: 'Category', type: 'text' },
-      { name: 'description', label: 'Description', type: 'textarea', wide: true },
-      { name: 'price', label: 'Price', type: 'number', min: '0', step: '0.01' },
+      { name: 'sale_price', label: 'Sale Price', type: 'number', min: '0', step: '0.01' },
+      { name: 'notes', label: 'Notes', type: 'textarea', wide: true },
       { name: 'status', label: 'Status', type: 'text', defaultValue: 'active' }
     ]
   },
@@ -79,22 +88,51 @@ const MODULE_SECTIONS = {
     subtitle: 'Standardize recipes, ingredients, procedures, and consistency.',
     emptyTitle: 'No recipes yet.',
     emptyCopy: 'Add your first recipe to begin building your recipe library.',
-    action: 'Add Recipe',
+    action: 'New Recipe',
     singular: 'recipe',
     plural: 'recipes',
     table: 'beoflow_recipes',
     index: '03',
     titleField: 'name',
     badgeField: 'status',
-    metaFields: ['category', 'yield_quantity', 'prep_time', 'cook_time'],
-    detailFields: ['ingredients', 'procedure', 'notes'],
+    metaFields: ['recipe_number', 'category', 'pax', 'yield_quantity', 'yield_unit', 'total_cost', 'waste_cost', 'suggested_sale_price', 'manual_sale_price', 'cost_percentage', 'margin_percentage', 'profit'],
+    detailFields: ['procedure', 'notes'],
     fields: [
       { name: 'name', label: 'Recipe Name', type: 'text', required: true },
       { name: 'category', label: 'Category', type: 'text' },
-      { name: 'yield_quantity', label: 'Yield Quantity', type: 'text' },
+      { name: 'recipe_number', label: 'Recipe Number', type: 'text' },
+      { name: 'pax', label: 'Pax', type: 'number', min: '0', step: '1' },
+      { name: 'yield_quantity', label: 'Yield / Rendimiento', type: 'number', min: '0', step: '0.01' },
+      { name: 'yield_unit', label: 'Yield Unit', type: 'text', placeholder: 'portions, lb, oz, trays' },
+      { name: 'manual_sale_price', label: 'Manual Sale Price', type: 'number', min: '0', step: '0.01' },
       { name: 'prep_time', label: 'Prep Time', type: 'text' },
-      { name: 'cook_time', label: 'Cook Time', type: 'text' },
-      { name: 'ingredients', label: 'Ingredients', type: 'textarea', wide: true },
+      { name: 'procedure', label: 'Procedure', type: 'textarea', wide: true },
+      { name: 'notes', label: 'Notes', type: 'textarea', wide: true },
+      { name: 'responsible', label: 'Responsible', type: 'text' },
+      { name: 'photo_url', label: 'Photo URL', type: 'url' },
+      { name: 'status', label: 'Status', type: 'text', defaultValue: 'active' }
+    ]
+  },
+  subrecipes: {
+    title: 'Subrecipes',
+    subtitle: 'Create reusable preparations such as sauces, bases, doughs, and garnishes.',
+    emptyTitle: 'No subrecipes yet.',
+    emptyCopy: 'Create reusable preparations manually when you are ready.',
+    action: 'New Subrecipe',
+    singular: 'subrecipe',
+    plural: 'subrecipes',
+    table: 'beoflow_subrecipes',
+    index: '04',
+    titleField: 'name',
+    badgeField: 'status',
+    metaFields: ['recipe_number', 'category', 'yield_quantity', 'yield_unit', 'total_cost', 'cost_per_yield_unit'],
+    detailFields: ['procedure', 'notes'],
+    fields: [
+      { name: 'name', label: 'Subrecipe Name', type: 'text', required: true },
+      { name: 'category', label: 'Category', type: 'text' },
+      { name: 'recipe_number', label: 'Subrecipe Number', type: 'text' },
+      { name: 'yield_quantity', label: 'Yield / Rendimiento', type: 'number', min: '0', step: '0.01' },
+      { name: 'yield_unit', label: 'Yield Unit', type: 'text', placeholder: 'portions, lb, oz, trays' },
       { name: 'procedure', label: 'Procedure', type: 'textarea', wide: true },
       { name: 'notes', label: 'Notes', type: 'textarea', wide: true },
       { name: 'status', label: 'Status', type: 'text', defaultValue: 'active' }
@@ -102,26 +140,30 @@ const MODULE_SECTIONS = {
   },
   inventory: {
     title: 'Inventory',
-    subtitle: 'Track ingredients, supplies, stock levels, and usage.',
+    subtitle: 'Register kitchen inputs by code, presentation, supplier, and cost.',
     emptyTitle: 'No inventory items yet.',
-    emptyCopy: 'Add your first item to start tracking stock.',
-    action: 'Add Inventory Item',
+    emptyCopy: 'Add your first input to start building recipe costs.',
+    action: 'New Ingredient',
     singular: 'inventory item',
     plural: 'inventory items',
     table: 'beoflow_inventory_items',
-    index: '04',
+    index: '05',
     titleField: 'name',
     badgeField: 'status',
-    metaFields: ['category', 'quantity', 'unit', 'par_level', 'vendor'],
-    detailFields: ['cost_per_unit', 'notes'],
+    metaFields: ['item_code', 'category', 'brand', 'base_unit', 'package_quantity', 'package_unit', 'package_price', 'cost_per_unit', 'supplier'],
+    detailFields: ['current_stock', 'minimum_stock', 'notes'],
     fields: [
-      { name: 'name', label: 'Item Name', type: 'text', required: true },
+      { name: 'item_code', label: 'Input Code', type: 'text', required: true, placeholder: 'INS-001' },
+      { name: 'name', label: 'Name / Description', type: 'text', required: true },
       { name: 'category', label: 'Category', type: 'text' },
-      { name: 'unit', label: 'Unit', type: 'text' },
-      { name: 'quantity', label: 'Quantity', type: 'number', step: '0.01' },
-      { name: 'par_level', label: 'Par Level', type: 'number', step: '0.01' },
-      { name: 'cost_per_unit', label: 'Cost Per Unit', type: 'number', min: '0', step: '0.01' },
-      { name: 'vendor', label: 'Vendor', type: 'text' },
+      { name: 'brand', label: 'Brand', type: 'text' },
+      { name: 'base_unit', label: 'Base Unit', type: 'text', required: true, placeholder: 'oz, lb, each' },
+      { name: 'package_quantity', label: 'Package Quantity', type: 'number', min: '0.01', step: '0.01' },
+      { name: 'package_unit', label: 'Package Unit', type: 'text', placeholder: 'case, bag, bottle' },
+      { name: 'package_price', label: 'Package Price', type: 'number', min: '0', step: '0.01' },
+      { name: 'current_stock', label: 'Current Stock', type: 'number', step: '0.01' },
+      { name: 'minimum_stock', label: 'Minimum Stock', type: 'number', step: '0.01' },
+      { name: 'supplier', label: 'Supplier', type: 'text' },
       { name: 'status', label: 'Status', type: 'text', defaultValue: 'active' },
       { name: 'notes', label: 'Notes', type: 'textarea', wide: true }
     ]
@@ -131,11 +173,11 @@ const MODULE_SECTIONS = {
     subtitle: 'Organize prep tasks, production logs, and kitchen execution.',
     emptyTitle: 'No production records yet.',
     emptyCopy: 'Start a production log when operations begin.',
-    action: 'New Production Log',
+    action: 'New Production Plan',
     singular: 'production log',
     plural: 'production logs',
     table: 'beoflow_production_logs',
-    index: '05',
+    index: '06',
     titleField: 'title',
     badgeField: 'status',
     metaFields: ['production_date', 'shift', 'assigned_to'],
@@ -158,7 +200,7 @@ const MODULE_SECTIONS = {
     singular: 'staff member',
     plural: 'staff members',
     table: 'beoflow_staff',
-    index: '06',
+    index: '07',
     titleField: 'full_name',
     badgeField: 'status',
     metaFields: ['role', 'email', 'phone'],
@@ -181,7 +223,7 @@ const MODULE_SECTIONS = {
     singular: 'report',
     plural: 'reports',
     table: null,
-    index: '07'
+    index: '08'
   }
 };
 
@@ -218,6 +260,7 @@ function cacheElements() {
     'confirm-password-field',
     'show-sign-in',
     'show-sign-up',
+    'workspace-header',
     'workspace-title',
     'workspace-subtitle',
     'workspace-message',
@@ -286,6 +329,8 @@ function cacheElements() {
     'workspace-settings-form',
     'workspace-settings-name',
     'workspace-settings-type',
+    'workspace-settings-waste',
+    'workspace-settings-factor',
     'workspace-settings-cancel',
     'workspace-settings-save',
     'sign-out-button'
@@ -460,28 +505,84 @@ function formatLabel(value) {
     .replace(/\b\w/g, letter => letter.toUpperCase());
 }
 
+function formatMoney(value) {
+  const numberValue = Number(value);
+  if (!Number.isFinite(numberValue)) return '';
+
+  return numberValue.toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD'
+  });
+}
+
 function formatRecordValue(fieldName, value) {
   if (value === null || value === undefined || value === '') return '';
 
-  if (fieldName === 'price' || fieldName === 'cost_per_unit') {
+  if (
+    fieldName === 'price'
+    || fieldName === 'sale_price'
+    || fieldName === 'manual_sale_price'
+    || fieldName === 'package_price'
+    || fieldName === 'cost_per_unit'
+    || fieldName === 'total_ingredient_cost'
+    || fieldName === 'total_cost'
+    || fieldName === 'waste_cost'
+    || fieldName === 'unit_cost_total'
+    || fieldName === 'food_factor_total'
+    || fieldName === 'suggested_sale_price'
+    || fieldName === 'recipe_cost'
+    || fieldName === 'cost_per_yield_unit'
+    || fieldName === 'cost_per_portion'
+    || fieldName === 'profit'
+  ) {
+    return formatMoney(value);
+  }
+
+  if (
+    fieldName === 'cost_percentage'
+    || fieldName === 'margin_percentage'
+    || fieldName === 'waste_percentage'
+  ) {
     const numberValue = Number(value);
-    if (Number.isFinite(numberValue)) {
-      return numberValue.toLocaleString('en-US', {
-        style: 'currency',
-        currency: 'USD'
-      });
-    }
+    if (!Number.isFinite(numberValue)) return '';
+    return `${(numberValue * 100).toFixed(1)}%`;
+  }
+
+  if (fieldName === 'food_factor') {
+    const numberValue = Number(value);
+    return Number.isFinite(numberValue) ? numberValue.toFixed(2) : '';
+  }
+
+  if (fieldName === 'price_cost_ratio') {
+    const numberValue = Number(value);
+    return Number.isFinite(numberValue) ? `${numberValue.toFixed(2)}x` : '';
   }
 
   if (fieldName === 'guest_count') {
     return `${value} guests`;
   }
 
-  if (fieldName === 'par_level') {
-    return `Par ${value}`;
+  if (fieldName === 'minimum_stock') {
+    return `Minimum ${value}`;
   }
 
-  if (fieldName === 'prep_time' || fieldName === 'cook_time') {
+  if (fieldName === 'current_stock') {
+    return `Stock ${value}`;
+  }
+
+  if (fieldName === 'package_quantity') {
+    return `Package qty ${value}`;
+  }
+
+  if (fieldName === 'pax') {
+    return `${value} pax`;
+  }
+
+  if (fieldName === 'yield_quantity') {
+    return `Yield ${value}`;
+  }
+
+  if (fieldName === 'prep_time') {
     return String(value);
   }
 
@@ -530,6 +631,10 @@ function getModuleConfig(section) {
   return moduleConfig;
 }
 
+function isCostingRecipeSection(section) {
+  return section === 'recipes' || section === 'subrecipes';
+}
+
 function withActiveRecordFilter(query) {
   return query.neq('status', 'archived');
 }
@@ -543,10 +648,436 @@ function normalizePayloadValue(field, value) {
   return value;
 }
 
+function getInventoryCurrentStock(record) {
+  return record?.current_stock ?? record?.currentStock ?? record?.quantity ?? null;
+}
+
+function getInventoryMinimumStock(record) {
+  return record?.minimum_stock ?? record?.minimumStock ?? record?.par_level ?? null;
+}
+
+function getInventorySupplier(record) {
+  return record?.supplier ?? record?.vendor ?? '';
+}
+
+function getInventoryBaseUnit(record) {
+  return record?.base_unit ?? record?.unit ?? '';
+}
+
+function getInventoryPackageQuantity(record) {
+  return record?.package_quantity ?? record?.quantity_per_package ?? null;
+}
+
+function getInventoryPackagePrice(record) {
+  if (record && Object.prototype.hasOwnProperty.call(record, 'package_price')) {
+    return record.package_price;
+  }
+  return record?.price_per_package ?? record?.cost_per_unit ?? null;
+}
+
+function getInventoryPackageUnit(record) {
+  return record?.package_unit ?? record?.presentation_unit ?? '';
+}
+
+function calculateInventoryUnitCost(recordOrPayload) {
+  const packageQuantity = Number(getInventoryPackageQuantity(recordOrPayload));
+  const packagePrice = Number(getInventoryPackagePrice(recordOrPayload));
+  if (!Number.isFinite(packageQuantity) || packageQuantity <= 0) return null;
+  if (!Number.isFinite(packagePrice)) return null;
+  return Number((packagePrice / packageQuantity).toFixed(6));
+}
+
+function getWorkspaceWastePercentage() {
+  const value = Number(state.activeClient?.beoflow_waste_percentage);
+  return Number.isFinite(value) && value >= 0 ? value : DEFAULT_WASTE_PERCENTAGE;
+}
+
+function getWorkspaceFoodFactor() {
+  const value = Number(state.activeClient?.beoflow_food_factor);
+  return Number.isFinite(value) && value >= 0 ? value : DEFAULT_FOOD_FACTOR;
+}
+
+function normalizeIngredientNameForMatch(value) {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .split(' ')
+    .filter(Boolean)
+    .map(word => {
+      if (word.endsWith('oes') && word.length > 4) return word.slice(0, -2);
+      if (word.endsWith('ies') && word.length > 4) return `${word.slice(0, -3)}y`;
+      if (word.endsWith('es') && word.length > 4) return word.slice(0, -2);
+      if (word.endsWith('s') && word.length > 3) return word.slice(0, -1);
+      return word;
+    })
+    .join(' ');
+}
+
+function normalizeInventoryCode(value) {
+  return String(value || '').trim().toUpperCase();
+}
+
+function findMatchingInventoryIngredient(name, excludeId = null) {
+  const normalizedName = normalizeIngredientNameForMatch(name);
+  if (!normalizedName) return null;
+
+  return getInventoryOptions().find(item => (
+    String(item.id) !== String(excludeId || '')
+    && normalizeIngredientNameForMatch(item.name) === normalizedName
+  )) || null;
+}
+
+function findInventoryIngredientByCode(code, excludeId = null) {
+  const normalizedCode = normalizeInventoryCode(code);
+  if (!normalizedCode) return null;
+
+  return getInventoryOptions().find(item => (
+    String(item.id) !== String(excludeId || '')
+    && normalizeInventoryCode(item.item_code) === normalizedCode
+  )) || null;
+}
+
+function requireNonNegativeNumber(value, label, { allowNull = true } = {}) {
+  if (value === null || value === undefined || value === '') {
+    if (allowNull) return null;
+    throw new Error(`${label} is required.`);
+  }
+
+  const numberValue = Number(value);
+  if (!Number.isFinite(numberValue)) throw new Error(`${label} must be a valid number.`);
+  if (numberValue < 0) throw new Error(`${label} cannot be negative.`);
+  return numberValue;
+}
+
 function isLowStock(record) {
-  const quantity = Number(record?.quantity);
-  const parLevel = Number(record?.par_level);
+  const quantity = Number(getInventoryCurrentStock(record));
+  const parLevel = Number(getInventoryMinimumStock(record));
   return Number.isFinite(quantity) && Number.isFinite(parLevel) && quantity <= parLevel;
+}
+
+function normalizeRecipeIngredients(rawIngredients) {
+  if (!rawIngredients) return [];
+
+  if (Array.isArray(rawIngredients)) {
+    return rawIngredients.map(normalizeRecipeIngredient).filter(Boolean);
+  }
+
+  if (typeof rawIngredients === 'string') {
+    try {
+      const parsed = JSON.parse(rawIngredients);
+      return normalizeRecipeIngredients(parsed);
+    } catch {
+      return rawIngredients
+        .split('\n')
+        .map(line => line.trim())
+        .filter(Boolean)
+        .map((ingredientName, index) => normalizeRecipeIngredient({
+          inventoryItemId: `legacy-${index}`,
+          ingredientName,
+          quantity: 0,
+          unit: '',
+          costPerUnit: 0
+        }));
+    }
+  }
+
+  return [];
+}
+
+function normalizeRecipeIngredient(ingredient) {
+  if (!ingredient || typeof ingredient !== 'object') return null;
+  const itemType = ingredient.itemType || ingredient.item_type || 'inventory';
+  const inventoryItemId = ingredient.inventoryItemId || ingredient.inventory_item_id || '';
+  const subrecipeId = ingredient.subrecipeId || ingredient.subrecipe_id || '';
+  const itemCode = normalizeInventoryCode(ingredient.itemCode || ingredient.item_code || ingredient.code || '');
+  const ingredientName = ingredient.ingredientName || ingredient.ingredient_name || ingredient.name || '';
+  const quantity = Number(ingredient.quantity || 0);
+  const packagePrice = Number(ingredient.packagePrice ?? ingredient.package_price ?? ingredient.pricePresentation ?? ingredient.price_presentation ?? ingredient.costPerUnit ?? ingredient.cost_per_unit ?? 0);
+  const packageQuantity = Number(ingredient.packageQuantity ?? ingredient.package_quantity ?? ingredient.quantityPresentation ?? ingredient.quantity_presentation ?? 1);
+  const costPerUnit = Number.isFinite(packageQuantity) && packageQuantity > 0 && Number.isFinite(packagePrice)
+    ? packagePrice / packageQuantity
+    : Number(ingredient.costPerUnit ?? ingredient.cost_per_unit ?? 0);
+  const formulaLineCost = Number.isFinite(quantity)
+    && quantity >= 0
+    && Number.isFinite(packagePrice)
+    && Number.isFinite(packageQuantity)
+    && packageQuantity > 0
+    ? (quantity * packagePrice) / packageQuantity
+    : null;
+  const fallbackLineCost = Number(ingredient.lineCost ?? ingredient.line_cost ?? ingredient.totalCost ?? ingredient.total_cost);
+  const lineCost = Number.isFinite(formulaLineCost)
+    ? formulaLineCost
+    : Number.isFinite(fallbackLineCost)
+      ? fallbackLineCost
+      : quantity * costPerUnit;
+
+  return {
+    itemType,
+    inventoryItemId,
+    subrecipeId,
+    itemCode,
+    ingredientName,
+    quantity: Number.isFinite(quantity) ? quantity : 0,
+    unit: ingredient.unit || '',
+    ounces: Number.isFinite(Number(ingredient.ounces)) ? Number(ingredient.ounces) : null,
+    packagePrice: Number.isFinite(packagePrice) ? packagePrice : null,
+    packageQuantity: Number.isFinite(packageQuantity) ? packageQuantity : null,
+    packageUnit: ingredient.packageUnit || ingredient.package_unit || '',
+    costPerUnit: Number.isFinite(costPerUnit) ? Number(costPerUnit.toFixed(6)) : 0,
+    lineCost: Number.isFinite(lineCost) ? Number(lineCost.toFixed(4)) : 0,
+    totalCost: Number.isFinite(lineCost) ? Number(lineCost.toFixed(4)) : 0,
+    validationStatus: ingredient.validationStatus || ingredient.validation_status || 'valid'
+  };
+}
+
+function createRecipeIngredientFromInventory(item, quantity = 1) {
+  const normalizedQuantity = Number(quantity);
+  if (!Number.isFinite(normalizedQuantity) || normalizedQuantity < 0) {
+    throw new Error('Ingredient quantity cannot be negative.');
+  }
+
+  const safeQuantity = normalizedQuantity > 0 ? normalizedQuantity : 1;
+  const costPerUnit = calculateInventoryUnitCost(item) ?? 0;
+  const packagePrice = Number(getInventoryPackagePrice(item));
+  const packageQuantity = Number(getInventoryPackageQuantity(item));
+
+  return normalizeRecipeIngredient({
+    itemType: 'inventory',
+    inventoryItemId: item?.id,
+    itemCode: item?.item_code,
+    ingredientName: item?.name,
+    quantity: safeQuantity,
+    unit: getInventoryBaseUnit(item),
+    packagePrice: Number.isFinite(packagePrice) ? packagePrice : null,
+    packageQuantity: Number.isFinite(packageQuantity) ? packageQuantity : null,
+    packageUnit: getInventoryPackageUnit(item),
+    costPerUnit: Number.isFinite(costPerUnit) ? costPerUnit : 0,
+    validationStatus: validateInventoryIngredientForRecipe(item, safeQuantity).status
+  });
+}
+
+function createRecipeIngredientFromSubrecipe(subrecipe, quantity = 1) {
+  const normalizedQuantity = Number(quantity);
+  if (!Number.isFinite(normalizedQuantity) || normalizedQuantity < 0) {
+    throw new Error('Subrecipe quantity cannot be negative.');
+  }
+
+  const safeQuantity = normalizedQuantity > 0 ? normalizedQuantity : 1;
+  const packagePrice = Number(subrecipe?.unit_cost_total ?? subrecipe?.total_cost ?? subrecipe?.total_ingredient_cost ?? 0);
+  const packageQuantity = Number(subrecipe?.yield_quantity || 1);
+  const packageUnit = subrecipe?.yield_unit || 'batch';
+
+  return normalizeRecipeIngredient({
+    itemType: 'subrecipe',
+    subrecipeId: subrecipe?.id,
+    itemCode: subrecipe?.recipe_number || '',
+    ingredientName: subrecipe?.name,
+    quantity: safeQuantity,
+    unit: packageUnit,
+    packagePrice: Number.isFinite(packagePrice) ? packagePrice : 0,
+    packageQuantity: Number.isFinite(packageQuantity) && packageQuantity > 0 ? packageQuantity : 1,
+    packageUnit,
+    validationStatus: packagePrice > 0 ? 'valid' : 'subrecipe_cost_zero'
+  });
+}
+
+function validateInventoryIngredientForRecipe(item, quantity = 0) {
+  if (!item) return { status: 'not_found', message: 'Ingredient code not found.' };
+  if (!Number.isFinite(Number(quantity)) || Number(quantity) < 0) {
+    return { status: 'invalid_quantity', message: 'Quantity cannot be negative.' };
+  }
+
+  const packageQuantity = Number(getInventoryPackageQuantity(item));
+  const packagePrice = Number(getInventoryPackagePrice(item));
+
+  if (!Number.isFinite(packageQuantity) || packageQuantity <= 0) {
+    return { status: 'critical_missing_presentation', message: 'Missing or invalid package quantity.' };
+  }
+
+  if (!Number.isFinite(packagePrice)) {
+    return { status: 'missing_price', message: 'Missing package price.' };
+  }
+
+  return { status: 'valid', message: 'Ready to calculate.' };
+}
+
+function calculateLineCostFromIngredient(ingredient) {
+  const quantity = Number(ingredient.quantity || 0);
+  const packagePrice = Number(ingredient.packagePrice ?? ingredient.package_price);
+  const packageQuantity = Number(ingredient.packageQuantity ?? ingredient.package_quantity);
+
+  if (!Number.isFinite(quantity) || quantity < 0) return 0;
+  if (!Number.isFinite(packagePrice)) return 0;
+  if (!Number.isFinite(packageQuantity) || packageQuantity <= 0) return 0;
+
+  return Number(((quantity * packagePrice) / packageQuantity).toFixed(4));
+}
+
+function calculateRecipeCosts(ingredients, yieldQuantity, yieldUnit, portionCount, manualSalePrice = null) {
+  const normalizedIngredients = normalizeRecipeIngredients(ingredients);
+  const totalIngredientCost = normalizedIngredients.reduce((total, ingredient) => (
+    total + calculateLineCostFromIngredient(ingredient)
+  ), 0);
+  const normalizedYieldQuantity = Number(yieldQuantity);
+  const normalizedPortionCount = Number(portionCount);
+  const yieldLooksLikePortions = /portion|serving|plate/i.test(String(yieldUnit || ''));
+  const wastePercentage = getWorkspaceWastePercentage();
+  const foodFactor = getWorkspaceFoodFactor();
+  const wasteCost = totalIngredientCost * wastePercentage;
+  const unitCostTotal = totalIngredientCost + wasteCost;
+  const suggestedSalePrice = unitCostTotal * foodFactor;
+  const normalizedManualSalePrice = Number(manualSalePrice);
+  const finalSalePrice = Number.isFinite(normalizedManualSalePrice) && normalizedManualSalePrice > 0
+    ? normalizedManualSalePrice
+    : suggestedSalePrice;
+  const portionDivisor = Number.isFinite(normalizedPortionCount) && normalizedPortionCount > 0
+    ? normalizedPortionCount
+    : yieldLooksLikePortions && Number.isFinite(normalizedYieldQuantity) && normalizedYieldQuantity > 0
+      ? normalizedYieldQuantity
+      : 0;
+  const costPercentage = finalSalePrice > 0 ? totalIngredientCost / finalSalePrice : null;
+  const marginPercentage = finalSalePrice > 0 ? (finalSalePrice - totalIngredientCost) / finalSalePrice : null;
+  const profit = finalSalePrice > 0 ? finalSalePrice - totalIngredientCost : null;
+  const priceCostRatio = finalSalePrice > 0 && totalIngredientCost > 0 ? finalSalePrice / totalIngredientCost : null;
+
+  return {
+    total_cost: Number(totalIngredientCost.toFixed(4)),
+    total_ingredient_cost: Number(totalIngredientCost.toFixed(4)),
+    waste_percentage: wastePercentage,
+    waste_cost: Number(wasteCost.toFixed(4)),
+    unit_cost_total: Number(unitCostTotal.toFixed(4)),
+    food_factor: foodFactor,
+    food_factor_total: Number(suggestedSalePrice.toFixed(4)),
+    suggested_sale_price: Number(suggestedSalePrice.toFixed(4)),
+    final_sale_price: Number(finalSalePrice.toFixed(4)),
+    cost_percentage: costPercentage === null ? null : Number(costPercentage.toFixed(4)),
+    margin_percentage: marginPercentage === null ? null : Number(marginPercentage.toFixed(4)),
+    profit: profit === null ? null : Number(profit.toFixed(4)),
+    price_cost_ratio: priceCostRatio === null ? null : Number(priceCostRatio.toFixed(4)),
+    cost_per_yield_unit: Number.isFinite(normalizedYieldQuantity) && normalizedYieldQuantity > 0
+      ? Number((unitCostTotal / normalizedYieldQuantity).toFixed(4))
+      : null,
+    cost_per_portion: portionDivisor > 0
+      ? Number((unitCostTotal / portionDivisor).toFixed(4))
+      : null
+  };
+}
+
+function refreshIngredientFromSource(ingredient) {
+  const normalized = normalizeRecipeIngredient(ingredient);
+  if (!normalized) return null;
+
+  if (normalized.itemType === 'subrecipe') {
+    const subrecipe = (state.moduleRecords.subrecipes || []).find(row => (
+      String(row.id) === String(normalized.subrecipeId)
+    ));
+    if (!subrecipe) {
+      return normalizeRecipeIngredient({
+        ...normalized,
+        validationStatus: 'subrecipe_not_found'
+      });
+    }
+
+    return normalizeRecipeIngredient({
+      ...createRecipeIngredientFromSubrecipe(subrecipe, normalized.quantity),
+      unit: normalized.unit || subrecipe.yield_unit || 'batch'
+    });
+  }
+
+  const inventoryItem = (state.moduleRecords.inventory || []).find(row => (
+    String(row.id) === String(normalized.inventoryItemId)
+    || normalizeInventoryCode(row.item_code) === normalizeInventoryCode(normalized.itemCode)
+  ));
+  if (!inventoryItem) {
+    return normalizeRecipeIngredient({
+      ...normalized,
+      validationStatus: 'not_found'
+    });
+  }
+
+  return normalizeRecipeIngredient({
+    ...createRecipeIngredientFromInventory(inventoryItem, normalized.quantity),
+    unit: normalized.unit || getInventoryBaseUnit(inventoryItem)
+  });
+}
+
+function normalizeRecipeIngredientsForStorage(ingredients) {
+  return normalizeRecipeIngredients(ingredients)
+    .map(refreshIngredientFromSource)
+    .filter(Boolean)
+    .map(ingredient => normalizeRecipeIngredient({
+      ...ingredient,
+      lineCost: calculateLineCostFromIngredient(ingredient),
+      totalCost: calculateLineCostFromIngredient(ingredient)
+    }));
+}
+
+function calculateRecipeCostFields(source, ingredients) {
+  const normalizedIngredients = normalizeRecipeIngredientsForStorage(ingredients);
+  const costs = calculateRecipeCosts(
+    normalizedIngredients,
+    source?.yield_quantity,
+    source?.yield_unit,
+    source?.pax ?? source?.portion_count,
+    source?.manual_sale_price
+  );
+
+  return {
+    ingredients: normalizedIngredients,
+    total_cost: costs.total_cost,
+    total_ingredient_cost: costs.total_ingredient_cost,
+    waste_percentage: costs.waste_percentage,
+    waste_cost: costs.waste_cost,
+    unit_cost_total: costs.unit_cost_total,
+    food_factor: costs.food_factor,
+    food_factor_total: costs.food_factor_total,
+    suggested_sale_price: costs.suggested_sale_price,
+    final_sale_price: costs.final_sale_price,
+    cost_percentage: costs.cost_percentage,
+    margin_percentage: costs.margin_percentage,
+    profit: costs.profit,
+    price_cost_ratio: costs.price_cost_ratio,
+    cost_per_yield_unit: costs.cost_per_yield_unit,
+    cost_per_portion: costs.cost_per_portion
+  };
+}
+
+function getRecipeCostForMenu(recipe) {
+  const recipeCost = Number(recipe?.total_cost ?? recipe?.total_ingredient_cost ?? 0);
+  return Number.isFinite(recipeCost) ? recipeCost : 0;
+}
+
+function buildMenuCostFields(recipe, salePrice) {
+  const recipeCost = recipe ? getRecipeCostForMenu(recipe) : null;
+  const normalizedSalePrice = Number(salePrice);
+  const hasSalePrice = Number.isFinite(normalizedSalePrice) && normalizedSalePrice > 0;
+  const hasRecipeCost = Number.isFinite(recipeCost) && recipeCost > 0;
+
+  return {
+    recipe_name: recipe?.name || null,
+    recipe_cost: recipeCost,
+    suggested_sale_price: recipe?.suggested_sale_price ?? recipe?.final_sale_price ?? null,
+    cost_percentage: hasSalePrice && hasRecipeCost ? Number((recipeCost / normalizedSalePrice).toFixed(4)) : null,
+    margin_percentage: hasSalePrice && hasRecipeCost ? Number(((normalizedSalePrice - recipeCost) / normalizedSalePrice).toFixed(4)) : null,
+    profit: hasSalePrice && Number.isFinite(recipeCost) ? Number((normalizedSalePrice - recipeCost).toFixed(4)) : null,
+    price_cost_ratio: hasSalePrice && hasRecipeCost ? Number((normalizedSalePrice / recipeCost).toFixed(4)) : null
+  };
+}
+
+function getRecipesUsingInventoryItem(inventoryItemId) {
+  const inventoryItem = getRecordById('inventory', inventoryItemId);
+  const itemCode = normalizeInventoryCode(inventoryItem?.item_code);
+  return (state.moduleRecords.recipes || []).filter(recipe => (
+    normalizeRecipeIngredients(recipe.ingredients)
+      .some(ingredient => (
+        String(ingredient.inventoryItemId) === String(inventoryItemId)
+        || (itemCode && normalizeInventoryCode(ingredient.itemCode) === itemCode)
+      ))
+  ));
 }
 
 async function countTableRecords(table) {
@@ -595,7 +1126,56 @@ async function loadModuleData(section) {
 
   state.moduleRecords[section] = data || [];
   state.moduleCounts[section] = state.moduleRecords[section].length;
+
+  if (section === 'inventory') {
+    await loadRecipesForInventoryUsage();
+  }
+
+  if (section === 'menu') {
+    await loadRecipesForInventoryUsage();
+  }
+
+  if (section === 'recipes') {
+    await loadSubrecipesForRecipeUsage();
+  }
+
   return state.moduleRecords[section];
+}
+
+async function loadRecipesForInventoryUsage() {
+  const clientId = getActiveClientId();
+  if (!clientId) return [];
+
+  const { data, error } = await withActiveRecordFilter(
+    requireSupabaseClient()
+      .from(MODULE_SECTIONS.recipes.table)
+      .select('*')
+      .eq('client_id', clientId)
+  ).order('created_at', { ascending: false });
+
+  if (error) throw error;
+
+  state.moduleRecords.recipes = data || [];
+  state.moduleCounts.recipes = state.moduleRecords.recipes.length;
+  return state.moduleRecords.recipes;
+}
+
+async function loadSubrecipesForRecipeUsage() {
+  const clientId = getActiveClientId();
+  if (!clientId) return [];
+
+  const { data, error } = await withActiveRecordFilter(
+    requireSupabaseClient()
+      .from(MODULE_SECTIONS.subrecipes.table)
+      .select('*')
+      .eq('client_id', clientId)
+  ).order('created_at', { ascending: false });
+
+  if (error) throw error;
+
+  state.moduleRecords.subrecipes = data || [];
+  state.moduleCounts.subrecipes = state.moduleRecords.subrecipes.length;
+  return state.moduleRecords.subrecipes;
 }
 
 async function loadReportsData() {
@@ -603,24 +1183,78 @@ async function loadReportsData() {
   if (!clientId) return null;
 
   const counts = await loadDashboardCounts();
-  const { data: inventoryRows, error } = await withActiveRecordFilter(
-    requireSupabaseClient()
-      .from(MODULE_SECTIONS.inventory.table)
-      .select('id, quantity, par_level')
-      .eq('client_id', clientId)
-  );
+  const supabase = requireSupabaseClient();
+  const [
+    { data: inventoryRows, error: inventoryError },
+    { data: recipeRows, error: recipeError },
+    { data: menuRows, error: menuError }
+  ] = await Promise.all([
+    withActiveRecordFilter(supabase.from(MODULE_SECTIONS.inventory.table).select('*').eq('client_id', clientId)),
+    withActiveRecordFilter(supabase.from(MODULE_SECTIONS.recipes.table).select('*').eq('client_id', clientId)),
+    withActiveRecordFilter(supabase.from(MODULE_SECTIONS.menu.table).select('*').eq('client_id', clientId))
+  ]);
 
-  if (error) throw error;
+  if (inventoryError) throw inventoryError;
+  if (recipeError) throw recipeError;
+  if (menuError) throw menuError;
 
-  const lowStockItems = (inventoryRows || []).filter(isLowStock).length;
+  const inventory = inventoryRows || [];
+  const recipes = recipeRows || [];
+  const menuItems = menuRows || [];
+  const lowStockItems = inventory.filter(isLowStock).length;
+  const ingredientsById = new Map(inventory.map(item => [String(item.id), item]));
+  const usageCounts = new Map();
+  const incompleteRecipes = recipes.filter(recipe => {
+    const ingredients = normalizeRecipeIngredients(recipe.ingredients);
+    if (ingredients.length === 0) return true;
+    return ingredients.some(ingredient => {
+      if (ingredient.validationStatus && ingredient.validationStatus !== 'valid') return true;
+      if (ingredient.itemType === 'inventory' && !ingredientsById.has(String(ingredient.inventoryItemId))) return true;
+      return false;
+    });
+  }).length;
+
+  recipes.forEach(recipe => {
+    normalizeRecipeIngredients(recipe.ingredients).forEach(ingredient => {
+      if (ingredient.itemType !== 'inventory' || !ingredient.inventoryItemId) return;
+      const key = String(ingredient.inventoryItemId);
+      usageCounts.set(key, (usageCounts.get(key) || 0) + 1);
+    });
+  });
+
+  const mostUsedInventoryId = [...usageCounts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
+  const mostUsedInventory = mostUsedInventoryId ? ingredientsById.get(mostUsedInventoryId) : null;
+  const menuWithMargin = menuItems.filter(item => Number.isFinite(Number(item.margin_percentage)));
+  const bestMenuItem = [...menuWithMargin].sort((a, b) => Number(b.margin_percentage) - Number(a.margin_percentage))[0];
+  const worstMenuItem = [...menuWithMargin].sort((a, b) => Number(a.margin_percentage) - Number(b.margin_percentage))[0];
+
   state.reportsData = {
     total_staff: counts.staff || 0,
     total_menu_items: counts.menu || 0,
     total_recipes: counts.recipes || 0,
+    total_subrecipes: counts.subrecipes || 0,
     total_inventory_items: counts.inventory || 0,
     total_events: counts.events || 0,
     total_production_logs: counts.production || 0,
-    low_stock_items: lowStockItems
+    low_stock_items: lowStockItems,
+    total_recipe_cost: recipes.reduce((total, recipe) => total + getRecipeCostForMenu(recipe), 0),
+    low_margin_recipes: recipes.filter(recipe => {
+      const margin = Number(recipe.margin_percentage);
+      return Number.isFinite(margin) && margin < 0.2;
+    }).length,
+    incomplete_recipes: incompleteRecipes,
+    inventory_missing_price: inventory.filter(item => !Number.isFinite(Number(getInventoryPackagePrice(item)))).length,
+    inventory_missing_presentation: inventory.filter(item => {
+      const packageQuantity = Number(getInventoryPackageQuantity(item));
+      return !Number.isFinite(packageQuantity) || packageQuantity <= 0;
+    }).length,
+    most_used_inventory: mostUsedInventory ? `${mostUsedInventory.name} (${usageCounts.get(mostUsedInventoryId)} recipes)` : 'Not available',
+    best_menu_margin: bestMenuItem ? `${bestMenuItem.name} (${formatRecordValue('margin_percentage', bestMenuItem.margin_percentage)})` : 'Not available',
+    worst_menu_margin: worstMenuItem ? `${worstMenuItem.name} (${formatRecordValue('margin_percentage', worstMenuItem.margin_percentage)})` : 'Not available',
+    estimated_menu_profit: menuItems.reduce((total, item) => {
+      const profit = Number(item.profit);
+      return total + (Number.isFinite(profit) ? profit : 0);
+    }, 0)
   };
   return state.reportsData;
 }
@@ -891,7 +1525,7 @@ function renderConfigState() {
   );
 }
 
-function renderWorkspaceFrame() {
+function renderWorkspaceFrame({ showWorkspaceHeader = true } = {}) {
   if (!state.activeClient?.id) {
     renderClientSelector();
     return;
@@ -901,6 +1535,7 @@ function renderWorkspaceFrame() {
   els['auth-view'].hidden = true;
   hideStandaloneWorkspaceViews();
   els['workspace-view'].hidden = false;
+  els['workspace-header'].hidden = !showWorkspaceHeader;
   const activeName = state.activeClient?.name || 'Beoflow';
   els['workspace-title'].textContent = activeName;
   els['workspace-subtitle'].textContent = state.activeClient
@@ -988,7 +1623,7 @@ function renderDashboard() {
   const activeClient = requireActiveClient();
   if (!activeClient) return;
 
-  renderWorkspaceFrame();
+  renderWorkspaceFrame({ showWorkspaceHeader: true });
   hideWorkspaceSections();
   setActiveSidebarSection('dashboard');
   els['dashboard-view'].hidden = false;
@@ -1015,13 +1650,13 @@ function renderModuleSection(section) {
     return;
   }
 
-  renderWorkspaceFrame();
+  renderWorkspaceFrame({ showWorkspaceHeader: false });
   hideWorkspaceSections();
   setActiveSidebarSection(section);
   els['module-view'].hidden = false;
   els['module-title'].textContent = moduleConfig.title;
   els['module-subtitle'].textContent = moduleConfig.subtitle;
-  els['module-count-badge'].textContent = section === 'reports' ? '7 metrics' : 'Loading';
+  els['module-count-badge'].textContent = section === 'reports' ? 'Loading metrics' : 'Loading';
   els['module-header-action-button'].textContent = moduleConfig.action;
   els['module-header-action-button'].hidden = section === 'reports';
   els['module-empty-icon'].textContent = moduleConfig.index;
@@ -1072,13 +1707,13 @@ function renderRecordCard(section, record) {
   const title = getRecordTitle(section, record);
   const status = record?.[moduleConfig.badgeField] || 'active';
   const metaHtml = (moduleConfig.metaFields || [])
-    .map(fieldName => formatRecordValue(fieldName, record?.[fieldName]))
+    .map(fieldName => formatRecordValue(fieldName, getRecordDisplayValue(section, fieldName, record)))
     .filter(Boolean)
     .map(value => `<span>${escapeHtml(value)}</span>`)
     .join('');
   const detailHtml = (moduleConfig.detailFields || [])
     .map(fieldName => {
-      const value = formatRecordValue(fieldName, record?.[fieldName]);
+      const value = formatRecordValue(fieldName, getRecordDisplayValue(section, fieldName, record));
       if (!value) return '';
       return `
         <div class="record-detail">
@@ -1105,8 +1740,10 @@ function renderRecordCard(section, record) {
         </div>
         ${metaHtml ? `<div class="record-meta">${metaHtml}</div>` : ''}
         ${detailHtml ? `<div class="record-details">${detailHtml}</div>` : ''}
+        ${renderSpecialRecordDetails(section, record)}
       </div>
       <div class="record-actions">
+        ${renderSpecialRecordActions(section, record)}
         <button type="button" class="secondary-action" data-module-action="edit" data-section="${escapeHtml(section)}" data-record-id="${escapeHtml(record.id)}">Edit</button>
         <button type="button" class="secondary-action danger-action" data-module-action="archive" data-section="${escapeHtml(section)}" data-record-id="${escapeHtml(record.id)}">Archive</button>
       </div>
@@ -1116,32 +1753,128 @@ function renderRecordCard(section, record) {
 
 function renderReportsSection(reportsData = state.reportsData) {
   const metrics = [
-    ['total_staff', 'Total staff'],
-    ['total_menu_items', 'Total menu items'],
     ['total_recipes', 'Total recipes'],
+    ['total_subrecipes', 'Total subrecipes'],
     ['total_inventory_items', 'Total inventory items'],
-    ['total_events', 'Total events'],
-    ['total_production_logs', 'Total production logs'],
-    ['low_stock_items', 'Low stock items']
+    ['total_menu_items', 'Total menu items'],
+    ['total_recipe_cost', 'Total recipe cost'],
+    ['low_margin_recipes', 'Low margin recipes'],
+    ['incomplete_recipes', 'Incomplete recipes'],
+    ['inventory_missing_price', 'Inputs without price'],
+    ['inventory_missing_presentation', 'Inputs without presentation'],
+    ['low_stock_items', 'Low stock items'],
+    ['most_used_inventory', 'Most used input'],
+    ['best_menu_margin', 'Best menu margin'],
+    ['worst_menu_margin', 'Worst menu margin'],
+    ['estimated_menu_profit', 'Estimated menu profit']
   ];
-  const totalSourceRecords = metrics
-    .filter(([key]) => key !== 'low_stock_items')
-    .reduce((total, [key]) => total + (reportsData?.[key] || 0), 0);
+  const totalSourceRecords = (
+    (reportsData?.total_recipes || 0)
+    + (reportsData?.total_subrecipes || 0)
+    + (reportsData?.total_inventory_items || 0)
+    + (reportsData?.total_menu_items || 0)
+  );
 
-  els['module-count-badge'].textContent = '7 metrics';
+  els['module-count-badge'].textContent = `${metrics.length} metrics`;
   els['module-empty-state'].hidden = totalSourceRecords > 0;
-  els['module-record-list'].hidden = false;
+  els['module-record-list'].hidden = totalSourceRecords === 0;
+  if (totalSourceRecords === 0) {
+    els['module-record-list'].innerHTML = '';
+    updateDashboardCards(state.moduleCounts);
+    return;
+  }
+
   els['module-record-list'].innerHTML = `
     <div class="reports-grid">
       ${metrics.map(([key, label]) => `
         <article class="report-card">
           <span>${escapeHtml(label)}</span>
-          <strong>${escapeHtml(reportsData?.[key] || 0)}</strong>
+          <strong>${escapeHtml(formatReportMetricValue(key, reportsData?.[key]))}</strong>
         </article>
       `).join('')}
     </div>
   `;
   updateDashboardCards(state.moduleCounts);
+}
+
+function formatReportMetricValue(key, value) {
+  if (value === null || value === undefined || value === '') return key.includes('most_') || key.includes('menu_') ? 'Not available' : '0';
+  if (key.includes('cost') || key.includes('profit')) return formatMoney(value);
+  return String(value);
+}
+
+function getRecordDisplayValue(section, fieldName, record) {
+  if (section === 'inventory') {
+    if (fieldName === 'current_stock') return getInventoryCurrentStock(record);
+    if (fieldName === 'minimum_stock') return getInventoryMinimumStock(record);
+    if (fieldName === 'supplier') return getInventorySupplier(record);
+    if (fieldName === 'base_unit') return getInventoryBaseUnit(record);
+    if (fieldName === 'package_quantity') return getInventoryPackageQuantity(record);
+    if (fieldName === 'package_price') return getInventoryPackagePrice(record);
+    if (fieldName === 'package_unit') return getInventoryPackageUnit(record);
+    if (fieldName === 'cost_per_unit') return calculateInventoryUnitCost(record);
+  }
+
+  return record?.[fieldName];
+}
+
+function formatIngredientQuantity(ingredient) {
+  const quantity = Number(ingredient.quantity || 0);
+  const quantityText = Number.isFinite(quantity) ? quantity.toLocaleString('en-US') : '0';
+  return `${quantityText}${ingredient.unit ? ` ${ingredient.unit}` : ''}`;
+}
+
+function renderRecipeIngredientSummary(record) {
+  const ingredients = normalizeRecipeIngredients(record.ingredients);
+  if (ingredients.length === 0) return '';
+
+  return `
+    <div class="recipe-ingredient-summary">
+      <span>Ingredients</span>
+      <ul>
+        ${ingredients.map(ingredient => `
+          <li>
+            <span>${escapeHtml([ingredient.itemCode, ingredient.ingredientName].filter(Boolean).join(' - '))}</span>
+            <span>${escapeHtml(formatIngredientQuantity(ingredient))} &middot; ${escapeHtml(formatMoney(calculateLineCostFromIngredient(ingredient)))} &middot; ${escapeHtml(formatLabel(ingredient.validationStatus))}</span>
+          </li>
+        `).join('')}
+      </ul>
+    </div>
+  `;
+}
+
+function renderInventoryUsageDetails(record) {
+  const recipesUsingItem = getRecipesUsingInventoryItem(record.id);
+  if (recipesUsingItem.length === 0) {
+    return `
+      <div class="record-detail">
+        <span>Recipe Usage</span>
+        <p>Not used in recipes yet.</p>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="record-detail">
+      <span>Recipe Usage</span>
+      <p>${escapeHtml(recipesUsingItem.map(recipe => recipe.name).join(', '))}</p>
+    </div>
+  `;
+}
+
+function renderSpecialRecordDetails(section, record) {
+  if (isCostingRecipeSection(section)) return renderRecipeIngredientSummary(record);
+  if (section === 'inventory') return renderInventoryUsageDetails(record);
+  return '';
+}
+
+function renderSpecialRecordActions(section, record) {
+  if (section !== 'inventory') return '';
+
+  return `
+    <button type="button" class="secondary-action" data-module-action="use-in-recipe" data-section="inventory" data-record-id="${escapeHtml(record.id)}">Use in recipe</button>
+    <button type="button" class="secondary-action" data-module-action="add-to-recipe" data-section="inventory" data-record-id="${escapeHtml(record.id)}">Add to recipe</button>
+  `;
 }
 
 function getRecordById(section, recordId) {
@@ -1154,13 +1887,35 @@ function renderFormField(field, record = null) {
   const requiredAttr = field.required ? ' required' : '';
   const minAttr = field.min !== undefined ? ` min="${escapeHtml(field.min)}"` : '';
   const stepAttr = field.step !== undefined ? ` step="${escapeHtml(field.step)}"` : '';
+  const placeholderAttr = field.placeholder ? ` placeholder="${escapeHtml(field.placeholder)}"` : '';
   const wideClass = field.wide || field.type === 'textarea' ? ' form-field-wide' : '';
 
   if (field.type === 'textarea') {
     return `
       <label class="form-field${wideClass}">
         <span>${escapeHtml(field.label)}</span>
-        <textarea name="${escapeHtml(field.name)}"${requiredAttr}>${escapeHtml(value)}</textarea>
+        <textarea name="${escapeHtml(field.name)}"${requiredAttr}${placeholderAttr}>${escapeHtml(value)}</textarea>
+      </label>
+    `;
+  }
+
+  if (field.type === 'recipe-select') {
+    const recipes = (state.moduleRecords.recipes || []).filter(recipe => String(recipe.status || 'active') !== 'archived');
+    const recipeOptions = recipes.length
+      ? recipes.map(recipe => {
+        const recipeCost = formatMoney(getRecipeCostForMenu(recipe));
+        const selected = String(recipe.id) === String(value) ? ' selected' : '';
+        return `<option value="${escapeHtml(recipe.id)}"${selected}>${escapeHtml(recipe.name)}${recipeCost ? ` - ${escapeHtml(recipeCost)}` : ''}</option>`;
+      }).join('')
+      : '<option value="">No recipes available</option>';
+
+    return `
+      <label class="form-field${wideClass}">
+        <span>${escapeHtml(field.label)}</span>
+        <select name="${escapeHtml(field.name)}"${requiredAttr}${recipes.length ? '' : ' disabled'}>
+          <option value="">No linked recipe</option>
+          ${recipeOptions}
+        </select>
       </label>
     `;
   }
@@ -1168,17 +1923,405 @@ function renderFormField(field, record = null) {
   return `
     <label class="form-field${wideClass}">
       <span>${escapeHtml(field.label)}</span>
-      <input type="${escapeHtml(field.type || 'text')}" name="${escapeHtml(field.name)}" value="${escapeHtml(value)}"${requiredAttr}${minAttr}${stepAttr}>
+      <input type="${escapeHtml(field.type || 'text')}" name="${escapeHtml(field.name)}" value="${escapeHtml(value)}"${requiredAttr}${minAttr}${stepAttr}${placeholderAttr}>
     </label>
   `;
 }
 
-function openModuleModal(section, record = null) {
+function getInventoryOptions() {
+  return (state.moduleRecords.inventory || []).filter(item => String(item.status || 'active') !== 'archived');
+}
+
+function renderInventoryDuplicateSuggestion(name, excludeId = null, { compact = false } = {}) {
+  const match = findMatchingInventoryIngredient(name, excludeId);
+  if (!match) return '';
+
+  const stock = formatRecordValue('current_stock', getInventoryCurrentStock(match));
+  const details = [match.item_code, match.category, stock, getInventoryBaseUnit(match)].filter(Boolean).join(' / ');
+
+  return `
+    <div class="inventory-duplicate-suggestion${compact ? ' inventory-duplicate-suggestion-compact' : ''}">
+      <strong>${escapeHtml(match.name)} already exists in Inventory.</strong>
+      ${details ? `<span>${escapeHtml(details)}</span>` : ''}
+      <button type="button" class="text-action" data-use-existing-ingredient="${escapeHtml(match.id)}">Use existing ingredient</button>
+    </div>
+  `;
+}
+
+function refreshInventoryDuplicateSuggestion() {
+  const suggestion = els['module-form-fields'].querySelector('[data-inventory-duplicate-suggestion]');
+  if (!suggestion) return;
+  const nameInput = els['module-form-fields'].querySelector('input[name="name"]');
+  suggestion.innerHTML = renderInventoryDuplicateSuggestion(nameInput?.value || '', state.editingRecord?.id);
+}
+
+function renderRecipeIngredientOptions() {
+  const searchTerm = state.recipeIngredientSearch.trim().toLowerCase();
+  const inventoryItems = getInventoryOptions();
+  const filteredItems = searchTerm
+    ? inventoryItems.filter(item => (
+      String(item.name || '').toLowerCase().includes(searchTerm)
+      || String(item.item_code || '').toLowerCase().includes(searchTerm)
+      || String(item.category || '').toLowerCase().includes(searchTerm)
+      || String(item.supplier || item.vendor || '').toLowerCase().includes(searchTerm)
+    ))
+    : inventoryItems;
+
+  if (filteredItems.length === 0) {
+    return '<option value="">No inventory ingredient found</option>';
+  }
+
+  return [
+    '<option value="">Select inventory ingredient</option>',
+    ...filteredItems.map(item => {
+      const cost = formatMoney(calculateInventoryUnitCost(item) || 0);
+      const unit = getInventoryBaseUnit(item) ? ` / ${getInventoryBaseUnit(item)}` : '';
+      const code = item.item_code ? `${item.item_code} - ` : '';
+      return `<option value="${escapeHtml(item.id)}">${escapeHtml(code)}${escapeHtml(item.name)}${cost ? ` &middot; ${escapeHtml(cost)}${escapeHtml(unit)}` : ''}</option>`;
+    })
+  ].join('');
+}
+
+function getSubrecipeOptions() {
+  return (state.moduleRecords.subrecipes || []).filter(item => (
+    String(item.status || 'active') !== 'archived'
+    && String(item.id) !== String(state.editingRecord?.id || '')
+  ));
+}
+
+function renderSubrecipeOptions() {
+  const searchTerm = state.subrecipeSearch.trim().toLowerCase();
+  const subrecipes = getSubrecipeOptions();
+  const filteredItems = searchTerm
+    ? subrecipes.filter(item => (
+      String(item.name || '').toLowerCase().includes(searchTerm)
+      || String(item.recipe_number || '').toLowerCase().includes(searchTerm)
+      || String(item.category || '').toLowerCase().includes(searchTerm)
+    ))
+    : subrecipes;
+
+  if (filteredItems.length === 0) {
+    return '<option value="">No subrecipes available</option>';
+  }
+
+  return [
+    '<option value="">Select subrecipe</option>',
+    ...filteredItems.map(item => {
+      const cost = formatMoney(item.unit_cost_total ?? item.total_cost ?? item.total_ingredient_cost ?? 0);
+      const code = item.recipe_number ? `${item.recipe_number} - ` : '';
+      return `<option value="${escapeHtml(item.id)}">${escapeHtml(code)}${escapeHtml(item.name)}${cost ? ` &middot; ${escapeHtml(cost)}` : ''}</option>`;
+    })
+  ].join('');
+}
+
+function renderSubrecipePicker() {
+  if (state.modalSection !== 'recipes') return '';
+
+  return `
+    <div class="recipe-ingredient-picker subrecipe-picker">
+      <label class="form-field">
+        <span>Subrecipe search</span>
+        <input type="search" id="subrecipe-search" value="${escapeHtml(state.subrecipeSearch)}" placeholder="Sauce, base, dough">
+      </label>
+      <label class="form-field">
+        <span>Subrecipe</span>
+        <select id="recipe-subrecipe-select">
+          ${renderSubrecipeOptions()}
+        </select>
+      </label>
+      <label class="form-field">
+        <span>Quantity</span>
+        <input type="number" id="recipe-subrecipe-add-quantity" min="0" step="0.01" value="1">
+      </label>
+      <button type="button" class="secondary-action" id="recipe-add-selected-subrecipe">Add Subrecipe</button>
+    </div>
+  `;
+}
+
+function renderRecipeIngredientRows() {
+  if (state.recipeIngredientsDraft.length === 0) {
+    return '<p class="recipe-ingredient-empty">No ingredients added yet.</p>';
+  }
+
+  return `
+    <div class="recipe-ingredient-list">
+      ${state.recipeIngredientsDraft.map((ingredient, index) => `
+        <div class="recipe-ingredient-row" data-ingredient-index="${index}">
+          <div>
+            <strong>${escapeHtml([ingredient.itemCode, ingredient.ingredientName].filter(Boolean).join(' - '))}</strong>
+            <span>${escapeHtml(ingredient.itemType === 'subrecipe' ? 'Subrecipe' : 'Inventory input')}</span>
+            <span>${escapeHtml(formatMoney(ingredient.packagePrice))} / ${escapeHtml(ingredient.packageQuantity || 0)} ${escapeHtml(ingredient.packageUnit || ingredient.unit || '')}</span>
+            <span>${escapeHtml(formatLabel(ingredient.validationStatus))}</span>
+          </div>
+          <label>
+            <span>Qty</span>
+            <input type="number" min="0" step="0.01" value="${escapeHtml(ingredient.quantity)}" data-recipe-ingredient-quantity="${index}">
+          </label>
+          <label>
+            <span>Unit</span>
+            <input type="text" value="${escapeHtml(ingredient.unit)}" data-recipe-ingredient-unit="${index}">
+          </label>
+          <strong>${escapeHtml(formatMoney(calculateLineCostFromIngredient(ingredient)))}</strong>
+          <button type="button" class="modal-icon-button" data-recipe-ingredient-remove="${index}">Remove</button>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function getCurrentRecipeCostInputs() {
+  const formData = new FormData(els['module-form']);
+  return {
+    yieldQuantity: formData.get('yield_quantity'),
+    yieldUnit: formData.get('yield_unit'),
+    portionCount: formData.get('pax') || formData.get('portion_count'),
+    manualSalePrice: formData.get('manual_sale_price')
+  };
+}
+
+function renderRecipeCostSummary() {
+  const { yieldQuantity, yieldUnit, portionCount, manualSalePrice } = getCurrentRecipeCostInputs();
+  const costs = calculateRecipeCosts(state.recipeIngredientsDraft, yieldQuantity, yieldUnit, portionCount, manualSalePrice);
+
+  return `
+    <div class="recipe-cost-summary">
+      <div>
+        <span>Total ingredient cost</span>
+        <strong>${escapeHtml(formatMoney(costs.total_ingredient_cost))}</strong>
+      </div>
+      <div>
+        <span>Waste</span>
+        <strong>${escapeHtml(formatMoney(costs.waste_cost))}</strong>
+      </div>
+      <div>
+        <span>Suggested sale price</span>
+        <strong>${escapeHtml(formatMoney(costs.suggested_sale_price))}</strong>
+      </div>
+      <div>
+        <span>Cost per yield/unit</span>
+        <strong>${costs.cost_per_yield_unit === null ? 'Not set' : escapeHtml(formatMoney(costs.cost_per_yield_unit))}</strong>
+      </div>
+      <div>
+        <span>Cost per portion</span>
+        <strong>${costs.cost_per_portion === null ? 'Not set' : escapeHtml(formatMoney(costs.cost_per_portion))}</strong>
+      </div>
+      <div>
+        <span>Margin</span>
+        <strong>${costs.margin_percentage === null ? 'Not set' : escapeHtml(formatRecordValue('margin_percentage', costs.margin_percentage))}</strong>
+      </div>
+    </div>
+  `;
+}
+
+function renderRecipeIngredientBuilder() {
+  const searchValue = state.recipeIngredientSearch;
+  const quickPanelHidden = state.recipeQuickIngredientOpen ? '' : ' hidden';
+  const isSubrecipeModal = state.modalSection === 'subrecipes';
+
+  return `
+    <section class="recipe-ingredient-builder form-field-wide" data-recipe-ingredient-builder>
+      <div class="recipe-builder-heading">
+        <span>${isSubrecipeModal ? 'Subrecipe Ingredients' : 'Recipe Ingredients'}</span>
+        <p>Add inputs by inventory code. If the code does not exist, create the input without leaving this form.</p>
+      </div>
+
+      <div class="recipe-ingredient-picker">
+        <label class="form-field">
+          <span>Input code</span>
+          <input type="search" id="recipe-ingredient-search" value="${escapeHtml(searchValue)}" placeholder="Type code or search inventory">
+        </label>
+        <label class="form-field">
+          <span>Inventory input</span>
+          <select id="recipe-ingredient-select">
+            ${renderRecipeIngredientOptions()}
+          </select>
+        </label>
+        <label class="form-field">
+          <span>Quantity</span>
+          <input type="number" id="recipe-ingredient-add-quantity" min="0" step="0.01" value="1">
+        </label>
+        <button type="button" class="secondary-action" id="recipe-add-selected-ingredient">Add by Code</button>
+      </div>
+
+      ${renderSubrecipePicker()}
+
+      <button type="button" class="text-action recipe-quick-add-toggle" id="recipe-quick-add-ingredient">+ Add new ingredient to inventory</button>
+
+      <div class="recipe-quick-add-panel"${quickPanelHidden}>
+        <div class="form-field-wide" data-quick-ingredient-duplicate-suggestion>
+          ${renderInventoryDuplicateSuggestion(searchValue, null, { compact: true })}
+        </div>
+        <label class="form-field">
+          <span>Input Code</span>
+          <input type="text" id="quick-ingredient-code" value="${escapeHtml(normalizeInventoryCode(searchValue))}" placeholder="INS-001">
+        </label>
+        <label class="form-field">
+          <span>Ingredient name</span>
+          <input type="text" id="quick-ingredient-name" placeholder="Ingredient name">
+        </label>
+        <label class="form-field">
+          <span>Category</span>
+          <input type="text" id="quick-ingredient-category" placeholder="Produce, dairy, protein">
+        </label>
+        <label class="form-field">
+          <span>Unit</span>
+          <input type="text" id="quick-ingredient-unit" placeholder="lb, oz, each">
+        </label>
+        <label class="form-field">
+          <span>Package Quantity</span>
+          <input type="number" id="quick-ingredient-package-quantity" min="0.01" step="0.01" value="1">
+        </label>
+        <label class="form-field">
+          <span>Package Unit</span>
+          <input type="text" id="quick-ingredient-package-unit" placeholder="bag, case, bottle">
+        </label>
+        <label class="form-field">
+          <span>Package Price</span>
+          <input type="number" id="quick-ingredient-package-price" min="0" step="0.01" value="0">
+        </label>
+        <label class="form-field">
+          <span>Current Stock</span>
+          <input type="number" id="quick-ingredient-current-stock" min="0" step="0.01" value="0">
+        </label>
+        <label class="form-field">
+          <span>Minimum Stock</span>
+          <input type="number" id="quick-ingredient-minimum-stock" min="0" step="0.01" value="0">
+        </label>
+        <label class="form-field">
+          <span>Supplier</span>
+          <input type="text" id="quick-ingredient-supplier" placeholder="Optional supplier">
+        </label>
+        <div class="recipe-quick-add-actions">
+          <button type="button" class="secondary-action" id="recipe-cancel-quick-ingredient">Cancel</button>
+          <button type="button" class="primary-action" id="recipe-save-quick-ingredient">Save and add</button>
+        </div>
+      </div>
+
+      ${renderRecipeIngredientRows()}
+      ${renderRecipeCostSummary()}
+    </section>
+  `;
+}
+
+function refreshRecipeIngredientBuilder() {
+  const builder = els['module-form-fields'].querySelector('[data-recipe-ingredient-builder]');
+  if (!builder) return;
+  builder.outerHTML = renderRecipeIngredientBuilder();
+}
+
+function refreshRecipeIngredientOptions() {
+  const select = document.getElementById('recipe-ingredient-select');
+  if (select) select.innerHTML = renderRecipeIngredientOptions();
+}
+
+function refreshSubrecipeOptions() {
+  const select = document.getElementById('recipe-subrecipe-select');
+  if (select) select.innerHTML = renderSubrecipeOptions();
+}
+
+function refreshRecipeCostSummary() {
+  const summary = els['module-form-fields'].querySelector('.recipe-cost-summary');
+  if (summary) summary.outerHTML = renderRecipeCostSummary();
+}
+
+function addRecipeIngredientToDraft(ingredient) {
+  if (!ingredient?.inventoryItemId && !ingredient?.subrecipeId) {
+    throw new Error('Choose a valid inventory ingredient or subrecipe.');
+  }
+
+  const existingIndex = state.recipeIngredientsDraft.findIndex(item => (
+    ingredient.itemType === 'subrecipe'
+      ? String(item.subrecipeId) === String(ingredient.subrecipeId)
+      : String(item.inventoryItemId) === String(ingredient.inventoryItemId)
+  ));
+
+  if (existingIndex >= 0) {
+    const existing = state.recipeIngredientsDraft[existingIndex];
+    const quantity = Number(existing.quantity || 0) + Number(ingredient.quantity || 0);
+    state.recipeIngredientsDraft[existingIndex] = normalizeRecipeIngredient({
+      ...existing,
+      quantity
+    });
+    return;
+  }
+
+  state.recipeIngredientsDraft.push(ingredient);
+}
+
+async function loadInventoryOptionsForRecipe() {
+  try {
+    await loadModuleData('inventory');
+    if (state.modalSection === 'recipes') await loadSubrecipesForRecipeUsage();
+    refreshRecipeIngredientBuilder();
+  } catch (error) {
+    showAlert(els['module-form-message'], error.message || 'Unable to load inventory ingredients.');
+  }
+}
+
+async function saveQuickInventoryIngredient() {
+  const itemCode = normalizeInventoryCode(document.getElementById('quick-ingredient-code')?.value);
+  const name = document.getElementById('quick-ingredient-name')?.value.trim();
+  if (!itemCode) throw new Error('Input code is required.');
+  if (!name) throw new Error('Ingredient name is required.');
+
+  const duplicateCode = findInventoryIngredientByCode(itemCode);
+  if (duplicateCode) {
+    throw new Error(`${duplicateCode.item_code} already exists in Inventory. Use the existing ingredient instead of creating a duplicate.`);
+  }
+
+  const duplicate = findMatchingInventoryIngredient(name);
+  if (duplicate) {
+    throw new Error(`${duplicate.name} already exists in Inventory. Use the existing ingredient instead of creating a duplicate.`);
+  }
+
+  const payload = {
+    item_code: itemCode,
+    name,
+    category: document.getElementById('quick-ingredient-category')?.value.trim() || null,
+    base_unit: document.getElementById('quick-ingredient-unit')?.value.trim() || null,
+    package_quantity: normalizePayloadValue({ type: 'number' }, document.getElementById('quick-ingredient-package-quantity')?.value || '1'),
+    package_unit: document.getElementById('quick-ingredient-package-unit')?.value.trim() || null,
+    package_price: normalizePayloadValue({ type: 'number' }, document.getElementById('quick-ingredient-package-price')?.value || '0'),
+    current_stock: normalizePayloadValue({ type: 'number' }, document.getElementById('quick-ingredient-current-stock')?.value || '0'),
+    minimum_stock: normalizePayloadValue({ type: 'number' }, document.getElementById('quick-ingredient-minimum-stock')?.value || '0'),
+    supplier: document.getElementById('quick-ingredient-supplier')?.value.trim() || null,
+    status: 'active'
+  };
+
+  requireNonNegativeNumber(payload.package_price, 'Package Price', { allowNull: false });
+  const packageQuantity = requireNonNegativeNumber(payload.package_quantity, 'Package Quantity', { allowNull: false });
+  if (packageQuantity === 0) throw new Error('Package Quantity cannot be 0.');
+  requireNonNegativeNumber(payload.current_stock, 'Current Stock', { allowNull: false });
+  requireNonNegativeNumber(payload.minimum_stock, 'Minimum Stock', { allowNull: false });
+  payload.unit = payload.base_unit;
+  payload.cost_per_unit = calculateInventoryUnitCost(payload) || 0;
+
+  const createdIngredient = await createRecord(MODULE_SECTIONS.inventory.table, payload);
+  await loadModuleData('inventory');
+  addRecipeIngredientToDraft(createRecipeIngredientFromInventory(createdIngredient));
+  state.recipeIngredientSearch = '';
+  state.recipeQuickIngredientOpen = false;
+  refreshRecipeIngredientBuilder();
+  showToast(`${createdIngredient.name} added to inventory and recipe.`);
+}
+
+function openModuleModal(section, record = null, options = {}) {
   const moduleConfig = getModuleConfig(section);
   if (!moduleConfig.table) return;
 
   state.modalSection = section;
   state.editingRecord = record;
+  state.recipeIngredientSearch = '';
+  state.subrecipeSearch = '';
+  state.recipeQuickIngredientOpen = false;
+  state.recipeIngredientsDraft = isCostingRecipeSection(section)
+    ? normalizeRecipeIngredients(record?.ingredients)
+    : [];
+
+  if (section === 'recipes' && options.preselectedIngredient) {
+    addRecipeIngredientToDraft(createRecipeIngredientFromInventory(options.preselectedIngredient));
+  }
+
   showAlert(els['module-form-message'], '');
   els['module-modal-title'].textContent = record
     ? `Edit ${moduleConfig.singular}`
@@ -1187,17 +2330,35 @@ function openModuleModal(section, record = null) {
     ? `Update this ${moduleConfig.singular} for ${state.activeClient?.name || 'this workspace'}.`
     : `Create a new ${moduleConfig.singular} for ${state.activeClient?.name || 'this workspace'}.`;
   els['module-save-button'].textContent = record ? 'Save Changes' : moduleConfig.action;
-  els['module-form-fields'].innerHTML = moduleConfig.fields
+  const baseFieldsHtml = moduleConfig.fields
     .map(field => renderFormField(field, record))
     .join('');
+  els['module-form-fields'].innerHTML = isCostingRecipeSection(section)
+    ? `${baseFieldsHtml}${renderRecipeIngredientBuilder()}`
+    : section === 'inventory'
+      ? `${baseFieldsHtml}<div class="form-field-wide" data-inventory-duplicate-suggestion></div>`
+    : baseFieldsHtml;
   els['module-modal'].hidden = false;
   const firstInput = els['module-form-fields'].querySelector('input, textarea, select');
   if (firstInput) firstInput.focus();
+
+  if (isCostingRecipeSection(section)) {
+    loadInventoryOptionsForRecipe();
+  }
+
+  if (section === 'inventory') {
+    refreshInventoryDuplicateSuggestion();
+  }
 }
 
 function closeModuleModal() {
   state.modalSection = null;
   state.editingRecord = null;
+  state.recipeIngredientsDraft = [];
+  state.recipeIngredientSearch = '';
+  state.subrecipeSearch = '';
+  state.recipeQuickIngredientOpen = false;
+  state.recipeLinkIngredient = null;
   els['module-modal'].hidden = true;
   els['module-form'].reset();
   els['module-form-fields'].innerHTML = '';
@@ -1221,9 +2382,164 @@ function buildModulePayload(section) {
     }
 
     payload[field.name] = normalizePayloadValue(field, rawValue);
+    if (field.type === 'number' && payload[field.name] !== null && Number(payload[field.name]) < 0) {
+      throw new Error(`${field.label} cannot be negative.`);
+    }
   });
 
+  if (section === 'inventory') {
+    payload.item_code = normalizeInventoryCode(payload.item_code);
+    if (!payload.item_code) throw new Error('Input Code is required.');
+    const duplicateCode = findInventoryIngredientByCode(payload.item_code, state.editingRecord?.id);
+    if (duplicateCode) {
+      throw new Error(`${duplicateCode.item_code} already exists in Inventory. Use a unique input code.`);
+    }
+
+    const duplicate = findMatchingInventoryIngredient(payload.name, state.editingRecord?.id);
+    if (duplicate) {
+      throw new Error(`${duplicate.name} already exists in Inventory. Use the existing ingredient instead of creating a duplicate.`);
+    }
+
+    const packageQuantity = requireNonNegativeNumber(payload.package_quantity, 'Package Quantity', { allowNull: false });
+    if (packageQuantity === 0) throw new Error('Package Quantity cannot be 0.');
+    if (payload.package_price !== null) {
+      requireNonNegativeNumber(payload.package_price, 'Package Price', { allowNull: false });
+    }
+
+    ['current_stock', 'minimum_stock'].forEach(fieldName => {
+      payload[fieldName] = payload[fieldName] === null ? 0 : payload[fieldName];
+      requireNonNegativeNumber(payload[fieldName], formatLabel(fieldName), { allowNull: false });
+    });
+
+    payload.unit = payload.base_unit;
+    payload.cost_per_unit = calculateInventoryUnitCost(payload) || 0;
+  }
+
+  if (isCostingRecipeSection(section)) {
+    const normalizedIngredients = state.recipeIngredientsDraft.map(normalizeRecipeIngredient).filter(Boolean);
+    if (normalizedIngredients.length === 0) {
+      throw new Error(`Add at least one inventory input before saving this ${MODULE_SECTIONS[section].singular}.`);
+    }
+
+    normalizedIngredients.forEach(ingredient => {
+      if (Number(ingredient.quantity) < 0) {
+        throw new Error(`${ingredient.ingredientName || 'Ingredient'} quantity cannot be negative.`);
+      }
+    });
+
+    Object.assign(payload, calculateRecipeCostFields(payload, normalizedIngredients));
+  }
+
+  if (section === 'menu') {
+    const recipeId = payload.recipe_id;
+    const recipe = recipeId
+      ? (state.moduleRecords.recipes || []).find(row => String(row.id) === String(recipeId))
+      : null;
+
+    if (recipeId && !recipe) throw new Error('Choose a valid linked recipe.');
+    if (recipe && getRecipeCostForMenu(recipe) === 0 && String(payload.status || 'active') === 'active') {
+      throw new Error('This recipe cost is 0. Add ingredients and costs before activating this menu item.');
+    }
+
+    Object.assign(payload, buildMenuCostFields(recipe, payload.sale_price));
+  }
+
   return payload;
+}
+
+async function recalculateMenuItemsForRecipes(recipeIds = []) {
+  const ids = new Set(recipeIds.map(String).filter(Boolean));
+  if (ids.size === 0) return 0;
+
+  await loadRecipesForInventoryUsage();
+  const clientId = getActiveClientId();
+  if (!clientId) return 0;
+
+  const { data, error } = await withActiveRecordFilter(
+    requireSupabaseClient()
+      .from(MODULE_SECTIONS.menu.table)
+      .select('*')
+      .eq('client_id', clientId)
+  );
+
+  if (error) throw error;
+
+  const menuItems = data || [];
+  state.moduleRecords.menu = menuItems;
+  let updatedCount = 0;
+
+  for (const item of menuItems) {
+    if (!ids.has(String(item.recipe_id))) continue;
+    const recipe = (state.moduleRecords.recipes || []).find(row => String(row.id) === String(item.recipe_id));
+    const costFields = buildMenuCostFields(recipe, item.sale_price);
+    await updateRecord(MODULE_SECTIONS.menu.table, item.id, costFields);
+    updatedCount += 1;
+  }
+
+  return updatedCount;
+}
+
+async function recalculateRecipesUsingInventoryItem(inventoryItem) {
+  if (!inventoryItem?.id) return [];
+  const inventoryRecords = state.moduleRecords.inventory || [];
+  const existingInventoryIndex = inventoryRecords.findIndex(item => String(item.id) === String(inventoryItem.id));
+  state.moduleRecords.inventory = existingInventoryIndex >= 0
+    ? inventoryRecords.map(item => (String(item.id) === String(inventoryItem.id) ? inventoryItem : item))
+    : [...inventoryRecords, inventoryItem];
+  await loadRecipesForInventoryUsage();
+  const itemCode = normalizeInventoryCode(inventoryItem.item_code);
+  const updatedRecipeIds = [];
+
+  for (const recipe of state.moduleRecords.recipes || []) {
+    const ingredients = normalizeRecipeIngredients(recipe.ingredients);
+    const usesIngredient = ingredients.some(ingredient => (
+      String(ingredient.inventoryItemId) === String(inventoryItem.id)
+      || (itemCode && normalizeInventoryCode(ingredient.itemCode) === itemCode)
+    ));
+    if (!usesIngredient) continue;
+
+    const costFields = calculateRecipeCostFields(recipe, ingredients);
+    await updateRecord(MODULE_SECTIONS.recipes.table, recipe.id, costFields);
+    updatedRecipeIds.push(recipe.id);
+  }
+
+  if (updatedRecipeIds.length > 0) {
+    await loadRecipesForInventoryUsage();
+    await recalculateMenuItemsForRecipes(updatedRecipeIds);
+  }
+
+  return updatedRecipeIds;
+}
+
+async function recalculateRecipesUsingSubrecipe(subrecipe) {
+  if (!subrecipe?.id) return [];
+  const subrecipeRecords = state.moduleRecords.subrecipes || [];
+  const existingSubrecipeIndex = subrecipeRecords.findIndex(item => String(item.id) === String(subrecipe.id));
+  state.moduleRecords.subrecipes = existingSubrecipeIndex >= 0
+    ? subrecipeRecords.map(item => (String(item.id) === String(subrecipe.id) ? subrecipe : item))
+    : [...subrecipeRecords, subrecipe];
+  await loadRecipesForInventoryUsage();
+  const updatedRecipeIds = [];
+
+  for (const recipe of state.moduleRecords.recipes || []) {
+    const ingredients = normalizeRecipeIngredients(recipe.ingredients);
+    const usesSubrecipe = ingredients.some(ingredient => (
+      ingredient.itemType === 'subrecipe'
+      && String(ingredient.subrecipeId) === String(subrecipe.id)
+    ));
+    if (!usesSubrecipe) continue;
+
+    const costFields = calculateRecipeCostFields(recipe, ingredients);
+    await updateRecord(MODULE_SECTIONS.recipes.table, recipe.id, costFields);
+    updatedRecipeIds.push(recipe.id);
+  }
+
+  if (updatedRecipeIds.length > 0) {
+    await loadRecipesForInventoryUsage();
+    await recalculateMenuItemsForRecipes(updatedRecipeIds);
+  }
+
+  return updatedRecipeIds;
 }
 
 async function saveModuleRecord(event) {
@@ -1231,18 +2547,55 @@ async function saveModuleRecord(event) {
   const section = state.modalSection;
   if (!section) return;
 
+  if (section === 'recipe-link') {
+    setLoading(true);
+    showAlert(els['module-form-message'], '');
+    try {
+      await saveInventoryRecipeLink();
+    } catch (error) {
+      showAlert(els['module-form-message'], error.message || 'Unable to connect ingredient to recipe.');
+    } finally {
+      setLoading(false);
+    }
+    return;
+  }
+
   const moduleConfig = getModuleConfig(section);
   setLoading(true);
   showAlert(els['module-form-message'], '');
 
   try {
+    if (isCostingRecipeSection(section)) {
+      await loadModuleData('inventory');
+      if (section === 'recipes') await loadSubrecipesForRecipeUsage();
+    }
+
+    if (section === 'menu') {
+      await loadRecipesForInventoryUsage();
+    }
+
     const payload = buildModulePayload(section);
+    let savedRecord = null;
     if (state.editingRecord?.id) {
-      await updateRecord(moduleConfig.table, state.editingRecord.id, payload);
+      savedRecord = await updateRecord(moduleConfig.table, state.editingRecord.id, payload);
       showToast(`${moduleConfig.title} record updated.`);
     } else {
-      await createRecord(moduleConfig.table, payload);
+      savedRecord = await createRecord(moduleConfig.table, payload);
       showToast(`${moduleConfig.title} record created.`);
+    }
+
+    if (section === 'inventory') {
+      const updatedRecipes = await recalculateRecipesUsingInventoryItem(savedRecord);
+      if (updatedRecipes.length > 0) showToast(`${updatedRecipes.length} connected recipe costs recalculated.`);
+    }
+
+    if (section === 'subrecipes') {
+      const updatedRecipes = await recalculateRecipesUsingSubrecipe(savedRecord);
+      if (updatedRecipes.length > 0) showToast(`${updatedRecipes.length} recipes using this subrecipe recalculated.`);
+    }
+
+    if (section === 'recipes') {
+      await recalculateMenuItemsForRecipes([savedRecord.id]);
     }
 
     closeModuleModal();
@@ -1277,6 +2630,149 @@ async function archiveModuleRecord(section, recordId) {
   } finally {
     setLoading(false);
   }
+}
+
+function startRecipeWithInventoryItem(recordId) {
+  const ingredient = getRecordById('inventory', recordId);
+  if (!ingredient) return;
+  openModuleModal('recipes', null, { preselectedIngredient: ingredient });
+}
+
+function renderInventoryRecipeLinkForm(ingredient) {
+  const recipes = (state.moduleRecords.recipes || []).filter(recipe => String(recipe.status || 'active') !== 'archived');
+  const recipeOptions = recipes.length
+    ? [
+      '<option value="">Choose recipe</option>',
+      ...recipes.map(recipe => `<option value="${escapeHtml(recipe.id)}">${escapeHtml(recipe.name)}</option>`)
+    ].join('')
+    : '<option value="">No recipes available</option>';
+
+  return `
+    <div class="inventory-recipe-link-panel form-field-wide">
+      <div class="recipe-builder-heading">
+        <span>${escapeHtml(ingredient.name)}</span>
+        <p>Add this inventory ingredient to an existing recipe.</p>
+      </div>
+      <label class="form-field form-field-wide">
+        <span>Recipe</span>
+        <select id="recipe-link-recipe-id" ${recipes.length ? '' : 'disabled'}>
+          ${recipeOptions}
+        </select>
+      </label>
+      <label class="form-field">
+        <span>Quantity used in recipe</span>
+        <input type="number" id="recipe-link-quantity" min="0" step="0.01" value="1">
+      </label>
+      <label class="form-field">
+        <span>Unit used in recipe</span>
+        <input type="text" id="recipe-link-unit" value="${escapeHtml(getInventoryBaseUnit(ingredient) || '')}">
+      </label>
+      ${recipes.length ? '' : '<p class="recipe-ingredient-empty">Create a recipe first, or use "Use in recipe" to start a new one with this ingredient.</p>'}
+    </div>
+  `;
+}
+
+async function openInventoryRecipeLinkModal(recordId) {
+  const ingredient = getRecordById('inventory', recordId);
+  if (!ingredient) return;
+
+  state.modalSection = 'recipe-link';
+  state.editingRecord = null;
+  state.recipeLinkIngredient = ingredient;
+  showAlert(els['module-form-message'], '');
+  els['module-modal-title'].textContent = 'Add to recipe';
+  els['module-modal-subtitle'].textContent = `Connect ${ingredient.name} to an existing recipe.`;
+  els['module-save-button'].textContent = 'Add to Recipe';
+  els['module-form-fields'].innerHTML = '<div class="module-loading form-field-wide">Loading recipes.</div>';
+  els['module-modal'].hidden = false;
+
+  try {
+    await loadRecipesForInventoryUsage();
+    els['module-form-fields'].innerHTML = renderInventoryRecipeLinkForm(ingredient);
+  } catch (error) {
+    showAlert(els['module-form-message'], error.message || 'Unable to load recipes.');
+    els['module-form-fields'].innerHTML = renderInventoryRecipeLinkForm(ingredient);
+  }
+}
+
+async function saveInventoryRecipeLink() {
+  const ingredient = state.recipeLinkIngredient;
+  if (!ingredient?.id) throw new Error('Choose a valid inventory ingredient.');
+
+  const recipeId = document.getElementById('recipe-link-recipe-id')?.value;
+  const recipe = (state.moduleRecords.recipes || []).find(row => String(row.id) === String(recipeId));
+  if (!recipe) throw new Error('Choose a recipe to connect this ingredient.');
+
+  const quantity = requireNonNegativeNumber(
+    document.getElementById('recipe-link-quantity')?.value,
+    'Ingredient quantity',
+    { allowNull: false }
+  );
+  if (quantity === 0) throw new Error('Ingredient quantity must be greater than zero.');
+
+  const unit = document.getElementById('recipe-link-unit')?.value.trim() || getInventoryBaseUnit(ingredient) || '';
+  const recipeIngredients = normalizeRecipeIngredients(recipe.ingredients);
+  const newIngredient = createRecipeIngredientFromInventory(ingredient, quantity);
+  newIngredient.unit = unit;
+
+  const existingIndex = recipeIngredients.findIndex(row => (
+    String(row.inventoryItemId) === String(ingredient.id)
+  ));
+
+  if (existingIndex >= 0) {
+    const existingIngredient = recipeIngredients[existingIndex];
+    const nextQuantity = Number(existingIngredient.quantity || 0) + quantity;
+    recipeIngredients[existingIndex] = normalizeRecipeIngredient({
+      ...existingIngredient,
+      quantity: nextQuantity,
+      unit
+    });
+  } else {
+    recipeIngredients.push(newIngredient);
+  }
+
+  const costFields = calculateRecipeCostFields(recipe, recipeIngredients);
+
+  await updateRecord(MODULE_SECTIONS.recipes.table, recipe.id, {
+    ...costFields
+  });
+
+  await loadRecipesForInventoryUsage();
+  await recalculateMenuItemsForRecipes([recipe.id]);
+  closeModuleModal();
+  renderModuleSection(state.activeSection === 'recipes' ? 'recipes' : 'inventory');
+  showToast(`${ingredient.name} added to ${recipe.name}.`);
+}
+
+function addSelectedRecipeIngredient() {
+  const select = document.getElementById('recipe-ingredient-select');
+  const selectedId = select?.value;
+  const quantity = Number(document.getElementById('recipe-ingredient-add-quantity')?.value || 1);
+  const typedCode = normalizeInventoryCode(document.getElementById('recipe-ingredient-search')?.value);
+  const selectedItem = selectedId
+    ? getInventoryOptions().find(item => String(item.id) === String(selectedId))
+    : findInventoryIngredientByCode(typedCode);
+  if (!selectedItem) {
+    throw new Error(typedCode
+      ? `${typedCode} was not found in Inventory. Use "+ Add new ingredient to inventory" to create it.`
+      : 'Choose an inventory ingredient first.');
+  }
+  if (!Number.isFinite(quantity) || quantity < 0) throw new Error('Ingredient quantity cannot be negative.');
+
+  addRecipeIngredientToDraft(createRecipeIngredientFromInventory(selectedItem, quantity));
+  refreshRecipeIngredientBuilder();
+}
+
+function addSelectedRecipeSubrecipe() {
+  const select = document.getElementById('recipe-subrecipe-select');
+  const selectedId = select?.value;
+  const quantity = Number(document.getElementById('recipe-subrecipe-add-quantity')?.value || 1);
+  const selectedItem = getSubrecipeOptions().find(item => String(item.id) === String(selectedId));
+  if (!selectedItem) throw new Error('Choose a subrecipe first.');
+  if (!Number.isFinite(quantity) || quantity < 0) throw new Error('Subrecipe quantity cannot be negative.');
+
+  addRecipeIngredientToDraft(createRecipeIngredientFromSubrecipe(selectedItem, quantity));
+  refreshRecipeIngredientBuilder();
 }
 
 function escapeHtml(value) {
@@ -1575,18 +3071,27 @@ async function loadUserClients() {
     return state.userClients;
   }
 
-  const { data: clients, error: clientsError } = await supabase
+  let clientsResult = await supabase
     .from('clients')
-    .select('id, name, client_type, status, created_at, updated_at')
+    .select('id, name, client_type, status, created_at, updated_at, beoflow_waste_percentage, beoflow_food_factor')
     .in('id', allowedClientIds)
     .eq('status', 'active')
     .order('created_at', { ascending: true });
 
-  if (clientsError) throw clientsError;
+  if (clientsResult.error && String(clientsResult.error.message || '').toLowerCase().includes('column')) {
+    clientsResult = await supabase
+      .from('clients')
+      .select('id, name, client_type, status, created_at, updated_at')
+      .in('id', allowedClientIds)
+      .eq('status', 'active')
+      .order('created_at', { ascending: true });
+  }
+
+  if (clientsResult.error) throw clientsResult.error;
 
   const membershipByClientId = new Map((memberships || []).map(row => [row.client_id, row]));
 
-  state.userClients = (clients || []).map(client => ({
+  state.userClients = (clientsResult.data || []).map(client => ({
     ...client,
     member_role: membershipByClientId.get(client.id)?.role || 'member'
   }));
@@ -1610,13 +3115,15 @@ async function createBeoflowClient(clientInput) {
     ...clientPayload,
     city: clientInput.city || null,
     state: clientInput.state || null,
-    timezone: clientInput.timezone || null
+    timezone: clientInput.timezone || null,
+    beoflow_waste_percentage: DEFAULT_WASTE_PERCENTAGE,
+    beoflow_food_factor: DEFAULT_FOOD_FACTOR
   };
 
   let insertResult = await supabase
     .from('clients')
     .insert(optionalPayload)
-    .select('id, name, client_type, status, created_at, updated_at')
+    .select('id, name, client_type, status, created_at, updated_at, beoflow_waste_percentage, beoflow_food_factor')
     .single();
 
   if (insertResult.error && String(insertResult.error.message || '').toLowerCase().includes('column')) {
@@ -1769,6 +3276,8 @@ function showWorkspaceSettings() {
   showAlert(els['workspace-settings-message'], '');
   els['workspace-settings-name'].value = activeClient.name || '';
   els['workspace-settings-type'].value = activeClient.client_type || 'restaurant';
+  els['workspace-settings-waste'].value = String(getWorkspaceWastePercentage() * 100);
+  els['workspace-settings-factor'].value = String(getWorkspaceFoodFactor());
   els['workspace-settings-modal'].hidden = false;
 }
 
@@ -1778,24 +3287,41 @@ async function updateWorkspaceSettings() {
 
   const name = els['workspace-settings-name'].value.trim();
   if (!name) throw new Error('Business name is required.');
+  const wastePercentageInput = requireNonNegativeNumber(els['workspace-settings-waste'].value, 'Default waste percentage', { allowNull: false });
+  const foodFactor = requireNonNegativeNumber(els['workspace-settings-factor'].value, 'Food factor', { allowNull: false });
 
-  const payload = {
+  const basePayload = {
     name,
     client_type: els['workspace-settings-type'].value
   };
 
-  const { data, error } = await requireSupabaseClient()
+  const payload = {
+    ...basePayload,
+    beoflow_waste_percentage: wastePercentageInput / 100,
+    beoflow_food_factor: foodFactor
+  };
+
+  let updateResult = await requireSupabaseClient()
     .from('clients')
     .update(payload)
     .eq('id', activeClient.id)
-    .select('id, name, client_type, status, created_at, updated_at')
+    .select('id, name, client_type, status, created_at, updated_at, beoflow_waste_percentage, beoflow_food_factor')
     .single();
 
-  if (error) throw error;
+  if (updateResult.error && String(updateResult.error.message || '').toLowerCase().includes('column')) {
+    updateResult = await requireSupabaseClient()
+      .from('clients')
+      .update(basePayload)
+      .eq('id', activeClient.id)
+      .select('id, name, client_type, status, created_at, updated_at')
+      .single();
+  }
+
+  if (updateResult.error) throw updateResult.error;
 
   const updatedClient = {
     ...activeClient,
-    ...data
+    ...updateResult.data
   };
   state.userClients = state.userClients.map(client => (
     client.id === updatedClient.id ? { ...client, ...updatedClient } : client
@@ -2145,6 +3671,167 @@ function bindEvents() {
 
     if (actionButton.dataset.moduleAction === 'archive') {
       archiveModuleRecord(section, recordId);
+      return;
+    }
+
+    if (actionButton.dataset.moduleAction === 'use-in-recipe') {
+      startRecipeWithInventoryItem(recordId);
+      return;
+    }
+
+    if (actionButton.dataset.moduleAction === 'add-to-recipe') {
+      openInventoryRecipeLinkModal(recordId);
+    }
+  });
+
+  els['module-form-fields'].addEventListener('input', event => {
+    if (event.target.id === 'recipe-ingredient-search') {
+      state.recipeIngredientSearch = event.target.value;
+      refreshRecipeIngredientOptions();
+    }
+
+    if (event.target.id === 'subrecipe-search') {
+      state.subrecipeSearch = event.target.value;
+      refreshSubrecipeOptions();
+    }
+
+    if (event.target.id === 'quick-ingredient-name') {
+      const suggestion = els['module-form-fields'].querySelector('[data-quick-ingredient-duplicate-suggestion]');
+      if (suggestion) {
+        suggestion.innerHTML = renderInventoryDuplicateSuggestion(event.target.value, null, { compact: true });
+      }
+    }
+
+    if (event.target.name === 'name' && state.modalSection === 'inventory') {
+      refreshInventoryDuplicateSuggestion();
+    }
+
+    const quantityInputIndex = event.target.dataset.recipeIngredientQuantity;
+    if (quantityInputIndex !== undefined) {
+      const draftIngredient = state.recipeIngredientsDraft[Number(quantityInputIndex)];
+      if (!draftIngredient) return;
+      const quantity = Number(event.target.value || 0);
+      if (!Number.isFinite(quantity) || quantity < 0) {
+        showAlert(els['module-form-message'], 'Ingredient quantity cannot be negative.');
+        return;
+      }
+
+      state.recipeIngredientsDraft[Number(quantityInputIndex)] = normalizeRecipeIngredient({
+        ...draftIngredient,
+        quantity
+      });
+      refreshRecipeCostSummary();
+    }
+
+    const unitIndex = event.target.dataset.recipeIngredientUnit;
+    if (unitIndex !== undefined) {
+      const draftIngredient = state.recipeIngredientsDraft[Number(unitIndex)];
+      if (!draftIngredient) return;
+      state.recipeIngredientsDraft[Number(unitIndex)] = normalizeRecipeIngredient({
+        ...draftIngredient,
+        unit: event.target.value
+      });
+    }
+
+    if (
+      (
+        ['yield_quantity', 'yield_unit', 'portion_count'].includes(event.target.name)
+        || ['pax', 'manual_sale_price'].includes(event.target.name)
+      )
+      && isCostingRecipeSection(state.modalSection)
+    ) {
+      refreshRecipeCostSummary();
+    }
+  });
+
+  els['module-form-fields'].addEventListener('change', event => {
+    const quantityIndex = event.target.dataset.recipeIngredientQuantity;
+    if (quantityIndex === undefined) return;
+
+    const draftIngredient = state.recipeIngredientsDraft[Number(quantityIndex)];
+    if (!draftIngredient) return;
+
+    const quantity = Number(event.target.value || 0);
+    if (!Number.isFinite(quantity) || quantity < 0) {
+      showAlert(els['module-form-message'], 'Ingredient quantity cannot be negative.');
+      event.target.value = draftIngredient.quantity;
+      return;
+    }
+    state.recipeIngredientsDraft[Number(quantityIndex)] = normalizeRecipeIngredient({
+      ...draftIngredient,
+      quantity
+    });
+    refreshRecipeIngredientBuilder();
+  });
+
+  els['module-form-fields'].addEventListener('click', async event => {
+    if (event.target.id === 'recipe-add-selected-ingredient') {
+      try {
+        addSelectedRecipeIngredient();
+      } catch (error) {
+        showAlert(els['module-form-message'], error.message || 'Unable to add ingredient.');
+      }
+      return;
+    }
+
+    if (event.target.id === 'recipe-add-selected-subrecipe') {
+      try {
+        addSelectedRecipeSubrecipe();
+      } catch (error) {
+        showAlert(els['module-form-message'], error.message || 'Unable to add subrecipe.');
+      }
+      return;
+    }
+
+    if (event.target.id === 'recipe-quick-add-ingredient') {
+      state.recipeQuickIngredientOpen = true;
+      refreshRecipeIngredientBuilder();
+      document.getElementById('quick-ingredient-name')?.focus();
+      return;
+    }
+
+    if (event.target.id === 'recipe-cancel-quick-ingredient') {
+      state.recipeQuickIngredientOpen = false;
+      refreshRecipeIngredientBuilder();
+      return;
+    }
+
+    if (event.target.id === 'recipe-save-quick-ingredient') {
+      setLoading(true);
+      showAlert(els['module-form-message'], '');
+      try {
+        await saveQuickInventoryIngredient();
+      } catch (error) {
+        showAlert(els['module-form-message'], error.message || 'Unable to create ingredient.');
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
+    const removeIndex = event.target.dataset.recipeIngredientRemove;
+    if (removeIndex !== undefined) {
+      state.recipeIngredientsDraft.splice(Number(removeIndex), 1);
+      refreshRecipeIngredientBuilder();
+      return;
+    }
+
+    const useExistingIngredientId = event.target.dataset.useExistingIngredient;
+    if (useExistingIngredientId) {
+      const ingredient = getInventoryOptions().find(item => String(item.id) === String(useExistingIngredientId));
+      if (!ingredient) return;
+
+      if (isCostingRecipeSection(state.modalSection)) {
+        addRecipeIngredientToDraft(createRecipeIngredientFromInventory(ingredient));
+        state.recipeQuickIngredientOpen = false;
+        state.recipeIngredientSearch = '';
+        refreshRecipeIngredientBuilder();
+        return;
+      }
+
+      if (state.modalSection === 'inventory') {
+        openModuleModal('inventory', ingredient);
+      }
     }
   });
 

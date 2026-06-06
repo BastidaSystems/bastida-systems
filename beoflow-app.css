@@ -994,6 +994,195 @@ h1 {
   gap: 1rem;
 }
 
+.recipe-ingredient-builder,
+.inventory-recipe-link-panel {
+  display: grid;
+  gap: 0.95rem;
+  padding: 1rem;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  background: var(--surface-subtle);
+}
+
+.recipe-builder-heading {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.recipe-builder-heading span {
+  color: var(--ink-strong);
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.recipe-builder-heading p,
+.recipe-ingredient-empty {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.recipe-ingredient-picker,
+.recipe-quick-add-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.3fr) minmax(7rem, 0.5fr) auto;
+  gap: 0.75rem;
+  align-items: end;
+}
+
+.recipe-quick-add-toggle {
+  margin: 0;
+}
+
+.recipe-quick-add-panel {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+  padding: 1rem;
+  border: 1px solid rgba(31, 138, 112, 0.16);
+  border-radius: var(--radius);
+  background: #fff;
+}
+
+.inventory-duplicate-suggestion {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.85rem;
+  border: 1px solid rgba(184, 137, 84, 0.22);
+  border-radius: var(--radius);
+  background: rgba(184, 137, 84, 0.1);
+}
+
+.inventory-duplicate-suggestion:empty {
+  display: none;
+}
+
+.inventory-duplicate-suggestion strong {
+  color: #8a5b29;
+  font-size: 0.88rem;
+}
+
+.inventory-duplicate-suggestion span {
+  color: var(--muted-strong);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.inventory-duplicate-suggestion .text-action {
+  margin: 0;
+}
+
+.recipe-quick-add-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  grid-column: 1 / -1;
+}
+
+.recipe-ingredient-list {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.recipe-ingredient-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(7rem, 0.25fr) minmax(7rem, 0.25fr) auto auto;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.75rem;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  background: #fff;
+}
+
+.recipe-ingredient-row strong,
+.recipe-ingredient-row span,
+.recipe-ingredient-row label span {
+  display: block;
+}
+
+.recipe-ingredient-row strong {
+  color: var(--ink-strong);
+}
+
+.recipe-ingredient-row span,
+.recipe-ingredient-row label span {
+  color: var(--muted-strong);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.recipe-ingredient-row input {
+  min-height: 2.5rem;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0.55rem 0.65rem;
+}
+
+.recipe-cost-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.recipe-cost-summary div {
+  padding: 0.8rem;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  background: #fff;
+}
+
+.recipe-cost-summary span,
+.recipe-ingredient-summary > span {
+  display: block;
+  color: var(--muted-strong);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.recipe-cost-summary strong {
+  display: block;
+  margin-top: 0.35rem;
+  color: var(--ink-strong);
+  font-size: 1.1rem;
+}
+
+.recipe-ingredient-summary {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 0.95rem;
+}
+
+.recipe-ingredient-summary ul {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.recipe-ingredient-summary li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  background: var(--surface-subtle);
+}
+
+.recipe-ingredient-summary li span:first-child {
+  color: var(--ink-strong);
+  font-weight: 800;
+}
+
+.recipe-ingredient-summary li span:last-child {
+  color: var(--muted-strong);
+  font-weight: 800;
+}
+
 .modal-actions {
   display: flex;
   justify-content: flex-end;
@@ -1078,6 +1267,10 @@ h1 {
   .module-card-grid,
   .module-empty-state,
   .module-form-fields,
+  .recipe-ingredient-picker,
+  .recipe-quick-add-panel,
+  .recipe-ingredient-row,
+  .recipe-cost-summary,
   .reports-grid {
     grid-template-columns: 1fr;
   }
@@ -1110,6 +1303,15 @@ h1 {
 
   .record-badges {
     justify-content: flex-start;
+  }
+
+  .recipe-quick-add-actions,
+  .recipe-ingredient-row {
+    align-items: stretch;
+  }
+
+  .recipe-quick-add-actions {
+    display: grid;
   }
 
   .module-modal-backdrop {
