@@ -25,6 +25,9 @@ const state = {
   recipeQuickIngredientOpen: false,
   recipeLinkIngredient: null,
   subrecipeSearch: '',
+  dashboardCalendarDate: new Date(),
+  dashboardSelectedDate: null,
+  dashboardEvents: [],
   mobileDrawerOpen: false,
   onboardingMode: 'first',
   authMode: 'signin',
@@ -273,6 +276,7 @@ function cacheElements() {
     'selector-add-client-button',
     'dashboard-title',
     'dashboard-description',
+    'operations-calendar',
     'workspace-control-name',
     'workspace-sidebar',
     'mobile-workspace-name',
@@ -498,7 +502,12 @@ function renderIcon(name, extraClass = '') {
     add: '<path d="M12 5v14M5 12h14"></path>',
     alert: '<path d="M12 9v4"></path><path d="M12 17h.01"></path><path d="M10.3 3.9 2.6 17.1A2 2 0 0 0 4.3 20h15.4a2 2 0 0 0 1.7-2.9L13.7 3.9a2 2 0 0 0-3.4 0Z"></path>',
     box: '<path d="m21 8-9-5-9 5 9 5 9-5Z"></path><path d="M3 8v8l9 5 9-5V8"></path><path d="M12 13v8"></path>',
+    calendar: '<path d="M8 2v4"></path><path d="M16 2v4"></path><path d="M3 10h18"></path><path d="M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"></path>',
     check: '<path d="m4 12 5 5L20 6"></path>',
+    chevronLeft: '<path d="m15 18-6-6 6-6"></path>',
+    chevronRight: '<path d="m9 18 6-6-6-6"></path>',
+    circle: '<circle cx="12" cy="12" r="4"></circle>',
+    clock: '<circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path>',
     close: '<path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>',
     leaf: '<path d="M5 21c8-1 15-8 16-16-8 1-15 8-16 16Z"></path><path d="M5 21c0-5 4-9 9-9"></path>',
     package: '<path d="M16.5 9.4 7.5 4.2"></path><path d="M21 16V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.7Z"></path><path d="M3.3 7 12 12l8.7-5"></path><path d="M12 22V12"></path>',
@@ -514,6 +523,71 @@ function renderIcon(name, extraClass = '') {
 
 function renderIconLabel(iconName, label, extraClass = '') {
   return `${renderIcon(iconName, extraClass)}<span>${escapeHtml(label)}</span>`;
+}
+
+function createCalendarDate(year, monthIndex, day) {
+  const date = new Date(year, monthIndex, day);
+  date.setHours(0, 0, 0, 0);
+  return date;
+}
+
+function getTodayDateKey() {
+  return formatDateKey(new Date());
+}
+
+function formatDateKey(date) {
+  if (!(date instanceof Date) || Number.isNaN(date.getTime())) return '';
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function parseDateKey(value) {
+  if (!value) return null;
+  if (value instanceof Date) {
+    return createCalendarDate(value.getFullYear(), value.getMonth(), value.getDate());
+  }
+
+  const textValue = String(value);
+  const match = textValue.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (match) {
+    return createCalendarDate(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  }
+
+  const parsedDate = new Date(textValue);
+  if (Number.isNaN(parsedDate.getTime())) return null;
+  return createCalendarDate(parsedDate.getFullYear(), parsedDate.getMonth(), parsedDate.getDate());
+}
+
+function formatCalendarMonth(date) {
+  return date.toLocaleDateString('en-US', {
+    month: 'long',
+    year: 'numeric'
+  });
+}
+
+function formatCalendarDayHeading(dateKey) {
+  const date = parseDateKey(dateKey);
+  if (!date) return 'Selected day';
+  return date.toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric'
+  });
+}
+
+function formatTimeLabel(value) {
+  if (!value) return '';
+  const match = String(value).match(/^(\d{1,2}):(\d{2})/);
+  if (!match) return String(value);
+
+  const date = new Date();
+  date.setHours(Number(match[1]), Number(match[2]), 0, 0);
+  return date.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit'
+  });
 }
 
 function formatMoney(value) {
@@ -1170,6 +1244,30 @@ async function loadDashboardCounts() {
   return counts;
 }
 
+async function loadDashboardEvents() {
+  const clientId = getActiveClientId();
+  if (!clientId) {
+    state.dashboardEvents = [];
+    return [];
+  }
+
+  const { data, error } = await withActiveRecordFilter(
+    requireSupabaseClient()
+      .from(MODULE_SECTIONS.events.table)
+      .select('*')
+      .eq('client_id', clientId)
+  )
+    .order('event_date', { ascending: true })
+    .order('start_time', { ascending: true });
+
+  if (error) throw error;
+
+  state.dashboardEvents = data || [];
+  state.moduleRecords.events = state.dashboardEvents;
+  state.moduleCounts.events = state.dashboardEvents.length;
+  return state.dashboardEvents;
+}
+
 async function loadModuleData(section) {
   const moduleConfig = getModuleConfig(section);
   if (section === 'reports') return loadReportsData();
@@ -1238,6 +1336,48 @@ async function loadSubrecipesForRecipeUsage() {
   state.moduleRecords.subrecipes = data || [];
   state.moduleCounts.subrecipes = state.moduleRecords.subrecipes.length;
   return state.moduleRecords.subrecipes;
+}
+
+function getActiveClientStorageKey() {
+  return config.activeClientStorageKey || 'beoflow.activeClientId';
+}
+
+function normalizeWorkspaceSelector(value) {
+  return String(value || '').trim().toLowerCase();
+}
+
+function findMatchingWorkspace(savedWorkspace, availableWorkspaces = state.userClients) {
+  const workspaces = (availableWorkspaces || []).filter(workspace => workspace?.id);
+  if (workspaces.length === 0 || !savedWorkspace) return null;
+
+  const savedId = typeof savedWorkspace === 'string'
+    ? savedWorkspace
+    : savedWorkspace.id || savedWorkspace.client_id || savedWorkspace.workspace_id;
+  const savedName = typeof savedWorkspace === 'string'
+    ? savedWorkspace
+    : savedWorkspace.name || savedWorkspace.workspace_name || savedWorkspace.restaurant_name;
+  const normalizedSavedId = normalizeWorkspaceSelector(savedId);
+  const normalizedSavedName = normalizeWorkspaceSelector(savedName);
+
+  return workspaces.find(workspace => (
+    normalizeWorkspaceSelector(workspace.id) === normalizedSavedId
+    || normalizeWorkspaceSelector(workspace.name) === normalizedSavedName
+    || normalizeWorkspaceSelector(workspace.slug) === normalizedSavedName
+  )) || null;
+}
+
+function getValidSelectedWorkspace(savedWorkspace, availableWorkspaces = state.userClients) {
+  const workspaces = (availableWorkspaces || []).filter(workspace => workspace?.id);
+  if (workspaces.length === 0) return null;
+
+  return findMatchingWorkspace(savedWorkspace, workspaces) || workspaces[0];
+}
+
+function clearInvalidStoredWorkspace(savedWorkspace, selectedWorkspace) {
+  if (!savedWorkspace) return;
+  const matchedWorkspace = findMatchingWorkspace(savedWorkspace);
+  if (matchedWorkspace && selectedWorkspace?.id === matchedWorkspace.id) return;
+  localStorage.removeItem(getActiveClientStorageKey());
 }
 
 async function loadReportsData() {
@@ -1365,6 +1505,201 @@ function updateDashboardCards(counts = state.moduleCounts) {
     const section = element.dataset.countSection;
     element.textContent = String(counts[section] || 0);
   });
+}
+
+function getDashboardEventDateKey(record) {
+  return formatDateKey(parseDateKey(record?.event_date));
+}
+
+function getDashboardEventsForDate(dateKey) {
+  return (state.dashboardEvents || [])
+    .filter(record => getDashboardEventDateKey(record) === dateKey)
+    .sort((first, second) => String(first.start_time || '').localeCompare(String(second.start_time || '')));
+}
+
+function renderCalendarEventBadge(record) {
+  const timeLabel = formatTimeLabel(record.start_time);
+  return `
+    <button
+      type="button"
+      class="calendar-event-chip"
+      data-calendar-action="open-event"
+      data-event-id="${escapeHtml(record.id)}"
+      title="${escapeHtml(`${record.name || 'Event'}${timeLabel ? ` at ${timeLabel}` : ''}`)}"
+    >
+      <span>${escapeHtml(record.name || 'Untitled event')}</span>
+    </button>
+  `;
+}
+
+function renderCalendarDayCell(date, monthIndex) {
+  const dateKey = formatDateKey(date);
+  const isCurrentMonth = date.getMonth() === monthIndex;
+  const isToday = dateKey === getTodayDateKey();
+  const isSelected = dateKey === state.dashboardSelectedDate;
+  const dayEvents = getDashboardEventsForDate(dateKey);
+  const visibleEvents = dayEvents.slice(0, 2);
+  const overflowCount = dayEvents.length - visibleEvents.length;
+  const classNames = [
+    'calendar-day',
+    isCurrentMonth ? '' : 'is-outside-month',
+    isToday ? 'is-today' : '',
+    isSelected ? 'is-selected' : ''
+  ].filter(Boolean).join(' ');
+
+  return `
+    <div class="${classNames}">
+      <button
+        type="button"
+        class="calendar-day-number"
+        data-calendar-action="select-date"
+        data-date="${escapeHtml(dateKey)}"
+        aria-label="Select ${escapeHtml(formatCalendarDayHeading(dateKey))}"
+      >
+        ${date.getDate()}
+      </button>
+      <div class="calendar-day-events">
+        ${visibleEvents.map(renderCalendarEventBadge).join('')}
+        ${overflowCount > 0 ? `<span class="calendar-event-overflow">+${overflowCount} more</span>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function renderSelectedCalendarEvents(dateKey) {
+  const selectedEvents = getDashboardEventsForDate(dateKey);
+  if (selectedEvents.length === 0) {
+    return '<p class="calendar-empty-copy">No events scheduled.</p>';
+  }
+
+  return `
+    <div class="calendar-selected-list">
+      ${selectedEvents.map(record => {
+        const timeLabel = formatTimeLabel(record.start_time);
+        const details = [
+          timeLabel,
+          record.location,
+          record.guest_count ? `${record.guest_count} guests` : ''
+        ].filter(Boolean).join(' - ');
+
+        return `
+          <button
+            type="button"
+            class="calendar-selected-event"
+            data-calendar-action="open-event"
+            data-event-id="${escapeHtml(record.id)}"
+          >
+            <span class="calendar-selected-event-icon">${renderIcon('clock')}</span>
+            <span>
+              <strong>${escapeHtml(record.name || 'Untitled event')}</strong>
+              ${details ? `<small>${escapeHtml(details)}</small>` : ''}
+            </span>
+          </button>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+function renderOperationsCalendar() {
+  const calendar = els['operations-calendar'];
+  if (!calendar) return;
+
+  const today = createCalendarDate(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+  if (!state.dashboardSelectedDate) state.dashboardSelectedDate = formatDateKey(today);
+  if (!(state.dashboardCalendarDate instanceof Date) || Number.isNaN(state.dashboardCalendarDate.getTime())) {
+    state.dashboardCalendarDate = today;
+  }
+
+  const monthDate = createCalendarDate(
+    state.dashboardCalendarDate.getFullYear(),
+    state.dashboardCalendarDate.getMonth(),
+    1
+  );
+  const monthIndex = monthDate.getMonth();
+  const leadingDays = monthDate.getDay();
+  const calendarCells = Array.from({ length: 42 }, (_, index) => (
+    createCalendarDate(monthDate.getFullYear(), monthIndex, 1 - leadingDays + index)
+  ));
+  const selectedDateKey = state.dashboardSelectedDate || formatDateKey(today);
+
+  calendar.innerHTML = `
+    <div class="calendar-card-header">
+      <div class="calendar-title-row">
+        <span class="calendar-title-icon">${renderIcon('calendar')}</span>
+        <div>
+          <p class="eyebrow">Dashboard</p>
+          <h3>Operations Calendar</h3>
+        </div>
+      </div>
+      <div class="calendar-controls" aria-label="Calendar controls">
+        <button type="button" class="secondary-action calendar-today-button" data-calendar-action="today">Today</button>
+        <button type="button" class="calendar-icon-button" data-calendar-action="previous-month" aria-label="Previous month">${renderIcon('chevronLeft')}</button>
+        <span class="calendar-month-label">${escapeHtml(formatCalendarMonth(monthDate))}</span>
+        <button type="button" class="calendar-icon-button" data-calendar-action="next-month" aria-label="Next month">${renderIcon('chevronRight')}</button>
+      </div>
+    </div>
+
+    <div class="calendar-grid" role="grid" aria-label="${escapeHtml(formatCalendarMonth(monthDate))}">
+      ${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => `<span class="calendar-weekday">${day}</span>`).join('')}
+      ${calendarCells.map(date => renderCalendarDayCell(date, monthIndex)).join('')}
+    </div>
+
+    <div class="calendar-selected-panel">
+      <div>
+        <p class="eyebrow">Selected Day</p>
+        <h4>${escapeHtml(formatCalendarDayHeading(selectedDateKey))}</h4>
+      </div>
+      ${renderSelectedCalendarEvents(selectedDateKey)}
+      <button type="button" class="primary-action calendar-add-event" data-calendar-action="add-event">
+        ${renderIconLabel('add', 'Add Event')}
+      </button>
+    </div>
+  `;
+}
+
+function handleOperationsCalendarClick(event) {
+  const actionControl = event.target.closest('[data-calendar-action]');
+  if (!actionControl || !els['operations-calendar']?.contains(actionControl)) return;
+
+  const action = actionControl.dataset.calendarAction;
+  if (action === 'previous-month' || action === 'next-month') {
+    const delta = action === 'previous-month' ? -1 : 1;
+    state.dashboardCalendarDate = createCalendarDate(
+      state.dashboardCalendarDate.getFullYear(),
+      state.dashboardCalendarDate.getMonth() + delta,
+      1
+    );
+    renderOperationsCalendar();
+    return;
+  }
+
+  if (action === 'today') {
+    const today = createCalendarDate(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+    state.dashboardCalendarDate = today;
+    state.dashboardSelectedDate = formatDateKey(today);
+    renderOperationsCalendar();
+    return;
+  }
+
+  if (action === 'select-date') {
+    const selectedDate = parseDateKey(actionControl.dataset.date);
+    if (!selectedDate) return;
+    state.dashboardSelectedDate = formatDateKey(selectedDate);
+    state.dashboardCalendarDate = createCalendarDate(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
+    renderOperationsCalendar();
+    return;
+  }
+
+  if (action === 'open-event') {
+    const record = (state.dashboardEvents || []).find(item => String(item.id) === String(actionControl.dataset.eventId));
+    if (record) openModuleModal('events', record);
+    return;
+  }
+
+  if (action === 'add-event') {
+    openModuleModal('events');
+  }
 }
 
 function hideWorkspaceSections() {
@@ -1692,6 +2027,7 @@ function renderDashboard() {
   els['dashboard-title'].textContent = state.activeClient.name;
   els['dashboard-description'].textContent = `Welcome to ${state.activeClient.name}. Your Beoflow modules are ready for real operating data when your team starts building.`;
   updateDashboardCards();
+  renderOperationsCalendar();
 
   loadDashboardCounts()
     .then(counts => {
@@ -1699,6 +2035,14 @@ function renderDashboard() {
     })
     .catch(error => {
       showAlert(els['workspace-message'], error.message || 'Unable to load dashboard counts.');
+    });
+
+  loadDashboardEvents()
+    .then(() => {
+      if (state.activeSection === 'dashboard') renderOperationsCalendar();
+    })
+    .catch(error => {
+      showAlert(els['workspace-message'], error.message || 'Unable to load dashboard calendar.');
     });
 }
 
@@ -2729,6 +3073,7 @@ async function saveModuleRecord(event) {
   event.preventDefault();
   const section = state.modalSection;
   if (!section) return;
+  const shouldReturnToDashboard = state.activeSection === 'dashboard';
 
   if (section === 'recipe-link') {
     setLoading(true);
@@ -2784,7 +3129,12 @@ async function saveModuleRecord(event) {
     closeModuleModal();
     await loadDashboardCounts();
     updateDashboardCards();
-    renderModuleSection(section);
+    if (shouldReturnToDashboard) {
+      if (section === 'events') await loadDashboardEvents();
+      renderDashboard();
+    } else {
+      renderModuleSection(section);
+    }
   } catch (error) {
     showAlert(els['module-form-message'], error.message || `Unable to save ${moduleConfig.singular}.`);
   } finally {
@@ -3349,8 +3699,8 @@ async function createBeoflowClient(clientInput) {
 }
 
 function setActiveClient(client) {
-  const validClient = client?.id
-    ? state.userClients.find(row => row.id === client.id) || client
+  const validClient = client
+    ? findMatchingWorkspace(client) || (client.id ? client : null)
     : null;
 
   state.activeClient = validClient;
@@ -3360,9 +3710,9 @@ function setActiveClient(client) {
   state.activeSection = 'dashboard';
 
   if (state.activeClient?.id) {
-    localStorage.setItem(config.activeClientStorageKey || 'beoflow.activeClientId', state.activeClient.id);
+    localStorage.setItem(getActiveClientStorageKey(), state.activeClient.id);
   } else {
-    localStorage.removeItem(config.activeClientStorageKey || 'beoflow.activeClientId');
+    localStorage.removeItem(getActiveClientStorageKey());
   }
 
   return state.activeClient;
@@ -3373,35 +3723,27 @@ function clearActiveClient() {
 }
 
 function requireActiveClient() {
-  if (
-    state.activeClient?.id
-    && state.userClients.some(client => client.id === state.activeClient.id)
-  ) {
+  const activeClient = findMatchingWorkspace(state.activeClient);
+  if (activeClient) {
+    state.activeClient = activeClient;
     return state.activeClient;
   }
 
   if (state.activeClient?.id) {
-    clearActiveClient();
+    state.activeClient = null;
   }
 
   if (state.userClients.length === 0) {
+    localStorage.removeItem(getActiveClientStorageKey());
     showWorkspaceOnboarding();
     return null;
   }
 
-  const storedClientId = localStorage.getItem(config.activeClientStorageKey || 'beoflow.activeClientId');
-  const storedClient = state.userClients.find(client => client.id === storedClientId);
-  if (storedClient && state.userClients.length === 1) {
-    setActiveClient(storedClient);
-    return state.activeClient;
-  }
-
-  if (storedClientId && !storedClient) {
-    localStorage.removeItem(config.activeClientStorageKey || 'beoflow.activeClientId');
-  }
-
-  renderClientSelector();
-  return null;
+  const storedClient = localStorage.getItem(getActiveClientStorageKey());
+  const selectedClient = getValidSelectedWorkspace(storedClient);
+  clearInvalidStoredWorkspace(storedClient, selectedClient);
+  setActiveClient(selectedClient);
+  return state.activeClient;
 }
 
 function switchWorkspace(clientId) {
@@ -3552,7 +3894,7 @@ function resetSessionState() {
   state.editingRecord = null;
   state.mobileDrawerOpen = false;
   state.onboardingMode = 'first';
-  localStorage.removeItem(config.activeClientStorageKey || 'beoflow.activeClientId');
+  localStorage.removeItem(getActiveClientStorageKey());
 }
 
 async function syncProfileFromUser(user, fullName = '') {
@@ -3593,19 +3935,11 @@ async function refreshAuthenticatedState(user) {
       return;
     }
 
-    if (state.userClients.length === 1) {
-      setActiveClient(state.userClients[0]);
-      renderDashboard();
-      return;
-    }
-
-    const storedClientId = localStorage.getItem(config.activeClientStorageKey || 'beoflow.activeClientId');
-    if (storedClientId && !state.userClients.some(client => client.id === storedClientId)) {
-      localStorage.removeItem(config.activeClientStorageKey || 'beoflow.activeClientId');
-    }
-
-    clearActiveClient();
-    renderClientSelector();
+    const storedClient = localStorage.getItem(getActiveClientStorageKey());
+    const selectedClient = getValidSelectedWorkspace(storedClient);
+    clearInvalidStoredWorkspace(storedClient, selectedClient);
+    setActiveClient(selectedClient);
+    renderDashboard();
   } catch (error) {
     els['session-loading-view'].hidden = true;
     els['auth-view'].hidden = true;
@@ -3831,6 +4165,8 @@ function bindEvents() {
       renderModuleSection(card.dataset.section);
     });
   });
+
+  els['operations-calendar']?.addEventListener('click', handleOperationsCalendarClick);
 
   els['module-action-button'].addEventListener('click', () => {
     openModuleModal(state.activeSection);
