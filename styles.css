@@ -7,7 +7,7 @@
   --muted: #5e6672;
   --soft: #8c95a3;
   --line: rgba(13, 17, 23, 0.12);
-  --accent: #107c68;
+  --accent: #b91c1c;
   --accent-2: #2f6fed;
   --shadow: 0 22px 70px rgba(15, 23, 42, 0.08);
   --radius: 8px;
@@ -23,7 +23,7 @@
   --muted: #a5afbc;
   --soft: #77818f;
   --line: rgba(244, 247, 251, 0.12);
-  --accent: #49d6b4;
+  --accent: #ef4444;
   --accent-2: #78a6ff;
   --shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
 }
@@ -50,7 +50,7 @@ body::before {
   inset: 0;
   pointer-events: none;
   background:
-    linear-gradient(90deg, transparent 0, rgba(16, 124, 104, 0.045) 50%, transparent 100%),
+    linear-gradient(90deg, transparent 0, rgba(239, 68, 68, 0.045) 50%, transparent 100%),
     linear-gradient(var(--line) 1px, transparent 1px),
     linear-gradient(90deg, var(--line) 1px, transparent 1px);
   background-size: 100% 100%, 56px 56px, 56px 56px;
