@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Website Services | Bastida Systems</title>
+  <meta name="description" content="Website design and development packages from Bastida Systems for business landing pages, service websites, and professional company sites.">
+  <link rel="icon" type="image/png" href="img/logo_bastida_sys.png">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Manrope', sans-serif;
+      background: #0a0a0a;
+      color: #ffffff;
+      letter-spacing: 0;
+      overflow-x: hidden;
+    }
+
+    .site-shell {
+      background:
+        radial-gradient(circle at 78% 8%, rgba(0, 255, 156, 0.12), transparent 30%),
+        radial-gradient(circle at 14% 18%, rgba(255, 255, 255, 0.08), transparent 26%),
+        #0a0a0a;
+    }
+
+    .web-card {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(75, 85, 99, 0.62);
+      border-radius: 8px;
+      background: linear-gradient(145deg, rgba(17, 24, 39, 0.96), rgba(3, 7, 18, 0.95));
+      box-shadow: 0 20px 70px rgba(0, 0, 0, 0.28);
+    }
+
+    .web-card.featured {
+      border-color: rgba(0, 255, 156, 0.58);
+      box-shadow: 0 24px 90px rgba(0, 255, 156, 0.1);
+    }
+
+    .package-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 2rem;
+      padding: 0.35rem 0.7rem;
+      border: 1px solid rgba(0, 255, 156, 0.24);
+      border-radius: 999px;
+      color: #9ca3af;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .feature-list {
+      display: grid;
+      gap: 0.7rem;
+      margin: 1.5rem 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .feature-list li {
+      display: flex;
+      gap: 0.65rem;
+      color: #d1d5db;
+      font-size: 0.93rem;
+      line-height: 1.55;
+    }
+
+    .feature-list li::before {
+      content: "";
+      width: 0.48rem;
+      height: 0.48rem;
+      margin-top: 0.52rem;
+      border-radius: 999px;
+      background: #00ff9c;
+      box-shadow: 0 0 16px rgba(0, 255, 156, 0.75);
+      flex: 0 0 auto;
+    }
+
+    .service-icon {
+      display: inline-grid;
+      place-items: center;
+      width: 2.75rem;
+      height: 2.75rem;
+      border: 1px solid rgba(0, 255, 156, 0.22);
+      border-radius: 8px;
+      background: rgba(0, 255, 156, 0.08);
+      color: #00ff9c;
+    }
+
+    .service-icon svg {
+      width: 1.35rem;
+      height: 1.35rem;
+    }
+
+    .process-step {
+      border-left: 1px solid rgba(75, 85, 99, 0.7);
+      padding-left: 1.25rem;
+    }
+
+    @media (max-width: 640px) {
+      #site-header nav {
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 0.85rem;
+        padding-top: 0.95rem !important;
+        padding-bottom: 0.95rem !important;
+      }
+
+      #site-header nav > div:last-child {
+        width: 100%;
+        justify-content: flex-start;
+        gap: 1rem;
+        overflow-x: auto;
+        padding-bottom: 0.1rem;
+      }
+
+      #site-header nav > div:last-child > a {
+        flex: 0 0 auto;
+      }
+    }
+
+    @media print {
+      #site-header,
+      #site-header nav {
+        position: static !important;
+        top: auto !important;
+        z-index: auto !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="site-header"></div>
+
+  <script>
+    const sharedHeader = `
+      <nav class="flex flex-wrap justify-between items-center gap-4 px-4 md:px-8 py-5 border-b border-gray-200 bg-white sticky top-0 z-50">
+        <div class="flex items-center gap-3">
+          <a href="index.html" class="flex items-center gap-3">
+            <img src="img/logo_bastida_sys.png" alt="Bastida Systems Logo" class="h-8 w-auto object-contain">
+            <span class="hidden md:inline text-base font-semibold tracking-[0.08em] text-black uppercase">Bastida Systems LLC</span>
+          </a>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-end gap-4 md:gap-8 text-sm font-medium text-gray-600">
+          <a href="index.html#products" class="hover:text-black transition" data-i18n="nav.products">Work</a>
+          <a href="websites.html" class="hover:text-black transition" data-i18n="nav.websites">Websites</a>
+          <a href="systems.html" class="hover:text-black transition" data-i18n="nav.systems">Systems</a>
+          <a href="about.html" class="hover:text-black transition" data-i18n="nav.about">About</a>
+          <a href="portal.html" class="hover:text-black transition" data-i18n="nav.portal">Client Portal</a>
+          <a href="index.html#contact" class="hover:text-black transition" data-i18n="nav.contact">Contact</a>
+          <label class="language-picker inline-flex min-h-9 items-center gap-2 rounded-lg border border-gray-300 bg-white px-2 py-1 text-xs font-bold uppercase text-gray-500">
+            <span data-i18n="nav.language">Language</span>
+            <select id="language-select" class="rounded-md border-0 bg-gray-900 px-2 py-1 text-xs font-extrabold text-white" aria-label="Language selector" data-i18n-aria-label="nav.languageSelector">
+              <option value="en">EN</option>
+              <option value="es">ES</option>
+            </select>
+          </label>
+        </div>
+      </nav>
+    `;
+
+    const headerTarget = document.getElementById('site-header');
+
+    fetch('header.html')
+      .then(response => {
+        if (!response.ok) throw new Error('header.html not found');
+        return response.text();
+      })
+      .then(html => {
+        headerTarget.innerHTML = html;
+      })
+      .catch(() => {
+        headerTarget.innerHTML = sharedHeader;
+      });
+  </script>
+
+  <script>
+    window.pageTranslations = {
+      en: {
+        'meta.title': 'Website Services | Bastida Systems',
+        'web.hero.label': 'Website Services',
+        'web.hero.title': 'Business websites with clear pricing.',
+        'web.hero.body': 'We build responsive websites for service businesses, consultants, restaurants, portfolios, and local brands that need a professional online presence without a complicated process.',
+        'web.hero.packages': 'View Packages',
+        'web.hero.example': 'See Example',
+        'web.example.badge': 'Published Example',
+        'web.example.body': 'A client website for professional consulting and advisory services, including brand presentation, contact paths, WhatsApp, and a welcome screen.',
+        'web.marketing.label': 'Marketing Page Examples',
+        'web.marketing.title': 'Public pages built to present products, services, and brands.',
+        'web.marketing.body': 'These are website, e-commerce, and marketing-page examples. Beoflow and FiltraCore are systems, but these pages are the public presentation layer for those products.',
+        'web.marketing.viewPage': 'View Page',
+        'web.marketing.clientPage': 'Client business page',
+        'web.marketing.ecommercePage': 'E-commerce website',
+        'web.marketing.portfolioPage': 'Portfolio website',
+        'web.marketing.productPage': 'Product marketing page',
+        'web.marketing.estrattiva.body': 'Consulting and professional advisory website with branded welcome, contact paths, phone, email, and WhatsApp.',
+        'web.marketing.tallador.body': 'Premium storefront for hand-painted wood sculptures, with collections, product detail, cart, checkout, custom commission story, and contact flow.',
+        'web.marketing.cocofilms.body': 'Cinematic portfolio website for a photography and video production studio, with a premium dark visual system, service sections, testimonials, and booking flow.',
+        'web.marketing.beoflow.body': 'Marketing page for a kitchen operations platform, built to explain value, features, workflow, and product access.',
+        'web.marketing.filtracore.body': 'Marketing page for filter operations, showing product positioning, screenshots, workflow, mobile updates, and reporting value.',
+        'web.packages.label': 'Packages',
+        'web.packages.title': 'Starting prices for standard website projects.',
+        'web.packages.body': 'Fixed packages keep the scope clear. Custom systems, e-commerce, booking platforms, dashboards, and integrations are quoted separately.',
+        'web.price.starting': ' starting',
+        'web.starter.badge': 'Starter',
+        'web.starter.title': 'Launch Website',
+        'web.starter.body': 'A clean one-page website for a new service, personal brand, or small business.',
+        'web.starter.item1': 'One responsive landing page',
+        'web.starter.item2': 'Up to 5 focused sections',
+        'web.starter.item3': 'Contact buttons, phone, email, or WhatsApp',
+        'web.starter.item4': 'Basic SEO title and description',
+        'web.starter.item5': '1 revision round',
+        'web.business.badge': 'Most Requested',
+        'web.business.title': 'Business Website',
+        'web.business.body': 'A multi-page site for businesses that need services, credibility, and clear contact paths.',
+        'web.business.item1': 'Up to 5 pages',
+        'web.business.item2': 'Home, services, about, contact, and one custom page',
+        'web.business.item3': 'Responsive design for mobile and desktop',
+        'web.business.item4': 'Contact form or direct email setup',
+        'web.business.item5': '2 revision rounds',
+        'web.pro.badge': 'Advanced',
+        'web.pro.title': 'Professional Website',
+        'web.pro.body': 'A stronger website for established businesses that need polished structure and deeper content.',
+        'web.pro.item1': 'Up to 8 pages',
+        'web.pro.item2': 'Custom visual direction',
+        'web.pro.item3': 'Portfolio, project, or case study sections',
+        'web.pro.item4': 'Analytics-ready structure',
+        'web.pro.item5': '3 revision rounds',
+        'web.service.hosting.title': 'Hosting and launch support',
+        'web.service.hosting.body': 'We can help publish the site on GitHub Pages, Render, Netlify, or another hosting provider depending on the project.',
+        'web.service.care.title': 'Optional care plan',
+        'web.service.care.body': 'Monthly updates, small content changes, link checks, and basic support start at $49 USD per month.',
+        'web.service.systems.title': 'Custom systems',
+        'web.service.systems.body': 'If the site needs login, dashboards, payments, inventory, reservations, or automation, we quote it as a custom software project.',
+        'web.process.label': 'Process',
+        'web.process.title': 'Simple project flow.',
+        'web.process.scope.title': 'Scope',
+        'web.process.scope.body': 'We define the pages, content, contact methods, timeline, and package.',
+        'web.process.build.title': 'Build',
+        'web.process.build.body': 'We design, develop, and revise the website around the business goal.',
+        'web.process.launch.title': 'Launch',
+        'web.process.launch.body': 'We publish the site and make sure the main links, contact paths, and pages work.',
+        'web.cta.title': 'Need a website for your business?',
+        'web.cta.body': 'Send the business name, type of website, and the package that fits best. We will confirm the scope before starting.',
+        'web.cta.request': 'Request Website'
+      },
+      es: {
+        'meta.title': 'Servicios de Sitios Web | Bastida Systems',
+        'web.hero.label': 'Servicios Web',
+        'web.hero.title': 'Sitios web para negocios con precios claros.',
+        'web.hero.body': 'Creamos sitios web responsivos para negocios de servicio, consultores, restaurantes, portafolios y marcas locales que necesitan presencia profesional sin un proceso complicado.',
+        'web.hero.packages': 'Ver Paquetes',
+        'web.hero.example': 'Ver Ejemplo',
+        'web.example.badge': 'Ejemplo Publicado',
+        'web.example.body': 'Un sitio de cliente para consultoría y asesoría profesional, con presentación de marca, formas de contacto, WhatsApp y pantalla de bienvenida.',
+        'web.marketing.label': 'Ejemplos de Páginas de Marketing',
+        'web.marketing.title': 'Páginas públicas para presentar productos, servicios y marcas.',
+        'web.marketing.body': 'Estos son ejemplos de sitios web, e-commerce y páginas de marketing. Beoflow y FiltraCore son sistemas, pero estas páginas son la capa pública de presentación de esos productos.',
+        'web.marketing.viewPage': 'Ver Página',
+        'web.marketing.clientPage': 'Página de negocio',
+        'web.marketing.ecommercePage': 'Sitio e-commerce',
+        'web.marketing.portfolioPage': 'Sitio de portafolio',
+        'web.marketing.productPage': 'Página de producto',
+        'web.marketing.estrattiva.body': 'Sitio de consultoría y asesoría profesional con bienvenida de marca, contacto, teléfono, correo y WhatsApp.',
+        'web.marketing.tallador.body': 'Tienda premium para esculturas de madera pintadas a mano, con colecciones, detalle de producto, carrito, checkout, encargos personalizados y contacto.',
+        'web.marketing.cocofilms.body': 'Sitio de portafolio cinematográfico para un estudio de fotografía y producción de video, con sistema visual oscuro premium, servicios, testimonios y flujo de reserva.',
+        'web.marketing.beoflow.body': 'Página de marketing para una plataforma de operación de cocina, creada para explicar valor, funciones, flujo y acceso al producto.',
+        'web.marketing.filtracore.body': 'Página de marketing para operación de filtros, mostrando posicionamiento, capturas, flujo, actualización móvil y valor de reportes.',
+        'web.packages.label': 'Paquetes',
+        'web.packages.title': 'Precios iniciales para proyectos web estándar.',
+        'web.packages.body': 'Los paquetes fijos mantienen claro el alcance. Sistemas personalizados, e-commerce, reservas, dashboards e integraciones se cotizan por separado.',
+        'web.price.starting': ' desde',
+        'web.starter.badge': 'Inicial',
+        'web.starter.title': 'Sitio de Lanzamiento',
+        'web.starter.body': 'Una página limpia de una sola vista para un servicio nuevo, marca personal o negocio pequeño.',
+        'web.starter.item1': 'Una landing page responsiva',
+        'web.starter.item2': 'Hasta 5 secciones enfocadas',
+        'web.starter.item3': 'Botones de contacto, teléfono, correo o WhatsApp',
+        'web.starter.item4': 'Título y descripción SEO básicos',
+        'web.starter.item5': '1 ronda de revisión',
+        'web.business.badge': 'Más Solicitado',
+        'web.business.title': 'Sitio de Negocio',
+        'web.business.body': 'Un sitio de varias páginas para negocios que necesitan servicios, credibilidad y contacto claro.',
+        'web.business.item1': 'Hasta 5 páginas',
+        'web.business.item2': 'Inicio, servicios, acerca de, contacto y una página personalizada',
+        'web.business.item3': 'Diseño responsivo para móvil y escritorio',
+        'web.business.item4': 'Formulario de contacto o correo directo',
+        'web.business.item5': '2 rondas de revisión',
+        'web.pro.badge': 'Avanzado',
+        'web.pro.title': 'Sitio Profesional',
+        'web.pro.body': 'Un sitio más completo para negocios establecidos que necesitan estructura pulida y contenido más profundo.',
+        'web.pro.item1': 'Hasta 8 páginas',
+        'web.pro.item2': 'Dirección visual personalizada',
+        'web.pro.item3': 'Secciones de portafolio, proyecto o caso de estudio',
+        'web.pro.item4': 'Estructura lista para analytics',
+        'web.pro.item5': '3 rondas de revisión',
+        'web.service.hosting.title': 'Soporte de hosting y lanzamiento',
+        'web.service.hosting.body': 'Podemos ayudar a publicar el sitio en GitHub Pages, Render, Netlify u otro proveedor según el proyecto.',
+        'web.service.care.title': 'Plan de mantenimiento opcional',
+        'web.service.care.body': 'Actualizaciones mensuales, cambios pequeños de contenido, revisión de links y soporte básico desde $49 USD al mes.',
+        'web.service.systems.title': 'Sistemas personalizados',
+        'web.service.systems.body': 'Si el sitio necesita login, dashboards, pagos, inventario, reservaciones o automatización, se cotiza como proyecto de software personalizado.',
+        'web.process.label': 'Proceso',
+        'web.process.title': 'Flujo simple de proyecto.',
+        'web.process.scope.title': 'Alcance',
+        'web.process.scope.body': 'Definimos páginas, contenido, métodos de contacto, tiempo y paquete.',
+        'web.process.build.title': 'Construcción',
+        'web.process.build.body': 'Diseñamos, desarrollamos y revisamos el sitio alrededor del objetivo del negocio.',
+        'web.process.launch.title': 'Lanzamiento',
+        'web.process.launch.body': 'Publicamos el sitio y revisamos que links, contactos y páginas funcionen.',
+        'web.cta.title': '¿Necesitas un sitio web para tu negocio?',
+        'web.cta.body': 'Manda el nombre del negocio, tipo de sitio y el paquete que encaje mejor. Confirmamos el alcance antes de empezar.',
+        'web.cta.request': 'Solicitar Sitio Web'
+      }
+    };
+  </script>
+  <script src="site-language.js"></script>
+
+  <main class="site-shell">
+    <section class="px-6 md:px-8 py-20 md:py-24 border-b border-gray-800">
+      <div class="max-w-7xl mx-auto grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-end">
+        <div>
+          <p class="text-sm font-bold tracking-[0.18em] uppercase text-emerald-300 mb-5" data-i18n="web.hero.label">Website Services</p>
+          <h1 class="max-w-3xl text-4xl md:text-6xl font-extrabold leading-tight mb-6" data-i18n="web.hero.title">
+            Business websites with clear pricing.
+          </h1>
+          <p class="max-w-2xl text-gray-300 leading-8 text-lg" data-i18n="web.hero.body">
+            We build responsive websites for service businesses, consultants, restaurants, portfolios, and local brands that need a professional online presence without a complicated process.
+          </p>
+          <div class="flex flex-wrap gap-3 mt-8">
+            <a href="#packages" class="inline-flex items-center justify-center px-6 py-3 bg-white text-black rounded-full font-semibold hover:opacity-85 transition" data-i18n="web.hero.packages">
+              View Packages
+            </a>
+            <a href="https://bastidadavid.github.io/ESTRATIVA/" target="_blank" rel="noopener" class="inline-flex items-center justify-center px-6 py-3 border border-gray-600 rounded-full text-white hover:border-white transition" data-i18n="web.hero.example">
+              See Example
+            </a>
+          </div>
+        </div>
+
+        <div class="web-card p-5 md:p-6">
+          <div class="grid gap-4 sm:grid-cols-[0.8fr_1.2fr] sm:items-center">
+            <img src="img/estrattiva-preview.png" alt="Estrattiva website preview" class="w-full aspect-[4/3] rounded-lg object-cover object-center">
+            <div class="p-2">
+              <span class="package-badge" data-i18n="web.example.badge">Published Example</span>
+              <h2 class="mt-5 text-2xl font-bold">Estrattiva</h2>
+              <p class="mt-4 text-gray-300 leading-7" data-i18n="web.example.body">
+                A client website for professional consulting and advisory services, including brand presentation, contact paths, WhatsApp, and a welcome screen.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="px-6 md:px-8 py-20 border-b border-gray-800">
+      <div class="max-w-7xl mx-auto">
+        <div class="max-w-3xl mb-12">
+          <p class="text-sm font-bold tracking-[0.18em] uppercase text-gray-500 mb-4" data-i18n="web.marketing.label">Marketing Page Examples</p>
+          <h2 class="text-3xl md:text-4xl font-bold mb-4" data-i18n="web.marketing.title">Public pages built to present products, services, and brands.</h2>
+          <p class="text-gray-400 leading-8" data-i18n="web.marketing.body">
+            These are website, e-commerce, and marketing-page examples. Beoflow and FiltraCore are systems, but these pages are the public presentation layer for those products.
+          </p>
+        </div>
+
+        <div class="grid gap-6 lg:grid-cols-2 xl:grid-cols-4">
+          <article class="web-card overflow-hidden">
+            <img src="img/estrattiva-preview.png" alt="Estrattiva website preview" class="w-full aspect-[16/10] object-cover object-center border-b border-gray-800">
+            <div class="p-6">
+              <span class="package-badge" data-i18n="web.marketing.clientPage">Client business page</span>
+              <h3 class="mt-5 text-2xl font-bold">Estrattiva</h3>
+              <p class="mt-3 text-gray-400 leading-7" data-i18n="web.marketing.estrattiva.body">
+                Consulting and professional advisory website with branded welcome, contact paths, phone, email, and WhatsApp.
+              </p>
+              <a href="https://bastidadavid.github.io/ESTRATIVA/" target="_blank" rel="noopener" class="inline-flex mt-6 px-5 py-2 bg-white text-black rounded-full font-semibold hover:opacity-85 transition" data-i18n="web.marketing.viewPage">
+                View Page
+              </a>
+            </div>
+          </article>
+
+          <article class="web-card overflow-hidden">
+            <img src="img/tallador-preview.jpg" alt="Tallador de Sueños website preview" class="w-full aspect-[16/10] object-cover object-center border-b border-gray-800">
+            <div class="p-6">
+              <span class="package-badge" data-i18n="web.marketing.ecommercePage">E-commerce website</span>
+              <h3 class="mt-5 text-2xl font-bold">Tallador de Sueños</h3>
+              <p class="mt-3 text-gray-400 leading-7" data-i18n="web.marketing.tallador.body">
+                Premium storefront for hand-painted wood sculptures, with collections, product detail, cart, checkout, custom commission story, and contact flow.
+              </p>
+              <a href="https://tallador-de-suenos.onrender.com/" target="_blank" rel="noopener" class="inline-flex mt-6 px-5 py-2 bg-white text-black rounded-full font-semibold hover:opacity-85 transition" data-i18n="web.marketing.viewPage">
+                View Page
+              </a>
+            </div>
+          </article>
+
+          <article class="web-card overflow-hidden">
+            <img src="img/cocofilms-preview.jpg" alt="CocoFilms website preview" class="w-full aspect-[16/10] object-cover object-center border-b border-gray-800">
+            <div class="p-6">
+              <span class="package-badge" data-i18n="web.marketing.portfolioPage">Portfolio website</span>
+              <h3 class="mt-5 text-2xl font-bold">CocoFilms</h3>
+              <p class="mt-3 text-gray-400 leading-7" data-i18n="web.marketing.cocofilms.body">
+                Cinematic portfolio website for a photography and video production studio, with a premium dark visual system, service sections, testimonials, and booking flow.
+              </p>
+              <a href="https://bastidadavid.github.io/Cocofilms/" target="_blank" rel="noopener" class="inline-flex mt-6 px-5 py-2 bg-white text-black rounded-full font-semibold hover:opacity-85 transition" data-i18n="web.marketing.viewPage">
+                View Page
+              </a>
+            </div>
+          </article>
+
+          <article class="web-card overflow-hidden">
+            <img src="img/beoflow-dashboard.jpeg" alt="Beoflow marketing page preview" class="w-full aspect-[16/10] object-cover object-left-top border-b border-gray-800">
+            <div class="p-6">
+              <span class="package-badge" data-i18n="web.marketing.productPage">Product marketing page</span>
+              <h3 class="mt-5 text-2xl font-bold">Beoflow</h3>
+              <p class="mt-3 text-gray-400 leading-7" data-i18n="web.marketing.beoflow.body">
+                Marketing page for a kitchen operations platform, built to explain value, features, workflow, and product access.
+              </p>
+              <a href="beoflow.html" class="inline-flex mt-6 px-5 py-2 bg-white text-black rounded-full font-semibold hover:opacity-85 transition" data-i18n="web.marketing.viewPage">
+                View Page
+              </a>
+            </div>
+          </article>
+
+          <article class="web-card overflow-hidden">
+            <img src="img/filtracore-dashboard.jpeg" alt="FiltraCore marketing page preview" class="w-full aspect-[16/10] object-cover object-left-top border-b border-gray-800">
+            <div class="p-6">
+              <span class="package-badge" data-i18n="web.marketing.productPage">Product marketing page</span>
+              <h3 class="mt-5 text-2xl font-bold">FiltraCore</h3>
+              <p class="mt-3 text-gray-400 leading-7" data-i18n="web.marketing.filtracore.body">
+                Marketing page for filter operations, showing product positioning, screenshots, workflow, mobile updates, and reporting value.
+              </p>
+              <a href="filtracore.html" class="inline-flex mt-6 px-5 py-2 bg-white text-black rounded-full font-semibold hover:opacity-85 transition" data-i18n="web.marketing.viewPage">
+                View Page
+              </a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="packages" class="px-6 md:px-8 py-20 border-b border-gray-800">
+      <div class="max-w-7xl mx-auto">
+        <div class="max-w-3xl mb-12">
+          <p class="text-sm font-bold tracking-[0.18em] uppercase text-gray-500 mb-4" data-i18n="web.packages.label">Packages</p>
+          <h2 class="text-3xl md:text-4xl font-bold mb-4" data-i18n="web.packages.title">Starting prices for standard website projects.</h2>
+          <p class="text-gray-400 leading-8" data-i18n="web.packages.body">
+            Fixed packages keep the scope clear. Custom systems, e-commerce, booking platforms, dashboards, and integrations are quoted separately.
+          </p>
+        </div>
+
+        <div class="grid gap-6 lg:grid-cols-3">
+          <article class="web-card p-6 md:p-8">
+            <span class="package-badge" data-i18n="web.starter.badge">Starter</span>
+            <h3 class="mt-6 text-2xl font-bold" data-i18n="web.starter.title">Launch Website</h3>
+            <p class="mt-3 text-gray-400 leading-7" data-i18n="web.starter.body">A clean one-page website for a new service, personal brand, or small business.</p>
+            <p class="mt-7 text-4xl font-extrabold">$300 USD<span class="text-base font-semibold text-gray-500" data-i18n="web.price.starting"> starting</span></p>
+            <ul class="feature-list">
+              <li data-i18n="web.starter.item1">One responsive landing page</li>
+              <li data-i18n="web.starter.item2">Up to 5 focused sections</li>
+              <li data-i18n="web.starter.item3">Contact buttons, phone, email, or WhatsApp</li>
+              <li data-i18n="web.starter.item4">Basic SEO title and description</li>
+              <li data-i18n="web.starter.item5">1 revision round</li>
+            </ul>
+          </article>
+
+          <article class="web-card featured p-6 md:p-8">
+            <span class="package-badge" data-i18n="web.business.badge">Most Requested</span>
+            <h3 class="mt-6 text-2xl font-bold" data-i18n="web.business.title">Business Website</h3>
+            <p class="mt-3 text-gray-400 leading-7" data-i18n="web.business.body">A multi-page site for businesses that need services, credibility, and clear contact paths.</p>
+            <p class="mt-7 text-4xl font-extrabold">$650 USD<span class="text-base font-semibold text-gray-500" data-i18n="web.price.starting"> starting</span></p>
+            <ul class="feature-list">
+              <li data-i18n="web.business.item1">Up to 5 pages</li>
+              <li data-i18n="web.business.item2">Home, services, about, contact, and one custom page</li>
+              <li data-i18n="web.business.item3">Responsive design for mobile and desktop</li>
+              <li data-i18n="web.business.item4">Contact form or direct email setup</li>
+              <li data-i18n="web.business.item5">2 revision rounds</li>
+            </ul>
+          </article>
+
+          <article class="web-card p-6 md:p-8">
+            <span class="package-badge" data-i18n="web.pro.badge">Advanced</span>
+            <h3 class="mt-6 text-2xl font-bold" data-i18n="web.pro.title">Professional Website</h3>
+            <p class="mt-3 text-gray-400 leading-7" data-i18n="web.pro.body">A stronger website for established businesses that need polished structure and deeper content.</p>
+            <p class="mt-7 text-4xl font-extrabold">$1,100 USD<span class="text-base font-semibold text-gray-500" data-i18n="web.price.starting"> starting</span></p>
+            <ul class="feature-list">
+              <li data-i18n="web.pro.item1">Up to 8 pages</li>
+              <li data-i18n="web.pro.item2">Custom visual direction</li>
+              <li data-i18n="web.pro.item3">Portfolio, project, or case study sections</li>
+              <li data-i18n="web.pro.item4">Analytics-ready structure</li>
+              <li data-i18n="web.pro.item5">3 revision rounds</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="px-6 md:px-8 py-20 border-b border-gray-800">
+      <div class="max-w-7xl mx-auto grid gap-6 lg:grid-cols-3">
+        <article class="web-card p-6">
+          <span class="service-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="14" rx="2"></rect>
+              <path d="M8 20h8"></path>
+              <path d="M12 18v2"></path>
+            </svg>
+          </span>
+          <h3 class="mt-5 text-xl font-bold" data-i18n="web.service.hosting.title">Hosting and launch support</h3>
+          <p class="mt-3 text-gray-400 leading-7" data-i18n="web.service.hosting.body">
+            We can help publish the site on GitHub Pages, Render, Netlify, or another hosting provider depending on the project.
+          </p>
+        </article>
+
+        <article class="web-card p-6">
+          <span class="service-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 7h16"></path>
+              <path d="M4 12h10"></path>
+              <path d="M4 17h7"></path>
+              <path d="M17 14l3 3l-3 3"></path>
+            </svg>
+          </span>
+          <h3 class="mt-5 text-xl font-bold" data-i18n="web.service.care.title">Optional care plan</h3>
+          <p class="mt-3 text-gray-400 leading-7" data-i18n="web.service.care.body">
+            Monthly updates, small content changes, link checks, and basic support start at $49 USD per month.
+          </p>
+        </article>
+
+        <article class="web-card p-6">
+          <span class="service-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 19V5"></path>
+              <path d="M4 19h16"></path>
+              <path d="M8 15l3-3l3 2l5-7"></path>
+            </svg>
+          </span>
+          <h3 class="mt-5 text-xl font-bold" data-i18n="web.service.systems.title">Custom systems</h3>
+          <p class="mt-3 text-gray-400 leading-7" data-i18n="web.service.systems.body">
+            If the site needs login, dashboards, payments, inventory, reservations, or automation, we quote it as a custom software project.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="px-6 md:px-8 py-20 border-b border-gray-800">
+      <div class="max-w-7xl mx-auto grid gap-10 lg:grid-cols-[0.75fr_1.25fr]">
+        <div>
+          <p class="text-sm font-bold tracking-[0.18em] uppercase text-gray-500 mb-4" data-i18n="web.process.label">Process</p>
+          <h2 class="text-3xl md:text-4xl font-bold" data-i18n="web.process.title">Simple project flow.</h2>
+        </div>
+
+        <div class="grid gap-8 md:grid-cols-3">
+          <div class="process-step">
+            <p class="text-emerald-300 font-bold mb-3">01</p>
+            <h3 class="text-xl font-bold mb-3" data-i18n="web.process.scope.title">Scope</h3>
+            <p class="text-gray-400 leading-7" data-i18n="web.process.scope.body">We define the pages, content, contact methods, timeline, and package.</p>
+          </div>
+          <div class="process-step">
+            <p class="text-emerald-300 font-bold mb-3">02</p>
+            <h3 class="text-xl font-bold mb-3" data-i18n="web.process.build.title">Build</h3>
+            <p class="text-gray-400 leading-7" data-i18n="web.process.build.body">We design, develop, and revise the website around the business goal.</p>
+          </div>
+          <div class="process-step">
+            <p class="text-emerald-300 font-bold mb-3">03</p>
+            <h3 class="text-xl font-bold mb-3" data-i18n="web.process.launch.title">Launch</h3>
+            <p class="text-gray-400 leading-7" data-i18n="web.process.launch.body">We publish the site and make sure the main links, contact paths, and pages work.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="px-6 md:px-8 py-20 text-center">
+      <h2 class="text-3xl md:text-4xl font-bold mb-5" data-i18n="web.cta.title">Need a website for your business?</h2>
+      <p class="max-w-2xl mx-auto text-gray-400 leading-8 mb-8" data-i18n="web.cta.body">
+        Send the business name, type of website, and the package that fits best. We will confirm the scope before starting.
+      </p>
+      <div class="flex flex-wrap justify-center gap-3">
+        <a href="mailto:bastidasystems@gmail.com?subject=Website%20project%20request" class="inline-flex items-center justify-center px-6 py-3 bg-white text-black rounded-full font-semibold hover:opacity-85 transition" data-i18n="web.cta.request">
+          Request Website
+        </a>
+        <a href="index.html#contact" class="inline-flex items-center justify-center px-6 py-3 border border-gray-600 rounded-full text-white hover:border-white transition" data-i18n="nav.contact">
+          Contact
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="px-8 py-10 border-t border-gray-800 text-gray-500 text-sm text-center">
+    <div class="flex flex-wrap justify-center gap-6 mb-4 text-gray-400">
+      <a href="index.html#products" class="hover:text-white transition" data-i18n="nav.products">Work</a>
+      <a href="websites.html" class="hover:text-white transition" data-i18n="nav.websites">Websites</a>
+      <a href="systems.html" class="hover:text-white transition" data-i18n="nav.systems">Systems</a>
+      <a href="about.html" class="hover:text-white transition" data-i18n="nav.about">About</a>
+      <a href="portal.html" class="hover:text-white transition" data-i18n="nav.portal">Client Portal</a>
+      <a href="index.html#contact" class="hover:text-white transition" data-i18n="nav.contact">Contact</a>
+      <a href="privacy.html" class="hover:text-white transition" data-i18n="nav.privacy">Privacy</a>
+    </div>
+    <p data-i18n="footer.rights">© 2026 Bastida Systems. All rights reserved.</p>
+  </footer>
+</body>
+</html>

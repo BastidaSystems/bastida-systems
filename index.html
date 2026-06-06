@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>David Ramirez Bastida | Founder Portfolio</title>
+  <meta name="description" content="Professional portfolio of David Ramirez Bastida, founder of Bastida Systems LLC, multimedia designer, UX/UI designer, software builder, and operations systems creator.">
+  <link rel="icon" type="image/png" href="img/logo_bastida_sys.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#home" aria-label="David Ramirez Bastida home">
+      <img src="img/logo_bastida_sys.png" alt="Bastida Systems logo">
+      <span>David Bastida</span>
+    </a>
+
+    <nav class="nav-links" aria-label="Primary navigation">
+      <a href="#about" data-i18n="nav.about">About</a>
+      <a href="#projects" data-i18n="nav.projects">Projects</a>
+      <a href="#skills" data-i18n="nav.skills">Skills</a>
+      <a href="#contact" data-i18n="nav.contact">Contact</a>
+    </nav>
+
+    <div class="controls" aria-label="Portfolio controls">
+      <div class="segmented" aria-label="Language selector">
+        <button class="control-btn" type="button" data-lang="es">ES</button>
+        <button class="control-btn is-active" type="button" data-lang="en">EN</button>
+      </div>
+      <button class="theme-toggle" type="button" aria-label="Toggle light and dark theme">
+        <span data-i18n="theme.label">Dark</span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero section" id="home">
+      <div class="hero-copy reveal">
+        <h1>David Ramirez Bastida</h1>
+        <p class="hero-title" data-i18n="hero.title">Founder & CEO of Bastida Systems · Multimedia Designer · Intelligent Operations Systems Builder</p>
+        <p class="hero-subtitle" data-i18n="hero.subtitle">I design, develop, and build digital systems that solve real operational problems in hospitality, casinos, restaurants, and business workflows.</p>
+        <div class="hero-actions">
+          <a class="btn primary" href="#projects" data-i18n="hero.projects">View Projects</a>
+          <a class="btn secondary" href="#contact" data-i18n="hero.contact">Contact</a>
+          <a class="btn ghost" href="assets/docs/David_Bastida_CV_2026.pdf" download data-i18n="hero.cv">Download CV</a>
+        </div>
+      </div>
+
+      <aside class="hero-panel reveal" aria-label="Founder profile summary">
+        <div class="profile-card">
+          <div>
+            <span class="profile-label" data-i18n="hero.panelLabel">Current focus</span>
+            <h2>Bastida Systems LLC</h2>
+          </div>
+          <p data-i18n="hero.panelText">Building practical SaaS products, operational tools, visual systems, and AI-assisted workflows for real business environments.</p>
+          <div class="profile-grid">
+            <span>FiltraCore</span>
+            <span>BeoFlow</span>
+            <span>Shift Rotation</span>
+            <span>La Apertura</span>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="section split-section" id="about">
+      <div class="section-heading reveal">
+        <span class="section-number">01</span>
+        <h2 data-i18n="about.heading">About</h2>
+      </div>
+      <div class="section-body reveal">
+        <p data-i18n="about.body1">I am David Ramirez Bastida, founder of Bastida Systems LLC. My work combines multimedia design, UX/UI, software development, real-world operations, and AI-assisted tools to create practical systems that solve problems inside real businesses. My approach comes from direct experience in hospitality, casino, and kitchen environments, where manual processes, lack of traceability, and operational disorder can create losses, delays, and risks.</p>
+        <p data-i18n="about.body2">Through Bastida Systems, I develop products such as FiltraCore, BeoFlow, Shift Rotation, and La Apertura, combining design, technology, and business vision to build solutions with real value.</p>
+      </div>
+    </section>
+
+    <section class="section" id="projects">
+      <div class="section-heading wide reveal">
+        <span class="section-number">02</span>
+        <h2 data-i18n="projects.heading">Projects</h2>
+      </div>
+
+      <div class="project-grid">
+        <article class="project-card reveal">
+          <img src="img/filtracore-dashboard.jpeg" alt="FiltraCore dashboard interface">
+          <div class="project-content">
+            <h3>FiltraCore</h3>
+            <p data-i18n="projects.filtracore">An intelligent filtration management system designed for hospitality, casinos, restaurants, and industrial operations. It helps register machines, monitor PSI, track filter lifespan, schedule maintenance, and improve operational compliance.</p>
+            <div class="tags">
+              <span>SaaS</span><span>Operations</span><span>Hospitality</span><span>Filtration</span><span>UX/UI</span><span>Compliance</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="project-card reveal">
+          <img src="img/beoflow-dashboard.jpeg" alt="BeoFlow dashboard interface">
+          <div class="project-content">
+            <h3>BeoFlow</h3>
+            <p data-i18n="projects.beoflow">An operational platform for restaurant, banquet, and internal workflow management, focused on inventory, recipes, events, cost analysis, shift readiness, and operational consistency.</p>
+            <div class="tags">
+              <span>Operations</span><span>Restaurant Tech</span><span>Inventory</span><span>Workflow</span><span>UX/UI</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="project-card reveal">
+          <img src="img/lineops-devices.png" alt="Shift Rotation operational scheduling devices">
+          <div class="project-content">
+            <h3>Shift Rotation</h3>
+            <p data-i18n="projects.shift">An app for organizing schedules, rotations, assignments, and shift coordination, designed for operational teams, restaurants, and casinos.</p>
+            <div class="tags">
+              <span>iOS</span><span>Scheduling</span><span>Operations</span><span>Apple Watch</span><span>Productivity</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="project-card reveal">
+          <img src="img/la-apertura-preview.png" alt="La Apertura interactive narrative preview">
+          <div class="project-content">
+            <h3>La Apertura</h3>
+            <p data-i18n="projects.apertura">An interactive narrative and game project in development, combining creative direction, character design, concept art, emotional atmosphere, and connected digital experiences.</p>
+            <div class="tags">
+              <span>Game Design</span><span>Creative Direction</span><span>Unity</span><span>Storytelling</span><span>Concept Art</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="skills">
+      <div class="section-heading wide reveal">
+        <span class="section-number">03</span>
+        <h2 data-i18n="skills.heading">Skills</h2>
+      </div>
+      <div class="skills-grid">
+        <article class="skill-block reveal">
+          <h3 data-i18n="skills.design">Design</h3>
+          <ul>
+            <li>Multimedia Design</li>
+            <li>UX/UI Design</li>
+            <li>Figma</li>
+            <li>Adobe Illustrator</li>
+            <li>Adobe After Effects</li>
+            <li>Adobe XD</li>
+            <li>Branding</li>
+            <li>Motion Graphics</li>
+            <li>Visual Storytelling</li>
+          </ul>
+        </article>
+        <article class="skill-block reveal">
+          <h3 data-i18n="skills.visual">3D / Visual</h3>
+          <ul>
+            <li>Blender</li>
+            <li>Maya</li>
+            <li>Unreal Engine</li>
+            <li>Cinematic Design</li>
+            <li>VFX</li>
+            <li>3D Modeling</li>
+            <li>Real-time Rendering</li>
+          </ul>
+        </article>
+        <article class="skill-block reveal">
+          <h3 data-i18n="skills.software">Software / Technology</h3>
+          <ul>
+            <li>HTML</li>
+            <li>CSS</li>
+            <li>JavaScript</li>
+            <li>Supabase</li>
+            <li>GitHub</li>
+            <li>Git</li>
+            <li>AI-assisted development</li>
+            <li>SaaS product building</li>
+            <li>Web systems</li>
+          </ul>
+        </article>
+        <article class="skill-block reveal">
+          <h3 data-i18n="skills.operations">Operations / Business</h3>
+          <ul>
+            <li>Hospitality operations</li>
+            <li>Casino operations</li>
+            <li>Kitchen workflows</li>
+            <li>Maintenance workflows</li>
+            <li>Product strategy</li>
+            <li>Startup development</li>
+            <li>Client demos</li>
+            <li>Operational documentation</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section split-section" id="experience">
+      <div class="section-heading reveal">
+        <span class="section-number">04</span>
+        <h2 data-i18n="experience.heading">Experience</h2>
+      </div>
+      <div class="timeline reveal">
+        <article>
+          <span>2025 - Present</span>
+          <h3>Founder & CEO — Bastida Systems LLC</h3>
+          <p data-i18n="experience.founder">Founder of a technology company focused on building intelligent operational systems for real businesses. I develop SaaS products, prototypes, interfaces, documentation, presentations, and product strategies.</p>
+        </article>
+        <article>
+          <span data-i18n="experience.opsDate">Direct operations background</span>
+          <h3>Hospitality / Casino Operations</h3>
+          <p data-i18n="experience.ops">Direct experience in casino, kitchen, and hospitality environments, understanding real operational processes, maintenance needs, work timing, and problems current systems do not solve.</p>
+        </article>
+        <article>
+          <span data-i18n="experience.designDate">Creative and academic background</span>
+          <h3>Multimedia Design Background</h3>
+          <p data-i18n="experience.design">Education and experience in multimedia design, creative tools, visual production, UX/UI, 3D, motion graphics, and digital experience development.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="certifications">
+      <div class="section-heading wide reveal">
+        <span class="section-number">05</span>
+        <h2 data-i18n="certs.heading">Certifications & Education</h2>
+      </div>
+      <div class="cert-grid">
+        <article class="cert-card reveal">
+          <h3>Learn2Serve Food Safety Management Principles</h3>
+          <p><strong data-i18n="certs.issuer">Issuing organization</strong>: 360training / Learn2Serve</p>
+          <p><strong data-i18n="certs.date">Date</strong>: 04/09/2026</p>
+          <p><strong data-i18n="certs.status">Status</strong>: <span data-i18n="certs.verified">Verified from certificate file</span></p>
+          <a href="assets/docs/Learn2Serve_Food_Safety_Management_Principles.pdf" target="_blank" rel="noopener" data-i18n="certs.open">Open credential file</a>
+        </article>
+        <article class="cert-card reveal">
+          <h3 data-i18n="certs.educationTitle">Multimedia Design</h3>
+          <p><strong data-i18n="certs.issuer">Issuing organization</strong>: Universidad Anahuac</p>
+          <p><strong data-i18n="certs.date">Date</strong>: 2021 - Present</p>
+          <p><strong data-i18n="certs.status">Status</strong>: <span data-i18n="certs.progress">In progress, confirmed in CV file</span></p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section company-section" id="company">
+      <div class="section-heading reveal">
+        <span class="section-number">06</span>
+        <h2>Bastida Systems</h2>
+      </div>
+      <div class="company-copy reveal">
+        <p data-i18n="company.body">Bastida Systems LLC builds intelligent systems for real operations. The vision is to create tools that modernize processes that have relied for years on paper, spreadsheets, informal messages, or manual tracking. The company combines design, AI, software, and operational experience to create useful, scalable, and easy-to-adopt products.</p>
+      </div>
+    </section>
+
+    <section class="section contact-section" id="contact">
+      <div class="contact-copy reveal">
+        <span class="section-number">07</span>
+        <h2 data-i18n="contact.heading">Contact</h2>
+        <p data-i18n="contact.body">Want to collaborate, invest, hire, or learn more about my projects?</p>
+      </div>
+      <div class="contact-card reveal">
+        <a href="mailto:davidrramirez61@gmail.com">davidrramirez61@gmail.com</a>
+        <a href="https://bastidasystems.com">bastidasystems.com</a>
+        <span>GitHub</span>
+        <span>LinkedIn</span>
+        <span>Las Vegas, Nevada</span>
+        <span>Bastida Systems LLC</span>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>David Ramirez Bastida</span>
+    <span>Bastida Systems LLC</span>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

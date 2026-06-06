@@ -1,0 +1,1873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FiltraCore | Bastida Systems</title>
+  <meta name="description" content="FiltraCore helps organizations monitor filter condition, PSI, maintenance history, alerts, and operational risk so they can reduce waste, protect equipment, and make data-based replacement decisions.">
+  <link rel="icon" type="image/png" href="img/LOGO_FILTRACOREXCODE.png">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="filtra.css?v=20260531-impact">
+
+  <style>
+    body {
+      font-family: 'Manrope', sans-serif;
+      letter-spacing: 0;
+    }
+
+    @media print {
+      #site-header,
+      #site-header nav {
+        position: static !important;
+        top: auto !important;
+        z-index: auto !important;
+      }
+
+      #site-header nav {
+        break-after: avoid;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="site-header"></div>
+
+  <script>
+    const sharedHeader = `
+      <nav class="flex justify-between items-center px-4 md:px-8 py-5 border-b border-gray-200 bg-white sticky top-0 z-50">
+        <div class="flex items-center gap-3">
+          <a href="index.html" class="flex items-center gap-3">
+            <img src="img/logo_bastida_sys.png" alt="Bastida Systems Logo" class="h-8 w-auto object-contain">
+            <span class="hidden md:inline text-base font-semibold tracking-[0.08em] text-black uppercase">Bastida Systems LLC</span>
+          </a>
+        </div>
+
+        <div class="flex items-center gap-4 md:gap-8 text-sm font-medium text-gray-600">
+          <a href="index.html#products" class="hover:text-black transition">Work</a>
+          <a href="websites.html" class="hover:text-black transition">Websites</a>
+          <a href="systems.html" class="hover:text-black transition">Systems</a>
+          <a href="about.html" class="hover:text-black transition">About</a>
+          <a href="portal.html" class="hover:text-black transition">Client Portal</a>
+          <a href="index.html#contact" class="hover:text-black transition">Contact</a>
+        </div>
+      </nav>
+    `;
+
+    const headerTarget = document.getElementById('site-header');
+
+    fetch('header.html')
+      .then(response => {
+        if (!response.ok) throw new Error('header.html not found');
+        return response.text();
+      })
+      .then(html => {
+        headerTarget.innerHTML = html;
+      })
+      .catch(() => {
+        headerTarget.innerHTML = sharedHeader;
+      });
+  </script>
+
+  <main class="fc-page">
+    <section class="fc-hero" aria-labelledby="hero-title">
+      <div class="fc-container fc-hero-grid">
+        <div class="fc-hero-copy">
+          <a href="index.html" class="fc-brand-lockup" aria-label="Bastida Systems home">
+            <img src="img/LOGO_FILTRACOREXCODE.png" alt="" class="fc-brand-mark">
+            <span>
+              <strong>FiltraCore</strong>
+              <small data-i18n="hero.brandSystem">Filter Monitoring Intelligence</small>
+            </span>
+          </a>
+
+          <h1 id="hero-title">
+            <span class="fc-title-desktop" data-i18n-html="hero.titleDesktop">Stop running filters blind.<br>Protect water.<br>Control costs.</span>
+            <span class="fc-title-mobile" data-i18n-html="hero.titleMobile">Stop running filters blind. Protect water. Control costs.</span>
+          </h1>
+
+          <p class="fc-hero-lede" data-i18n="hero.lede">
+            Every overdue filter can compromise water quality, increase operating costs, damage equipment,
+            waste energy, and leave teams reacting after the issue is already expensive.
+          </p>
+          <p class="fc-hero-slogan" data-i18n="hero.slogan">FiltraCore turns filter condition, PSI, maintenance history, and alerts into decisions based on real data.</p>
+
+          <div class="fc-hero-actions" aria-label="FiltraCore calls to action">
+            <a href="#product-access" data-product-access class="fc-button fc-button-primary" data-i18n="cta.openLogin">Open Login</a>
+            <a href="#industry-fit" class="fc-button fc-button-secondary" data-i18n="hero.seeMobileUpdate">See industries</a>
+          </div>
+
+          <div class="fc-hero-proof" aria-label="FiltraCore operating advantages">
+            <span data-i18n="hero.proof1">Water quality</span>
+            <span data-i18n="hero.proof2">Cost risk</span>
+            <span data-i18n="hero.proof3">Preventive alerts</span>
+            <span data-i18n="hero.proof4">Real data</span>
+          </div>
+        </div>
+
+        <div class="fc-hero-visual" aria-label="FiltraCore desktop and mobile product mockups">
+          <figure class="fc-computer-mockup">
+            <div class="fc-computer-frame">
+              <div class="fc-computer-screen">
+                <img src="img/filtracore-desktop/dashboard.png" alt="FiltraCore desktop dashboard showing filter readiness, risk exposure, setup progress, and system metrics" decoding="async" fetchpriority="high">
+              </div>
+              <div class="fc-computer-chin"></div>
+            </div>
+            <div class="fc-computer-stand"></div>
+            <div class="fc-computer-base"></div>
+          </figure>
+
+          <figure class="fc-phone-mockup fc-hero-phone-image" aria-label="FiltraCore mobile dashboard mockup">
+            <img src="img/filtracore2.png" alt="FiltraCore mobile dashboard with machines, filters, PSI, inventory, and priority machines" decoding="async" fetchpriority="high">
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section id="industry-fit" class="fc-section fc-industries" aria-labelledby="industries-title">
+      <div class="fc-container fc-industries-layout">
+        <div class="fc-industries-copy">
+          <p class="fc-section-label" data-i18n="industries.label">Industries We Serve</p>
+          <h2 id="industries-title" data-i18n="industries.title">Filtration problems affect every operation differently.</h2>
+          <p data-i18n="industries.body">FiltraCore adapts to each sector by tracking filter condition, PSI, maintenance history, risks, and service priorities in one place.</p>
+          <div class="fc-industries-pills" aria-label="FiltraCore industry value points">
+            <span>Water quality</span>
+            <span>Cost control</span>
+            <span>Equipment protection</span>
+            <span>Compliance visibility</span>
+          </div>
+        </div>
+
+        <div class="fc-industry-accordion" data-industry-accordion>
+          <article class="fc-industry-card is-open">
+            <button class="fc-industry-trigger" type="button" id="industry-casinos-trigger" aria-expanded="true" aria-controls="industry-casinos-panel">
+              <span>
+                <strong data-i18n="industry.casinos.title">Casinos</strong>
+                <small data-i18n="industry.casinos.summary">High-volume beverage, ice, kitchen, and guest-service equipment.</small>
+              </span>
+              <i aria-hidden="true"></i>
+            </button>
+            <div id="industry-casinos-panel" class="fc-industry-panel" role="region" aria-labelledby="industry-casinos-trigger">
+              <div class="fc-industry-content">
+                <div><span data-i18n="industries.problemLabel">Main problem</span><p data-i18n="industry.casinos.problem">Casinos depend on consistent filtered water across bars, restaurants, ice machines, beverage stations, and back-of-house equipment.</p></div>
+                <div><span data-i18n="industries.risksLabel">Risks</span><p data-i18n="industry.casinos.risks">Poor monitoring can create taste issues, mineral buildup, machine downtime, inconsistent service records, and higher emergency maintenance.</p></div>
+                <div><span data-i18n="industries.helpsLabel">How FiltraCore helps</span><p data-i18n="industry.casinos.helps">Maps each machine by location, tracks PSI and filter life, centralizes maintenance history, and sends preventive alerts before service is disrupted.</p></div>
+                <div><span data-i18n="industries.benefitsLabel">Benefits</span><p data-i18n="industry.casinos.benefits">Better guest experience, fewer unexpected failures, stronger engineering visibility, and cleaner documentation for multi-venue operations.</p></div>
+                <div><span data-i18n="industries.metricLabel">Key metric</span><p data-i18n="industry.casinos.metric">Filters by station, PSI range, days remaining, service events, and equipment risk level.</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="fc-industry-card">
+            <button class="fc-industry-trigger" type="button" id="industry-hospitals-trigger" aria-expanded="false" aria-controls="industry-hospitals-panel">
+              <span>
+                <strong data-i18n="industry.hospitals.title">Hospitals</strong>
+                <small data-i18n="industry.hospitals.summary">Operational water quality, documentation, and preventive maintenance.</small>
+              </span>
+              <i aria-hidden="true"></i>
+            </button>
+            <div id="industry-hospitals-panel" class="fc-industry-panel" role="region" aria-labelledby="industry-hospitals-trigger">
+              <div class="fc-industry-content">
+                <div><span data-i18n="industries.problemLabel">Main problem</span><p data-i18n="industry.hospitals.problem">Hospitals need reliable filtered water for kitchens, ice, labs, sterilization support areas, mechanical systems, and patient-facing services.</p></div>
+                <div><span data-i18n="industries.risksLabel">Risks</span><p data-i18n="industry.hospitals.risks">Missed filter changes can create quality concerns, scale, equipment strain, documentation gaps, and delayed corrective actions.</p></div>
+                <div><span data-i18n="industries.helpsLabel">How FiltraCore helps</span><p data-i18n="industry.hospitals.helps">Creates a traceable maintenance record by asset, location, technician, PSI reading, filter age, and corrective action.</p></div>
+                <div><span data-i18n="industries.benefitsLabel">Benefits</span><p data-i18n="industry.hospitals.benefits">Stronger preventive maintenance, cleaner inspections, better operational control, and faster visibility when a filter or asset needs attention.</p></div>
+                <div><span data-i18n="industries.metricLabel">Key metric</span><p data-i18n="industry.hospitals.metric">Filter age, pressure differential, open alerts, completed service records, and audit-ready evidence.</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="fc-industry-card">
+            <button class="fc-industry-trigger" type="button" id="industry-restaurants-trigger" aria-expanded="false" aria-controls="industry-restaurants-panel">
+              <span>
+                <strong data-i18n="industry.restaurants.title">Restaurants</strong>
+                <small data-i18n="industry.restaurants.summary">Water taste, ice quality, equipment protection, and replacement timing.</small>
+              </span>
+              <i aria-hidden="true"></i>
+            </button>
+            <div id="industry-restaurants-panel" class="fc-industry-panel" role="region" aria-labelledby="industry-restaurants-trigger">
+              <div class="fc-industry-content">
+                <div><span data-i18n="industries.problemLabel">Main problem</span><p data-i18n="industry.restaurants.problem">Restaurants depend on water filtration for coffee, ice, soda, steam equipment, dish areas, and guest-facing food and beverage quality.</p></div>
+                <div><span data-i18n="industries.risksLabel">Risks</span><p data-i18n="industry.restaurants.risks">Calendar-only replacements can waste money, while late replacements can affect taste, reduce flow, damage equipment, and trigger urgent service calls.</p></div>
+                <div><span data-i18n="industries.helpsLabel">How FiltraCore helps</span><p data-i18n="industry.restaurants.helps">Tracks installed filters, PSI readings, stock, supplier context, due dates, and service notes from desktop or mobile.</p></div>
+                <div><span data-i18n="industries.benefitsLabel">Benefits</span><p data-i18n="industry.restaurants.benefits">Lower replacement waste, fewer breakdowns, better water consistency, and clearer records for owners, managers, and technicians.</p></div>
+                <div><span data-i18n="industries.metricLabel">Key metric</span><p data-i18n="industry.restaurants.metric">Cost per filter, remaining life, low-stock alerts, PSI trend, and completed maintenance logs.</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="fc-industry-card">
+            <button class="fc-industry-trigger" type="button" id="industry-hotels-trigger" aria-expanded="false" aria-controls="industry-hotels-panel">
+              <span>
+                <strong data-i18n="industry.hotels.title">Hotels</strong>
+                <small data-i18n="industry.hotels.summary">Property-wide equipment, guest amenities, kitchens, laundry, and service history.</small>
+              </span>
+              <i aria-hidden="true"></i>
+            </button>
+            <div id="industry-hotels-panel" class="fc-industry-panel" role="region" aria-labelledby="industry-hotels-trigger">
+              <div class="fc-industry-content">
+                <div><span data-i18n="industries.problemLabel">Main problem</span><p data-i18n="industry.hotels.problem">Hotels operate many filtration-dependent areas: kitchens, bars, ice machines, laundry, spas, meeting spaces, and guest amenities.</p></div>
+                <div><span data-i18n="industries.risksLabel">Risks</span><p data-i18n="industry.hotels.risks">Disconnected maintenance can create guest complaints, equipment wear, repeated service calls, and unclear accountability across shifts or departments.</p></div>
+                <div><span data-i18n="industries.helpsLabel">How FiltraCore helps</span><p data-i18n="industry.hotels.helps">Organizes every asset by building, floor, zone, department, filter product, and maintenance status.</p></div>
+                <div><span data-i18n="industries.benefitsLabel">Benefits</span><p data-i18n="industry.hotels.benefits">Consistent service quality, fewer surprises, faster handoffs, and a centralized record for engineering and management teams.</p></div>
+                <div><span data-i18n="industries.metricLabel">Key metric</span><p data-i18n="industry.hotels.metric">Due-soon filters, equipment by location, service completion, PSI changes, and repeated issue patterns.</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="fc-industry-card">
+            <button class="fc-industry-trigger" type="button" id="industry-manufacturing-trigger" aria-expanded="false" aria-controls="industry-manufacturing-panel">
+              <span>
+                <strong data-i18n="industry.manufacturing.title">Manufacturing</strong>
+                <small data-i18n="industry.manufacturing.summary">Process reliability, equipment protection, and downtime prevention.</small>
+              </span>
+              <i aria-hidden="true"></i>
+            </button>
+            <div id="industry-manufacturing-panel" class="fc-industry-panel" role="region" aria-labelledby="industry-manufacturing-trigger">
+              <div class="fc-industry-content">
+                <div><span data-i18n="industries.problemLabel">Main problem</span><p data-i18n="industry.manufacturing.problem">Manufacturing teams need stable filtration for process water, cooling loops, washdowns, utilities, and equipment that cannot afford unplanned downtime.</p></div>
+                <div><span data-i18n="industries.risksLabel">Risks</span><p data-i18n="industry.manufacturing.risks">A saturated filter can reduce flow, increase energy use, stress pumps or valves, affect product consistency, and interrupt production schedules.</p></div>
+                <div><span data-i18n="industries.helpsLabel">How FiltraCore helps</span><p data-i18n="industry.manufacturing.helps">Tracks condition signals, maintenance cadence, pressure changes, asset criticality, and service documentation by production area.</p></div>
+                <div><span data-i18n="industries.benefitsLabel">Benefits</span><p data-i18n="industry.manufacturing.benefits">More predictable maintenance, lower downtime risk, better equipment protection, and traceability for quality or operations reviews.</p></div>
+                <div><span data-i18n="industries.metricLabel">Key metric</span><p data-i18n="industry.manufacturing.metric">Differential pressure, critical assets, downtime exposure, filter life, and corrective maintenance events.</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="fc-industry-card">
+            <button class="fc-industry-trigger" type="button" id="industry-malls-trigger" aria-expanded="false" aria-controls="industry-malls-panel">
+              <span>
+                <strong data-i18n="industry.malls.title">Shopping Centers</strong>
+                <small data-i18n="industry.malls.summary">Tenant areas, food courts, public spaces, and shared maintenance visibility.</small>
+              </span>
+              <i aria-hidden="true"></i>
+            </button>
+            <div id="industry-malls-panel" class="fc-industry-panel" role="region" aria-labelledby="industry-malls-trigger">
+              <div class="fc-industry-content">
+                <div><span data-i18n="industries.problemLabel">Main problem</span><p data-i18n="industry.malls.problem">Shopping centers manage filtration across food courts, tenant support areas, restrooms, mechanical rooms, fountains, and shared infrastructure.</p></div>
+                <div><span data-i18n="industries.risksLabel">Risks</span><p data-i18n="industry.malls.risks">When records are fragmented, teams miss service windows, tenants report issues late, and small filtration problems become facility-wide work orders.</p></div>
+                <div><span data-i18n="industries.helpsLabel">How FiltraCore helps</span><p data-i18n="industry.malls.helps">Centralizes locations, assets, filter products, maintenance status, and vendor activity in a single operational view.</p></div>
+                <div><span data-i18n="industries.benefitsLabel">Benefits</span><p data-i18n="industry.malls.benefits">Better tenant support, fewer repeated issues, clearer preventive planning, and faster reporting for property management.</p></div>
+                <div><span data-i18n="industries.metricLabel">Key metric</span><p data-i18n="industry.malls.metric">Open alerts by zone, service history by tenant area, equipment status, and upcoming replacement windows.</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="fc-industry-card">
+            <button class="fc-industry-trigger" type="button" id="industry-schools-trigger" aria-expanded="false" aria-controls="industry-schools-panel">
+              <span>
+                <strong data-i18n="industry.schools.title">Schools and Universities</strong>
+                <small data-i18n="industry.schools.summary">Campus-wide preventive maintenance and service traceability.</small>
+              </span>
+              <i aria-hidden="true"></i>
+            </button>
+            <div id="industry-schools-panel" class="fc-industry-panel" role="region" aria-labelledby="industry-schools-trigger">
+              <div class="fc-industry-content">
+                <div><span data-i18n="industries.problemLabel">Main problem</span><p data-i18n="industry.schools.problem">Campuses have cafeterias, labs, athletics, dorms, fountains, kitchens, and mechanical spaces spread across many buildings.</p></div>
+                <div><span data-i18n="industries.risksLabel">Risks</span><p data-i18n="industry.schools.risks">Deferred filter service can affect water quality, increase equipment wear, create audit gaps, and overwhelm small maintenance teams.</p></div>
+                <div><span data-i18n="industries.helpsLabel">How FiltraCore helps</span><p data-i18n="industry.schools.helps">Gives facilities teams one place to track filters, locations, inspections, notes, due dates, and completed work.</p></div>
+                <div><span data-i18n="industries.benefitsLabel">Benefits</span><p data-i18n="industry.schools.benefits">More organized preventive maintenance, easier budget planning, cleaner documentation, and fewer reactive tickets.</p></div>
+                <div><span data-i18n="industries.metricLabel">Key metric</span><p data-i18n="industry.schools.metric">Assets by building, due dates, work completed, filter age, and unresolved service risks.</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="fc-industry-card">
+            <button class="fc-industry-trigger" type="button" id="industry-corporate-trigger" aria-expanded="false" aria-controls="industry-corporate-panel">
+              <span>
+                <strong data-i18n="industry.corporate.title">Corporate Buildings</strong>
+                <small data-i18n="industry.corporate.summary">Amenities, office kitchens, mechanical rooms, and maintenance handoffs.</small>
+              </span>
+              <i aria-hidden="true"></i>
+            </button>
+            <div id="industry-corporate-panel" class="fc-industry-panel" role="region" aria-labelledby="industry-corporate-trigger">
+              <div class="fc-industry-content">
+                <div><span data-i18n="industries.problemLabel">Main problem</span><p data-i18n="industry.corporate.problem">Corporate buildings rely on filtration for coffee stations, ice, break rooms, kitchenettes, HVAC-related systems, and tenant amenities.</p></div>
+                <div><span data-i18n="industries.risksLabel">Risks</span><p data-i18n="industry.corporate.risks">Inconsistent service records can lead to tenant complaints, repeated work orders, equipment wear, and unclear vendor accountability.</p></div>
+                <div><span data-i18n="industries.helpsLabel">How FiltraCore helps</span><p data-i18n="industry.corporate.helps">Keeps asset records, replacement windows, service notes, and vendor actions centralized for facilities teams.</p></div>
+                <div><span data-i18n="industries.benefitsLabel">Benefits</span><p data-i18n="industry.corporate.benefits">Cleaner operations, fewer surprises, better tenant experience, and easier oversight of preventive maintenance.</p></div>
+                <div><span data-i18n="industries.metricLabel">Key metric</span><p data-i18n="industry.corporate.metric">Tenant-area assets, upcoming replacements, open alerts, service history, and vendor response time.</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="fc-industry-card">
+            <button class="fc-industry-trigger" type="button" id="industry-government-trigger" aria-expanded="false" aria-controls="industry-government-panel">
+              <span>
+                <strong data-i18n="industry.government.title">Government and Municipalities</strong>
+                <small data-i18n="industry.government.summary">Public assets, infrastructure risk, service evidence, and accountability.</small>
+              </span>
+              <i aria-hidden="true"></i>
+            </button>
+            <div id="industry-government-panel" class="fc-industry-panel" role="region" aria-labelledby="industry-government-trigger">
+              <div class="fc-industry-content">
+                <div><span data-i18n="industries.problemLabel">Main problem</span><p data-i18n="industry.government.problem">Public buildings and municipal operations need reliable filtration records across facilities, utilities, parks, service centers, and community assets.</p></div>
+                <div><span data-i18n="industries.risksLabel">Risks</span><p data-i18n="industry.government.risks">Aging infrastructure, missed maintenance, and paper records make it harder to prove service, prioritize replacements, and control water-related costs.</p></div>
+                <div><span data-i18n="industries.helpsLabel">How FiltraCore helps</span><p data-i18n="industry.government.helps">Creates a digital maintenance trail by asset and location, helping teams prioritize risk, document work, and review replacement needs.</p></div>
+                <div><span data-i18n="industries.benefitsLabel">Benefits</span><p data-i18n="industry.government.benefits">Better accountability, clearer budget planning, improved service continuity, and stronger visibility across distributed public assets.</p></div>
+                <div><span data-i18n="industries.metricLabel">Key metric</span><p data-i18n="industry.government.metric">Link local asset records to broader water concerns: leakage, pipe breaks, infrastructure backlog, and service response history.</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="fc-industry-card">
+            <button class="fc-industry-trigger" type="button" id="industry-treatment-trigger" aria-expanded="false" aria-controls="industry-treatment-panel">
+              <span>
+                <strong data-i18n="industry.treatment.title">Water Treatment Plants</strong>
+                <small data-i18n="industry.treatment.summary">Pressure trends, lifecycle control, reporting, and preventive alerts.</small>
+              </span>
+              <i aria-hidden="true"></i>
+            </button>
+            <div id="industry-treatment-panel" class="fc-industry-panel" role="region" aria-labelledby="industry-treatment-trigger">
+              <div class="fc-industry-content">
+                <div><span data-i18n="industries.problemLabel">Main problem</span><p data-i18n="industry.treatment.problem">Treatment facilities depend on filtration stages, pressure behavior, maintenance timing, and accurate records to keep operations stable.</p></div>
+                <div><span data-i18n="industries.risksLabel">Risks</span><p data-i18n="industry.treatment.risks">Insufficient monitoring can create inefficient replacements, clogged filters, flow restrictions, compliance risk, and missed signs of performance decline.</p></div>
+                <div><span data-i18n="industries.helpsLabel">How FiltraCore helps</span><p data-i18n="industry.treatment.helps">Tracks PSI, differential pressure, filter lifecycle, alerts, maintenance logs, locations, and historical reports in one system.</p></div>
+                <div><span data-i18n="industries.benefitsLabel">Benefits</span><p data-i18n="industry.treatment.benefits">More reliable operations, better replacement timing, reduced waste, stronger documentation, and earlier detection of performance problems.</p></div>
+                <div><span data-i18n="industries.metricLabel">Key metric</span><p data-i18n="industry.treatment.metric">Differential pressure trend, filter life, service history, report output, and alert resolution time.</p></div>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="fc-industries-cta">
+          <div>
+            <h3 data-i18n="industries.notSeenTitle">Don't see your industry?</h3>
+            <p data-i18n="industries.notSeenBody">FiltraCore can adapt to any operation that depends on filtration systems, water, or preventive maintenance.</p>
+          </div>
+          <a class="fc-button fc-button-primary" href="mailto:bastidasystems@gmail.com?subject=FiltraCore%20demo%20request" data-i18n="industries.demoCta">Request a demo</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="fc-section fc-problem" aria-labelledby="problem-title">
+      <div class="fc-container fc-problem-grid">
+        <div class="fc-problem-copy">
+          <p class="fc-section-label" data-i18n="problem.label">Operational risk</p>
+          <h2 id="problem-title" data-i18n="problem.title">The problem nobody is monitoring.</h2>
+          <p data-i18n="problem.body1">
+            Every day, thousands of industrial, commercial, and water treatment filters operate without adequate monitoring.
+          </p>
+          <p data-i18n="problem.body2">
+            Many companies still replace filters by calendar instead of real condition, creating unnecessary expense and reducing operational efficiency.
+          </p>
+        </div>
+
+        <div class="fc-problem-panel" aria-label="Filter overuse consequences">
+          <h3 data-i18n="problem.panelTitle">When a filter runs beyond its useful life, it can cause:</h3>
+          <ul class="fc-impact-list">
+            <li data-i18n="problem.risk1">Loss of water quality.</li>
+            <li data-i18n="problem.risk2">Higher operating costs.</li>
+            <li data-i18n="problem.risk3">Damage to equipment.</li>
+            <li data-i18n="problem.risk4">Sanitary risks.</li>
+            <li data-i18n="problem.risk5">Regulatory non-compliance.</li>
+            <li data-i18n="problem.risk6">Unnecessary water consumption.</li>
+            <li data-i18n="problem.risk7">Energy waste.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="impact-stats" class="fc-section fc-impact" aria-labelledby="impact-title">
+      <div class="fc-container">
+        <div class="fc-section-header fc-section-header-center">
+          <p class="fc-section-label" data-i18n="impact.label">Why it matters</p>
+          <h2 id="impact-title" data-i18n="impact.title">Why does it matter?</h2>
+          <p data-i18n="impact.body">Poor visibility around water systems turns small signals into expensive losses, wasted treated water, and preventable operational risk.</p>
+        </div>
+
+        <div class="fc-stat-grid" aria-label="Water infrastructure and monitoring impact statistics">
+          <article class="fc-stat-card">
+            <span class="fc-stat-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 3C9 7 6 10.5 6 14a6 6 0 0 0 12 0c0-3.5-3-7-6-11Z"/><path d="M9 15a3 3 0 0 0 3 3"/></svg>
+            </span>
+            <strong><span class="fc-counter" data-counter-target="240000" data-counter-format="comma">0</span></strong>
+            <p data-i18n="impact.stat1Text">water pipe breaks occur every year in the United States.</p>
+          </article>
+
+          <article class="fc-stat-card">
+            <span class="fc-stat-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M4 19V5"/><path d="M4 19h16"/><path d="m7 15 3-4 3 2 5-7"/><path d="M16 6h2v2"/></svg>
+            </span>
+            <strong><span class="fc-counter" data-counter-target="14" data-counter-suffix="%">0</span></strong>
+            <p data-i18n="impact.stat2Text">of treated water is lost through distribution leaks.</p>
+          </article>
+
+          <article class="fc-stat-card">
+            <span class="fc-stat-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 8v5l3 2"/><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v6h-6"/></svg>
+            </span>
+            <strong><span class="fc-counter" data-counter-target="60" data-counter-suffix="%+">0</span></strong>
+            <p data-i18n="impact.stat3Text">water losses are reported by some systems.</p>
+          </article>
+
+          <article class="fc-stat-card">
+            <span class="fc-stat-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7H14a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </span>
+            <strong><span class="fc-counter" data-counter-target="625" data-counter-prefix="$" data-counter-suffix="B">0</span></strong>
+            <p data-i18n="impact.stat4Text">in U.S. water infrastructure needs over the coming years.</p>
+          </article>
+
+          <article class="fc-stat-card">
+            <span class="fc-stat-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M3 12h18"/><path d="M12 3a15 15 0 0 1 0 18"/><path d="M12 3a15 15 0 0 0 0 18"/><path d="M4 8h16"/><path d="M4 16h16"/><circle cx="12" cy="12" r="9"/></svg>
+            </span>
+            <strong><span class="fc-counter" data-counter-target="2" data-counter-suffix="T+">0</span></strong>
+            <p data-i18n="impact.stat5Text">gallons of treated water are wasted annually because of aging infrastructure and insufficient monitoring.</p>
+          </article>
+        </div>
+
+        <p class="fc-stat-source" data-i18n="impact.source">Context based on public EPA, ASCE, and U.S. congressional water infrastructure references.</p>
+      </div>
+    </section>
+
+    <section class="fc-section fc-water" aria-labelledby="water-title">
+      <div class="fc-container fc-water-panel">
+        <div class="fc-water-copy">
+          <p class="fc-section-label" data-i18n="water.label">Environmental impact</p>
+          <h2 id="water-title" data-i18n="water.title">Every drop counts.</h2>
+          <p data-i18n="water.body1">Water is one of the most important resources on the planet.</p>
+          <p data-i18n="water.body2">Filtration efficiency does not only protect equipment and operations; it also helps reduce waste, conserve resources, and improve organizational sustainability.</p>
+          <p data-i18n="water.body3">FiltraCore helps companies make decisions based on real data to maximize filter life while maintaining the quality and safety of their processes.</p>
+        </div>
+
+        <figure class="fc-water-visual">
+          <img src="img/filtracore-assets/water-sustainability-filtration.png" alt="Industrial water filtration equipment with flowing water and sustainability imagery" loading="lazy" decoding="async">
+        </figure>
+      </div>
+    </section>
+
+    <section class="fc-section fc-monitoring" aria-labelledby="monitoring-title">
+      <div class="fc-container">
+        <div class="fc-section-header fc-section-header-center">
+          <p class="fc-section-label" data-i18n="monitoring.label">What FiltraCore tracks</p>
+          <h2 id="monitoring-title" data-i18n="monitoring.title">What FiltraCore monitors.</h2>
+          <p data-i18n="monitoring.body">A single operating layer for filter condition, equipment context, service history, and the signals that usually stay scattered.</p>
+        </div>
+
+        <div class="fc-feature-grid" aria-label="FiltraCore monitoring capabilities">
+          <article>
+            <span class="fc-feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 14a7 7 0 0 1 14 0"/><path d="M12 14l4-5"/><path d="M4 20h16"/></svg></span>
+            <h3 data-i18n="monitoring.item1">PSI and differential pressure.</h3>
+          </article>
+          <article>
+            <span class="fc-feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M8 3h8"/><path d="M9 3v4l-4 6v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6l-4-6V3"/><path d="M8 14h8"/></svg></span>
+            <h3 data-i18n="monitoring.item2">Filter useful life.</h3>
+          </article>
+          <article>
+            <span class="fc-feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M7 3h10v18H7z"/><path d="M9 7h6"/><path d="M9 11h6"/><path d="M9 15h4"/></svg></span>
+            <h3 data-i18n="monitoring.item3">Maintenance history.</h3>
+          </article>
+          <article>
+            <span class="fc-feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3 2.5 20h19L12 3Z"/><path d="M12 9v5"/><path d="M12 17h.01"/></svg></span>
+            <h3 data-i18n="monitoring.item4">Preventive alerts.</h3>
+          </article>
+          <article>
+            <span class="fc-feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 19V5"/><path d="M4 19h16"/><path d="m7 15 4-4 3 3 5-7"/></svg></span>
+            <h3 data-i18n="monitoring.item5">Performance trends.</h3>
+          </article>
+          <article>
+            <span class="fc-feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3 20 7v6c0 5-3.5 7.5-8 8-4.5-.5-8-3-8-8V7l8-4Z"/><path d="m8.5 12 2.2 2.2 4.8-5"/></svg></span>
+            <h3 data-i18n="monitoring.item6">Operational compliance.</h3>
+          </article>
+          <article>
+            <span class="fc-feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s7-5.2 7-11a7 7 0 1 0-14 0c0 5.8 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg></span>
+            <h3 data-i18n="monitoring.item7">Equipment and locations.</h3>
+          </article>
+          <article>
+            <span class="fc-feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 3h9l3 3v15H6z"/><path d="M14 3v4h4"/><path d="M9 12h6"/><path d="M9 16h6"/></svg></span>
+            <h3 data-i18n="monitoring.item8">Historical reports.</h3>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="fc-section fc-benefits" aria-labelledby="benefits-title">
+      <div class="fc-container">
+        <div class="fc-section-header fc-section-header-split">
+          <div>
+            <p class="fc-section-label" data-i18n="benefits.label">Operational value</p>
+            <h2 id="benefits-title" data-i18n="benefits.title">Benefits for your operation.</h2>
+          </div>
+          <p data-i18n="benefits.body">FiltraCore connects maintenance discipline with financial, environmental, and compliance outcomes that managers can act on.</p>
+        </div>
+
+        <div class="fc-benefit-grid" aria-label="FiltraCore operational benefits">
+          <article><span></span><h3 data-i18n="benefits.item1">Reduce operating costs.</h3></article>
+          <article><span></span><h3 data-i18n="benefits.item2">Avoid premature replacements.</h3></article>
+          <article><span></span><h3 data-i18n="benefits.item3">Detect problems before they happen.</h3></article>
+          <article><span></span><h3 data-i18n="benefits.item4">Protect critical equipment.</h3></article>
+          <article><span></span><h3 data-i18n="benefits.item5">Improve audits and inspections.</h3></article>
+          <article><span></span><h3 data-i18n="benefits.item6">Reduce water waste.</h3></article>
+          <article><span></span><h3 data-i18n="benefits.item7">Centralize real-time information.</h3></article>
+          <article><span></span><h3 data-i18n="benefits.item8">Make decisions easier.</h3></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="fc-section fc-shift" aria-labelledby="shift-title">
+      <div class="fc-container">
+        <div class="fc-section-header fc-section-header-center">
+          <p class="fc-section-label" data-i18n="shift.label">Smarter maintenance</p>
+          <h2 id="shift-title" data-i18n="shift.title">From reactive maintenance to intelligent maintenance.</h2>
+        </div>
+
+        <div class="fc-shift-grid">
+          <article class="fc-shift-card fc-shift-before">
+            <span data-i18n="shift.beforeLabel">Before</span>
+            <ul>
+              <li data-i18n="shift.before1">Changes by intuition.</li>
+              <li data-i18n="shift.before2">Paper records.</li>
+              <li data-i18n="shift.before3">Unexpected failures.</li>
+              <li data-i18n="shift.before4">Scattered data.</li>
+            </ul>
+          </article>
+
+          <div class="fc-shift-arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+          </div>
+
+          <article class="fc-shift-card fc-shift-after">
+            <span data-i18n="shift.afterLabel">After</span>
+            <ul>
+              <li data-i18n="shift.after1">Real-time monitoring.</li>
+              <li data-i18n="shift.after2">Centralized history.</li>
+              <li data-i18n="shift.after3">Preventive alerts.</li>
+              <li data-i18n="shift.after4">Data-based decisions.</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="mobile-update" class="fc-section fc-mobile-update" aria-labelledby="mobile-title">
+      <div class="fc-container">
+        <div class="fc-section-header fc-section-header-split">
+          <div>
+            <p class="fc-section-label" data-i18n="mobile.label">Field workflow</p>
+            <h2 id="mobile-title" data-i18n="mobile.title">A simpler path for the people doing the work.</h2>
+          </div>
+
+          <p data-i18n="mobile.body">
+            The field routine stays direct: create the machine, confirm the filter product, install the filter,
+            record PSI, and log maintenance while the desktop dashboard keeps the full operation organized.
+          </p>
+        </div>
+
+        <div class="fc-mobile-workflow">
+          <article class="fc-step-card">
+            <span>01</span>
+            <h3 data-i18n="mobile.step1Title">Add the machine</h3>
+            <p data-i18n="mobile.step1Text">Capture name, type, location, department, brand, model, and machine ID in one clean form.</p>
+            <div class="fc-step-phone fc-phone-device">
+              <span class="fc-phone-screen">
+                <img src="img/filtracore-mobile/add-machine.png" alt="Mobile Add Machine form in FiltraCore" loading="eager" decoding="async">
+              </span>
+            </div>
+          </article>
+
+          <article class="fc-step-card">
+            <span>02</span>
+            <h3 data-i18n="mobile.step2Title">Install the filter</h3>
+            <p data-i18n="mobile.step2Text">Select the machine, choose the filter product, set lifespan, and create due dates from the phone.</p>
+            <div class="fc-step-phone fc-phone-device">
+              <span class="fc-phone-screen">
+                <img src="img/filtracore-mobile/install-filter.png" alt="Mobile Install Filter form in FiltraCore" loading="eager" decoding="async">
+              </span>
+            </div>
+          </article>
+
+          <article class="fc-step-card">
+            <span>03</span>
+            <h3 data-i18n="mobile.step3Title">Monitor PSI</h3>
+            <p data-i18n="mobile.step3Text">Review active filters, update pressure readings, and flag watch items from the same mobile view.</p>
+            <div class="fc-step-phone fc-phone-device">
+              <span class="fc-phone-screen">
+                <img src="img/filtracore-mobile/filters.png" alt="Mobile Filters screen showing PSI tracking and active status" loading="eager" decoding="async">
+              </span>
+            </div>
+          </article>
+
+          <article class="fc-step-card">
+            <span>04</span>
+            <h3 data-i18n="mobile.step4Title">Log maintenance</h3>
+            <p data-i18n="mobile.step4Text">Record inspections, corrected PSI, notes, and replacement actions while the work is fresh.</p>
+            <div class="fc-step-phone fc-phone-device">
+              <span class="fc-phone-screen">
+                <img src="img/filtracore-mobile/log-maintenance.png" alt="Mobile Log Maintenance form in FiltraCore" loading="eager" decoding="async">
+              </span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="platform-modules" class="fc-section fc-system" aria-labelledby="system-title">
+      <div class="fc-container">
+        <div class="fc-section-header">
+          <p class="fc-section-label" data-i18n="system.label">Desktop command center</p>
+          <h2 id="system-title" data-i18n="system.title">The full operation stays organized by module.</h2>
+          <p data-i18n="system.body">
+            Supervisors can move through dashboard, machines, inventory, suppliers, filters, maintenance,
+            smart import, reports, and accounts while every update stays tied to the selected restaurant or facility.
+          </p>
+        </div>
+
+        <div class="fc-showcase">
+          <figure class="fc-showcase-main">
+            <img src="img/filtracore-desktop/machines.png" alt="FiltraCore Machines module with registration form and machine table" loading="eager" decoding="async">
+          </figure>
+
+          <div class="fc-module-list">
+            <article>
+              <span data-i18n="system.machinesLabel">Machines</span>
+              <h3 data-i18n="system.machinesTitle">Register assets before assigning filters.</h3>
+              <p data-i18n="system.machinesText">Location, category, brand, model, serial number, QR, status, PSI, and installed filter stay tied to each machine.</p>
+            </article>
+
+            <article>
+              <span data-i18n="system.inventoryLabel">Inventory + Suppliers</span>
+              <h3 data-i18n="system.inventoryTitle">Connect stock, products, vendors, and cost.</h3>
+              <p data-i18n="system.inventoryText">Track reorder numbers, filter types, stock, low inventory alerts, supplier pricing, and purchase order preparation.</p>
+            </article>
+
+            <article>
+              <span data-i18n="system.filtersLabel">Filters + Maintenance</span>
+              <h3 data-i18n="system.filtersTitle">Monitor lifecycle, pressure, and service history.</h3>
+              <p data-i18n="system.filtersText">Due dates, days left, PSI range, watch status, inspections, technician logs, and replacements stay connected.</p>
+            </article>
+
+            <article>
+              <span data-i18n="system.importLabel">Smart Import</span>
+              <h3 data-i18n="system.importTitle">Turn existing sheets into structured records.</h3>
+              <p data-i18n="system.importText">Process PDFs, photos, spreadsheets, CSVs, and filter sheets to create machines, inventory, and filters faster.</p>
+            </article>
+          </div>
+        </div>
+
+        <div class="fc-desktop-gallery" aria-label="FiltraCore desktop module screenshots">
+          <figure>
+            <img src="img/filtracore-desktop/inventory.png" alt="FiltraCore stock desktop screen" loading="eager" decoding="async">
+            <figcaption data-i18n="system.galleryInventory">Inventory layer</figcaption>
+          </figure>
+
+          <figure>
+            <img src="img/filtracore-desktop/filters.png" alt="FiltraCore filters desktop screen" loading="eager" decoding="async">
+            <figcaption data-i18n="system.galleryLifecycle">Lifecycle layer</figcaption>
+          </figure>
+
+          <figure>
+            <img src="img/filtracore-desktop/maintenance.png" alt="FiltraCore maintenance desktop screen" loading="eager" decoding="async">
+            <figcaption data-i18n="system.galleryMaintenance">Maintenance layer</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="fc-section fc-buyer" aria-labelledby="procurement-title">
+      <div class="fc-container">
+        <div class="fc-section-header fc-section-header-split">
+          <div>
+            <p class="fc-section-label" data-i18n="procurement.label">Supplier cost control</p>
+            <h2 id="procurement-title" data-i18n="procurement.title">Procurement becomes part of the maintenance system.</h2>
+          </div>
+
+          <p data-i18n="procurement.body">
+            Each inventory item can have multiple suppliers, current and previous prices, price movement,
+            a recommended vendor, and an initial purchase order workflow.
+          </p>
+        </div>
+
+        <div class="fc-buyer-grid">
+          <article>
+            <h3 data-i18n="procurement.card1Title">Multiple suppliers per product</h3>
+            <p data-i18n="procurement.card1Text">Compare Sysco, Restaurant Depot, Amazon Business, OEM vendors, or local suppliers against the same inventory item.</p>
+          </article>
+
+          <article>
+            <h3 data-i18n="procurement.card2Title">Price tracking</h3>
+            <p data-i18n="procurement.card2Text">Monitor current price, last price, update date, movement percentage, and whether the product increased or decreased.</p>
+          </article>
+
+          <article>
+            <h3 data-i18n="procurement.card3Title">Recommended supplier</h3>
+            <p data-i18n="procurement.card3Text">Surface the best price, cost difference, and supplier suggestion before purchasing decisions are made.</p>
+          </article>
+
+          <article>
+            <h3 data-i18n="procurement.card4Title">Purchase orders</h3>
+            <p data-i18n="procurement.card4Text">Prepare draft, sent, received, and cancelled purchase order flows connected to inventory and supplier products.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="fc-section fc-ops" aria-labelledby="import-title">
+      <div class="fc-container">
+        <div class="fc-section-header fc-section-header-split">
+          <div>
+            <p class="fc-section-label" data-i18n="import.label">Smart import system</p>
+            <h2 id="import-title" data-i18n="import.title">From old filter sheets to live operational data.</h2>
+          </div>
+
+          <p data-i18n="import.body">
+            FiltraCore can process photos, PDFs, spreadsheets, CSVs, and pasted sheets, then detect venue,
+            machine, reorder number, filter type, and quantity before records are created.
+          </p>
+        </div>
+
+        <div class="fc-ops-grid">
+          <article>
+            <h3 data-i18n="import.card1Title">Venue detection</h3>
+            <p data-i18n="import.card1Text">Imported rows become separate restaurants, venues, facilities, or workspaces instead of one flat list.</p>
+          </article>
+
+          <article>
+            <h3 data-i18n="import.card2Title">Machine generation</h3>
+            <p data-i18n="import.card2Text">The importer can create machines and link them to the correct location, type, and operational category.</p>
+          </article>
+
+          <article>
+            <h3 data-i18n="import.card3Title">Filter records</h3>
+            <p data-i18n="import.card3Text">Reorder numbers, filter types, quantities, and vendor context become inventory and installed filter records.</p>
+          </article>
+
+          <article>
+            <h3 data-i18n="import.card4Title">Review before applying</h3>
+            <p data-i18n="import.card4Text">Teams preview detected rows before creating records, keeping the import controlled and explainable.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="fc-section fc-intelligence" aria-labelledby="intelligence-title">
+      <div class="fc-container fc-intelligence-grid">
+        <div>
+          <p class="fc-section-label" data-i18n="intelligence.label">Executive intelligence</p>
+          <h2 id="intelligence-title" data-i18n="intelligence.title">Reports connect operational risk, maintenance, inventory, and supplier cost.</h2>
+          <p data-i18n="intelligence.body">
+            FiltraCore turns operational data into a management view: asset health, pending maintenance,
+            PSI analytics, upcoming replacements, stock readiness, supplier changes, cost exposure, and printable summaries.
+          </p>
+
+          <div class="fc-intelligence-points">
+            <article>
+              <strong data-i18n="intelligence.point1Title">Facility overview</strong>
+              <span data-i18n="intelligence.point1Text">Restaurants, venues, machines, installed filters, due dates, service windows, and review status.</span>
+            </article>
+
+            <article>
+              <strong data-i18n="intelligence.point2Title">Operational summary</strong>
+              <span data-i18n="intelligence.point2Text">Total machines, at-risk assets, PSI analytics, installed filters, low stock, and intelligence alerts.</span>
+            </article>
+
+            <article>
+              <strong data-i18n="intelligence.point3Title">Cost and maintenance output</strong>
+              <span data-i18n="intelligence.point3Text">Generate summaries that connect service history, supplier movement, purchasing needs, and leadership review.</span>
+            </article>
+          </div>
+        </div>
+
+        <figure class="fc-report-mockup">
+          <img src="img/filtracore-desktop/reports.png" alt="FiltraCore reports desktop screen with readiness overview, operational summary, and report actions" loading="eager" decoding="async">
+        </figure>
+      </div>
+    </section>
+
+    <section class="fc-section fc-buyer" aria-labelledby="buyer-title">
+      <div class="fc-container">
+        <div class="fc-section-header fc-section-header-split">
+          <div>
+            <p class="fc-section-label" data-i18n="buyer.label">What buyers understand fast</p>
+            <h2 id="buyer-title" data-i18n="buyer.title">A cleaner operating layer for casinos, hotels, restaurants, and facilities.</h2>
+          </div>
+
+          <p data-i18n="buyer.body">
+            The product story is simple: less guessing, faster documentation, smarter purchasing, and better
+            visibility before filter, machine, or inventory issues affect guests or production.
+          </p>
+        </div>
+
+        <div class="fc-buyer-grid">
+          <article>
+            <h3 data-i18n="buyer.card1Title">Protect service quality</h3>
+            <p data-i18n="buyer.card1Text">Keep PSI changes, filter age, and maintenance notes visible before flow problems show up at the station.</p>
+          </article>
+
+          <article>
+            <h3 data-i18n="buyer.card2Title">Train teams faster</h3>
+            <p data-i18n="buyer.card2Text">The mobile workflow gives staff a clear path instead of asking them to remember a desktop process.</p>
+          </article>
+
+          <article>
+            <h3 data-i18n="buyer.card3Title">Buy with cost context</h3>
+            <p data-i18n="buyer.card3Text">Supplier comparison, reorder context, stock readiness, and installed filter data help purchasing act with better timing.</p>
+          </article>
+
+          <article>
+            <h3 data-i18n="buyer.card4Title">Show the work</h3>
+            <p data-i18n="buyer.card4Text">Maintenance history and printable summaries make it easier to review the operation with owners or managers.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="fc-section fc-ops" aria-labelledby="ops-title">
+      <div class="fc-container">
+        <div class="fc-section-header">
+          <p class="fc-section-label" data-i18n="ops.label">Food service operations</p>
+          <h2 id="ops-title" data-i18n="ops.title">Built around preventive maintenance discipline.</h2>
+          <p data-i18n="ops.body">
+            FiltraCore supports daily routines inspired by preventive maintenance, stock readiness habits,
+            traceable service logs, and procurement discipline. It is designed to help teams document work
+            consistently before small issues become expensive downtime.
+          </p>
+        </div>
+
+        <div class="fc-ops-grid">
+          <article>
+            <h3 data-i18n="ops.card1Title">PSI monitoring</h3>
+            <p data-i18n="ops.card1Text">Record baseline and corrected pressure readings so changing flow conditions are visible.</p>
+          </article>
+
+          <article>
+            <h3 data-i18n="ops.card2Title">Filter lifecycle</h3>
+            <p data-i18n="ops.card2Text">Track installation dates, due dates, lifespan months, and days left by machine.</p>
+          </article>
+
+          <article>
+            <h3 data-i18n="ops.card3Title">Traceability logs</h3>
+            <p data-i18n="ops.card3Text">Keep maintenance type, notes, technician action, and filter replacement context in one record trail.</p>
+          </article>
+
+          <article>
+            <h3 data-i18n="ops.card4Title">Cost readiness</h3>
+            <p data-i18n="ops.card4Text">Connect available stock, reorder context, supplier prices, and installed filters so purchasing has better visibility.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="product-access" class="fc-cta" aria-labelledby="cta-title">
+      <div class="fc-container fc-cta-inner">
+        <div>
+          <h2 id="cta-title" data-i18n="finalCta.title">Ready to stop managing filters by guesswork?</h2>
+          <p data-i18n="finalCta.body">Open FiltraCore and see how real condition data can protect water quality, reduce waste, and keep maintenance ahead of costly failures.</p>
+        </div>
+
+        <div class="fc-cta-steps" aria-label="Product access steps">
+          <span data-i18n="finalCta.step1">Monitor PSI</span>
+          <span data-i18n="finalCta.step2">Review filter life</span>
+          <span data-i18n="finalCta.step3">Act before failure</span>
+        </div>
+
+        <a href="#product-access" data-product-access class="fc-button fc-button-primary" data-i18n="cta.openLogin">Open Login</a>
+      </div>
+    </section>
+  </main>
+
+  <section class="fc-print-document" aria-label="FiltraCore printable overview">
+    <article class="fc-print-page fc-print-cover">
+      <header class="fc-print-topline">
+        <div class="fc-print-brand">
+          <img src="img/LOGO_FILTRACOREXCODE.png" alt="">
+          <span>
+            <strong>FiltraCore</strong>
+            <small data-i18n="hero.brandSystem">Maintenance & Cost Intelligence</small>
+          </span>
+        </div>
+        <p data-i18n="print.docTitle">Operating brief</p>
+      </header>
+
+      <div class="fc-print-cover-grid">
+        <div class="fc-print-cover-copy">
+          <p class="fc-print-kicker" data-i18n="print.coverLabel">Operational intelligence</p>
+          <h1 data-i18n-html="hero.titleDesktop">Water filter maintenance<br>and costs under control.</h1>
+          <p data-i18n="hero.lede">
+            FiltraCore helps restaurants, casinos, hotels, and facility teams manage machines, filter lifecycles,
+            PSI, inventory, supplier pricing, purchase orders, smart import, and maintenance history from one workspace.
+          </p>
+          <p class="fc-print-slogan" data-i18n="hero.slogan">We turn operational chaos into organized maintenance control.</p>
+
+          <div class="fc-print-proof">
+            <span data-i18n="hero.proof1">Asset tracking</span>
+            <span data-i18n="hero.proof2">PSI analytics</span>
+            <span data-i18n="hero.proof3">Supplier cost control</span>
+            <span data-i18n="hero.proof4">Smart import</span>
+          </div>
+        </div>
+
+        <div class="fc-print-device-stack">
+          <figure class="fc-print-desktop-frame">
+            <img src="img/filtracore-desktop/print-dashboard.jpg" alt="FiltraCore dashboard print preview">
+          </figure>
+          <figure class="fc-print-phone-frame">
+            <img src="img/filtracore-mobile/dashboard.png" alt="FiltraCore mobile dashboard print preview">
+          </figure>
+        </div>
+      </div>
+
+      <div class="fc-print-metrics">
+        <article>
+          <span data-i18n="metrics.setupLabel">Asset management</span>
+          <strong data-i18n="metrics.setupValue">Machines mapped</strong>
+          <p data-i18n="metrics.setupText">Track brand, model, serial number, location, QR context, and machine health.</p>
+        </article>
+        <article>
+          <span data-i18n="metrics.lifecycleLabel">Maintenance</span>
+          <strong data-i18n="metrics.lifecycleValue">Due soon visible</strong>
+          <p data-i18n="metrics.lifecycleText">Plan inspections, replacement cycles, technician logs, and service history.</p>
+        </article>
+        <article>
+          <span data-i18n="metrics.controlsLabel">Inventory</span>
+          <strong data-i18n="metrics.controlsValue">Stock controlled</strong>
+          <p data-i18n="metrics.controlsText">Monitor filter stock, low inventory alerts, usage, and automatic deductions.</p>
+        </article>
+        <article>
+          <span data-i18n="metrics.riskLabel">Procurement</span>
+          <strong data-i18n="metrics.riskValue">Supplier pricing</strong>
+          <p data-i18n="metrics.riskText">Compare vendors, price movement, suggested suppliers, and purchase orders.</p>
+        </article>
+      </div>
+    </article>
+
+    <article class="fc-print-page">
+      <header class="fc-print-page-header">
+        <p data-i18n="sales.label">Why it sells</p>
+        <h2 data-i18n="sales.title">Maintenance work stops living in notes, texts, spreadsheets, and memory.</h2>
+      </header>
+
+      <div class="fc-print-value-grid">
+        <section>
+          <p data-i18n="sales.body">
+            FiltraCore turns a messy back-of-house routine into a visible operating system for restaurants,
+            hotels, casinos, beverage stations, ice machines, and facility teams that need proof of what was checked.
+          </p>
+
+          <div class="fc-print-outcomes">
+            <article>
+              <h3 data-i18n="buyer.card1Title">Protect service quality</h3>
+              <p data-i18n="buyer.card1Text">Keep PSI changes, filter age, and maintenance notes visible before flow problems show up at the station.</p>
+            </article>
+            <article>
+              <h3 data-i18n="buyer.card2Title">Train teams faster</h3>
+              <p data-i18n="buyer.card2Text">The mobile workflow gives staff a clear path instead of asking them to remember a desktop process.</p>
+            </article>
+            <article>
+              <h3 data-i18n="buyer.card3Title">Buy with cost context</h3>
+              <p data-i18n="buyer.card3Text">Supplier comparison, reorder context, stock readiness, and installed filter data help purchasing act with better timing.</p>
+            </article>
+            <article>
+              <h3 data-i18n="buyer.card4Title">Show the work</h3>
+              <p data-i18n="buyer.card4Text">Maintenance history and printable summaries make it easier to review the operation with owners or managers.</p>
+            </article>
+          </div>
+        </section>
+
+        <aside class="fc-print-proof-stack">
+          <article>
+            <span>01</span>
+            <h3 data-i18n="sales.card1Title">Assets stay tied to their exact location.</h3>
+            <p data-i18n="sales.card1Text">Teams can capture machines, equipment categories, brand, model, serial number, floor, zone, and QR context.</p>
+          </article>
+          <article>
+            <span>02</span>
+            <h3 data-i18n="sales.card2Title">Managers see status, cost, and risk together.</h3>
+            <p data-i18n="sales.card2Text">Stock availability, supplier pricing, PSI, due dates, and maintenance history stay connected in the same workspace.</p>
+          </article>
+          <article>
+            <span>03</span>
+            <h3 data-i18n="sales.card3Title">Reports and purchase decisions are ready for review.</h3>
+            <p data-i18n="sales.card3Text">Clean summaries help leadership understand what is installed, what is pending, what is low, and which supplier is most competitive.</p>
+          </article>
+        </aside>
+      </div>
+    </article>
+
+    <article class="fc-print-page">
+      <header class="fc-print-page-header fc-print-page-header-split">
+        <div>
+          <p data-i18n="mobile.label">Field workflow</p>
+          <h2 data-i18n="mobile.title">A simpler path for the people doing the work.</h2>
+        </div>
+        <p data-i18n="mobile.body">
+          The field routine stays direct: create the machine, confirm the filter product, install the filter,
+          record PSI, and log maintenance while the desktop dashboard keeps the full operation organized.
+        </p>
+      </header>
+
+      <div class="fc-print-mobile-grid">
+        <article>
+          <span>01</span>
+          <h3 data-i18n="mobile.step1Title">Add the machine</h3>
+          <p data-i18n="mobile.step1Text">Capture name, type, location, department, brand, model, and machine ID in one clean form.</p>
+          <figure><img src="img/filtracore-mobile/add-machine.png" alt="Add machine mobile screen"></figure>
+        </article>
+        <article>
+          <span>02</span>
+          <h3 data-i18n="mobile.step2Title">Install the filter</h3>
+          <p data-i18n="mobile.step2Text">Select the machine, choose the filter product, set lifespan, and create due dates from the phone.</p>
+          <figure><img src="img/filtracore-mobile/install-filter.png" alt="Install filter mobile screen"></figure>
+        </article>
+        <article>
+          <span>03</span>
+          <h3 data-i18n="mobile.step3Title">Monitor PSI</h3>
+          <p data-i18n="mobile.step3Text">Review active filters, update pressure readings, and flag watch items from the same mobile view.</p>
+          <figure><img src="img/filtracore-mobile/filters.png" alt="Filter PSI mobile screen"></figure>
+        </article>
+        <article>
+          <span>04</span>
+          <h3 data-i18n="mobile.step4Title">Log maintenance</h3>
+          <p data-i18n="mobile.step4Text">Record inspections, corrected PSI, notes, and replacement actions while the work is fresh.</p>
+          <figure><img src="img/filtracore-mobile/log-maintenance.png" alt="Log maintenance mobile screen"></figure>
+        </article>
+      </div>
+    </article>
+
+    <article class="fc-print-page">
+      <header class="fc-print-page-header fc-print-page-header-split">
+        <div>
+          <p data-i18n="system.label">Desktop command center</p>
+          <h2 data-i18n="system.title">The full operation stays organized by module.</h2>
+        </div>
+        <p data-i18n="system.body">
+          Supervisors can move through dashboard, machines, inventory, suppliers, filters, maintenance,
+          smart import, reports, and accounts while every update stays tied to the selected restaurant or facility.
+        </p>
+      </header>
+
+      <div class="fc-print-system-grid">
+        <figure class="fc-print-large-shot">
+          <img src="img/filtracore-desktop/print-machines.jpg" alt="FiltraCore desktop machines module">
+        </figure>
+
+        <div class="fc-print-module-stack">
+          <article>
+            <span data-i18n="system.machinesLabel">Machines</span>
+            <h3 data-i18n="system.machinesTitle">Register assets before assigning filters.</h3>
+            <p data-i18n="system.machinesText">Location, category, brand, model, serial number, QR, status, PSI, and installed filter stay tied to each machine.</p>
+          </article>
+          <article>
+            <span data-i18n="system.inventoryLabel">Inventory + Suppliers</span>
+            <h3 data-i18n="system.inventoryTitle">Connect stock, products, vendors, and cost.</h3>
+            <p data-i18n="system.inventoryText">Track reorder numbers, filter types, stock, low inventory alerts, supplier pricing, and purchase order preparation.</p>
+          </article>
+          <article>
+            <span data-i18n="system.filtersLabel">Filters + Maintenance</span>
+            <h3 data-i18n="system.filtersTitle">Monitor lifecycle, pressure, and service history.</h3>
+            <p data-i18n="system.filtersText">Due dates, days left, PSI range, watch status, inspections, technician logs, and replacements stay connected.</p>
+          </article>
+          <article>
+            <span data-i18n="system.importLabel">Smart Import</span>
+            <h3 data-i18n="system.importTitle">Turn existing sheets into structured records.</h3>
+            <p data-i18n="system.importText">Process PDFs, photos, spreadsheets, CSVs, and filter sheets to create machines, inventory, and filters faster.</p>
+          </article>
+        </div>
+      </div>
+    </article>
+
+    <article class="fc-print-page">
+      <header class="fc-print-page-header fc-print-page-header-split">
+        <div>
+          <p data-i18n="intelligence.label">Executive intelligence</p>
+          <h2 data-i18n="intelligence.title">Reports connect operational risk, maintenance, inventory, and supplier cost.</h2>
+        </div>
+        <p data-i18n="intelligence.body">
+          FiltraCore turns operational data into a management view: asset health, pending maintenance,
+          PSI analytics, upcoming replacements, stock readiness, supplier changes, cost exposure, and printable summaries.
+        </p>
+      </header>
+
+      <div class="fc-print-report-grid">
+        <figure class="fc-print-large-shot">
+          <img src="img/filtracore-desktop/print-reports.jpg" alt="FiltraCore executive report module">
+        </figure>
+
+        <aside class="fc-print-next">
+          <h3 data-i18n="print.nextTitle">Access review path</h3>
+          <ol>
+            <li data-i18n="finalCta.step1">Review dashboard</li>
+            <li data-i18n="finalCta.step2">Compare suppliers</li>
+            <li data-i18n="finalCta.step3">Import a sheet</li>
+          </ol>
+          <p data-i18n="finalCta.body">Open the current system and review the exact workflow a team would use from setup to report.</p>
+          <strong>bastidasystems@gmail.com</strong>
+          <strong>+1 (702) 661-7149</strong>
+        </aside>
+      </div>
+    </article>
+  </section>
+
+  <script>
+    const productAccessUrl = 'filtracore-app.html';
+    const filtraTranslations = {
+      en: {
+        'meta.title': 'FiltraCore | Bastida Systems',
+        'nav.language': 'Language',
+        'nav.languageSelector': 'Language selector',
+        'nav.products': 'Work',
+        'nav.websites': 'Websites',
+        'nav.systems': 'Systems',
+        'nav.about': 'About',
+        'nav.portal': 'Client Portal',
+        'nav.contact': 'Contact',
+        'nav.privacy': 'Privacy',
+        'hero.brandSystem': 'Filter Monitoring Intelligence',
+        'hero.titleDesktop': 'Stop running filters blind.<br>Protect water.<br>Control costs.',
+        'hero.titleMobile': 'Stop running filters blind. Protect water. Control costs.',
+        'hero.lede': 'Every overdue filter can compromise water quality, increase operating costs, damage equipment, waste energy, and leave teams reacting after the issue is already expensive.',
+        'hero.slogan': 'FiltraCore turns filter condition, PSI, maintenance history, and alerts into decisions based on real data.',
+        'hero.seeMobileUpdate': 'See industries',
+        'hero.proof1': 'Water quality',
+        'hero.proof2': 'Cost risk',
+        'hero.proof3': 'Preventive alerts',
+        'hero.proof4': 'Real data',
+        'industries.label': 'Industry fit',
+        'industries.title': 'Does your industry face filtration problems?',
+        'industries.body': 'Discover how FiltraCore helps reduce costs, prevent failures, and maintain water quality across different sectors.',
+        'industries.problemLabel': 'Main problem',
+        'industries.risksLabel': 'Risks',
+        'industries.helpsLabel': 'How FiltraCore helps',
+        'industries.benefitsLabel': 'Benefits',
+        'industries.metricLabel': 'Key metric',
+        'industries.notSeenTitle': 'Do not see your industry?',
+        'industries.notSeenBody': 'FiltraCore can adapt to any operation that depends on filtration systems, water, or preventive maintenance.',
+        'industries.demoCta': 'Request a demo',
+        'industry.casinos.title': 'Casinos',
+        'industry.casinos.summary': 'High-volume beverage, ice, kitchen, and guest-service equipment.',
+        'industry.casinos.problem': 'Casinos depend on consistent filtered water across bars, restaurants, ice machines, beverage stations, and back-of-house equipment.',
+        'industry.casinos.risks': 'Poor monitoring can create taste issues, mineral buildup, machine downtime, inconsistent service records, and higher emergency maintenance.',
+        'industry.casinos.helps': 'Maps each machine by location, tracks PSI and filter life, centralizes maintenance history, and sends preventive alerts before service is disrupted.',
+        'industry.casinos.benefits': 'Better guest experience, fewer unexpected failures, stronger engineering visibility, and cleaner documentation for multi-venue operations.',
+        'industry.casinos.metric': 'Filters by station, PSI range, days remaining, service events, and equipment risk level.',
+        'industry.hospitals.title': 'Hospitals',
+        'industry.hospitals.summary': 'Operational water quality, documentation, and preventive maintenance.',
+        'industry.hospitals.problem': 'Hospitals need reliable filtered water for kitchens, ice, labs, sterilization support areas, mechanical systems, and patient-facing services.',
+        'industry.hospitals.risks': 'Missed filter changes can create quality concerns, scale, equipment strain, documentation gaps, and delayed corrective actions.',
+        'industry.hospitals.helps': 'Creates a traceable maintenance record by asset, location, technician, PSI reading, filter age, and corrective action.',
+        'industry.hospitals.benefits': 'Stronger preventive maintenance, cleaner inspections, better operational control, and faster visibility when a filter or asset needs attention.',
+        'industry.hospitals.metric': 'Filter age, pressure differential, open alerts, completed service records, and audit-ready evidence.',
+        'industry.restaurants.title': 'Restaurants',
+        'industry.restaurants.summary': 'Water taste, ice quality, equipment protection, and replacement timing.',
+        'industry.restaurants.problem': 'Restaurants depend on water filtration for coffee, ice, soda, steam equipment, dish areas, and guest-facing food and beverage quality.',
+        'industry.restaurants.risks': 'Calendar-only replacements can waste money, while late replacements can affect taste, reduce flow, damage equipment, and trigger urgent service calls.',
+        'industry.restaurants.helps': 'Tracks installed filters, PSI readings, stock, supplier context, due dates, and service notes from desktop or mobile.',
+        'industry.restaurants.benefits': 'Lower replacement waste, fewer breakdowns, better water consistency, and clearer records for owners, managers, and technicians.',
+        'industry.restaurants.metric': 'Cost per filter, remaining life, low-stock alerts, PSI trend, and completed maintenance logs.',
+        'industry.hotels.title': 'Hotels',
+        'industry.hotels.summary': 'Property-wide equipment, guest amenities, kitchens, laundry, and service history.',
+        'industry.hotels.problem': 'Hotels operate many filtration-dependent areas: kitchens, bars, ice machines, laundry, spas, meeting spaces, and guest amenities.',
+        'industry.hotels.risks': 'Disconnected maintenance can create guest complaints, equipment wear, repeated service calls, and unclear accountability across shifts or departments.',
+        'industry.hotels.helps': 'Organizes every asset by building, floor, zone, department, filter product, and maintenance status.',
+        'industry.hotels.benefits': 'Consistent service quality, fewer surprises, faster handoffs, and a centralized record for engineering and management teams.',
+        'industry.hotels.metric': 'Due-soon filters, equipment by location, service completion, PSI changes, and repeated issue patterns.',
+        'industry.manufacturing.title': 'Manufacturing',
+        'industry.manufacturing.summary': 'Process reliability, equipment protection, and downtime prevention.',
+        'industry.manufacturing.problem': 'Manufacturing teams need stable filtration for process water, cooling loops, washdowns, utilities, and equipment that cannot afford unplanned downtime.',
+        'industry.manufacturing.risks': 'A saturated filter can reduce flow, increase energy use, stress pumps or valves, affect product consistency, and interrupt production schedules.',
+        'industry.manufacturing.helps': 'Tracks condition signals, maintenance cadence, pressure changes, asset criticality, and service documentation by production area.',
+        'industry.manufacturing.benefits': 'More predictable maintenance, lower downtime risk, better equipment protection, and traceability for quality or operations reviews.',
+        'industry.manufacturing.metric': 'Differential pressure, critical assets, downtime exposure, filter life, and corrective maintenance events.',
+        'industry.malls.title': 'Shopping Centers',
+        'industry.malls.summary': 'Tenant areas, food courts, public spaces, and shared maintenance visibility.',
+        'industry.malls.problem': 'Shopping centers manage filtration across food courts, tenant support areas, restrooms, mechanical rooms, fountains, and shared infrastructure.',
+        'industry.malls.risks': 'When records are fragmented, teams miss service windows, tenants report issues late, and small filtration problems become facility-wide work orders.',
+        'industry.malls.helps': 'Centralizes locations, assets, filter products, maintenance status, and vendor activity in a single operational view.',
+        'industry.malls.benefits': 'Better tenant support, fewer repeated issues, clearer preventive planning, and faster reporting for property management.',
+        'industry.malls.metric': 'Open alerts by zone, service history by tenant area, equipment status, and upcoming replacement windows.',
+        'industry.schools.title': 'Schools and Universities',
+        'industry.schools.summary': 'Campus-wide preventive maintenance and service traceability.',
+        'industry.schools.problem': 'Campuses have cafeterias, labs, athletics, dorms, fountains, kitchens, and mechanical spaces spread across many buildings.',
+        'industry.schools.risks': 'Deferred filter service can affect water quality, increase equipment wear, create audit gaps, and overwhelm small maintenance teams.',
+        'industry.schools.helps': 'Gives facilities teams one place to track filters, locations, inspections, notes, due dates, and completed work.',
+        'industry.schools.benefits': 'More organized preventive maintenance, easier budget planning, cleaner documentation, and fewer reactive tickets.',
+        'industry.schools.metric': 'Assets by building, due dates, work completed, filter age, and unresolved service risks.',
+        'industry.corporate.title': 'Corporate Buildings',
+        'industry.corporate.summary': 'Amenities, office kitchens, mechanical rooms, and maintenance handoffs.',
+        'industry.corporate.problem': 'Corporate buildings rely on filtration for coffee stations, ice, break rooms, kitchenettes, HVAC-related systems, and tenant amenities.',
+        'industry.corporate.risks': 'Inconsistent service records can lead to tenant complaints, repeated work orders, equipment wear, and unclear vendor accountability.',
+        'industry.corporate.helps': 'Keeps asset records, replacement windows, service notes, and vendor actions centralized for facilities teams.',
+        'industry.corporate.benefits': 'Cleaner operations, fewer surprises, better tenant experience, and easier oversight of preventive maintenance.',
+        'industry.corporate.metric': 'Tenant-area assets, upcoming replacements, open alerts, service history, and vendor response time.',
+        'industry.government.title': 'Government and Municipalities',
+        'industry.government.summary': 'Public assets, infrastructure risk, service evidence, and accountability.',
+        'industry.government.problem': 'Public buildings and municipal operations need reliable filtration records across facilities, utilities, parks, service centers, and community assets.',
+        'industry.government.risks': 'Aging infrastructure, missed maintenance, and paper records make it harder to prove service, prioritize replacements, and control water-related costs.',
+        'industry.government.helps': 'Creates a digital maintenance trail by asset and location, helping teams prioritize risk, document work, and review replacement needs.',
+        'industry.government.benefits': 'Better accountability, clearer budget planning, improved service continuity, and stronger visibility across distributed public assets.',
+        'industry.government.metric': 'Link local asset records to broader water concerns: leakage, pipe breaks, infrastructure backlog, and service response history.',
+        'industry.treatment.title': 'Water Treatment Plants',
+        'industry.treatment.summary': 'Pressure trends, lifecycle control, reporting, and preventive alerts.',
+        'industry.treatment.problem': 'Treatment facilities depend on filtration stages, pressure behavior, maintenance timing, and accurate records to keep operations stable.',
+        'industry.treatment.risks': 'Insufficient monitoring can create inefficient replacements, clogged filters, flow restrictions, compliance risk, and missed signs of performance decline.',
+        'industry.treatment.helps': 'Tracks PSI, differential pressure, filter lifecycle, alerts, maintenance logs, locations, and historical reports in one system.',
+        'industry.treatment.benefits': 'More reliable operations, better replacement timing, reduced waste, stronger documentation, and earlier detection of performance problems.',
+        'industry.treatment.metric': 'Differential pressure trend, filter life, service history, report output, and alert resolution time.',
+        'problem.label': 'Operational risk',
+        'problem.title': 'The problem nobody is monitoring.',
+        'problem.body1': 'Every day, thousands of industrial, commercial, and water treatment filters operate without adequate monitoring.',
+        'problem.body2': 'Many companies still replace filters by calendar instead of real condition, creating unnecessary expense and reducing operational efficiency.',
+        'problem.panelTitle': 'When a filter runs beyond its useful life, it can cause:',
+        'problem.risk1': 'Loss of water quality.',
+        'problem.risk2': 'Higher operating costs.',
+        'problem.risk3': 'Damage to equipment.',
+        'problem.risk4': 'Sanitary risks.',
+        'problem.risk5': 'Regulatory non-compliance.',
+        'problem.risk6': 'Unnecessary water consumption.',
+        'problem.risk7': 'Energy waste.',
+        'impact.label': 'Why it matters',
+        'impact.title': 'Why does it matter?',
+        'impact.body': 'Poor visibility around water systems turns small signals into expensive losses, wasted treated water, and preventable operational risk.',
+        'impact.stat1Text': 'water pipe breaks occur every year in the United States.',
+        'impact.stat2Text': 'of treated water is lost through distribution leaks.',
+        'impact.stat3Text': 'water losses are reported by some systems.',
+        'impact.stat4Text': 'in U.S. water infrastructure needs over the coming years.',
+        'impact.stat5Text': 'gallons of treated water are wasted annually because of aging infrastructure and insufficient monitoring.',
+        'impact.source': 'Context based on public EPA, ASCE, and U.S. congressional water infrastructure references.',
+        'water.label': 'Environmental impact',
+        'water.title': 'Every drop counts.',
+        'water.body1': 'Water is one of the most important resources on the planet.',
+        'water.body2': 'Filtration efficiency does not only protect equipment and operations; it also helps reduce waste, conserve resources, and improve organizational sustainability.',
+        'water.body3': 'FiltraCore helps companies make decisions based on real data to maximize filter life while maintaining the quality and safety of their processes.',
+        'monitoring.label': 'What FiltraCore tracks',
+        'monitoring.title': 'What FiltraCore monitors.',
+        'monitoring.body': 'A single operating layer for filter condition, equipment context, service history, and the signals that usually stay scattered.',
+        'monitoring.item1': 'PSI and differential pressure.',
+        'monitoring.item2': 'Filter useful life.',
+        'monitoring.item3': 'Maintenance history.',
+        'monitoring.item4': 'Preventive alerts.',
+        'monitoring.item5': 'Performance trends.',
+        'monitoring.item6': 'Operational compliance.',
+        'monitoring.item7': 'Equipment and locations.',
+        'monitoring.item8': 'Historical reports.',
+        'benefits.label': 'Operational value',
+        'benefits.title': 'Benefits for your operation.',
+        'benefits.body': 'FiltraCore connects maintenance discipline with financial, environmental, and compliance outcomes that managers can act on.',
+        'benefits.item1': 'Reduce operating costs.',
+        'benefits.item2': 'Avoid premature replacements.',
+        'benefits.item3': 'Detect problems before they happen.',
+        'benefits.item4': 'Protect critical equipment.',
+        'benefits.item5': 'Improve audits and inspections.',
+        'benefits.item6': 'Reduce water waste.',
+        'benefits.item7': 'Centralize real-time information.',
+        'benefits.item8': 'Make decisions easier.',
+        'shift.label': 'Smarter maintenance',
+        'shift.title': 'From reactive maintenance to intelligent maintenance.',
+        'shift.beforeLabel': 'Before',
+        'shift.before1': 'Changes by intuition.',
+        'shift.before2': 'Paper records.',
+        'shift.before3': 'Unexpected failures.',
+        'shift.before4': 'Scattered data.',
+        'shift.afterLabel': 'After',
+        'shift.after1': 'Real-time monitoring.',
+        'shift.after2': 'Centralized history.',
+        'shift.after3': 'Preventive alerts.',
+        'shift.after4': 'Data-based decisions.',
+        'print.docTitle': 'Operating brief',
+        'print.coverLabel': 'Operational intelligence',
+        'print.nextTitle': 'Access review path',
+        'cta.openLogin': 'Open Login',
+        'metrics.setupLabel': 'Asset management',
+        'metrics.setupValue': 'Machines mapped',
+        'metrics.setupText': 'Track brand, model, serial number, location, QR context, and machine health.',
+        'metrics.lifecycleLabel': 'Maintenance',
+        'metrics.lifecycleValue': 'Due soon visible',
+        'metrics.lifecycleText': 'Plan inspections, replacement cycles, technician logs, and service history.',
+        'metrics.controlsLabel': 'Inventory',
+        'metrics.controlsValue': 'Stock controlled',
+        'metrics.controlsText': 'Monitor filter stock, low inventory alerts, usage, and automatic deductions.',
+        'metrics.riskLabel': 'Procurement',
+        'metrics.riskValue': 'Supplier pricing',
+        'metrics.riskText': 'Compare vendors, price movement, suggested suppliers, and purchase orders.',
+        'sales.label': 'Why it sells',
+        'sales.title': 'Maintenance work stops living in notes, texts, spreadsheets, and memory.',
+        'sales.body': 'FiltraCore turns a messy back-of-house routine into a visible operating system for restaurants, hotels, casinos, beverage stations, ice machines, and facility teams that need proof of what was checked.',
+        'sales.card1Title': 'Assets stay tied to their exact location.',
+        'sales.card1Text': 'Teams can capture machines, equipment categories, brand, model, serial number, floor, zone, and QR context.',
+        'sales.card2Title': 'Managers see status, cost, and risk together.',
+        'sales.card2Text': 'Stock availability, supplier pricing, PSI, due dates, and maintenance history stay connected in the same workspace.',
+        'sales.card3Title': 'Reports and purchase decisions are ready for review.',
+        'sales.card3Text': 'Clean summaries help leadership understand what is installed, what is pending, what is low, and which supplier is most competitive.',
+        'mobile.label': 'Field workflow',
+        'mobile.title': 'A simpler path for the people doing the work.',
+        'mobile.body': 'The field routine stays direct: create the machine, confirm the filter product, install the filter, record PSI, and log maintenance while the desktop dashboard keeps the full operation organized.',
+        'mobile.step1Title': 'Add the machine',
+        'mobile.step1Text': 'Capture name, type, location, department, brand, model, and machine ID in one clean form.',
+        'mobile.step2Title': 'Install the filter',
+        'mobile.step2Text': 'Select the machine, choose the filter product, set lifespan, and create due dates from the phone.',
+        'mobile.step3Title': 'Monitor PSI',
+        'mobile.step3Text': 'Review active filters, update pressure readings, and flag watch items from the same mobile view.',
+        'mobile.step4Title': 'Log maintenance',
+        'mobile.step4Text': 'Record inspections, corrected PSI, notes, and replacement actions while the work is fresh.',
+        'system.label': 'Desktop command center',
+        'system.title': 'The full operation stays organized by module.',
+        'system.body': 'Supervisors can move through dashboard, machines, inventory, suppliers, filters, maintenance, smart import, reports, and accounts while every update stays tied to the selected restaurant or facility.',
+        'system.machinesLabel': 'Machines',
+        'system.machinesTitle': 'Register assets before assigning filters.',
+        'system.machinesText': 'Location, category, brand, model, serial number, QR, status, PSI, and installed filter stay tied to each machine.',
+        'system.inventoryLabel': 'Inventory + Suppliers',
+        'system.inventoryTitle': 'Connect stock, products, vendors, and cost.',
+        'system.inventoryText': 'Track reorder numbers, filter types, stock, low inventory alerts, supplier pricing, and purchase order preparation.',
+        'system.filtersLabel': 'Filters + Maintenance',
+        'system.filtersTitle': 'Monitor lifecycle, pressure, and service history.',
+        'system.filtersText': 'Due dates, days left, PSI range, watch status, inspections, technician logs, and replacements stay connected.',
+        'system.importLabel': 'Smart Import',
+        'system.importTitle': 'Turn existing sheets into structured records.',
+        'system.importText': 'Process PDFs, photos, spreadsheets, CSVs, and filter sheets to create machines, inventory, and filters faster.',
+        'system.galleryInventory': 'Inventory layer',
+        'system.galleryLifecycle': 'Lifecycle layer',
+        'system.galleryMaintenance': 'Maintenance layer',
+        'procurement.label': 'Supplier cost control',
+        'procurement.title': 'Procurement becomes part of the maintenance system.',
+        'procurement.body': 'Each inventory item can have multiple suppliers, current and previous prices, price movement, a recommended vendor, and an initial purchase order workflow.',
+        'procurement.card1Title': 'Multiple suppliers per product',
+        'procurement.card1Text': 'Compare Sysco, Restaurant Depot, Amazon Business, OEM vendors, or local suppliers against the same inventory item.',
+        'procurement.card2Title': 'Price tracking',
+        'procurement.card2Text': 'Monitor current price, last price, update date, movement percentage, and whether the product increased or decreased.',
+        'procurement.card3Title': 'Recommended supplier',
+        'procurement.card3Text': 'Surface the best price, cost difference, and supplier suggestion before purchasing decisions are made.',
+        'procurement.card4Title': 'Purchase orders',
+        'procurement.card4Text': 'Prepare draft, sent, received, and cancelled purchase order flows connected to inventory and supplier products.',
+        'import.label': 'Smart import system',
+        'import.title': 'From old filter sheets to live operational data.',
+        'import.body': 'FiltraCore can process photos, PDFs, spreadsheets, CSVs, and pasted sheets, then detect venue, machine, reorder number, filter type, and quantity before records are created.',
+        'import.card1Title': 'Venue detection',
+        'import.card1Text': 'Imported rows become separate restaurants, venues, facilities, or workspaces instead of one flat list.',
+        'import.card2Title': 'Machine generation',
+        'import.card2Text': 'The importer can create machines and link them to the correct location, type, and operational category.',
+        'import.card3Title': 'Filter records',
+        'import.card3Text': 'Reorder numbers, filter types, quantities, and vendor context become inventory and installed filter records.',
+        'import.card4Title': 'Review before applying',
+        'import.card4Text': 'Teams preview detected rows before creating records, keeping the import controlled and explainable.',
+        'intelligence.label': 'Executive intelligence',
+        'intelligence.title': 'Reports connect operational risk, maintenance, inventory, and supplier cost.',
+        'intelligence.body': 'FiltraCore turns operational data into a management view: asset health, pending maintenance, PSI analytics, upcoming replacements, stock readiness, supplier changes, cost exposure, and printable summaries.',
+        'intelligence.point1Title': 'Facility overview',
+        'intelligence.point1Text': 'Restaurants, venues, machines, installed filters, due dates, service windows, and review status.',
+        'intelligence.point2Title': 'Operational summary',
+        'intelligence.point2Text': 'Total machines, at-risk assets, PSI analytics, installed filters, low stock, and intelligence alerts.',
+        'intelligence.point3Title': 'Cost and maintenance output',
+        'intelligence.point3Text': 'Generate summaries that connect service history, supplier movement, purchasing needs, and leadership review.',
+        'buyer.label': 'What buyers understand fast',
+        'buyer.title': 'A cleaner operating layer for casinos, hotels, restaurants, and facilities.',
+        'buyer.body': 'The product story is simple: less guessing, faster documentation, smarter purchasing, and better visibility before filter, machine, or inventory issues affect guests or production.',
+        'buyer.card1Title': 'Protect service quality',
+        'buyer.card1Text': 'Keep PSI changes, filter age, and maintenance notes visible before flow problems show up at the station.',
+        'buyer.card2Title': 'Train teams faster',
+        'buyer.card2Text': 'The mobile workflow gives staff a clear path instead of asking them to remember a desktop process.',
+        'buyer.card3Title': 'Buy with cost context',
+        'buyer.card3Text': 'Supplier comparison, reorder context, stock readiness, and installed filter data help purchasing act with better timing.',
+        'buyer.card4Title': 'Show the work',
+        'buyer.card4Text': 'Maintenance history and printable summaries make it easier to review the operation with owners or managers.',
+        'ops.label': 'Food service operations',
+        'ops.title': 'Built around preventive maintenance discipline.',
+        'ops.body': 'FiltraCore supports daily routines inspired by preventive maintenance, stock readiness habits, traceable service logs, and procurement discipline. It is designed to help teams document work consistently before small issues become expensive downtime.',
+        'ops.card1Title': 'PSI monitoring',
+        'ops.card1Text': 'Record baseline and corrected pressure readings so changing flow conditions are visible.',
+        'ops.card2Title': 'Filter lifecycle',
+        'ops.card2Text': 'Track installation dates, due dates, lifespan months, and days left by machine.',
+        'ops.card3Title': 'Traceability logs',
+        'ops.card3Text': 'Keep maintenance type, notes, technician action, and filter replacement context in one record trail.',
+        'ops.card4Title': 'Cost readiness',
+        'ops.card4Text': 'Connect available stock, reorder context, supplier prices, and installed filters so purchasing has better visibility.',
+        'finalCta.title': 'Ready to stop managing filters by guesswork?',
+        'finalCta.body': 'Open FiltraCore and see how real condition data can protect water quality, reduce waste, and keep maintenance ahead of costly failures.',
+        'finalCta.step1': 'Monitor PSI',
+        'finalCta.step2': 'Review filter life',
+        'finalCta.step3': 'Act before failure',
+        'footer.rights': '\u00a9 2026 Bastida Systems. All rights reserved.',
+      },
+      es: {
+        'meta.title': 'FiltraCore | Bastida Systems',
+        'nav.language': 'Idioma',
+        'nav.languageSelector': 'Selector de idioma',
+        'nav.products': 'Proyectos',
+        'nav.websites': 'Sitios Web',
+        'nav.systems': 'Sistemas',
+        'nav.about': 'Acerca',
+        'nav.portal': 'Portal de Clientes',
+        'nav.contact': 'Contacto',
+        'nav.privacy': 'Privacidad',
+        'hero.brandSystem': 'Inteligencia de monitoreo de filtros',
+        'hero.titleDesktop': 'Deja de operar filtros a ciegas.<br>Protege el agua.<br>Controla costos.',
+        'hero.titleMobile': 'Deja de operar filtros a ciegas. Protege el agua. Controla costos.',
+        'hero.lede': 'Cada filtro vencido puede afectar la calidad del agua, incrementar costos operativos, danar equipos, desperdiciar energia y dejar al equipo reaccionando cuando el problema ya es caro.',
+        'hero.slogan': 'FiltraCore convierte condicion del filtro, PSI, historial de mantenimiento y alertas en decisiones basadas en datos reales.',
+        'hero.seeMobileUpdate': 'Ver industrias',
+        'hero.proof1': 'Calidad del agua',
+        'hero.proof2': 'Riesgo de costo',
+        'hero.proof3': 'Alertas preventivas',
+        'hero.proof4': 'Datos reales',
+        'industries.label': 'Aplicación por industria',
+        'industries.title': '¿Tu industria enfrenta problemas de filtración?',
+        'industries.body': 'Descubre cómo FiltraCore ayuda a reducir costos, prevenir fallas y mantener la calidad del agua en distintos sectores.',
+        'industries.problemLabel': 'Problema principal',
+        'industries.risksLabel': 'Riesgos',
+        'industries.helpsLabel': 'Cómo ayuda FiltraCore',
+        'industries.benefitsLabel': 'Beneficios',
+        'industries.metricLabel': 'Métrica clave',
+        'industries.notSeenTitle': '¿No ves tu industria?',
+        'industries.notSeenBody': 'FiltraCore puede adaptarse a cualquier operación que dependa de sistemas de filtración, agua o mantenimiento preventivo.',
+        'industries.demoCta': 'Solicitar una demostración',
+        'industry.casinos.title': 'Casinos',
+        'industry.casinos.summary': 'Bebidas, hielo, cocinas y equipos de servicio al cliente de alto volumen.',
+        'industry.casinos.problem': 'Los casinos dependen de agua filtrada constante en bares, restaurantes, máquinas de hielo, estaciones de bebida y equipos back-of-house.',
+        'industry.casinos.risks': 'Un monitoreo deficiente puede generar problemas de sabor, acumulación mineral, paros de máquinas, registros inconsistentes y más mantenimiento de emergencia.',
+        'industry.casinos.helps': 'Mapea cada máquina por ubicación, monitorea PSI y vida útil del filtro, centraliza historial de mantenimiento y envía alertas preventivas antes de afectar el servicio.',
+        'industry.casinos.benefits': 'Mejor experiencia del huésped, menos fallas inesperadas, mayor visibilidad para ingeniería y documentación limpia para operaciones multi-venue.',
+        'industry.casinos.metric': 'Filtros por estación, rango PSI, días restantes, eventos de servicio y nivel de riesgo del equipo.',
+        'industry.hospitals.title': 'Hospitales',
+        'industry.hospitals.summary': 'Calidad operativa del agua, documentación y mantenimiento preventivo.',
+        'industry.hospitals.problem': 'Los hospitales necesitan agua filtrada confiable para cocinas, hielo, laboratorios, áreas de apoyo a esterilización, sistemas mecánicos y servicios de atención.',
+        'industry.hospitals.risks': 'Cambios de filtro omitidos pueden crear preocupaciones de calidad, sarro, esfuerzo en equipos, brechas documentales y acciones correctivas tardías.',
+        'industry.hospitals.helps': 'Crea un historial trazable por activo, ubicación, técnico, lectura PSI, edad del filtro y acción correctiva.',
+        'industry.hospitals.benefits': 'Mantenimiento preventivo más fuerte, inspecciones más claras, mejor control operativo y visibilidad rápida cuando un filtro o activo requiere atención.',
+        'industry.hospitals.metric': 'Edad del filtro, presión diferencial, alertas abiertas, servicios completados y evidencia lista para auditoría.',
+        'industry.restaurants.title': 'Restaurantes',
+        'industry.restaurants.summary': 'Sabor del agua, calidad del hielo, protección de equipos y timing de reemplazo.',
+        'industry.restaurants.problem': 'Los restaurantes dependen de la filtración para café, hielo, soda, equipos de vapor, áreas de lavado y calidad de alimentos y bebidas.',
+        'industry.restaurants.risks': 'Cambiar por calendario puede desperdiciar dinero, mientras que cambiar tarde puede afectar sabor, flujo, equipos y provocar llamadas urgentes.',
+        'industry.restaurants.helps': 'Monitorea filtros instalados, lecturas PSI, stock, contexto de proveedor, fechas de cambio y notas de servicio desde desktop o móvil.',
+        'industry.restaurants.benefits': 'Menos desperdicio por reemplazos prematuros, menos fallas, agua más consistente y registros claros para dueños, managers y técnicos.',
+        'industry.restaurants.metric': 'Costo por filtro, vida útil restante, alertas de bajo stock, tendencia PSI y logs de mantenimiento completados.',
+        'industry.hotels.title': 'Hoteles',
+        'industry.hotels.summary': 'Equipos de toda la propiedad, amenidades, cocinas, lavandería e historial de servicio.',
+        'industry.hotels.problem': 'Los hoteles operan muchas áreas dependientes de filtración: cocinas, bares, hielo, lavandería, spas, salones y amenidades para huéspedes.',
+        'industry.hotels.risks': 'El mantenimiento desconectado puede generar quejas de huéspedes, desgaste de equipos, llamadas repetidas y poca claridad entre turnos o departamentos.',
+        'industry.hotels.helps': 'Organiza cada activo por edificio, piso, zona, departamento, producto de filtro y estado de mantenimiento.',
+        'industry.hotels.benefits': 'Calidad de servicio consistente, menos sorpresas, handoffs más rápidos y un historial centralizado para ingeniería y gerencia.',
+        'industry.hotels.metric': 'Filtros próximos a vencer, equipos por ubicación, servicio completado, cambios PSI y patrones de problemas repetidos.',
+        'industry.manufacturing.title': 'Manufactura',
+        'industry.manufacturing.summary': 'Confiabilidad de proceso, protección de equipos y prevención de downtime.',
+        'industry.manufacturing.problem': 'Manufactura necesita filtración estable para agua de proceso, loops de enfriamiento, lavado, utilidades y equipos que no pueden detenerse sin costo.',
+        'industry.manufacturing.risks': 'Un filtro saturado puede reducir flujo, aumentar consumo de energía, forzar bombas o válvulas, afectar consistencia y detener producción.',
+        'industry.manufacturing.helps': 'Monitorea señales de condición, cadencia de mantenimiento, cambios de presión, criticidad del activo y documentación por área de producción.',
+        'industry.manufacturing.benefits': 'Mantenimiento más predecible, menor riesgo de downtime, mejor protección de equipos y trazabilidad para revisiones de calidad u operaciones.',
+        'industry.manufacturing.metric': 'Presión diferencial, activos críticos, exposición a downtime, vida útil del filtro y eventos correctivos.',
+        'industry.malls.title': 'Centros Comerciales',
+        'industry.malls.summary': 'Áreas de tenants, food courts, espacios públicos y visibilidad compartida de mantenimiento.',
+        'industry.malls.problem': 'Los centros comerciales manejan filtración en food courts, áreas de apoyo a tenants, baños, cuartos mecánicos, fuentes e infraestructura compartida.',
+        'industry.malls.risks': 'Cuando los registros están fragmentados, se pierden ventanas de servicio, los tenants reportan tarde y pequeños problemas se vuelven órdenes de trabajo grandes.',
+        'industry.malls.helps': 'Centraliza ubicaciones, activos, productos de filtro, estado de mantenimiento y actividad de proveedores en una sola vista operativa.',
+        'industry.malls.benefits': 'Mejor soporte a tenants, menos problemas repetidos, planeación preventiva más clara y reportes más rápidos para property management.',
+        'industry.malls.metric': 'Alertas abiertas por zona, historial por área de tenant, estado de equipos y próximas ventanas de reemplazo.',
+        'industry.schools.title': 'Escuelas y Universidades',
+        'industry.schools.summary': 'Mantenimiento preventivo de campus y trazabilidad de servicio.',
+        'industry.schools.problem': 'Los campus tienen cafeterías, laboratorios, gimnasios, dormitorios, bebederos, cocinas y áreas mecánicas distribuidas en muchos edificios.',
+        'industry.schools.risks': 'El servicio diferido de filtros puede afectar calidad del agua, aumentar desgaste de equipos, crear brechas de auditoría y saturar equipos pequeños.',
+        'industry.schools.helps': 'Da a facilities un solo lugar para rastrear filtros, ubicaciones, inspecciones, notas, fechas de cambio y trabajo completado.',
+        'industry.schools.benefits': 'Mantenimiento preventivo más ordenado, mejor planeación de presupuesto, documentación clara y menos tickets reactivos.',
+        'industry.schools.metric': 'Activos por edificio, fechas de cambio, trabajo completado, edad del filtro y riesgos de servicio sin resolver.',
+        'industry.corporate.title': 'Edificios Corporativos',
+        'industry.corporate.summary': 'Amenidades, cocinas de oficina, cuartos mecánicos y handoffs de mantenimiento.',
+        'industry.corporate.problem': 'Los edificios corporativos dependen de filtración en estaciones de café, hielo, break rooms, cocinetas, sistemas relacionados a HVAC y amenidades.',
+        'industry.corporate.risks': 'Registros inconsistentes pueden causar quejas de tenants, órdenes repetidas, desgaste de equipos y poca claridad sobre proveedores.',
+        'industry.corporate.helps': 'Mantiene activos, ventanas de reemplazo, notas de servicio y acciones de proveedor centralizadas para equipos de facilities.',
+        'industry.corporate.benefits': 'Operación más limpia, menos sorpresas, mejor experiencia de tenants y supervisión más fácil del mantenimiento preventivo.',
+        'industry.corporate.metric': 'Activos por área de tenant, próximos reemplazos, alertas abiertas, historial de servicio y tiempo de respuesta de proveedor.',
+        'industry.government.title': 'Gobierno y Municipios',
+        'industry.government.summary': 'Activos públicos, riesgo de infraestructura, evidencia de servicio y rendición de cuentas.',
+        'industry.government.problem': 'Edificios públicos y operaciones municipales necesitan registros confiables de filtración en facilities, utilidades, parques, centros de servicio y activos comunitarios.',
+        'industry.government.risks': 'Infraestructura envejecida, mantenimiento omitido y registros en papel dificultan probar servicio, priorizar reemplazos y controlar costos relacionados con agua.',
+        'industry.government.helps': 'Crea una bitácora digital por activo y ubicación para priorizar riesgo, documentar trabajo y revisar necesidades de reemplazo.',
+        'industry.government.benefits': 'Mayor rendición de cuentas, mejor planeación presupuestaria, continuidad de servicio y visibilidad sobre activos públicos distribuidos.',
+        'industry.government.metric': 'Conecta registros locales con riesgos mayores: fugas, rupturas, backlog de infraestructura e historial de respuesta.',
+        'industry.treatment.title': 'Plantas de Tratamiento de Agua',
+        'industry.treatment.summary': 'Tendencias de presión, control de vida útil, reportes y alertas preventivas.',
+        'industry.treatment.problem': 'Las plantas de tratamiento dependen de etapas de filtración, comportamiento de presión, timing de mantenimiento y registros precisos para operar estables.',
+        'industry.treatment.risks': 'Monitoreo insuficiente puede generar reemplazos ineficientes, filtros obstruidos, restricciones de flujo, riesgo de cumplimiento y señales perdidas de bajo rendimiento.',
+        'industry.treatment.helps': 'Monitorea PSI, presión diferencial, vida útil del filtro, alertas, logs de mantenimiento, ubicaciones y reportes históricos en un solo sistema.',
+        'industry.treatment.benefits': 'Operación más confiable, mejor timing de reemplazo, menos desperdicio, documentación sólida y detección temprana de problemas de rendimiento.',
+        'industry.treatment.metric': 'Tendencia de presión diferencial, vida útil, historial de servicio, reportes y tiempo de resolución de alertas.',
+        'problem.label': 'Riesgo operativo',
+        'problem.title': 'El problema que nadie esta monitoreando.',
+        'problem.body1': 'Cada dia miles de filtros industriales, comerciales y de tratamiento de agua operan sin un monitoreo adecuado.',
+        'problem.body2': 'Muchas empresas continuan reemplazando filtros por calendario en lugar de hacerlo segun su condicion real, generando gastos innecesarios y reduciendo la eficiencia operativa.',
+        'problem.panelTitle': 'Cuando un filtro se utiliza mas alla de su vida util puede provocar:',
+        'problem.risk1': 'Perdida de calidad del agua.',
+        'problem.risk2': 'Incremento en costos operativos.',
+        'problem.risk3': 'Daños a equipos.',
+        'problem.risk4': 'Riesgos sanitarios.',
+        'problem.risk5': 'Incumplimiento de normativas.',
+        'problem.risk6': 'Consumo innecesario de agua.',
+        'problem.risk7': 'Desperdicio de energia.',
+        'impact.label': 'Por que importa',
+        'impact.title': 'Por que importa?',
+        'impact.body': 'La baja visibilidad en sistemas de agua convierte señales pequeñas en perdidas costosas, agua tratada desperdiciada y riesgo operativo prevenible.',
+        'impact.stat1Text': 'rupturas de tuberias de agua ocurren cada año en Estados Unidos.',
+        'impact.stat2Text': 'del agua tratada se pierde por fugas en sistemas de distribucion.',
+        'impact.stat3Text': 'de perdidas se reportan en algunos sistemas.',
+        'impact.stat4Text': 'en necesidades de infraestructura de agua en Estados Unidos durante los proximos años.',
+        'impact.stat5Text': 'galones de agua tratada se desperdician anualmente por infraestructura envejecida y monitoreo insuficiente.',
+        'impact.source': 'Contexto basado en referencias publicas de EPA, ASCE y el Congreso de Estados Unidos sobre infraestructura hidrica.',
+        'water.label': 'Impacto ambiental',
+        'water.title': 'Cada gota cuenta.',
+        'water.body1': 'El agua es uno de los recursos mas importantes del planeta.',
+        'water.body2': 'La eficiencia en la filtracion no solo protege equipos y operaciones; tambien ayuda a reducir desperdicios, conservar recursos y mejorar la sostenibilidad de las organizaciones.',
+        'water.body3': 'FiltraCore ayuda a las empresas a tomar decisiones basadas en datos reales para maximizar la vida util de sus filtros mientras mantienen la calidad y seguridad de sus procesos.',
+        'monitoring.label': 'Lo que FiltraCore rastrea',
+        'monitoring.title': 'Lo que FiltraCore monitorea.',
+        'monitoring.body': 'Una sola capa operativa para condicion del filtro, contexto del equipo, historial de servicio y señales que normalmente quedan dispersas.',
+        'monitoring.item1': 'PSI y presion diferencial.',
+        'monitoring.item2': 'Vida util del filtro.',
+        'monitoring.item3': 'Historial de mantenimiento.',
+        'monitoring.item4': 'Alertas preventivas.',
+        'monitoring.item5': 'Tendencias de rendimiento.',
+        'monitoring.item6': 'Cumplimiento operacional.',
+        'monitoring.item7': 'Equipos y ubicaciones.',
+        'monitoring.item8': 'Reportes historicos.',
+        'benefits.label': 'Valor operativo',
+        'benefits.title': 'Beneficios para tu operacion.',
+        'benefits.body': 'FiltraCore conecta disciplina de mantenimiento con resultados financieros, ambientales y de cumplimiento que los managers pueden accionar.',
+        'benefits.item1': 'Reduce costos operativos.',
+        'benefits.item2': 'Evita reemplazos prematuros.',
+        'benefits.item3': 'Detecta problemas antes de que ocurran.',
+        'benefits.item4': 'Protege equipos criticos.',
+        'benefits.item5': 'Mejora auditorias e inspecciones.',
+        'benefits.item6': 'Reduce desperdicio de agua.',
+        'benefits.item7': 'Centraliza informacion en tiempo real.',
+        'benefits.item8': 'Facilita la toma de decisiones.',
+        'shift.label': 'Mantenimiento inteligente',
+        'shift.title': 'De mantenimiento reactivo a mantenimiento inteligente.',
+        'shift.beforeLabel': 'Antes',
+        'shift.before1': 'Cambios por intuicion.',
+        'shift.before2': 'Registros en papel.',
+        'shift.before3': 'Fallas inesperadas.',
+        'shift.before4': 'Datos dispersos.',
+        'shift.afterLabel': 'Despues',
+        'shift.after1': 'Monitoreo en tiempo real.',
+        'shift.after2': 'Historial centralizado.',
+        'shift.after3': 'Alertas preventivas.',
+        'shift.after4': 'Decisiones basadas en datos.',
+        'print.docTitle': 'Resumen operativo',
+        'print.coverLabel': 'Inteligencia operativa',
+        'print.nextTitle': 'Ruta de revision de acceso',
+        'cta.openLogin': 'Abrir login',
+        'metrics.setupLabel': 'Activos',
+        'metrics.setupValue': 'Maquinas mapeadas',
+        'metrics.setupText': 'Controla marca, modelo, numero de serie, ubicacion, QR y salud de maquina.',
+        'metrics.lifecycleLabel': 'Mantenimiento',
+        'metrics.lifecycleValue': 'Proximos visibles',
+        'metrics.lifecycleText': 'Planea inspecciones, ciclos de reemplazo, logs tecnicos e historial de servicio.',
+        'metrics.controlsLabel': 'Inventario',
+        'metrics.controlsValue': 'Stock controlado',
+        'metrics.controlsText': 'Monitorea stock de filtros, alertas bajas, uso y deducciones automaticas.',
+        'metrics.riskLabel': 'Compras',
+        'metrics.riskValue': 'Precios proveedor',
+        'metrics.riskText': 'Compara proveedores, cambios de precio, sugerencias y ordenes de compra.',
+        'sales.label': 'Por que vende',
+        'sales.title': 'El mantenimiento deja de vivir en notas, mensajes, hojas y memoria.',
+        'sales.body': 'FiltraCore convierte una rutina desordenada de back-of-house en un sistema operativo visible para restaurantes, hoteles, casinos, estaciones de bebida, maquinas de hielo y equipos de facilities que necesitan prueba de lo revisado.',
+        'sales.card1Title': 'Los activos quedan conectados a su ubicacion exacta.',
+        'sales.card1Text': 'Los equipos pueden capturar maquinas, categorias, marca, modelo, numero de serie, piso, zona y contexto QR.',
+        'sales.card2Title': 'Los managers ven estado, costo y riesgo juntos.',
+        'sales.card2Text': 'Disponibilidad de stock, precios de proveedor, PSI, fechas de cambio e historial de mantenimiento quedan conectados en el mismo workspace.',
+        'sales.card3Title': 'Reportes y decisiones de compra quedan listos.',
+        'sales.card3Text': 'Los resumenes limpios ayudan a entender que esta instalado, que esta pendiente, que esta bajo y que proveedor conviene mas.',
+        'mobile.label': 'Flujo de campo',
+        'mobile.title': 'Un camino mas simple para quienes hacen el trabajo.',
+        'mobile.body': 'La rutina de campo se mantiene directa: crear la maquina, confirmar el producto de filtro, instalar el filtro, registrar PSI y documentar mantenimiento mientras el dashboard desktop organiza toda la operacion.',
+        'mobile.step1Title': 'Agregar maquina',
+        'mobile.step1Text': 'Captura nombre, tipo, ubicacion, departamento, marca, modelo e ID de maquina en un formulario limpio.',
+        'mobile.step2Title': 'Instalar filtro',
+        'mobile.step2Text': 'Selecciona la maquina, elige el producto de filtro, define vida util y crea fechas de cambio desde el celular.',
+        'mobile.step3Title': 'Monitorear PSI',
+        'mobile.step3Text': 'Revisa filtros activos, actualiza lecturas de presion y marca elementos en vigilancia desde la misma vista movil.',
+        'mobile.step4Title': 'Registrar mantenimiento',
+        'mobile.step4Text': 'Documenta inspecciones, PSI corregido, notas y reemplazos mientras el trabajo esta fresco.',
+        'system.label': 'Centro de control desktop',
+        'system.title': 'Toda la operacion queda organizada por modulo.',
+        'system.body': 'Los supervisores pueden revisar dashboard, maquinas, inventario, proveedores, filtros, mantenimiento, importacion inteligente, reportes y cuentas mientras cada cambio queda conectado al restaurante o facility seleccionado.',
+        'system.machinesLabel': 'Maquinas',
+        'system.machinesTitle': 'Registra activos antes de asignar filtros.',
+        'system.machinesText': 'Ubicacion, categoria, marca, modelo, numero de serie, QR, estado, PSI y filtro instalado quedan conectados a cada maquina.',
+        'system.inventoryLabel': 'Inventario + Proveedores',
+        'system.inventoryTitle': 'Conecta stock, productos, proveedores y costo.',
+        'system.inventoryText': 'Controla numeros de reorden, tipos de filtro, stock, alertas bajas, precios de proveedor y preparacion de ordenes.',
+        'system.filtersLabel': 'Filtros + Mantenimiento',
+        'system.filtersTitle': 'Monitorea ciclo de vida, presion e historial.',
+        'system.filtersText': 'Fechas de cambio, dias restantes, rango PSI, vigilancia, inspecciones, logs tecnicos y reemplazos quedan conectados.',
+        'system.importLabel': 'Importacion inteligente',
+        'system.importTitle': 'Convierte hojas existentes en registros estructurados.',
+        'system.importText': 'Procesa PDFs, fotos, hojas de calculo, CSVs y sheets de filtros para crear maquinas, inventario y filtros mas rapido.',
+        'system.galleryInventory': 'Capa de inventario',
+        'system.galleryLifecycle': 'Capa de ciclo de vida',
+        'system.galleryMaintenance': 'Capa de mantenimiento',
+        'procurement.label': 'Control de proveedores',
+        'procurement.title': 'Compras se vuelve parte del sistema de mantenimiento.',
+        'procurement.body': 'Cada item de inventario puede tener multiples proveedores, precio actual y anterior, movimiento de precio, proveedor recomendado y flujo inicial de ordenes de compra.',
+        'procurement.card1Title': 'Multiples proveedores por producto',
+        'procurement.card1Text': 'Compara Sysco, Restaurant Depot, Amazon Business, proveedores OEM o locales contra el mismo item de inventario.',
+        'procurement.card2Title': 'Historial de precios',
+        'procurement.card2Text': 'Monitorea precio actual, ultimo precio, fecha de actualizacion, variacion porcentual y si el producto subio o bajo.',
+        'procurement.card3Title': 'Proveedor recomendado',
+        'procurement.card3Text': 'Muestra mejor precio, diferencia de costo y sugerencia de proveedor antes de decidir compras.',
+        'procurement.card4Title': 'Ordenes de compra',
+        'procurement.card4Text': 'Prepara flujos draft, sent, received y cancelled conectados al inventario y productos de proveedor.',
+        'import.label': 'Importacion inteligente',
+        'import.title': 'De hojas viejas de filtros a datos operativos vivos.',
+        'import.body': 'FiltraCore puede procesar fotos, PDFs, hojas de calculo, CSVs y hojas pegadas, detectar venue, maquina, reorden, tipo de filtro y cantidad antes de crear registros.',
+        'import.card1Title': 'Deteccion de venue',
+        'import.card1Text': 'Las filas importadas se vuelven restaurantes, venues, facilities o workspaces separados en vez de una lista plana.',
+        'import.card2Title': 'Generacion de maquinas',
+        'import.card2Text': 'El importador puede crear maquinas y conectarlas con la ubicacion, tipo y categoria operativa correcta.',
+        'import.card3Title': 'Registros de filtros',
+        'import.card3Text': 'Numeros de reorden, tipos de filtro, cantidades y contexto de proveedor se vuelven inventario y filtros instalados.',
+        'import.card4Title': 'Revision antes de aplicar',
+        'import.card4Text': 'Los equipos revisan las filas detectadas antes de crear registros para mantener la importacion controlada y explicable.',
+        'intelligence.label': 'Inteligencia ejecutiva',
+        'intelligence.title': 'Los reportes conectan riesgo operativo, mantenimiento, inventario y costo.',
+        'intelligence.body': 'FiltraCore convierte datos operativos en una vista de gestion: salud de activos, mantenimiento pendiente, analitica PSI, proximos reemplazos, stock listo, cambios de proveedor, exposicion de costo y resumenes imprimibles.',
+        'intelligence.point1Title': 'Vista de facility',
+        'intelligence.point1Text': 'Restaurantes, venues, maquinas, filtros instalados, fechas de cambio, ventanas de servicio y revision.',
+        'intelligence.point2Title': 'Resumen operativo',
+        'intelligence.point2Text': 'Total de maquinas, activos en riesgo, analitica PSI, filtros instalados, bajo stock y alertas inteligentes.',
+        'intelligence.point3Title': 'Salida de costo y mantenimiento',
+        'intelligence.point3Text': 'Genera resumenes que conectan historial de servicio, movimiento de proveedor, compras necesarias y revision directiva.',
+        'buyer.label': 'Lo que el cliente entiende rapido',
+        'buyer.title': 'Una capa operativa mas clara para casinos, hoteles, restaurantes y facilities.',
+        'buyer.body': 'La historia del producto es simple: menos adivinanza, documentacion mas rapida, compras mas inteligentes y mejor visibilidad antes de que filtros, maquinas o inventario afecten a invitados o produccion.',
+        'buyer.card1Title': 'Protege la calidad del servicio',
+        'buyer.card1Text': 'Mantiene cambios de PSI, edad del filtro y notas de mantenimiento visibles antes de que los problemas de flujo lleguen a la estacion.',
+        'buyer.card2Title': 'Entrena equipos mas rapido',
+        'buyer.card2Text': 'El flujo movil le da al staff un camino claro sin obligarlos a recordar un proceso de escritorio.',
+        'buyer.card3Title': 'Compra con contexto de costo',
+        'buyer.card3Text': 'Comparacion de proveedores, contexto de reorden, stock listo y filtros instalados ayudan a comprar con mejor tiempo.',
+        'buyer.card4Title': 'Muestra el trabajo',
+        'buyer.card4Text': 'El historial de mantenimiento y los resumenes imprimibles facilitan revisar la operacion con duenos o managers.',
+        'ops.label': 'Operaciones de food service',
+        'ops.title': 'Creado alrededor de disciplina de mantenimiento preventivo.',
+        'ops.body': 'FiltraCore apoya rutinas diarias inspiradas en mantenimiento preventivo, habitos de stock listo, bitacoras trazables de servicio y disciplina de compras. Esta pensado para documentar el trabajo de forma consistente antes de que pequenos problemas se vuelvan tiempo muerto costoso.',
+        'ops.card1Title': 'Monitoreo PSI',
+        'ops.card1Text': 'Registra presion base y corregida para detectar cambios en el flujo.',
+        'ops.card2Title': 'Ciclo de vida del filtro',
+        'ops.card2Text': 'Controla fecha de instalacion, fecha de cambio, meses de vida util y dias restantes por maquina.',
+        'ops.card3Title': 'Bitacoras trazables',
+        'ops.card3Text': 'Guarda tipo de mantenimiento, notas, accion del tecnico y contexto de reemplazo en un historial.',
+        'ops.card4Title': 'Costos listos',
+        'ops.card4Text': 'Conecta stock disponible, contexto de reorden, precios de proveedor y filtros instalados para dar mejor visibilidad a compras.',
+        'finalCta.title': 'Listo para dejar de manejar filtros por intuicion?',
+        'finalCta.body': 'Abre FiltraCore y mira como los datos reales de condicion pueden proteger la calidad del agua, reducir desperdicio y anticipar fallas costosas.',
+        'finalCta.step1': 'Monitorear PSI',
+        'finalCta.step2': 'Revisar vida util',
+        'finalCta.step3': 'Actuar antes de fallar',
+        'footer.rights': '\u00a9 2026 Bastida Systems. Todos los derechos reservados.',
+      }
+    };
+
+    const translate = key => {
+      const table = filtraTranslations[activeLanguage] || filtraTranslations.en;
+      return table[key] || filtraTranslations.en[key] || '';
+    };
+    let activeLanguage = localStorage.getItem('filtracore-language') || (navigator.language.startsWith('es') ? 'es' : 'en');
+
+    if (!filtraTranslations[activeLanguage]) {
+      activeLanguage = 'en';
+    }
+
+    const setupLanguagePicker = () => {
+      const nav = document.querySelector('#site-header nav');
+      if (!nav) return false;
+      if (nav.dataset.filtracoreLanguageReady === 'true') return true;
+
+      nav.querySelector('a[href="index.html#products"]')?.setAttribute('data-i18n', 'nav.products');
+      nav.querySelector('a[href="websites.html"]')?.setAttribute('data-i18n', 'nav.websites');
+      nav.querySelector('a[href="systems.html"]')?.setAttribute('data-i18n', 'nav.systems');
+      nav.querySelector('a[href="about.html"]')?.setAttribute('data-i18n', 'nav.about');
+      nav.querySelector('a[href="portal.html"]')?.setAttribute('data-i18n', 'nav.portal');
+      nav.querySelector('a[href="index.html#contact"]')?.setAttribute('data-i18n', 'nav.contact');
+
+      const links = nav.querySelector('div:last-child');
+      if (!links) return false;
+
+      let select = document.getElementById('filtracore-language-select') || document.getElementById('language-select');
+
+      if (!select) {
+        links.insertAdjacentHTML('beforeend', `
+          <label class="fc-language-picker">
+            <span data-i18n="nav.language">Language</span>
+            <select id="filtracore-language-select" aria-label="Language selector" data-i18n-aria-label="nav.languageSelector">
+              <option value="en">EN</option>
+              <option value="es">ES</option>
+            </select>
+          </label>
+        `);
+        select = document.getElementById('filtracore-language-select');
+      } else {
+        select.id = 'filtracore-language-select';
+        select.closest('label')?.classList.add('fc-language-picker');
+      }
+
+      select.value = activeLanguage;
+      select.addEventListener('change', event => {
+        applyLanguage(event.target.value);
+      });
+      nav.dataset.filtracoreLanguageReady = 'true';
+
+      return true;
+    };
+
+    const applyLanguage = language => {
+      activeLanguage = filtraTranslations[language] ? language : 'en';
+      document.documentElement.lang = activeLanguage;
+      document.title = translate('meta.title');
+      localStorage.setItem('filtracore-language', activeLanguage);
+
+      document.querySelectorAll('[data-i18n]').forEach(element => {
+        element.textContent = translate(element.dataset.i18n);
+      });
+
+      document.querySelectorAll('[data-i18n-html]').forEach(element => {
+        element.innerHTML = translate(element.dataset.i18nHtml);
+      });
+
+      document.querySelectorAll('[data-i18n-aria-label]').forEach(element => {
+        element.setAttribute('aria-label', translate(element.dataset.i18nAriaLabel));
+      });
+
+      const select = document.getElementById('filtracore-language-select');
+      if (select) select.value = activeLanguage;
+
+      requestAnimationFrame(refreshIndustryAccordion);
+    };
+
+    const setCounterValue = (element, value) => {
+      const rounded = Math.round(value);
+      const formatted = element.dataset.counterFormat === 'comma'
+        ? rounded.toLocaleString('en-US')
+        : String(rounded);
+      element.textContent = `${element.dataset.counterPrefix || ''}${formatted}${element.dataset.counterSuffix || ''}`;
+    };
+
+    const runCounter = element => {
+      if (element.dataset.counterAnimated === 'true') return;
+      element.dataset.counterAnimated = 'true';
+
+      const target = Number(element.dataset.counterTarget || 0);
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (reduceMotion || !Number.isFinite(target)) {
+        setCounterValue(element, target);
+        return;
+      }
+
+      const duration = 1200;
+      const start = performance.now();
+
+      const tick = now => {
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        setCounterValue(element, target * eased);
+
+        if (progress < 1) requestAnimationFrame(tick);
+      };
+
+      requestAnimationFrame(tick);
+    };
+
+    const initCounters = () => {
+      const counters = document.querySelectorAll('[data-counter-target]');
+      if (!counters.length) return;
+
+      if (!('IntersectionObserver' in window)) {
+        counters.forEach(runCounter);
+        return;
+      }
+
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          runCounter(entry.target);
+          observer.unobserve(entry.target);
+        });
+      }, { threshold: 0.35 });
+
+      counters.forEach(counter => observer.observe(counter));
+    };
+
+    const refreshIndustryAccordion = () => {
+      document.querySelectorAll('.fc-industry-card.is-open .fc-industry-panel').forEach(panel => {
+        panel.style.maxHeight = `${panel.scrollHeight}px`;
+      });
+    };
+
+    const initIndustryAccordion = () => {
+      const root = document.querySelector('[data-industry-accordion]');
+      if (!root) return;
+
+      const cards = Array.from(root.querySelectorAll('.fc-industry-card'));
+      if (!cards.length) return;
+
+      const setOpenCard = activeCard => {
+        cards.forEach(card => {
+          const button = card.querySelector('.fc-industry-trigger');
+          const panel = card.querySelector('.fc-industry-panel');
+          const isOpen = card === activeCard;
+
+          card.classList.toggle('is-open', isOpen);
+          button?.setAttribute('aria-expanded', String(isOpen));
+          if (panel) panel.style.maxHeight = isOpen ? `${panel.scrollHeight}px` : '0px';
+        });
+      };
+
+      cards.forEach(card => {
+        const button = card.querySelector('.fc-industry-trigger');
+        button?.addEventListener('click', () => setOpenCard(card));
+      });
+
+      setOpenCard(cards.find(card => card.classList.contains('is-open')) || cards[0]);
+      window.addEventListener('resize', refreshIndustryAccordion);
+    };
+
+    const observeHeader = () => {
+      if (setupLanguagePicker()) {
+        applyLanguage(activeLanguage);
+        return;
+      }
+
+      const observer = new MutationObserver(() => {
+        if (setupLanguagePicker()) {
+          applyLanguage(activeLanguage);
+          observer.disconnect();
+        }
+      });
+
+      observer.observe(document.getElementById('site-header'), { childList: true, subtree: true });
+    };
+
+    document.querySelectorAll('[data-product-access]').forEach(link => {
+      link.addEventListener('click', event => {
+        event.preventDefault();
+        window.location.href = productAccessUrl;
+      });
+    });
+
+    observeHeader();
+    applyLanguage(activeLanguage);
+    initCounters();
+    initIndustryAccordion();
+  </script>
+
+  <footer class="fc-footer">
+    <div class="fc-footer-links">
+      <a href="index.html#products" data-i18n="nav.products">Work</a>
+      <a href="websites.html" data-i18n="nav.websites">Websites</a>
+      <a href="systems.html" data-i18n="nav.systems">Systems</a>
+      <a href="about.html" data-i18n="nav.about">About</a>
+      <a href="portal.html" data-i18n="nav.portal">Client Portal</a>
+      <a href="index.html#contact" data-i18n="nav.contact">Contact</a>
+      <a href="privacy.html" data-i18n="nav.privacy">Privacy</a>
+    </div>
+
+    <div class="fc-footer-contact">
+      <a href="mailto:bastidasystems@gmail.com">bastidasystems@gmail.com</a>
+      <a href="tel:+17026617149">+1 (702) 661-7149</a>
+    </div>
+
+    <p data-i18n="footer.rights">&copy; 2026 Bastida Systems. All rights reserved.</p>
+  </footer>
+</body>
+</html>

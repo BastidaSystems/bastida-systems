@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | Bastida Systems Portal</title>
+  <meta name="description" content="Login to the Bastida Systems client portal.">
+  <link rel="icon" type="image/png" href="img/logo_bastida_sys.png">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07090d;
+      --surface: rgba(17, 24, 39, 0.92);
+      --surface-strong: rgba(3, 7, 18, 0.94);
+      --line: rgba(75, 85, 99, 0.62);
+      --muted: #9ca3af;
+      --text: #f9fafb;
+      --accent: #00ff9c;
+      --danger: #fca5a5;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Manrope', sans-serif;
+      letter-spacing: 0;
+    }
+
+    .auth-shell {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 76% 8%, rgba(0, 255, 156, 0.14), transparent 30%),
+        radial-gradient(circle at 14% 12%, rgba(96, 165, 250, 0.12), transparent 28%),
+        linear-gradient(128deg, #050607 0%, #0a0f16 46%, #062019 78%, #020304 100%);
+    }
+
+    .auth-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 90% 0%, rgba(0, 255, 156, 0.1), transparent 36%),
+        linear-gradient(145deg, var(--surface), var(--surface-strong));
+      box-shadow: 0 24px 90px rgba(0, 0, 0, 0.32);
+    }
+
+    .auth-chip {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      min-height: 1.9rem;
+      padding: 0.3rem 0.68rem;
+      border: 1px solid rgba(0, 255, 156, 0.24);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .form-field {
+      width: 100%;
+      min-height: 3rem;
+      border: 1px solid rgba(75, 85, 99, 0.8);
+      border-radius: 8px;
+      background: rgba(3, 7, 18, 0.82);
+      color: #ffffff;
+      padding: 0.78rem 0.9rem;
+      outline: none;
+      transition: border-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .form-field:focus {
+      border-color: rgba(0, 255, 156, 0.62);
+      box-shadow: 0 0 0 3px rgba(0, 255, 156, 0.1);
+    }
+
+    .auth-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      min-height: 2.75rem;
+      border-radius: 999px;
+      padding: 0.68rem 1.1rem;
+      background: #ffffff;
+      color: #000000;
+      font-weight: 700;
+      transition: opacity 180ms ease, transform 180ms ease, border-color 180ms ease;
+    }
+
+    .auth-button:hover {
+      opacity: 0.86;
+      transform: translateY(-1px);
+    }
+
+    .auth-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.58;
+      transform: none;
+    }
+
+    .auth-link {
+      color: #bbf7d0;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .auth-link:hover {
+      color: #ffffff;
+    }
+
+    .message-box {
+      border: 1px solid rgba(96, 165, 250, 0.3);
+      border-radius: 8px;
+      background: rgba(96, 165, 250, 0.08);
+      padding: 1rem;
+      color: #bfdbfe;
+      line-height: 1.6;
+    }
+
+    .message-box.error {
+      border-color: rgba(252, 165, 165, 0.36);
+      background: rgba(127, 29, 29, 0.18);
+      color: var(--danger);
+    }
+
+    .message-box.success {
+      border-color: rgba(0, 255, 156, 0.34);
+      background: rgba(0, 255, 156, 0.08);
+      color: #bbf7d0;
+    }
+  </style>
+</head>
+<body>
+  <main class="auth-shell px-6 py-10 md:px-8 md:py-16">
+    <section class="mx-auto grid min-h-[calc(100vh-5rem)] max-w-6xl items-center gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+      <div>
+        <a href="index.html" class="inline-flex items-center gap-3">
+          <img src="img/logo_bastida_sys.png" alt="Bastida Systems Logo" class="h-10 w-auto object-contain">
+          <span class="text-sm font-extrabold uppercase tracking-[0.12em] text-white">Bastida Systems</span>
+        </a>
+
+        <div class="mt-10">
+          <span class="auth-chip">Private Client Portal</span>
+          <h1 class="mt-5 text-4xl font-extrabold leading-tight md:text-6xl">Login to your company dashboard.</h1>
+          <p class="mt-5 max-w-2xl text-lg leading-8 text-gray-400">
+            Access purchased hours, work history, payments, receipts, and reports through your secure Supabase account.
+          </p>
+        </div>
+      </div>
+
+      <div class="auth-card p-6 md:p-8">
+        <div class="mb-7 flex items-center gap-4">
+          <img src="img/logo_bastida_sys.png" alt="" aria-hidden="true" class="h-12 w-12 rounded-lg border border-emerald-400/20 bg-emerald-400/10 object-contain p-2">
+          <div>
+            <h2 class="text-2xl font-semibold">Secure login</h2>
+            <p class="mt-1 text-sm text-gray-500">Email and password only.</p>
+          </div>
+        </div>
+
+        <div id="login-message" class="message-box hidden"></div>
+
+        <form id="login-form" class="mt-6 grid gap-4">
+          <label class="grid gap-2">
+            <span class="text-sm font-bold uppercase tracking-[0.08em] text-gray-400">Email</span>
+            <input id="login-email" class="form-field" type="email" autocomplete="username" required>
+          </label>
+
+          <label class="grid gap-2">
+            <span class="text-sm font-bold uppercase tracking-[0.08em] text-gray-400">Password</span>
+            <input id="login-password" class="form-field" type="password" autocomplete="current-password" required>
+          </label>
+
+          <button id="login-button" class="auth-button w-full" type="submit">Sign in</button>
+        </form>
+
+        <div class="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-gray-800 pt-5 text-sm text-gray-400">
+          <a href="set-password.html" class="auth-link">Accepting an invitation?</a>
+          <button id="reset-password-button" class="auth-link" type="button">Send password reset</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="supabase-config.js"></script>
+  <script>
+    const AUTH_CONFIG = {
+      ...(window.BASTIDA_SUPABASE_CONFIG || {}),
+      portalUrl: (window.BASTIDA_AUTH_REDIRECTS && window.BASTIDA_AUTH_REDIRECTS.portal) || 'https://bastidasystems.com/portal.html',
+      setPasswordUrl: (window.BASTIDA_AUTH_REDIRECTS && window.BASTIDA_AUTH_REDIRECTS.setPassword) || 'https://bastidasystems.com/set-password.html'
+    };
+
+    const loginForm = document.getElementById('login-form');
+    const loginEmail = document.getElementById('login-email');
+    const loginPassword = document.getElementById('login-password');
+    const loginButton = document.getElementById('login-button');
+    const resetPasswordButton = document.getElementById('reset-password-button');
+    const loginMessage = document.getElementById('login-message');
+
+    let authClient = null;
+
+    function setLoginMessage(message, type = 'info') {
+      loginMessage.textContent = message;
+      loginMessage.classList.remove('hidden', 'error', 'success');
+      if (type === 'error') loginMessage.classList.add('error');
+      if (type === 'success') loginMessage.classList.add('success');
+    }
+
+    function getAuthClient() {
+      if (!AUTH_CONFIG.url || !AUTH_CONFIG.anonKey) {
+        throw new Error('Supabase is not configured yet. Add the project URL and anon key in login.html.');
+      }
+
+      if (!window.supabase || typeof window.supabase.createClient !== 'function') {
+        throw new Error('Supabase client failed to load. Please refresh and try again.');
+      }
+
+      if (!authClient) {
+        authClient = window.supabase.createClient(AUTH_CONFIG.url, AUTH_CONFIG.anonKey, {
+          auth: {
+            autoRefreshToken: true,
+            detectSessionInUrl: true,
+            persistSession: true
+          }
+        });
+      }
+
+      return authClient;
+    }
+
+    loginForm.addEventListener('submit', async event => {
+      event.preventDefault();
+
+      try {
+        loginButton.disabled = true;
+        loginButton.textContent = 'Signing in...';
+
+        const client = getAuthClient();
+        const { error } = await client.auth.signInWithPassword({
+          email: loginEmail.value.trim().toLowerCase(),
+          password: loginPassword.value
+        });
+
+        if (error) throw error;
+
+        setLoginMessage('Signed in. Opening portal...', 'success');
+        window.location.replace(AUTH_CONFIG.portalUrl);
+      } catch (error) {
+        loginButton.disabled = false;
+        loginButton.textContent = 'Sign in';
+        setLoginMessage(error.message || 'Unable to sign in.', 'error');
+      }
+    });
+
+    resetPasswordButton.addEventListener('click', async () => {
+      const email = loginEmail.value.trim().toLowerCase();
+
+      if (!email) {
+        setLoginMessage('Enter your email first, then request a password reset.', 'error');
+        loginEmail.focus();
+        return;
+      }
+
+      try {
+        resetPasswordButton.disabled = true;
+        const client = getAuthClient();
+        const { error } = await client.auth.resetPasswordForEmail(email, {
+          redirectTo: AUTH_CONFIG.setPasswordUrl
+        });
+
+        if (error) throw error;
+
+        setLoginMessage('Password reset email sent. Use the email link to create a new password.', 'success');
+      } catch (error) {
+        setLoginMessage(error.message || 'Unable to send password reset email.', 'error');
+      } finally {
+        resetPasswordButton.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beoflow App | Bastida Systems</title>
+  <link rel="icon" type="image/png" href="img/logobeoflow.png">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="beoflow-app.css?v=mvp-modules-20260603">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="beoflow-client-config.js?v=client-prod-recovery-20260603"></script>
+  <script src="beoflow-client.js?v=mvp-modules-20260603" defer></script>
+</head>
+<body class="beoflow-app-shell">
+  <main class="beoflow-app" data-testid="beoflow-app">
+    <section class="session-loading" id="session-loading-view" aria-live="polite">
+      <img src="img/logobeoflow.png" alt="" aria-hidden="true">
+      <p class="eyebrow">Beoflow</p>
+      <h1>Loading session</h1>
+      <p>Preparing your secure Beoflow workspace.</p>
+    </section>
+
+    <section class="auth-panel" id="auth-view" aria-labelledby="auth-title">
+      <div class="brand-block">
+        <img src="img/logobeoflow.png" alt="Beoflow" class="app-logo">
+        <p class="eyebrow">Beoflow</p>
+        <h1 id="auth-title">Kitchen operations workspace</h1>
+        <p id="auth-subtitle">Sign in or create an account to manage your restaurant, events, recipes, inventory, staff, and reports.</p>
+      </div>
+
+      <div class="auth-card">
+        <div class="auth-tabs" id="auth-tabs" role="tablist" aria-label="Authentication mode">
+          <button type="button" class="auth-tab is-active" id="show-sign-in" data-auth-mode="signin">Sign in</button>
+          <button type="button" class="auth-tab" id="show-sign-up" data-auth-mode="signup">Create account</button>
+        </div>
+
+        <div class="app-alert" id="config-alert" hidden></div>
+        <div class="app-alert app-alert-success" id="auth-message" hidden></div>
+
+        <form id="auth-form" class="stacked-form">
+          <label class="form-field" id="full-name-field" hidden>
+            <span>Full name</span>
+            <input type="text" id="auth-full-name" autocomplete="name" placeholder="Your name">
+          </label>
+          <label class="form-field">
+            <span>Email</span>
+            <input type="email" id="auth-email" autocomplete="email" required placeholder="you@example.com">
+          </label>
+          <label class="form-field">
+            <span>Password</span>
+            <span class="password-field">
+              <input type="password" id="auth-password" autocomplete="current-password" required minlength="6" placeholder="Minimum 6 characters">
+              <button type="button" class="password-toggle" data-password-toggle data-target="auth-password" aria-label="Show password" aria-pressed="false">
+                <svg class="password-icon password-icon-eye" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M2.25 12s3.5-6.25 9.75-6.25S21.75 12 21.75 12 18.25 18.25 12 18.25 2.25 12 2.25 12Z"></path>
+                  <circle cx="12" cy="12" r="2.75"></circle>
+                </svg>
+                <svg class="password-icon password-icon-eye-off" viewBox="0 0 24 24" aria-hidden="true" hidden>
+                  <path d="M3 3l18 18"></path>
+                  <path d="M9.4 5.95A10.5 10.5 0 0 1 12 5.75c6.25 0 9.75 6.25 9.75 6.25a16.1 16.1 0 0 1-3.12 3.82"></path>
+                  <path d="M14.12 14.12A3 3 0 0 1 9.88 9.88"></path>
+                  <path d="M6.36 6.36C3.72 8.05 2.25 12 2.25 12S5.75 18.25 12 18.25c1.52 0 2.89-.37 4.08-.94"></path>
+                </svg>
+              </button>
+            </span>
+          </label>
+          <label class="form-field" id="confirm-password-field" hidden>
+            <span>Confirm password</span>
+            <span class="password-field">
+              <input type="password" id="auth-confirm-password" autocomplete="new-password" minlength="8" placeholder="Confirm password" disabled>
+              <button type="button" class="password-toggle" data-password-toggle data-target="auth-confirm-password" aria-label="Show password" aria-pressed="false">
+                <svg class="password-icon password-icon-eye" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M2.25 12s3.5-6.25 9.75-6.25S21.75 12 21.75 12 18.25 18.25 12 18.25 2.25 12 2.25 12Z"></path>
+                  <circle cx="12" cy="12" r="2.75"></circle>
+                </svg>
+                <svg class="password-icon password-icon-eye-off" viewBox="0 0 24 24" aria-hidden="true" hidden>
+                  <path d="M3 3l18 18"></path>
+                  <path d="M9.4 5.95A10.5 10.5 0 0 1 12 5.75c6.25 0 9.75 6.25 9.75 6.25a16.1 16.1 0 0 1-3.12 3.82"></path>
+                  <path d="M14.12 14.12A3 3 0 0 1 9.88 9.88"></path>
+                  <path d="M6.36 6.36C3.72 8.05 2.25 12 2.25 12S5.75 18.25 12 18.25c1.52 0 2.89-.37 4.08-.94"></path>
+                </svg>
+              </button>
+            </span>
+          </label>
+          <button type="submit" class="primary-action" id="auth-submit">Sign in</button>
+        </form>
+
+        <button type="button" class="text-action" id="forgot-password-button">Forgot password?</button>
+
+        <form id="password-reset-request-form" class="stacked-form" hidden>
+          <label class="form-field">
+            <span>Email</span>
+            <input type="email" id="reset-email" autocomplete="email" required placeholder="you@example.com">
+          </label>
+          <button type="submit" class="primary-action" id="reset-submit">Send reset email</button>
+          <button type="button" class="text-action text-action-inline" id="back-to-sign-in-button">Back to sign in</button>
+        </form>
+
+        <form id="password-recovery-form" class="stacked-form" hidden>
+          <div class="form-heading">
+            <h2>Reset your password</h2>
+            <p>Enter and confirm your new Beoflow password.</p>
+          </div>
+          <label class="form-field">
+            <span>New password</span>
+            <span class="password-field">
+              <input type="password" id="new-password" autocomplete="new-password" required placeholder="Minimum 8 characters">
+              <button type="button" class="password-toggle" data-password-toggle data-target="new-password" aria-label="Show password" aria-pressed="false">
+                <svg class="password-icon password-icon-eye" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M2.25 12s3.5-6.25 9.75-6.25S21.75 12 21.75 12 18.25 18.25 12 18.25 2.25 12 2.25 12Z"></path>
+                  <circle cx="12" cy="12" r="2.75"></circle>
+                </svg>
+                <svg class="password-icon password-icon-eye-off" viewBox="0 0 24 24" aria-hidden="true" hidden>
+                  <path d="M3 3l18 18"></path>
+                  <path d="M9.4 5.95A10.5 10.5 0 0 1 12 5.75c6.25 0 9.75 6.25 9.75 6.25a16.1 16.1 0 0 1-3.12 3.82"></path>
+                  <path d="M14.12 14.12A3 3 0 0 1 9.88 9.88"></path>
+                  <path d="M6.36 6.36C3.72 8.05 2.25 12 2.25 12S5.75 18.25 12 18.25c1.52 0 2.89-.37 4.08-.94"></path>
+                </svg>
+              </button>
+            </span>
+          </label>
+          <label class="form-field">
+            <span>Confirm new password</span>
+            <span class="password-field">
+              <input type="password" id="confirm-new-password" autocomplete="new-password" required placeholder="Confirm password">
+              <button type="button" class="password-toggle" data-password-toggle data-target="confirm-new-password" aria-label="Show password" aria-pressed="false">
+                <svg class="password-icon password-icon-eye" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M2.25 12s3.5-6.25 9.75-6.25S21.75 12 21.75 12 18.25 18.25 12 18.25 2.25 12 2.25 12Z"></path>
+                  <circle cx="12" cy="12" r="2.75"></circle>
+                </svg>
+                <svg class="password-icon password-icon-eye-off" viewBox="0 0 24 24" aria-hidden="true" hidden>
+                  <path d="M3 3l18 18"></path>
+                  <path d="M9.4 5.95A10.5 10.5 0 0 1 12 5.75c6.25 0 9.75 6.25 9.75 6.25a16.1 16.1 0 0 1-3.12 3.82"></path>
+                  <path d="M14.12 14.12A3 3 0 0 1 9.88 9.88"></path>
+                  <path d="M6.36 6.36C3.72 8.05 2.25 12 2.25 12S5.75 18.25 12 18.25c1.52 0 2.89-.37 4.08-.94"></path>
+                </svg>
+              </button>
+            </span>
+          </label>
+          <button type="submit" class="primary-action" id="update-password-submit">Update password</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="workspace-gate" id="onboarding-view" hidden aria-labelledby="onboarding-title">
+      <div class="workspace-gate-card onboarding-card">
+        <img src="img/logobeoflow.png" alt="Beoflow" class="gate-logo">
+        <p class="eyebrow" id="onboarding-step">Step 1 of 1</p>
+        <h3 id="onboarding-title">Set up your first restaurant</h3>
+        <p id="onboarding-description">Create a workspace for your restaurant, kitchen, or operation.</p>
+        <div class="app-alert" id="onboarding-message" hidden></div>
+
+        <form id="client-form" class="client-form">
+          <label class="form-field form-field-wide">
+            <span>Restaurant / Operation Name</span>
+            <input type="text" id="client-name" required placeholder="Restaurant name">
+          </label>
+          <label class="form-field">
+            <span>Business Type</span>
+            <select id="client-type" required>
+              <option value="restaurant">Restaurant</option>
+              <option value="catering">Catering</option>
+              <option value="casino_kitchen">Casino Kitchen</option>
+              <option value="hotel_kitchen">Hotel Kitchen</option>
+              <option value="bar">Bar</option>
+              <option value="food_truck">Food Truck</option>
+              <option value="company">Company</option>
+              <option value="other">Other</option>
+            </select>
+          </label>
+          <label class="form-field">
+            <span>City optional</span>
+            <input type="text" id="client-city" placeholder="City">
+          </label>
+          <label class="form-field">
+            <span>State optional</span>
+            <input type="text" id="client-state" placeholder="State">
+          </label>
+          <label class="form-field">
+            <span>Timezone optional</span>
+            <input type="text" id="client-timezone" placeholder="America/Los_Angeles">
+          </label>
+          <button type="submit" class="primary-action form-field-wide" id="create-client-button">Create Workspace</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="workspace-gate" id="workspace-created-view" hidden aria-labelledby="workspace-created-title">
+      <div class="workspace-gate-card workspace-created-card">
+        <img src="img/logobeoflow.png" alt="Beoflow" class="gate-logo">
+        <p class="eyebrow">Beoflow Workspace</p>
+        <h3 id="workspace-created-title">Workspace created</h3>
+        <p id="workspace-created-description">Your Beoflow workspace is ready.</p>
+        <button type="button" class="primary-action" id="continue-dashboard-button">Continue to dashboard</button>
+      </div>
+    </section>
+
+    <section class="workspace-gate" id="client-selector-view" hidden aria-labelledby="client-selector-title">
+      <div class="workspace-gate-card workspace-selector-card">
+        <img src="img/logobeoflow.png" alt="Beoflow" class="gate-logo">
+        <p class="eyebrow">Choose workspace</p>
+        <h3 id="client-selector-title">Choose your workspace</h3>
+        <p>Select the restaurant or operation you want to manage.</p>
+        <div class="client-list" id="client-list"></div>
+        <button type="button" class="secondary-action selector-add-action" id="selector-add-client-button">Add another restaurant</button>
+      </div>
+    </section>
+
+    <section class="workspace-shell" id="workspace-view" hidden>
+      <header class="mobile-topbar" aria-label="Beoflow mobile navigation">
+        <div class="mobile-topbar-brand">
+          <img src="img/logobeoflow.png" alt="Beoflow">
+          <span id="mobile-workspace-name">Beoflow</span>
+        </div>
+        <button type="button" class="mobile-menu-button" id="mobile-menu-button" aria-label="Open menu" aria-controls="workspace-sidebar" aria-expanded="false">
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </button>
+      </header>
+
+      <div class="mobile-drawer-overlay" id="mobile-drawer-overlay" hidden></div>
+
+      <aside class="workspace-sidebar" id="workspace-sidebar" aria-label="Beoflow navigation">
+        <div class="mobile-drawer-header">
+          <div class="sidebar-brand">
+            <img src="img/logobeoflow.png" alt="Beoflow">
+            <span>Beoflow</span>
+          </div>
+          <button type="button" class="mobile-drawer-close" id="mobile-drawer-close" aria-label="Close menu">×</button>
+        </div>
+        <nav aria-label="Beoflow modules">
+          <button type="button" class="sidebar-link is-active" data-section="dashboard" aria-current="page">Dashboard</button>
+          <button type="button" class="sidebar-link" data-section="events">Events</button>
+          <button type="button" class="sidebar-link" data-section="menu">Menu</button>
+          <button type="button" class="sidebar-link" data-section="recipes">Recipes</button>
+          <button type="button" class="sidebar-link" data-section="inventory">Inventory</button>
+          <button type="button" class="sidebar-link" data-section="production">Production</button>
+          <button type="button" class="sidebar-link" data-section="staff">Staff</button>
+          <button type="button" class="sidebar-link" data-section="reports">Reports</button>
+        </nav>
+        <div class="mobile-drawer-actions" aria-label="Workspace actions">
+          <button type="button" class="sidebar-link" id="mobile-switch-client-button" data-mobile-action="switch-workspace">Switch workspace</button>
+          <button type="button" class="sidebar-link" id="mobile-add-restaurant-button" data-mobile-action="add-restaurant">Add restaurant</button>
+          <button type="button" class="sidebar-link" id="mobile-workspace-settings-button" data-mobile-action="workspace-settings">Workspace settings</button>
+          <button type="button" class="sidebar-link sidebar-link-danger" id="mobile-sign-out-button" data-mobile-action="sign-out">Sign out</button>
+        </div>
+      </aside>
+
+      <section class="workspace-main">
+        <header class="workspace-header">
+          <div>
+            <p class="eyebrow">Beoflow Workspace</p>
+            <h2 id="workspace-title">Beoflow</h2>
+            <p id="workspace-subtitle">Loading your restaurant workspace.</p>
+          </div>
+          <div class="header-actions">
+            <button type="button" class="secondary-action" id="switch-client-button" hidden>Switch restaurant</button>
+            <button type="button" class="secondary-action" id="add-restaurant-button">Add restaurant</button>
+            <button type="button" class="secondary-action" id="workspace-settings-button">Workspace settings</button>
+            <button type="button" class="secondary-action" id="sign-out-button">Sign out</button>
+          </div>
+        </header>
+
+        <div class="app-alert" id="workspace-message" hidden></div>
+
+        <section class="dashboard-view" id="dashboard-view" hidden aria-labelledby="dashboard-title">
+          <div class="workspace-control" id="workspace-control">
+            <div>
+              <span>Current workspace</span>
+              <strong id="workspace-control-name">Restaurant workspace</strong>
+            </div>
+            <span class="workspace-badge">Beoflow Workspace</span>
+          </div>
+
+          <div class="dashboard-heading">
+            <div>
+              <p class="eyebrow">Beoflow Workspace</p>
+              <h3 id="dashboard-title">Restaurant workspace</h3>
+              <p id="dashboard-description">Welcome to your Beoflow workspace. Your operating modules are ready for real restaurant data when your team starts building.</p>
+            </div>
+            <span class="workspace-badge">Beoflow Workspace</span>
+          </div>
+
+          <div class="module-card-grid" aria-label="Beoflow module empty states">
+            <button type="button" class="module-card" data-section="events">
+              <span>Events</span>
+              <strong data-count-section="events">0</strong>
+              <p>No events yet</p>
+            </button>
+            <button type="button" class="module-card" data-section="menu">
+              <span>Menu</span>
+              <strong data-count-section="menu">0</strong>
+              <p>No menu items yet</p>
+            </button>
+            <button type="button" class="module-card" data-section="recipes">
+              <span>Recipes</span>
+              <strong data-count-section="recipes">0</strong>
+              <p>No recipes yet</p>
+            </button>
+            <button type="button" class="module-card" data-section="inventory">
+              <span>Inventory</span>
+              <strong data-count-section="inventory">0</strong>
+              <p>No inventory items yet</p>
+            </button>
+            <button type="button" class="module-card" data-section="production">
+              <span>Production</span>
+              <strong data-count-section="production">0</strong>
+              <p>No production logs yet</p>
+            </button>
+            <button type="button" class="module-card" data-section="staff">
+              <span>Staff</span>
+              <strong data-count-section="staff">0</strong>
+              <p>No staff members yet</p>
+            </button>
+            <button type="button" class="module-card" data-section="reports">
+              <span>Reports</span>
+              <strong data-count-section="reports">0</strong>
+              <p>No reports yet</p>
+            </button>
+          </div>
+        </section>
+
+        <section class="module-view" id="module-view" hidden aria-labelledby="module-title">
+          <div class="module-view-header">
+            <div>
+              <p class="eyebrow">Beoflow Module</p>
+              <h3 id="module-title">Events</h3>
+              <p id="module-subtitle">Plan catering events, service days, banquets, and production schedules.</p>
+            </div>
+            <div class="module-header-actions">
+              <span class="module-count-badge" id="module-count-badge">0 records</span>
+              <button type="button" class="primary-action module-header-action" id="module-header-action-button">New Event</button>
+            </div>
+          </div>
+
+          <div class="module-empty-state" id="module-empty-state">
+            <div class="empty-icon" id="module-empty-icon" aria-hidden="true">01</div>
+            <div>
+              <h4 id="module-empty-title">No events yet.</h4>
+              <p id="module-empty-copy">Create your first event to start planning service operations.</p>
+            </div>
+            <button type="button" class="primary-action" id="module-action-button">New Event</button>
+          </div>
+
+          <div class="module-record-list" id="module-record-list"></div>
+        </section>
+      </section>
+    </section>
+    <div class="module-toast" id="module-toast" role="status" aria-live="polite" hidden>This module is ready for the next build.</div>
+
+    <div class="module-modal-backdrop" id="module-modal" hidden>
+      <section class="module-modal" role="dialog" aria-modal="true" aria-labelledby="module-modal-title">
+        <header class="module-modal-header">
+          <div>
+            <p class="eyebrow">Beoflow Module</p>
+            <h3 id="module-modal-title">Add record</h3>
+            <p id="module-modal-subtitle">Create a new workspace record.</p>
+          </div>
+          <button type="button" class="modal-icon-button" id="module-modal-close" aria-label="Close modal">Close</button>
+        </header>
+
+        <div class="app-alert" id="module-form-message" hidden></div>
+
+        <form class="module-form" id="module-form">
+          <div class="module-form-fields" id="module-form-fields"></div>
+          <div class="modal-actions">
+            <button type="button" class="secondary-action" id="module-cancel-button">Cancel</button>
+            <button type="submit" class="primary-action" id="module-save-button">Save</button>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <div class="module-modal-backdrop" id="workspace-switcher-modal" hidden>
+      <section class="module-modal workspace-modal" role="dialog" aria-modal="true" aria-labelledby="workspace-switcher-title">
+        <header class="module-modal-header">
+          <div>
+            <p class="eyebrow">Beoflow Workspace</p>
+            <h3 id="workspace-switcher-title">Switch workspace</h3>
+            <p>Select the restaurant or operation you want to manage.</p>
+          </div>
+          <button type="button" class="modal-icon-button" id="workspace-switcher-close" aria-label="Close workspace switcher">Close</button>
+        </header>
+        <div class="workspace-switcher-list" id="workspace-switcher-list"></div>
+        <div class="modal-actions">
+          <button type="button" class="secondary-action" id="workspace-switcher-add-button">Add another restaurant</button>
+        </div>
+      </section>
+    </div>
+
+    <div class="module-modal-backdrop" id="workspace-settings-modal" hidden>
+      <section class="module-modal workspace-modal" role="dialog" aria-modal="true" aria-labelledby="workspace-settings-title">
+        <header class="module-modal-header">
+          <div>
+            <p class="eyebrow">Workspace settings</p>
+            <h3 id="workspace-settings-title">Workspace settings</h3>
+            <p>Edit the business name and type for the active Beoflow workspace.</p>
+          </div>
+          <button type="button" class="modal-icon-button" id="workspace-settings-close" aria-label="Close workspace settings">Close</button>
+        </header>
+        <div class="app-alert" id="workspace-settings-message" hidden></div>
+        <form class="module-form" id="workspace-settings-form">
+          <div class="module-form-fields">
+            <label class="form-field form-field-wide">
+              <span>Business name</span>
+              <input type="text" id="workspace-settings-name" required placeholder="Restaurant name">
+            </label>
+            <label class="form-field form-field-wide">
+              <span>Business type</span>
+              <select id="workspace-settings-type" required>
+                <option value="restaurant">Restaurant</option>
+                <option value="catering">Catering</option>
+                <option value="casino_kitchen">Casino Kitchen</option>
+                <option value="hotel_kitchen">Hotel Kitchen</option>
+                <option value="bar">Bar</option>
+                <option value="food_truck">Food Truck</option>
+                <option value="company">Company</option>
+                <option value="other">Other</option>
+              </select>
+            </label>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="secondary-action" id="workspace-settings-cancel">Cancel</button>
+            <button type="submit" class="primary-action" id="workspace-settings-save">Save settings</button>
+          </div>
+        </form>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

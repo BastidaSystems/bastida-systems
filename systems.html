@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Systems & Apps | Bastida Systems</title>
+  <meta name="description" content="Custom systems, internal tools, dashboards, mobile apps, and automation packages from Bastida Systems.">
+  <link rel="icon" type="image/png" href="img/logo_bastida_sys.png">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Manrope', sans-serif;
+      background: #07090d;
+      color: #ffffff;
+      letter-spacing: 0;
+      overflow-x: hidden;
+    }
+
+    .systems-shell {
+      background:
+        radial-gradient(circle at 76% 12%, rgba(45, 125, 255, 0.16), transparent 30%),
+        radial-gradient(circle at 20% 8%, rgba(0, 255, 156, 0.12), transparent 28%),
+        #07090d;
+    }
+
+    .system-card {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(75, 85, 99, 0.62);
+      border-radius: 8px;
+      background: linear-gradient(145deg, rgba(17, 24, 39, 0.96), rgba(3, 7, 18, 0.96));
+      box-shadow: 0 20px 70px rgba(0, 0, 0, 0.32);
+    }
+
+    .system-card.featured {
+      border-color: rgba(0, 255, 156, 0.58);
+      box-shadow: 0 24px 90px rgba(0, 255, 156, 0.1);
+    }
+
+    .system-card.blue {
+      border-color: rgba(96, 165, 250, 0.42);
+    }
+
+    .system-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 2rem;
+      padding: 0.35rem 0.7rem;
+      border: 1px solid rgba(0, 255, 156, 0.24);
+      border-radius: 999px;
+      color: #9ca3af;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .feature-list {
+      display: grid;
+      gap: 0.7rem;
+      margin: 1.5rem 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .feature-list li {
+      display: flex;
+      gap: 0.65rem;
+      color: #d1d5db;
+      font-size: 0.93rem;
+      line-height: 1.55;
+    }
+
+    .feature-list li::before {
+      content: "";
+      width: 0.48rem;
+      height: 0.48rem;
+      margin-top: 0.52rem;
+      border-radius: 999px;
+      background: #00ff9c;
+      box-shadow: 0 0 16px rgba(0, 255, 156, 0.75);
+      flex: 0 0 auto;
+    }
+
+    .app-list li::before {
+      background: #60a5fa;
+      box-shadow: 0 0 16px rgba(96, 165, 250, 0.72);
+    }
+
+    .system-icon {
+      display: inline-grid;
+      place-items: center;
+      width: 2.75rem;
+      height: 2.75rem;
+      border: 1px solid rgba(0, 255, 156, 0.22);
+      border-radius: 8px;
+      background: rgba(0, 255, 156, 0.08);
+      color: #00ff9c;
+    }
+
+    .system-icon.blue {
+      border-color: rgba(96, 165, 250, 0.28);
+      background: rgba(96, 165, 250, 0.09);
+      color: #60a5fa;
+    }
+
+    .system-icon svg {
+      width: 1.35rem;
+      height: 1.35rem;
+    }
+
+    .preview-stack {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .preview-stack img {
+      width: 100%;
+      min-height: 13rem;
+      max-height: 18rem;
+      border-radius: 8px;
+      object-fit: cover;
+      object-position: left top;
+      border: 1px solid rgba(75, 85, 99, 0.6);
+      background: #0b1020;
+    }
+
+    .scope-row {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .scope-row article {
+      border-left: 1px solid rgba(75, 85, 99, 0.7);
+      padding-left: 1.25rem;
+    }
+
+    @media (max-width: 860px) {
+      .scope-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      #site-header nav {
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 0.85rem;
+        padding-top: 0.95rem !important;
+        padding-bottom: 0.95rem !important;
+      }
+
+      #site-header nav > div:last-child {
+        width: 100%;
+        justify-content: flex-start;
+        gap: 1rem;
+        overflow-x: auto;
+        padding-bottom: 0.1rem;
+      }
+
+      #site-header nav > div:last-child > a {
+        flex: 0 0 auto;
+      }
+    }
+
+    @media print {
+      #site-header,
+      #site-header nav {
+        position: static !important;
+        top: auto !important;
+        z-index: auto !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="site-header"></div>
+
+  <script>
+    const sharedHeader = `
+      <nav class="flex flex-wrap justify-between items-center gap-4 px-4 md:px-8 py-5 border-b border-gray-200 bg-white sticky top-0 z-50">
+        <div class="flex items-center gap-3">
+          <a href="index.html" class="flex items-center gap-3">
+            <img src="img/logo_bastida_sys.png" alt="Bastida Systems Logo" class="h-8 w-auto object-contain">
+            <span class="hidden md:inline text-base font-semibold tracking-[0.08em] text-black uppercase">Bastida Systems LLC</span>
+          </a>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-end gap-4 md:gap-8 text-sm font-medium text-gray-600">
+          <a href="index.html#products" class="hover:text-black transition" data-i18n="nav.products">Work</a>
+          <a href="websites.html" class="hover:text-black transition" data-i18n="nav.websites">Websites</a>
+          <a href="systems.html" class="hover:text-black transition" data-i18n="nav.systems">Systems</a>
+          <a href="about.html" class="hover:text-black transition" data-i18n="nav.about">About</a>
+          <a href="portal.html" class="hover:text-black transition" data-i18n="nav.portal">Client Portal</a>
+          <a href="index.html#contact" class="hover:text-black transition" data-i18n="nav.contact">Contact</a>
+          <label class="language-picker inline-flex min-h-9 items-center gap-2 rounded-lg border border-gray-300 bg-white px-2 py-1 text-xs font-bold uppercase text-gray-500">
+            <span data-i18n="nav.language">Language</span>
+            <select id="language-select" class="rounded-md border-0 bg-gray-900 px-2 py-1 text-xs font-extrabold text-white" aria-label="Language selector" data-i18n-aria-label="nav.languageSelector">
+              <option value="en">EN</option>
+              <option value="es">ES</option>
+            </select>
+          </label>
+        </div>
+      </nav>
+    `;
+
+    const headerTarget = document.getElementById('site-header');
+
+    fetch('header.html')
+      .then(response => {
+        if (!response.ok) throw new Error('header.html not found');
+        return response.text();
+      })
+      .then(html => {
+        headerTarget.innerHTML = html;
+      })
+      .catch(() => {
+        headerTarget.innerHTML = sharedHeader;
+      });
+  </script>
+
+  <script>
+    window.pageTranslations = {
+      en: {
+        'meta.title': 'Systems & Apps | Bastida Systems',
+        'sys.hero.label': 'Systems & Apps',
+        'sys.hero.title': 'Tools that support the systems you already use.',
+        'sys.hero.body': 'We build internal tools, dashboards, automations, and apps that extend existing operations. We do not replace the original system unless the client specifically asks us to design a replacement.',
+        'sys.hero.packages': 'View System Packages',
+        'sys.hero.apps': 'App Pricing',
+        'sys.preview.badge': 'Operational Tools',
+        'sys.preview.title': 'Dashboards, workflows, apps, and reports.',
+        'sys.preview.body': 'The goal is to make daily work easier: collect data, show what matters, reduce manual tracking, and give teams a clear place to act.',
+        'sys.preview.item1': 'Support existing systems instead of forcing replacement',
+        'sys.preview.item2': 'Build dashboards and workflows around real operations',
+        'sys.preview.item3': 'Add mobile access when teams work away from a desk',
+        'sys.packages.label': 'System Packages',
+        'sys.packages.title': 'Starting prices for internal tools and business systems.',
+        'sys.packages.body': 'These packages are for custom software with real workflows. Final pricing depends on data complexity, user roles, integrations, hosting, security needs, and how many modules are required.',
+        'sys.price.starting': ' starting',
+        'sys.tool.badge': 'Tool Starter',
+        'sys.tool.title': 'Internal Tool',
+        'sys.tool.body': 'A focused tool for one business workflow, team, or department.',
+        'sys.tool.item1': 'One core workflow or module',
+        'sys.tool.item2': 'Mobile-friendly web interface',
+        'sys.tool.item3': 'Simple data storage or structured forms',
+        'sys.tool.item4': 'Basic reporting or export view',
+        'sys.tool.item5': '2 revision rounds',
+        'sys.business.badge': 'Most Practical',
+        'sys.business.title': 'Business System',
+        'sys.business.body': 'A custom dashboard system for operations that need visibility, control, and cleaner records.',
+        'sys.business.item1': 'Dashboard with multiple workflow areas',
+        'sys.business.item2': 'User accounts and role-based access',
+        'sys.business.item3': 'Database-backed records and status tracking',
+        'sys.business.item4': 'Reports, filters, and operational views',
+        'sys.business.item5': 'Launch support and 30-day stabilization',
+        'sys.connected.badge': 'Connected',
+        'sys.connected.title': 'System + App',
+        'sys.connected.body': 'A business system with a companion app or mobile workflow for field, floor, or service teams.',
+        'sys.connected.item1': 'Web dashboard plus mobile-first app experience',
+        'sys.connected.item2': 'Forms, status updates, and field workflows',
+        'sys.connected.item3': 'Photo, file, or evidence capture when needed',
+        'sys.connected.item4': 'Admin tools and team visibility',
+        'sys.connected.item5': 'Deployment planning and launch support',
+        'sys.apps.label': 'Apps & Interactive Projects',
+        'sys.apps.title': 'App pricing depends on release path.',
+        'sys.apps.body': 'A mobile-friendly web app is usually the fastest first version. Native iOS or Android apps cost more because they require app-store setup, device testing, release builds, and long-term maintenance.',
+        'sys.prototype.title': 'Mobile App Prototype',
+        'sys.prototype.item1': 'Clickable or working first version',
+        'sys.prototype.item2': 'Core screens and user flow',
+        'sys.prototype.item3': 'Good for validating an idea before full build',
+        'sys.native.title': 'Native App Release',
+        'sys.native.item1': 'iOS or Android app build',
+        'sys.native.item2': 'Backend connection when needed',
+        'sys.native.item3': 'App Store or Play Store release support',
+        'sys.game.title': 'Game or Interactive Prototype',
+        'sys.game.item1': 'Playable core mechanic or demo',
+        'sys.game.item2': 'UI, controls, and basic state',
+        'sys.game.item3': 'Production game scope quoted separately',
+        'sys.scope.label': 'Scope Rules',
+        'sys.scope.title': 'Clear boundaries keep projects realistic.',
+        'sys.scope.included.title': 'Included',
+        'sys.scope.included.body': 'Planning, interface design, development, responsive layout, launch support, and the package-specific features.',
+        'sys.scope.quoted.title': 'Quoted Separately',
+        'sys.scope.quoted.body': 'Payments, complex integrations, native multi-platform apps, hardware, offline sync, AI features, and full system replacements.',
+        'sys.scope.care.title': 'Monthly Care',
+        'sys.scope.care.body': 'Support, monitoring, small improvements, and maintenance for systems start at $149 USD per month after launch.',
+        'sys.cta.title': 'Planning a system, app, or operational tool?',
+        'sys.cta.body': 'Send the workflow, the current tools you use, the team size, and whether you need a dashboard, app, automation, or full replacement.',
+        'sys.cta.request': 'Request System Quote',
+        'sys.cta.web': 'Website Pricing'
+      },
+      es: {
+        'meta.title': 'Sistemas y Apps | Bastida Systems',
+        'sys.hero.label': 'Sistemas y Apps',
+        'sys.hero.title': 'Herramientas que apoyan los sistemas que ya usas.',
+        'sys.hero.body': 'Creamos herramientas internas, dashboards, automatizaciones y apps que extienden operaciones existentes. No reemplazamos el sistema original a menos que el cliente pida específicamente diseñar un reemplazo.',
+        'sys.hero.packages': 'Ver Paquetes de Sistemas',
+        'sys.hero.apps': 'Precios de Apps',
+        'sys.preview.badge': 'Herramientas Operativas',
+        'sys.preview.title': 'Dashboards, flujos, apps y reportes.',
+        'sys.preview.body': 'El objetivo es facilitar el trabajo diario: capturar datos, mostrar lo importante, reducir seguimiento manual y dar al equipo un lugar claro para actuar.',
+        'sys.preview.item1': 'Apoyar sistemas existentes sin forzar reemplazos',
+        'sys.preview.item2': 'Crear dashboards y flujos alrededor de operaciones reales',
+        'sys.preview.item3': 'Agregar acceso móvil cuando el equipo trabaja fuera del escritorio',
+        'sys.packages.label': 'Paquetes de Sistemas',
+        'sys.packages.title': 'Precios iniciales para herramientas internas y sistemas de negocio.',
+        'sys.packages.body': 'Estos paquetes son para software personalizado con flujos reales. El precio final depende de complejidad de datos, roles, integraciones, hosting, seguridad y cantidad de módulos.',
+        'sys.price.starting': ' desde',
+        'sys.tool.badge': 'Tool Inicial',
+        'sys.tool.title': 'Herramienta Interna',
+        'sys.tool.body': 'Una herramienta enfocada para un flujo de negocio, equipo o departamento.',
+        'sys.tool.item1': 'Un flujo principal o módulo',
+        'sys.tool.item2': 'Interfaz web usable en móvil',
+        'sys.tool.item3': 'Almacenamiento simple de datos o formularios estructurados',
+        'sys.tool.item4': 'Reporte básico o vista de exportación',
+        'sys.tool.item5': '2 rondas de revisión',
+        'sys.business.badge': 'Más Práctico',
+        'sys.business.title': 'Sistema de Negocio',
+        'sys.business.body': 'Un sistema dashboard personalizado para operaciones que necesitan visibilidad, control y registros claros.',
+        'sys.business.item1': 'Dashboard con varias áreas de flujo',
+        'sys.business.item2': 'Cuentas de usuario y acceso por roles',
+        'sys.business.item3': 'Registros con base de datos y seguimiento de estado',
+        'sys.business.item4': 'Reportes, filtros y vistas operativas',
+        'sys.business.item5': 'Soporte de lanzamiento y 30 días de estabilización',
+        'sys.connected.badge': 'Conectado',
+        'sys.connected.title': 'Sistema + App',
+        'sys.connected.body': 'Un sistema de negocio con app o flujo móvil para equipos de campo, piso o servicio.',
+        'sys.connected.item1': 'Dashboard web más experiencia móvil',
+        'sys.connected.item2': 'Formularios, estados y flujos de campo',
+        'sys.connected.item3': 'Captura de fotos, archivos o evidencia cuando se requiera',
+        'sys.connected.item4': 'Herramientas administrativas y visibilidad del equipo',
+        'sys.connected.item5': 'Planeación de despliegue y soporte de lanzamiento',
+        'sys.apps.label': 'Apps y Proyectos Interactivos',
+        'sys.apps.title': 'El precio de apps depende del camino de lanzamiento.',
+        'sys.apps.body': 'Una web app móvil suele ser la primera versión más rápida. Apps nativas iOS o Android cuestan más porque requieren setup de tienda, pruebas en dispositivos, builds de release y mantenimiento.',
+        'sys.prototype.title': 'Prototipo de App Móvil',
+        'sys.prototype.item1': 'Primera versión clickable o funcional',
+        'sys.prototype.item2': 'Pantallas principales y flujo de usuario',
+        'sys.prototype.item3': 'Bueno para validar una idea antes del build completo',
+        'sys.native.title': 'Lanzamiento de App Nativa',
+        'sys.native.item1': 'Build para iOS o Android',
+        'sys.native.item2': 'Conexión a backend cuando se necesite',
+        'sys.native.item3': 'Soporte para App Store o Play Store',
+        'sys.game.title': 'Prototipo de Juego o Interactivo',
+        'sys.game.item1': 'Mecánica principal jugable o demo',
+        'sys.game.item2': 'UI, controles y estado básico',
+        'sys.game.item3': 'Alcance de juego en producción se cotiza por separado',
+        'sys.scope.label': 'Reglas de Alcance',
+        'sys.scope.title': 'Límites claros mantienen proyectos realistas.',
+        'sys.scope.included.title': 'Incluido',
+        'sys.scope.included.body': 'Planeación, diseño de interfaz, desarrollo, layout responsivo, soporte de lanzamiento y funciones del paquete.',
+        'sys.scope.quoted.title': 'Cotizado por Separado',
+        'sys.scope.quoted.body': 'Pagos, integraciones complejas, apps nativas multiplataforma, hardware, sync offline, funciones de AI y reemplazos completos de sistema.',
+        'sys.scope.care.title': 'Mantenimiento Mensual',
+        'sys.scope.care.body': 'Soporte, monitoreo, mejoras pequeñas y mantenimiento para sistemas desde $149 USD al mes después del lanzamiento.',
+        'sys.cta.title': '¿Planeas un sistema, app o herramienta operativa?',
+        'sys.cta.body': 'Manda el flujo de trabajo, herramientas actuales, tamaño del equipo y si necesitas dashboard, app, automatización o reemplazo completo.',
+        'sys.cta.request': 'Solicitar Cotización',
+        'sys.cta.web': 'Precios Web'
+      }
+    };
+  </script>
+  <script src="site-language.js"></script>
+
+  <main class="systems-shell">
+    <section class="px-6 md:px-8 py-20 md:py-24 border-b border-gray-800">
+      <div class="max-w-7xl mx-auto grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-center">
+        <div>
+          <p class="text-sm font-bold tracking-[0.18em] uppercase text-emerald-300 mb-5" data-i18n="sys.hero.label">Systems & Apps</p>
+          <h1 class="max-w-3xl text-4xl md:text-6xl font-extrabold leading-tight mb-6" data-i18n="sys.hero.title">
+            Tools that support the systems you already use.
+          </h1>
+          <p class="max-w-2xl text-gray-300 leading-8 text-lg" data-i18n="sys.hero.body">
+            We build internal tools, dashboards, automations, and apps that extend existing operations. We do not replace the original system unless the client specifically asks us to design a replacement.
+          </p>
+          <div class="flex flex-wrap gap-3 mt-8">
+            <a href="#packages" class="inline-flex items-center justify-center px-6 py-3 bg-white text-black rounded-full font-semibold hover:opacity-85 transition" data-i18n="sys.hero.packages">
+              View System Packages
+            </a>
+            <a href="#apps" class="inline-flex items-center justify-center px-6 py-3 border border-gray-600 rounded-full text-white hover:border-white transition" data-i18n="sys.hero.apps">
+              App Pricing
+            </a>
+          </div>
+        </div>
+
+        <div class="system-card p-5 md:p-6">
+          <div class="grid gap-4 md:grid-cols-2">
+            <div class="preview-stack">
+              <img src="img/filtracore-dashboard.jpeg" alt="FiltraCore dashboard preview">
+              <img src="img/beoflow-dashboard.jpeg" alt="Beoflow dashboard preview">
+            </div>
+            <div class="p-2 md:p-4">
+              <span class="system-badge" data-i18n="sys.preview.badge">Operational Tools</span>
+              <h2 class="mt-5 text-2xl font-bold" data-i18n="sys.preview.title">Dashboards, workflows, apps, and reports.</h2>
+              <p class="mt-4 text-gray-300 leading-7" data-i18n="sys.preview.body">
+                The goal is to make daily work easier: collect data, show what matters, reduce manual tracking, and give teams a clear place to act.
+              </p>
+              <ul class="feature-list">
+                <li data-i18n="sys.preview.item1">Support existing systems instead of forcing replacement</li>
+                <li data-i18n="sys.preview.item2">Build dashboards and workflows around real operations</li>
+                <li data-i18n="sys.preview.item3">Add mobile access when teams work away from a desk</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="packages" class="px-6 md:px-8 py-20 border-b border-gray-800">
+      <div class="max-w-7xl mx-auto">
+        <div class="max-w-3xl mb-12">
+          <p class="text-sm font-bold tracking-[0.18em] uppercase text-gray-500 mb-4" data-i18n="sys.packages.label">System Packages</p>
+          <h2 class="text-3xl md:text-4xl font-bold mb-4" data-i18n="sys.packages.title">Starting prices for internal tools and business systems.</h2>
+          <p class="text-gray-400 leading-8" data-i18n="sys.packages.body">
+            These packages are for custom software with real workflows. Final pricing depends on data complexity, user roles, integrations, hosting, security needs, and how many modules are required.
+          </p>
+        </div>
+
+        <div class="grid gap-6 lg:grid-cols-3">
+          <article class="system-card p-6 md:p-8">
+            <span class="system-badge" data-i18n="sys.tool.badge">Tool Starter</span>
+            <h3 class="mt-6 text-2xl font-bold" data-i18n="sys.tool.title">Internal Tool</h3>
+            <p class="mt-3 text-gray-400 leading-7" data-i18n="sys.tool.body">A focused tool for one business workflow, team, or department.</p>
+            <p class="mt-7 text-4xl font-extrabold">$950 USD<span class="text-base font-semibold text-gray-500" data-i18n="sys.price.starting"> starting</span></p>
+            <ul class="feature-list">
+              <li data-i18n="sys.tool.item1">One core workflow or module</li>
+              <li data-i18n="sys.tool.item2">Mobile-friendly web interface</li>
+              <li data-i18n="sys.tool.item3">Simple data storage or structured forms</li>
+              <li data-i18n="sys.tool.item4">Basic reporting or export view</li>
+              <li data-i18n="sys.tool.item5">2 revision rounds</li>
+            </ul>
+          </article>
+
+          <article class="system-card featured p-6 md:p-8">
+            <span class="system-badge" data-i18n="sys.business.badge">Most Practical</span>
+            <h3 class="mt-6 text-2xl font-bold" data-i18n="sys.business.title">Business System</h3>
+            <p class="mt-3 text-gray-400 leading-7" data-i18n="sys.business.body">A custom dashboard system for operations that need visibility, control, and cleaner records.</p>
+            <p class="mt-7 text-4xl font-extrabold">$2,200 USD<span class="text-base font-semibold text-gray-500" data-i18n="sys.price.starting"> starting</span></p>
+            <ul class="feature-list">
+              <li data-i18n="sys.business.item1">Dashboard with multiple workflow areas</li>
+              <li data-i18n="sys.business.item2">User accounts and role-based access</li>
+              <li data-i18n="sys.business.item3">Database-backed records and status tracking</li>
+              <li data-i18n="sys.business.item4">Reports, filters, and operational views</li>
+              <li data-i18n="sys.business.item5">Launch support and 30-day stabilization</li>
+            </ul>
+          </article>
+
+          <article class="system-card p-6 md:p-8">
+            <span class="system-badge" data-i18n="sys.connected.badge">Connected</span>
+            <h3 class="mt-6 text-2xl font-bold" data-i18n="sys.connected.title">System + App</h3>
+            <p class="mt-3 text-gray-400 leading-7" data-i18n="sys.connected.body">A business system with a companion app or mobile workflow for field, floor, or service teams.</p>
+            <p class="mt-7 text-4xl font-extrabold">$4,800 USD<span class="text-base font-semibold text-gray-500" data-i18n="sys.price.starting"> starting</span></p>
+            <ul class="feature-list">
+              <li data-i18n="sys.connected.item1">Web dashboard plus mobile-first app experience</li>
+              <li data-i18n="sys.connected.item2">Forms, status updates, and field workflows</li>
+              <li data-i18n="sys.connected.item3">Photo, file, or evidence capture when needed</li>
+              <li data-i18n="sys.connected.item4">Admin tools and team visibility</li>
+              <li data-i18n="sys.connected.item5">Deployment planning and launch support</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="apps" class="px-6 md:px-8 py-20 border-b border-gray-800">
+      <div class="max-w-7xl mx-auto">
+        <div class="max-w-3xl mb-12">
+          <p class="text-sm font-bold tracking-[0.18em] uppercase text-gray-500 mb-4" data-i18n="sys.apps.label">Apps & Interactive Projects</p>
+          <h2 class="text-3xl md:text-4xl font-bold mb-4" data-i18n="sys.apps.title">App pricing depends on release path.</h2>
+          <p class="text-gray-400 leading-8" data-i18n="sys.apps.body">
+            A mobile-friendly web app is usually the fastest first version. Native iOS or Android apps cost more because they require app-store setup, device testing, release builds, and long-term maintenance.
+          </p>
+        </div>
+
+        <div class="grid gap-6 lg:grid-cols-3">
+          <article class="system-card blue p-6">
+            <span class="system-icon blue" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="7" y="2" width="10" height="20" rx="2"></rect>
+                <path d="M11 18h2"></path>
+              </svg>
+            </span>
+            <h3 class="mt-5 text-xl font-bold" data-i18n="sys.prototype.title">Mobile App Prototype</h3>
+            <p class="mt-3 text-3xl font-extrabold">$1,200 USD<span class="text-sm font-semibold text-gray-500" data-i18n="sys.price.starting"> starting</span></p>
+            <ul class="feature-list app-list">
+              <li data-i18n="sys.prototype.item1">Clickable or working first version</li>
+              <li data-i18n="sys.prototype.item2">Core screens and user flow</li>
+              <li data-i18n="sys.prototype.item3">Good for validating an idea before full build</li>
+            </ul>
+          </article>
+
+          <article class="system-card blue p-6">
+            <span class="system-icon blue" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 3v18"></path>
+                <path d="M5 8h14"></path>
+                <path d="M5 16h14"></path>
+                <path d="M4 12h16"></path>
+              </svg>
+            </span>
+            <h3 class="mt-5 text-xl font-bold" data-i18n="sys.native.title">Native App Release</h3>
+            <p class="mt-3 text-3xl font-extrabold">$5,500 USD<span class="text-sm font-semibold text-gray-500" data-i18n="sys.price.starting"> starting</span></p>
+            <ul class="feature-list app-list">
+              <li data-i18n="sys.native.item1">iOS or Android app build</li>
+              <li data-i18n="sys.native.item2">Backend connection when needed</li>
+              <li data-i18n="sys.native.item3">App Store or Play Store release support</li>
+            </ul>
+          </article>
+
+          <article class="system-card blue p-6">
+            <span class="system-icon blue" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M6 12h4"></path>
+                <path d="M8 10v4"></path>
+                <path d="M15 11h.01"></path>
+                <path d="M18 13h.01"></path>
+                <rect x="3" y="7" width="18" height="10" rx="5"></rect>
+              </svg>
+            </span>
+            <h3 class="mt-5 text-xl font-bold" data-i18n="sys.game.title">Game or Interactive Prototype</h3>
+            <p class="mt-3 text-3xl font-extrabold">$1,500 USD<span class="text-sm font-semibold text-gray-500" data-i18n="sys.price.starting"> starting</span></p>
+            <ul class="feature-list app-list">
+              <li data-i18n="sys.game.item1">Playable core mechanic or demo</li>
+              <li data-i18n="sys.game.item2">UI, controls, and basic state</li>
+              <li data-i18n="sys.game.item3">Production game scope quoted separately</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="px-6 md:px-8 py-20 border-b border-gray-800">
+      <div class="max-w-7xl mx-auto">
+        <div class="grid gap-8 lg:grid-cols-[0.72fr_1.28fr]">
+          <div>
+            <p class="text-sm font-bold tracking-[0.18em] uppercase text-gray-500 mb-4" data-i18n="sys.scope.label">Scope Rules</p>
+            <h2 class="text-3xl md:text-4xl font-bold" data-i18n="sys.scope.title">Clear boundaries keep projects realistic.</h2>
+          </div>
+
+          <div class="scope-row">
+            <article>
+              <p class="text-emerald-300 font-bold mb-3" data-i18n="sys.scope.included.title">Included</p>
+              <p class="text-gray-400 leading-7" data-i18n="sys.scope.included.body">Planning, interface design, development, responsive layout, launch support, and the package-specific features.</p>
+            </article>
+            <article>
+              <p class="text-emerald-300 font-bold mb-3" data-i18n="sys.scope.quoted.title">Quoted Separately</p>
+              <p class="text-gray-400 leading-7" data-i18n="sys.scope.quoted.body">Payments, complex integrations, native multi-platform apps, hardware, offline sync, AI features, and full system replacements.</p>
+            </article>
+            <article>
+              <p class="text-emerald-300 font-bold mb-3" data-i18n="sys.scope.care.title">Monthly Care</p>
+              <p class="text-gray-400 leading-7" data-i18n="sys.scope.care.body">Support, monitoring, small improvements, and maintenance for systems start at $149 USD per month after launch.</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="px-6 md:px-8 py-20 text-center">
+      <h2 class="text-3xl md:text-4xl font-bold mb-5" data-i18n="sys.cta.title">Planning a system, app, or operational tool?</h2>
+      <p class="max-w-2xl mx-auto text-gray-400 leading-8 mb-8" data-i18n="sys.cta.body">
+        Send the workflow, the current tools you use, the team size, and whether you need a dashboard, app, automation, or full replacement.
+      </p>
+      <div class="flex flex-wrap justify-center gap-3">
+        <a href="mailto:bastidasystems@gmail.com?subject=System%20or%20app%20project%20request" class="inline-flex items-center justify-center px-6 py-3 bg-white text-black rounded-full font-semibold hover:opacity-85 transition" data-i18n="sys.cta.request">
+          Request System Quote
+        </a>
+        <a href="websites.html" class="inline-flex items-center justify-center px-6 py-3 border border-gray-600 rounded-full text-white hover:border-white transition" data-i18n="sys.cta.web">
+          Website Pricing
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="px-8 py-10 border-t border-gray-800 text-gray-500 text-sm text-center">
+    <div class="flex flex-wrap justify-center gap-6 mb-4 text-gray-400">
+      <a href="index.html#products" class="hover:text-white transition" data-i18n="nav.products">Work</a>
+      <a href="websites.html" class="hover:text-white transition" data-i18n="nav.websites">Websites</a>
+      <a href="systems.html" class="hover:text-white transition" data-i18n="nav.systems">Systems</a>
+      <a href="about.html" class="hover:text-white transition" data-i18n="nav.about">About</a>
+      <a href="portal.html" class="hover:text-white transition" data-i18n="nav.portal">Client Portal</a>
+      <a href="index.html#contact" class="hover:text-white transition" data-i18n="nav.contact">Contact</a>
+      <a href="privacy.html" class="hover:text-white transition" data-i18n="nav.privacy">Privacy</a>
+    </div>
+    <p data-i18n="footer.rights">© 2026 Bastida Systems. All rights reserved.</p>
+  </footer>
+</body>
+</html>
