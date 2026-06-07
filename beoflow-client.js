@@ -280,17 +280,21 @@ const MODULE_VISUALS = {
 };
 
 const INVENTORY_CATEGORY_VISUALS = [
-  { keywords: ['produce', 'vegetable', 'vegetables', 'fruit', 'fruits', 'herb', 'lettuce', 'tomato'], icon: 'leaf', className: 'category-produce' },
+  { keywords: ['produce', 'vegetable', 'vegetables', 'fruit', 'fruits', 'herb', 'lettuce', 'tomato'], icon: 'apple', className: 'category-produce' },
   { keywords: ['meat', 'beef', 'pork', 'protein'], icon: 'chefHat', className: 'category-protein' },
-  { keywords: ['poultry', 'chicken', 'turkey'], icon: 'chefHat', className: 'category-protein' },
-  { keywords: ['seafood', 'fish', 'shrimp', 'shellfish'], icon: 'droplet', className: 'category-seafood' },
-  { keywords: ['dairy', 'milk', 'cream', 'cheese', 'butter'], icon: 'droplet', className: 'category-dairy' },
-  { keywords: ['dry', 'goods', 'grain', 'grains', 'flour', 'rice', 'pasta', 'spice', 'spices', 'seasoning', 'seasonings', 'bakery'], icon: 'box', className: 'category-dry' },
-  { keywords: ['oil', 'oils', 'vinegar', 'vinegars', 'sauce', 'sauces', 'condiment', 'condiments'], icon: 'cup', className: 'category-condiment' },
+  { keywords: ['poultry', 'chicken', 'turkey'], icon: 'drumstick', className: 'category-protein' },
+  { keywords: ['seafood', 'fish', 'shrimp', 'shellfish'], icon: 'fish', className: 'category-seafood' },
+  { keywords: ['dairy', 'milk', 'cream', 'cheese', 'butter'], icon: 'milk', className: 'category-dairy' },
+  { keywords: ['grain', 'grains', 'rice', 'pasta'], icon: 'wheat', className: 'category-dry' },
+  { keywords: ['bakery', 'bread', 'dough'], icon: 'bread', className: 'category-dry' },
+  { keywords: ['dry', 'goods', 'flour', 'spice', 'spices', 'seasoning', 'seasonings'], icon: 'box', className: 'category-dry' },
+  { keywords: ['oil', 'oils', 'vinegar', 'vinegars'], icon: 'droplet', className: 'category-condiment' },
+  { keywords: ['sauce', 'sauces', 'condiment', 'condiments'], icon: 'cup', className: 'category-condiment' },
   { keywords: ['beverage', 'beverages', 'drink', 'juice', 'wine', 'beer'], icon: 'cup', className: 'category-beverage' },
-  { keywords: ['frozen', 'ice'], icon: 'package', className: 'category-frozen' },
-  { keywords: ['canned', 'can', 'cans'], icon: 'box', className: 'category-canned' },
-  { keywords: ['cleaning', 'supply', 'supplies', 'disposable', 'disposables'], icon: 'tag', className: 'category-supplies' }
+  { keywords: ['frozen', 'ice'], icon: 'snowflake', className: 'category-frozen' },
+  { keywords: ['canned', 'can', 'cans'], icon: 'can', className: 'category-canned' },
+  { keywords: ['cleaning', 'supply', 'supplies'], icon: 'spray', className: 'category-supplies' },
+  { keywords: ['disposable', 'disposables'], icon: 'package', className: 'category-supplies' }
 ];
 
 const INVENTORY_CATEGORY_OPTIONS = [
@@ -594,10 +598,13 @@ function renderIcon(name, extraClass = '') {
   const icons = {
     add: '<path d="M12 5v14M5 12h14"></path>',
     alert: '<path d="M12 9v4"></path><path d="M12 17h.01"></path><path d="M10.3 3.9 2.6 17.1A2 2 0 0 0 4.3 20h15.4a2 2 0 0 0 1.7-2.9L13.7 3.9a2 2 0 0 0-3.4 0Z"></path>',
+    apple: '<path d="M12 6c-2.8 0-5 2.3-5 5.7C7 16.7 9.6 21 12 21s5-4.3 5-9.3C17 8.3 14.8 6 12 6Z"></path><path d="M12 6c0-2 1.5-3 3-3"></path><path d="M9.5 5.3C9 4.3 8.2 3.8 7 4"></path>',
     archive: '<path d="M21 8v13H3V8"></path><path d="M1 3h22v5H1Z"></path><path d="M10 12h4"></path>',
     barChart: '<path d="M3 3v18h18"></path><path d="M7 16V9"></path><path d="M12 16V5"></path><path d="M17 16v-3"></path>',
     box: '<path d="m21 8-9-5-9 5 9 5 9-5Z"></path><path d="M3 8v8l9 5 9-5V8"></path><path d="M12 13v8"></path>',
+    bread: '<path d="M4 11a8 8 0 0 1 16 0v8H4v-8Z"></path><path d="M8 19v-5"></path><path d="M12 19v-6"></path><path d="M16 19v-5"></path>',
     calendar: '<path d="M8 2v4"></path><path d="M16 2v4"></path><path d="M3 10h18"></path><path d="M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"></path>',
+    can: '<ellipse cx="12" cy="5" rx="7" ry="3"></ellipse><path d="M5 5v14c0 1.7 3.1 3 7 3s7-1.3 7-3V5"></path><path d="M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"></path>',
     check: '<path d="m4 12 5 5L20 6"></path>',
     checklist: '<path d="M9 6h11"></path><path d="M9 12h11"></path><path d="M9 18h11"></path><path d="m3 6 1 1 2-2"></path><path d="m3 12 1 1 2-2"></path><path d="m3 18 1 1 2-2"></path>',
     chefHat: '<path d="M6 13.9V21h12v-7.1"></path><path d="M6.1 14A4 4 0 0 1 8 6.5 4.5 4.5 0 0 1 16 6.5 4 4 0 0 1 17.9 14"></path><path d="M8 17h8"></path>',
@@ -608,19 +615,25 @@ function renderIcon(name, extraClass = '') {
     close: '<path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>',
     cup: '<path d="M4 5h12v8a6 6 0 0 1-12 0V5Z"></path><path d="M16 8h2a3 3 0 0 1 0 6h-2"></path><path d="M3 21h18"></path>',
     droplet: '<path d="M12 2.5 6.5 9A7 7 0 1 0 17.5 9L12 2.5Z"></path>',
+    drumstick: '<path d="M15.5 5.5a5.5 5.5 0 0 1 0 7.8l-4.2 4.2a2.2 2.2 0 0 1-3.1 0l-1.4-1.4a2.2 2.2 0 0 1 0-3.1l4.2-4.2"></path><path d="M17 4a3 3 0 0 1 4 4"></path><path d="M18.5 8.5 21 11"></path>',
+    fish: '<path d="M3 12s4-6 10-6 8 6 8 6-2 6-8 6-10-6-10-6Z"></path><path d="m3 12-2-3v6l2-3Z"></path><path d="M16 12h.01"></path>',
     gauge: '<path d="M4 19a8 8 0 1 1 16 0"></path><path d="M12 14l4-4"></path><path d="M12 19h.01"></path>',
     leaf: '<path d="M5 21c8-1 15-8 16-16-8 1-15 8-16 16Z"></path><path d="M5 21c0-5 4-9 9-9"></path>',
     layers: '<path d="m12 2 9 5-9 5-9-5 9-5Z"></path><path d="m3 12 9 5 9-5"></path><path d="m3 17 9 5 9-5"></path>',
     book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-17A2.5 2.5 0 0 1 6.5 2Z"></path>',
+    milk: '<path d="M8 2h8l1 4v16H7V6l1-4Z"></path><path d="M7 6h10"></path><path d="M9 10h6"></path><path d="M10 14h4"></path>',
     package: '<path d="M16.5 9.4 7.5 4.2"></path><path d="M21 16V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.7Z"></path><path d="M3.3 7 12 12l8.7-5"></path><path d="M12 22V12"></path>',
     packageAdd: '<path d="M16.5 9.4 7.5 4.2"></path><path d="M21 12V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l1.5-.86"></path><path d="M3.3 7 12 12l8.7-5"></path><path d="M12 22V12"></path><path d="M18 14v6"></path><path d="M15 17h6"></path>',
     pencil: '<path d="m16 3 5 5L8 21H3v-5L16 3Z"></path><path d="m14 5 5 5"></path>',
     save: '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"></path><path d="M17 21v-8H7v8"></path><path d="M7 3v5h8"></path>',
     search: '<circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path>',
+    snowflake: '<path d="M12 2v20"></path><path d="m4.9 4.9 14.2 14.2"></path><path d="m19.1 4.9-14.2 14.2"></path><path d="M2 12h20"></path>',
+    spray: '<path d="M9 2h6v4H9Z"></path><path d="M12 6v3"></path><path d="M8 9h8l1 12H7L8 9Z"></path><path d="M18 11h3"></path><path d="M19 15h2"></path>',
     tag: '<path d="M20.6 13.2 13.2 20.6a2 2 0 0 1-2.8 0L3 13.2V3h10.2l7.4 7.4a2 2 0 0 1 0 2.8Z"></path><path d="M7.5 7.5h.01"></path>',
     trash: '<path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path>',
     users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>',
-    utensils: '<path d="M4 2v8"></path><path d="M7 2v8"></path><path d="M4 6h3"></path><path d="M5.5 10v12"></path><path d="M19 2v20"></path><path d="M15 2v8a4 4 0 0 0 4 4"></path>'
+    utensils: '<path d="M4 2v8"></path><path d="M7 2v8"></path><path d="M4 6h3"></path><path d="M5.5 10v12"></path><path d="M19 2v20"></path><path d="M15 2v8a4 4 0 0 0 4 4"></path>',
+    wheat: '<path d="M12 2v20"></path><path d="M12 6c-3 0-5-2-5-4 3 0 5 2 5 4Z"></path><path d="M12 10c-3 0-5-2-5-4 3 0 5 2 5 4Z"></path><path d="M12 14c-3 0-5-2-5-4 3 0 5 2 5 4Z"></path><path d="M12 18c3 0 5-2 5-4-3 0-5 2-5 4Z"></path>'
   };
   const body = icons[name] || icons.box;
   const classAttr = extraClass ? ` ${extraClass}` : '';
@@ -2387,7 +2400,7 @@ function renderInventoryCategoryGroup(category, records = []) {
   ));
 
   return `
-    <section class="inventory-category-group">
+    <section class="inventory-category-group ${escapeHtml(categoryVisual.className)}">
       <header class="inventory-category-header">
         <span class="inventory-category-icon ${escapeHtml(categoryVisual.className)}">${renderIcon(categoryVisual.icon)}</span>
         <div>
