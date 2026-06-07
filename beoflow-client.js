@@ -7,6 +7,8 @@ const missingAnonKeyValues = new Set([
 
 const DEFAULT_WASTE_PERCENTAGE = 0.1;
 const DEFAULT_FOOD_FACTOR = 1;
+const MAX_INLINE_RECIPE_IMAGE_BYTES = 1.5 * 1024 * 1024;
+const RECIPE_IMAGE_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 const INVENTORY_TYPE_OPTIONS = [
   { value: 'raw_ingredient', label: 'Raw Ingredient', icon: 'leaf' },
   { value: 'subrecipe', label: 'Subrecipe', icon: 'layers' },
@@ -116,7 +118,7 @@ const MODULE_SECTIONS = {
       { name: 'pax', label: 'Portions / Pax', type: 'number', min: '0', step: '0.01' },
       { name: 'prep_time', label: 'Prep Time', type: 'text', placeholder: '20 min' },
       { name: 'cook_time', label: 'Cook Time', type: 'text', placeholder: '35 min' },
-      { name: 'photo_url', label: 'Recipe Photo URL', type: 'url', placeholder: 'https://example.com/photo.jpg', wide: true },
+      { name: 'photo_url', label: 'Recipe Photo', type: 'image-file', wide: true },
       { name: 'procedure', label: 'Procedure', type: 'textarea', wide: true },
       { name: 'notes', label: 'Notes', type: 'textarea', wide: true },
       { name: 'status', label: 'Status', type: 'text', defaultValue: 'active' }
@@ -142,7 +144,6 @@ const MODULE_SECTIONS = {
       { name: 'recipe_number', label: 'Subrecipe Number', type: 'text' },
       { name: 'yield_quantity', label: 'Yield / Rendimiento', type: 'number', min: '0', step: '0.01' },
       { name: 'yield_unit', label: 'Yield Unit', type: 'text', placeholder: 'portions, lb, oz, trays' },
-      { name: 'photo_url', label: 'Subrecipe Photo URL', type: 'url', placeholder: 'https://example.com/photo.jpg', wide: true },
       { name: 'procedure', label: 'Procedure', type: 'textarea', wide: true },
       { name: 'notes', label: 'Notes', type: 'textarea', wide: true },
       { name: 'status', label: 'Status', type: 'text', defaultValue: 'active' }
@@ -2391,6 +2392,11 @@ function renderModuleList(section, records = state.moduleRecords[section] || [])
     return;
   }
 
+  if (section === 'subrecipes') {
+    renderSubrecipesSummaryList(records);
+    return;
+  }
+
   if (section === 'inventory') {
     renderInventoryList(records);
     return;
@@ -2526,9 +2532,17 @@ function renderInventoryIngredientRow(record) {
 }
 
 function renderRecipesInlineList(records = state.moduleRecords.recipes || []) {
-  const moduleConfig = getModuleConfig('recipes');
+  renderCostingSummaryList('recipes', records);
+}
+
+function renderSubrecipesSummaryList(records = state.moduleRecords.subrecipes || []) {
+  renderCostingSummaryList('subrecipes', records);
+}
+
+function renderCostingSummaryList(section, records = state.moduleRecords[section] || []) {
+  const activeModuleConfig = getModuleConfig(section);
   const count = records.length;
-  els['module-count-badge'].textContent = `${count} ${count === 1 ? moduleConfig.singular : moduleConfig.plural}`;
+  els['module-count-badge'].textContent = `${count} ${count === 1 ? activeModuleConfig.singular : activeModuleConfig.plural}`;
   els['module-empty-state'].hidden = count > 0;
   els['module-record-list'].hidden = count === 0;
 
@@ -2538,9 +2552,9 @@ function renderRecipesInlineList(records = state.moduleRecords.recipes || []) {
   }
 
   els['module-record-list'].innerHTML = `
-    ${renderInlineRecipeInventoryDatalist()}
+    ${section === 'recipes' ? renderInlineRecipeInventoryDatalist() : ''}
     <div class="recipe-summary-list">
-      ${records.map(record => renderRecipeSummaryCard(record)).join('')}
+      ${records.map(record => renderCostingSummaryCard(section, record)).join('')}
     </div>
   `;
 }
@@ -2548,6 +2562,7 @@ function renderRecipesInlineList(records = state.moduleRecords.recipes || []) {
 function getSafeImageUrl(value) {
   const rawUrl = String(value || '').trim();
   if (!rawUrl) return '';
+  if (/^data:image\/(jpeg|png|webp);base64,/i.test(rawUrl)) return rawUrl;
 
   try {
     const parsedUrl = new URL(rawUrl, window.location.href);
@@ -2604,7 +2619,7 @@ function getRecipeInventoryConnectionSummary(ingredients) {
   };
 }
 
-function renderRecipeThumbnail(record, title) {
+function renderRecipeThumbnail(record, title, section = 'recipes') {
   const photoUrl = getRecipePhotoUrl(record);
   if (photoUrl) {
     return `
@@ -2616,14 +2631,22 @@ function renderRecipeThumbnail(record, title) {
 
   return `
     <div class="recipe-summary-photo recipe-summary-photo-empty" aria-hidden="true">
-      ${renderIcon('image')}
+      ${renderIcon(section === 'subrecipes' ? 'layers' : 'image')}
     </div>
   `;
 }
 
 function renderRecipeSummaryCard(record) {
-  const visual = getModuleVisual('recipes');
-  const title = getRecordTitle('recipes', record);
+  return renderCostingSummaryCard('recipes', record);
+}
+
+function renderSubrecipeSummaryCard(record) {
+  return renderCostingSummaryCard('subrecipes', record);
+}
+
+function renderCostingSummaryCard(section, record) {
+  const visual = getModuleVisual(section);
+  const title = getRecordTitle(section, record);
   const status = record?.status || 'active';
   const ingredients = normalizeRecipeIngredients(record?.ingredients);
   const inventorySummary = getRecipeInventoryConnectionSummary(ingredients);
@@ -2631,14 +2654,17 @@ function renderRecipeSummaryCard(record) {
     ? `<span class="record-meta-chip">${escapeHtml(record.category)}</span>`
     : '';
   const yieldLabel = formatRecipeYield(record);
+  const isSubrecipe = section === 'subrecipes';
+  const eyebrow = isSubrecipe ? 'Subrecipe' : 'Recipe';
+  const viewLabel = isSubrecipe ? 'View Subrecipe' : 'View Recipe';
 
   return `
     <article class="record-card module-record-card recipe-summary-card" style="--module-accent: ${escapeHtml(visual.accent)}; --module-accent-soft: ${escapeHtml(visual.soft)};">
-      ${renderRecipeThumbnail(record, title)}
+      ${renderRecipeThumbnail(record, title, section)}
       <div class="recipe-summary-main">
         <div class="record-title-row">
           <div>
-            <p class="eyebrow">Recipe</p>
+            <p class="eyebrow">${escapeHtml(eyebrow)}</p>
             <h4>${escapeHtml(title)}</h4>
           </div>
           <div class="record-badges">
@@ -2650,13 +2676,14 @@ function renderRecipeSummaryCard(record) {
           ${categoryHtml}
           <span class="record-meta-chip">${renderIconLabel('box', `${ingredients.length} ${ingredients.length === 1 ? 'ingredient' : 'ingredients'}`)}</span>
           ${yieldLabel ? `<span class="record-meta-chip">${escapeHtml(`Yield ${yieldLabel}`)}</span>` : ''}
-          ${record?.prep_time ? `<span class="record-meta-chip">${renderIconLabel('clock', `Prep ${record.prep_time}`)}</span>` : ''}
+          ${!isSubrecipe && record?.prep_time ? `<span class="record-meta-chip">${renderIconLabel('clock', `Prep ${record.prep_time}`)}</span>` : ''}
+          ${isSubrecipe && record?.cost_per_yield_unit ? `<span class="record-meta-chip">${escapeHtml(`Unit cost ${formatMoney(record.cost_per_yield_unit)}`)}</span>` : ''}
         </div>
       </div>
       <div class="record-actions recipe-summary-actions">
-        <button type="button" class="primary-action icon-action" data-module-action="view-recipe" data-section="recipes" data-record-id="${escapeHtml(record.id)}">${renderIconLabel('book', 'View Recipe')}</button>
-        <button type="button" class="secondary-action icon-action" data-module-action="edit" data-section="recipes" data-record-id="${escapeHtml(record.id)}">${renderIconLabel('pencil', 'Edit')}</button>
-        <button type="button" class="secondary-action danger-action icon-action" data-module-action="archive" data-section="recipes" data-record-id="${escapeHtml(record.id)}">${renderIconLabel('archive', 'Archive')}</button>
+        <button type="button" class="primary-action icon-action" data-module-action="view-costing-record" data-section="${escapeHtml(section)}" data-record-id="${escapeHtml(record.id)}">${renderIconLabel(isSubrecipe ? 'layers' : 'book', viewLabel)}</button>
+        <button type="button" class="secondary-action icon-action" data-module-action="edit" data-section="${escapeHtml(section)}" data-record-id="${escapeHtml(record.id)}">${renderIconLabel('pencil', 'Edit')}</button>
+        <button type="button" class="secondary-action danger-action icon-action" data-module-action="archive" data-section="${escapeHtml(section)}" data-record-id="${escapeHtml(record.id)}">${renderIconLabel('archive', 'Archive')}</button>
       </div>
     </article>
   `;
@@ -2712,14 +2739,23 @@ function renderRecipeDetailTextSection(title, value) {
 }
 
 function renderRecipeDetailView(record) {
-  const title = getRecordTitle('recipes', record);
+  return renderCostingDetailView('recipes', record);
+}
+
+function renderSubrecipeDetailView(record) {
+  return renderCostingDetailView('subrecipes', record);
+}
+
+function renderCostingDetailView(section, record) {
+  const title = getRecordTitle(section, record);
   const ingredients = normalizeRecipeIngredients(record?.ingredients);
   const inventorySummary = getRecipeInventoryConnectionSummary(ingredients);
   const photoUrl = getRecipePhotoUrl(record);
   const yieldLabel = formatRecipeYield(record) || 'Not set';
+  const isSubrecipe = section === 'subrecipes';
   const photoHtml = photoUrl
     ? `<img src="${escapeHtml(photoUrl)}" alt="${escapeHtml(title)} photo" loading="lazy">`
-    : `<div class="recipe-detail-photo-empty">${renderIcon('image')}<span>No photo yet</span></div>`;
+    : `<div class="recipe-detail-photo-empty">${renderIcon(isSubrecipe ? 'layers' : 'image')}<span>${isSubrecipe ? 'Reusable prep' : 'No photo yet'}</span></div>`;
 
   return `
     <div class="recipe-detail-view form-field-wide">
@@ -2733,8 +2769,8 @@ function renderRecipeDetailView(record) {
           <div class="recipe-detail-meta-grid">
             ${renderRecipeDetailMetaItem('Category', record?.category, 'tag')}
             ${renderRecipeDetailMetaItem('Yield quantity', yieldLabel, 'box')}
-            ${renderRecipeDetailMetaItem('Prep time', record?.prep_time, 'clock')}
-            ${renderRecipeDetailMetaItem('Cook time', record?.cook_time, 'clock')}
+            ${isSubrecipe ? renderRecipeDetailMetaItem('Cost per yield', record?.cost_per_yield_unit ? formatMoney(record.cost_per_yield_unit) : null, 'tag') : renderRecipeDetailMetaItem('Prep time', record?.prep_time, 'clock')}
+            ${isSubrecipe ? renderRecipeDetailMetaItem('Total cost', record?.total_cost ? formatMoney(record.total_cost) : null, 'tag') : renderRecipeDetailMetaItem('Cook time', record?.cook_time, 'clock')}
             ${renderRecipeDetailMetaItem('Ingredients', `${ingredients.length} ${ingredients.length === 1 ? 'ingredient' : 'ingredients'}`, 'checklist')}
             ${renderRecipeDetailMetaItem('Inventory', inventorySummary.label, inventorySummary.icon)}
           </div>
@@ -2750,7 +2786,7 @@ function renderRecipeDetailView(record) {
       ${renderRecipeDetailTextSection('Notes', record?.notes)}
 
       <div class="recipe-detail-actions">
-        <button type="button" class="primary-action icon-action" data-recipe-detail-edit="${escapeHtml(record?.id || '')}">${renderIconLabel('pencil', 'Edit Recipe')}</button>
+        <button type="button" class="primary-action icon-action" data-costing-detail-edit="${escapeHtml(record?.id || '')}" data-section="${escapeHtml(section)}">${renderIconLabel('pencil', isSubrecipe ? 'Edit Subrecipe' : 'Edit Recipe')}</button>
       </div>
     </div>
   `;
@@ -3100,6 +3136,75 @@ function getRecordById(section, recordId) {
   return (state.moduleRecords[section] || []).find(record => String(record.id) === String(recordId));
 }
 
+function renderImageFileField(field, value, requiredAttr = '', wideClass = '') {
+  const imageUrl = getSafeImageUrl(value);
+  return `
+    <label class="form-field image-file-field${wideClass}" data-image-file-field>
+      <span>${escapeHtml(field.label)}</span>
+      <input type="hidden" name="${escapeHtml(field.name)}" value="${escapeHtml(value || '')}" data-image-file-value>
+      <div class="image-file-control">
+        <div class="image-file-preview${imageUrl ? '' : ' image-file-preview-empty'}" data-image-file-preview>
+          ${imageUrl ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(field.label)} preview">` : `${renderIcon('image')}<span>No image selected</span>`}
+        </div>
+        <div class="image-file-actions">
+          <input type="file" accept="image/jpeg,image/png,image/webp"${requiredAttr} data-image-file-input data-image-file-target="${escapeHtml(field.name)}">
+          <small>Choose a JPG, PNG, or WebP image. No URL needed.</small>
+          <button type="button" class="secondary-action icon-action" data-image-file-remove="${escapeHtml(field.name)}"${imageUrl ? '' : ' hidden'}>${renderIconLabel('close', 'Remove image')}</button>
+        </div>
+      </div>
+    </label>
+  `;
+}
+
+function updateImageFileFieldPreview(fieldElement, imageValue = '') {
+  if (!fieldElement) return;
+  const preview = fieldElement.querySelector('[data-image-file-preview]');
+  const hiddenInput = fieldElement.querySelector('[data-image-file-value]');
+  const removeButton = fieldElement.querySelector('[data-image-file-remove]');
+  const imageUrl = getSafeImageUrl(imageValue);
+
+  if (hiddenInput) hiddenInput.value = imageUrl;
+  if (removeButton) removeButton.hidden = !imageUrl;
+  if (!preview) return;
+
+  preview.classList.toggle('image-file-preview-empty', !imageUrl);
+  preview.innerHTML = imageUrl
+    ? `<img src="${escapeHtml(imageUrl)}" alt="Recipe photo preview">`
+    : `${renderIcon('image')}<span>No image selected</span>`;
+}
+
+function readImageFileAsDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ''));
+    reader.onerror = () => reject(reader.error || new Error('Unable to read image file.'));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function handleImageFileInputChange(input) {
+  const file = input?.files?.[0];
+  if (!file) return;
+  if (!RECIPE_IMAGE_MIME_TYPES.has(file.type)) {
+    input.value = '';
+    throw new Error('Choose a JPG, PNG, or WebP image.');
+  }
+  if (file.size > MAX_INLINE_RECIPE_IMAGE_BYTES) {
+    input.value = '';
+    throw new Error('Image is too large. Choose an image under 1.5 MB.');
+  }
+
+  const imageValue = await readImageFileAsDataUrl(file);
+  updateImageFileFieldPreview(input.closest('[data-image-file-field]'), imageValue);
+}
+
+function clearImageFileField(button) {
+  const fieldElement = button?.closest('[data-image-file-field]');
+  const fileInput = fieldElement?.querySelector('[data-image-file-input]');
+  if (fileInput) fileInput.value = '';
+  updateImageFileFieldPreview(fieldElement, '');
+}
+
 function renderFormField(field, record = null) {
   const rawValue = record?.[field.name] ?? field.defaultValue ?? '';
   const value = rawValue === null || rawValue === undefined ? '' : String(rawValue);
@@ -3116,6 +3221,10 @@ function renderFormField(field, record = null) {
         <textarea name="${escapeHtml(field.name)}"${requiredAttr}${placeholderAttr}>${escapeHtml(value)}</textarea>
       </label>
     `;
+  }
+
+  if (field.type === 'image-file') {
+    return renderImageFileField(field, value, requiredAttr, wideClass);
   }
 
   if (field.type === 'recipe-select') {
@@ -3966,8 +4075,13 @@ function openModuleModal(section, record = null, options = {}) {
 }
 
 function openRecipeDetailModal(record) {
-  if (!record?.id) return;
-  state.modalSection = 'recipe-details';
+  openCostingDetailModal('recipes', record);
+}
+
+function openCostingDetailModal(section, record) {
+  if (!record?.id || !isCostingRecipeSection(section)) return;
+  const moduleConfig = getModuleConfig(section);
+  state.modalSection = `${section}-details`;
   state.editingRecord = record;
   state.recipeIngredientsDraft = [];
   state.recipeIngredientSearch = '';
@@ -3975,13 +4089,13 @@ function openRecipeDetailModal(record) {
   state.recipeQuickIngredientOpen = false;
   showAlert(els['module-form-message'], '');
   els['module-form'].classList.add('module-form-detail-mode');
-  els['module-modal-title'].textContent = getRecordTitle('recipes', record);
-  els['module-modal-subtitle'].textContent = `Complete recipe details for ${state.activeClient?.name || 'this workspace'}.`;
+  els['module-modal-title'].textContent = getRecordTitle(section, record);
+  els['module-modal-subtitle'].textContent = `Complete ${moduleConfig.singular} details for ${state.activeClient?.name || 'this workspace'}.`;
   els['module-save-button'].hidden = true;
   els['module-cancel-button'].textContent = 'Close';
   els['module-modal-close'].textContent = 'Close';
   els['module-modal-close'].classList.remove('icon-action');
-  els['module-form-fields'].innerHTML = renderRecipeDetailView(record);
+  els['module-form-fields'].innerHTML = renderCostingDetailView(section, record);
   els['module-modal'].hidden = false;
 }
 
@@ -5520,9 +5634,10 @@ function bindEvents() {
 
     const section = actionButton.dataset.section;
     const recordId = actionButton.dataset.recordId;
-    if (actionButton.dataset.moduleAction === 'view-recipe') {
-      const record = getRecordById('recipes', recordId);
-      if (record) openRecipeDetailModal(record);
+    if (actionButton.dataset.moduleAction === 'view-costing-record' || actionButton.dataset.moduleAction === 'view-recipe') {
+      const detailSection = actionButton.dataset.moduleAction === 'view-recipe' ? 'recipes' : section;
+      const record = getRecordById(detailSection, recordId);
+      if (record) openCostingDetailModal(detailSection, record);
       return;
     }
 
@@ -5670,7 +5785,17 @@ function bindEvents() {
     }
   });
 
-  els['module-form-fields'].addEventListener('change', event => {
+  els['module-form-fields'].addEventListener('change', async event => {
+    if (event.target.hasAttribute('data-image-file-input')) {
+      showAlert(els['module-form-message'], '');
+      try {
+        await handleImageFileInputChange(event.target);
+      } catch (error) {
+        showAlert(els['module-form-message'], error.message || 'Unable to load image.');
+      }
+      return;
+    }
+
     const nameIndex = event.target.dataset.recipeIngredientName;
     if (nameIndex !== undefined) {
       refreshRecipeIngredientBuilder();
@@ -5700,10 +5825,16 @@ function bindEvents() {
     const clickedButton = event.target.closest('button');
     if (!clickedButton) return;
 
-    const recipeDetailEditId = clickedButton.dataset.recipeDetailEdit;
-    if (recipeDetailEditId) {
-      const record = getRecordById('recipes', recipeDetailEditId);
-      if (record) openModuleModal('recipes', record);
+    if (clickedButton.hasAttribute('data-image-file-remove')) {
+      clearImageFileField(clickedButton);
+      return;
+    }
+
+    const costingDetailEditId = clickedButton.dataset.costingDetailEdit || clickedButton.dataset.recipeDetailEdit;
+    if (costingDetailEditId) {
+      const detailSection = clickedButton.dataset.section || 'recipes';
+      const record = getRecordById(detailSection, costingDetailEditId);
+      if (record) openModuleModal(detailSection, record);
       return;
     }
 

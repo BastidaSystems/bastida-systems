@@ -355,7 +355,6 @@ create table if not exists public.beoflow_subrecipes (
   recipe_number text,
   yield_quantity numeric(12, 3),
   yield_unit text,
-  photo_url text,
   procedure text,
   notes text,
   ingredients jsonb not null default '[]'::jsonb,
@@ -379,9 +378,6 @@ create table if not exists public.beoflow_subrecipes (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
-
-alter table if exists public.beoflow_subrecipes
-  add column if not exists photo_url text;
 
 create table if not exists public.beoflow_production_logs (
   id uuid primary key default gen_random_uuid(),
