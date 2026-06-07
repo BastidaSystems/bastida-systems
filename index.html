@@ -222,6 +222,33 @@
       opacity: 0.32;
     }
 
+    @keyframes industryBackgroundDrift {
+      0% {
+        background-position: center, center, 46% 50%;
+        background-size: 100% 100%, 100% 100%, 122% 122%;
+      }
+
+      50% {
+        background-position: center, center, 54% 46%;
+        background-size: 100% 100%, 100% 100%, 132% 132%;
+      }
+
+      100% {
+        background-position: center, center, 48% 56%;
+        background-size: 100% 100%, 100% 100%, 126% 126%;
+      }
+    }
+
+    @keyframes industryGlowDrift {
+      0% {
+        transform: translate3d(-5%, -4%, 0) scale(1.04);
+      }
+
+      100% {
+        transform: translate3d(6%, 5%, 0) scale(1.12);
+      }
+    }
+
     .industries-intro {
       position: relative;
       z-index: 2;
@@ -282,6 +309,16 @@
       background: #020617;
     }
 
+    .industries-interactive-layout {
+      position: relative;
+      z-index: 2;
+      display: block;
+      background: #020617;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+    }
+
     .industry-panel {
       --industry-accent: #38bdf8;
       position: relative;
@@ -290,40 +327,81 @@
       align-items: flex-end;
       min-height: 43rem;
       flex: 1 1 0;
-      margin-left: -4.6rem;
-      padding: 7rem 4.5rem 4.8rem 6.4rem;
-      clip-path: polygon(11% 0, 100% 0, 89% 100%, 0 100%);
+      margin-left: -6.75rem;
+      padding: 7rem 4.2rem 4.8rem 8.2rem;
+      clip-path: polygon(17% 0, 100% 0, 83% 100%, 0 100%);
       color: #fff;
       background-image:
-        linear-gradient(180deg, rgba(2, 6, 23, 0.16), rgba(2, 6, 23, 0.82)),
-        linear-gradient(120deg, var(--industry-tint), rgba(2, 6, 23, 0.74)),
+        linear-gradient(180deg, rgba(2, 6, 23, 0.02), rgba(2, 6, 23, 0.42)),
+        linear-gradient(120deg, var(--industry-tint), rgba(2, 6, 23, 0.34)),
         var(--industry-image);
-      background-size: cover;
-      background-position: center;
+      background-size: 100% 100%, 100% 100%, 126% 126%;
+      background-position: center, center, center;
       border-left: 1px solid rgba(255, 255, 255, 0.42);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+        inset 0 0 90px color-mix(in srgb, var(--industry-accent) 18%, transparent);
+      animation: industryBackgroundDrift 18s ease-in-out infinite alternate;
+      cursor: pointer;
+      transform: translateZ(0);
+      transition: transform 220ms ease, filter 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
     }
 
     .industry-panel:first-child {
       margin-left: 0;
-      padding-left: 4.5rem;
-      clip-path: polygon(0 0, 100% 0, 89% 100%, 0 100%);
+      padding-left: 4.75rem;
+      clip-path: polygon(0 0, 100% 0, 83% 100%, 0 100%);
       border-left: 0;
     }
 
     .industry-panel:last-child {
-      clip-path: polygon(11% 0, 100% 0, 100% 100%, 0 100%);
+      clip-path: polygon(17% 0, 100% 0, 100% 100%, 0 100%);
       padding-right: 4.5rem;
+    }
+
+    .industry-panel:nth-child(2) {
+      animation-delay: -4s;
+    }
+
+    .industry-panel:nth-child(3) {
+      animation-delay: -8s;
+    }
+
+    .industry-panel:nth-child(4) {
+      animation-delay: -12s;
+    }
+
+    .industry-panel:focus-visible {
+      outline: 3px solid var(--industry-accent);
+      outline-offset: -8px;
+    }
+
+    .industry-panel.is-active {
+      z-index: 5;
+      transform: translateY(-0.45rem) scale(1.025);
+      filter: saturate(1.24) brightness(1.13);
+      border-color: color-mix(in srgb, var(--industry-accent) 78%, #ffffff 22%);
+      box-shadow:
+        0 0 0 1px color-mix(in srgb, var(--industry-accent) 72%, transparent),
+        0 26px 90px color-mix(in srgb, var(--industry-accent) 38%, transparent),
+        inset 0 0 110px color-mix(in srgb, var(--industry-accent) 28%, transparent);
+    }
+
+    .industry-panel:not(.is-active) {
+      filter: saturate(0.9) brightness(0.94);
     }
 
     .industry-panel::before {
       content: "";
       position: absolute;
-      inset: 0;
+      inset: -12%;
       z-index: -1;
       background:
-        linear-gradient(90deg, rgba(255, 255, 255, 0.08), transparent 22%, transparent 78%, rgba(255, 255, 255, 0.06)),
-        radial-gradient(circle at 72% 30%, color-mix(in srgb, var(--industry-accent) 22%, transparent), transparent 28%);
-      opacity: 0.95;
+        radial-gradient(circle at 30% 18%, color-mix(in srgb, var(--industry-accent) 34%, transparent), transparent 28%),
+        radial-gradient(circle at 74% 35%, rgba(255, 255, 255, 0.18), transparent 26%),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.13), transparent 24%, transparent 76%, rgba(255, 255, 255, 0.1));
+      opacity: 0.9;
+      animation: industryGlowDrift 13s ease-in-out infinite alternate;
     }
 
     .industry-panel::after {
@@ -331,7 +409,9 @@
       position: absolute;
       inset: 0;
       z-index: -1;
-      background: linear-gradient(180deg, transparent 18%, rgba(0, 0, 0, 0.74) 100%);
+      background:
+        linear-gradient(180deg, rgba(0, 0, 0, 0.02) 0%, rgba(0, 0, 0, 0.12) 35%, rgba(0, 0, 0, 0.56) 100%),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.42), transparent 42%, rgba(0, 0, 0, 0.24));
     }
 
     .industry-panel-content {
@@ -396,12 +476,18 @@
     }
 
     .industry-link {
+      border: 0;
+      padding: 0;
+      background: transparent;
       display: inline-flex;
       align-items: center;
       gap: 0.55rem;
       margin-top: 2.1rem;
       color: var(--industry-accent);
       font-weight: 800;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
       transition: gap 180ms ease, color 180ms ease;
     }
 
@@ -415,7 +501,131 @@
       color: #fff;
     }
 
+    .industry-products-shell {
+      position: absolute;
+      right: 1.5rem;
+      bottom: 1.5rem;
+      z-index: 6;
+      width: min(27rem, calc(100% - 3rem));
+      max-height: calc(43rem - 3rem);
+      min-height: 0;
+      padding: 2rem;
+      overflow: auto;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background:
+        radial-gradient(circle at 20% 10%, color-mix(in srgb, var(--active-industry-accent, #38bdf8) 18%, transparent), transparent 30%),
+        linear-gradient(160deg, rgba(15, 23, 42, 0.94), rgba(2, 6, 23, 0.98));
+      box-shadow:
+        0 34px 90px rgba(0, 0, 0, 0.56),
+        0 0 0 1px color-mix(in srgb, var(--active-industry-accent, #38bdf8) 18%, transparent);
+      backdrop-filter: blur(18px);
+    }
+
+    .industry-products-panel {
+      display: grid;
+      gap: 1rem;
+      max-width: 72rem;
+      margin: 0 auto;
+      animation: industryPanelReveal 220ms ease;
+    }
+
+    .industry-products-panel[hidden] {
+      display: none;
+    }
+
+    @keyframes industryPanelReveal {
+      from {
+        opacity: 0;
+        transform: translateX(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .industry-products-kicker {
+      color: var(--active-industry-accent, #38bdf8);
+      font-size: 0.72rem;
+      font-weight: 900;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .industry-products-title {
+      margin: 0;
+      color: #fff;
+      font-size: clamp(1.55rem, 2vw, 2.2rem);
+      font-weight: 850;
+      letter-spacing: 0;
+      line-height: 1.05;
+    }
+
+    .industry-products-copy {
+      margin: 0 0 0.65rem;
+      color: rgba(226, 232, 240, 0.78);
+      line-height: 1.65;
+    }
+
+    .industry-product-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.9rem;
+    }
+
+    .industry-product-card {
+      display: grid;
+      gap: 0.55rem;
+      padding: 1rem;
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, color-mix(in srgb, var(--active-industry-accent, #38bdf8) 12%, transparent), transparent),
+        rgba(15, 23, 42, 0.72);
+      color: #e2e8f0;
+      transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .industry-product-card:hover {
+      transform: translateY(-2px);
+      border-color: color-mix(in srgb, var(--active-industry-accent, #38bdf8) 70%, #ffffff 15%);
+      box-shadow: 0 18px 50px color-mix(in srgb, var(--active-industry-accent, #38bdf8) 24%, transparent);
+    }
+
+    .industry-product-card strong {
+      color: #fff;
+      font-size: 1.08rem;
+      letter-spacing: 0;
+    }
+
+    .industry-product-card p {
+      margin: 0;
+      color: rgba(226, 232, 240, 0.78);
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
+    .industry-product-meta {
+      color: var(--active-industry-accent, #38bdf8);
+      font-size: 0.72rem;
+      font-weight: 850;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .industry-product-action {
+      color: var(--active-industry-accent, #38bdf8);
+      font-size: 0.88rem;
+      font-weight: 850;
+    }
+
     @media (max-width: 1180px) {
+      .industries-interactive-layout {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
       .industries-panel-row {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -428,13 +638,30 @@
         min-height: 34rem;
         margin-left: 0;
         padding: 4.5rem 2.25rem 3.25rem;
-        clip-path: polygon(0 0, 100% 0, 94% 100%, 0 100%);
+        clip-path: polygon(0 0, 100% 0, 88% 100%, 0 100%);
         border-left: 0;
         border-top: 1px solid rgba(255, 255, 255, 0.24);
       }
 
       .industry-panel:nth-child(2n) {
-        clip-path: polygon(6% 0, 100% 0, 100% 100%, 0 100%);
+        clip-path: polygon(12% 0, 100% 0, 100% 100%, 0 100%);
+      }
+
+      .industry-products-shell {
+        position: relative;
+        right: auto;
+        bottom: auto;
+        width: auto;
+        max-height: none;
+        min-height: 0;
+        border-left: 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
+        overflow: visible;
+        box-shadow: 0 -28px 90px rgba(0, 0, 0, 0.38);
+      }
+
+      .industry-product-list {
+        grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
       }
     }
 
@@ -481,6 +708,10 @@
 
       .industry-panel h3 {
         max-width: 18rem;
+      }
+
+      .industry-products-shell {
+        padding: 1.25rem;
       }
     }
 
@@ -1104,7 +1335,10 @@
       .product-panel,
       .product-panel::before,
       .product-preview img,
+      .industry-panel,
+      .industry-panel::before,
       .collaboration-card {
+        animation: none;
         transition: none;
       }
     }
@@ -1201,14 +1435,24 @@
         'industries.heading': 'Powering a Better Future',
         'industries.intro': 'Bastida Systems builds innovative digital solutions across the industries that matter most.',
         'industries.learnMore': 'Learn more',
+        'industries.openProduct': 'Open product',
+        'industries.productsEyebrow': 'Selected industry',
         'industries.hospitality.title': 'Hospitality',
         'industries.hospitality.copy': 'Technology solutions for hotels, restaurants, food & beverage, tourism, and transportation. We help businesses streamline operations and deliver better experiences.',
+        'industries.hospitality.productsTitle': 'Hospitality products',
+        'industries.hospitality.productsCopy': 'Operational tools for kitchens, restaurants, hotels, and service teams.',
         'industries.environment.title': 'Environmental Care',
         'industries.environment.copy': 'Smart water filtration and monitoring solutions designed to protect resources, improve efficiency, and support a cleaner future.',
+        'industries.environment.productsTitle': 'Environmental Care products',
+        'industries.environment.productsCopy': 'Water filtration intelligence and monitoring tools for cleaner operations.',
         'industries.gaming.title': 'Gaming & Entertainment',
         'industries.gaming.copy': 'We create immersive games and digital entertainment experiences that connect, inspire, and engage users.',
+        'industries.gaming.productsTitle': 'Gaming & Entertainment products',
+        'industries.gaming.productsCopy': 'Digital entertainment and visual experience projects already in the Bastida Systems portfolio.',
         'industries.innovation.title': 'Innovation & Startups',
         'industries.innovation.copy': 'We build and scale innovative digital products and platforms, turning ideas into real solutions for growing businesses.',
+        'industries.innovation.productsTitle': 'Innovation & Startups products',
+        'industries.innovation.productsCopy': 'Digital platforms and modern web products for growing brands and emerging ideas.',
         'collab.heading': 'Companies & Collaborations',
         'collab.intro': 'Companies and founders working with Bastida Systems across operations software, client websites, scheduling, e-commerce, and production brands.',
         'collab.portalCta': 'Open Client Portal',
@@ -1314,14 +1558,24 @@
         'industries.heading': 'Impulsando un mejor futuro',
         'industries.intro': 'Bastida Systems crea soluciones digitales innovadoras para las industrias que mas importan.',
         'industries.learnMore': 'Conocer mas',
+        'industries.openProduct': 'Abrir producto',
+        'industries.productsEyebrow': 'Industria seleccionada',
         'industries.hospitality.title': 'Hospitality',
         'industries.hospitality.copy': 'Soluciones tecnologicas para hoteles, restaurantes, food & beverage, turismo y transporte. Ayudamos a optimizar operaciones y entregar mejores experiencias.',
+        'industries.hospitality.productsTitle': 'Productos de Hospitality',
+        'industries.hospitality.productsCopy': 'Herramientas operativas para cocinas, restaurantes, hoteles y equipos de servicio.',
         'industries.environment.title': 'Environmental Care',
         'industries.environment.copy': 'Soluciones inteligentes de filtracion y monitoreo de agua para proteger recursos, mejorar eficiencia y apoyar un futuro mas limpio.',
+        'industries.environment.productsTitle': 'Productos de Environmental Care',
+        'industries.environment.productsCopy': 'Inteligencia de filtracion de agua y monitoreo para operaciones mas limpias.',
         'industries.gaming.title': 'Gaming & Entertainment',
         'industries.gaming.copy': 'Creamos videojuegos y experiencias digitales inmersivas que conectan, inspiran y atraen a los usuarios.',
+        'industries.gaming.productsTitle': 'Productos de Gaming & Entertainment',
+        'industries.gaming.productsCopy': 'Proyectos de entretenimiento digital y experiencia visual que ya existen en el portafolio de Bastida Systems.',
         'industries.innovation.title': 'Innovation & Startups',
         'industries.innovation.copy': 'Construimos y escalamos productos y plataformas digitales innovadoras, convirtiendo ideas en soluciones reales para negocios en crecimiento.',
+        'industries.innovation.productsTitle': 'Productos de Innovation & Startups',
+        'industries.innovation.productsCopy': 'Plataformas digitales y productos web modernos para marcas en crecimiento e ideas emergentes.',
         'collab.heading': 'Empresas y Colaboraciones',
         'collab.intro': 'Empresas y fundadores que trabajan con Bastida Systems en software operativo, sitios web, horarios, e-commerce y marcas de producción.',
         'collab.portalCta': 'Abrir Portal de Clientes',
@@ -1810,104 +2064,199 @@
       </p>
     </div>
 
-    <div class="industries-panel-row" aria-label="Industries served by Bastida Systems">
-      <article
-        class="industry-panel"
-        style="--industry-accent: #38bdf8; --industry-tint: rgba(8, 47, 73, 0.82); --industry-image: url('https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1400&q=85'), url('img/beoflow-dashboard.jpeg');"
-      >
-        <div class="industry-panel-content">
-          <span class="industry-icon" aria-hidden="true">
-            <svg viewBox="0 0 48 48">
-              <path d="M8 30h32"></path>
-              <path d="M12 30a12 12 0 0 1 24 0"></path>
-              <path d="M24 14v-4"></path>
-              <path d="M19 10h10"></path>
-              <path d="M11 36h26"></path>
-            </svg>
-          </span>
-          <span class="industry-number">01</span>
-          <h3 data-i18n="industries.hospitality.title">Hospitality</h3>
-          <span class="industry-line" aria-hidden="true"></span>
-          <p data-i18n="industries.hospitality.copy">
-            Technology solutions for hotels, restaurants, food & beverage, tourism, and transportation. We help businesses streamline operations and deliver better experiences.
-          </p>
-          <a href="beoflow.html" class="industry-link" data-i18n="industries.learnMore">Learn more</a>
-        </div>
-      </article>
+    <div class="industries-interactive-layout">
+      <div class="industries-panel-row" role="tablist" aria-label="Industries served by Bastida Systems">
+        <article
+          id="industry-tab-hospitality"
+          class="industry-panel is-active"
+          data-industry-panel="hospitality"
+          role="tab"
+          tabindex="0"
+          aria-selected="true"
+          aria-controls="industry-products-hospitality"
+          style="--industry-accent: #38bdf8; --industry-tint: rgba(8, 47, 73, 0.46); --industry-image: url('https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1400&q=85'), url('img/beoflow-dashboard.jpeg');"
+        >
+          <div class="industry-panel-content">
+            <span class="industry-icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48">
+                <path d="M8 30h32"></path>
+                <path d="M12 30a12 12 0 0 1 24 0"></path>
+                <path d="M24 14v-4"></path>
+                <path d="M19 10h10"></path>
+                <path d="M11 36h26"></path>
+              </svg>
+            </span>
+            <span class="industry-number">01</span>
+            <h3 data-i18n="industries.hospitality.title">Hospitality</h3>
+            <span class="industry-line" aria-hidden="true"></span>
+            <p data-i18n="industries.hospitality.copy">
+              Technology solutions for hotels, restaurants, food & beverage, tourism, and transportation. We help businesses streamline operations and deliver better experiences.
+            </p>
+            <span class="industry-link" data-i18n="industries.learnMore">Learn more</span>
+          </div>
+        </article>
 
-      <article
-        class="industry-panel"
-        style="--industry-accent: #7ddc3f; --industry-tint: rgba(20, 83, 45, 0.8); --industry-image: url('https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=1400&q=85'), url('img/filtracore-dashboard.jpeg');"
-      >
-        <div class="industry-panel-content">
-          <span class="industry-icon" aria-hidden="true">
-            <svg viewBox="0 0 48 48">
-              <path d="M24 6c8 9 12 15 12 22a12 12 0 0 1-24 0c0-7 4-13 12-22Z"></path>
-              <path d="M20 34c5-10 12-13 18-13"></path>
-              <path d="M31 23c.8 5-.8 9-4.7 12"></path>
-            </svg>
-          </span>
-          <span class="industry-number">02</span>
-          <h3 data-i18n="industries.environment.title">Environmental Care</h3>
-          <span class="industry-line" aria-hidden="true"></span>
-          <p data-i18n="industries.environment.copy">
-            Smart water filtration and monitoring solutions designed to protect resources, improve efficiency, and support a cleaner future.
-          </p>
-          <a href="filtracore.html" class="industry-link" data-i18n="industries.learnMore">Learn more</a>
-        </div>
-      </article>
+        <article
+          id="industry-tab-environment"
+          class="industry-panel"
+          data-industry-panel="environment"
+          role="tab"
+          tabindex="-1"
+          aria-selected="false"
+          aria-controls="industry-products-environment"
+          style="--industry-accent: #7ddc3f; --industry-tint: rgba(20, 83, 45, 0.42); --industry-image: url('https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=1400&q=85'), url('img/filtracore-dashboard.jpeg');"
+        >
+          <div class="industry-panel-content">
+            <span class="industry-icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48">
+                <path d="M24 6c8 9 12 15 12 22a12 12 0 0 1-24 0c0-7 4-13 12-22Z"></path>
+                <path d="M20 34c5-10 12-13 18-13"></path>
+                <path d="M31 23c.8 5-.8 9-4.7 12"></path>
+              </svg>
+            </span>
+            <span class="industry-number">02</span>
+            <h3 data-i18n="industries.environment.title">Environmental Care</h3>
+            <span class="industry-line" aria-hidden="true"></span>
+            <p data-i18n="industries.environment.copy">
+              Smart water filtration and monitoring solutions designed to protect resources, improve efficiency, and support a cleaner future.
+            </p>
+            <span class="industry-link" data-i18n="industries.learnMore">Learn more</span>
+          </div>
+        </article>
 
-      <article
-        id="industry-gaming"
-        class="industry-panel"
-        style="--industry-accent: #a855f7; --industry-tint: rgba(58, 12, 102, 0.82); --industry-image: url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=85');"
-      >
-        <div class="industry-panel-content">
-          <span class="industry-icon" aria-hidden="true">
-            <svg viewBox="0 0 48 48">
-              <path d="M15 18h18a8 8 0 0 1 7.7 5.8l2.2 8.1a5 5 0 0 1-8.7 4.4l-4.1-4.6H17.9l-4.1 4.6a5 5 0 0 1-8.7-4.4l2.2-8.1A8 8 0 0 1 15 18Z"></path>
-              <path d="M17 24v7"></path>
-              <path d="M13.5 27.5h7"></path>
-              <path d="M31 26h.1"></path>
-              <path d="M36 30h.1"></path>
-              <path d="M31 18v-5"></path>
-              <path d="M35 13h-8"></path>
-            </svg>
-          </span>
-          <span class="industry-number">03</span>
-          <h3 data-i18n="industries.gaming.title">Gaming & Entertainment</h3>
-          <span class="industry-line" aria-hidden="true"></span>
-          <p data-i18n="industries.gaming.copy">
-            We create immersive games and digital entertainment experiences that connect, inspire, and engage users.
-          </p>
-          <a href="index.html#contact" class="industry-link" data-i18n="industries.learnMore">Learn more</a>
-        </div>
-      </article>
+        <article
+          id="industry-gaming"
+          class="industry-panel"
+          data-industry-panel="gaming"
+          role="tab"
+          tabindex="-1"
+          aria-selected="false"
+          aria-controls="industry-products-gaming"
+          style="--industry-accent: #a855f7; --industry-tint: rgba(58, 12, 102, 0.5); --industry-image: url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=85');"
+        >
+          <div class="industry-panel-content">
+            <span class="industry-icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48">
+                <path d="M15 18h18a8 8 0 0 1 7.7 5.8l2.2 8.1a5 5 0 0 1-8.7 4.4l-4.1-4.6H17.9l-4.1 4.6a5 5 0 0 1-8.7-4.4l2.2-8.1A8 8 0 0 1 15 18Z"></path>
+                <path d="M17 24v7"></path>
+                <path d="M13.5 27.5h7"></path>
+                <path d="M31 26h.1"></path>
+                <path d="M36 30h.1"></path>
+                <path d="M31 18v-5"></path>
+                <path d="M35 13h-8"></path>
+              </svg>
+            </span>
+            <span class="industry-number">03</span>
+            <h3 data-i18n="industries.gaming.title">Gaming & Entertainment</h3>
+            <span class="industry-line" aria-hidden="true"></span>
+            <p data-i18n="industries.gaming.copy">
+              We create immersive games and digital entertainment experiences that connect, inspire, and engage users.
+            </p>
+            <span class="industry-link" data-i18n="industries.learnMore">Learn more</span>
+          </div>
+        </article>
 
-      <article
-        class="industry-panel"
-        style="--industry-accent: #22d3ee; --industry-tint: rgba(8, 27, 58, 0.84); --industry-image: url('img/lineops-devices.png');"
-      >
-        <div class="industry-panel-content">
-          <span class="industry-icon" aria-hidden="true">
-            <svg viewBox="0 0 48 48">
-              <path d="M8 38h34"></path>
-              <path d="M12 34V22h8v12"></path>
-              <path d="M24 34V16h8v18"></path>
-              <path d="M36 34V10h8v24"></path>
-              <path d="M10 16c9-1 17-5 26-12"></path>
-              <path d="M36 4h8v8"></path>
-            </svg>
-          </span>
-          <span class="industry-number">04</span>
-          <h3 data-i18n="industries.innovation.title">Innovation & Startups</h3>
-          <span class="industry-line" aria-hidden="true"></span>
-          <p data-i18n="industries.innovation.copy">
-            We build and scale innovative digital products and platforms, turning ideas into real solutions for growing businesses.
-          </p>
-          <a href="systems.html" class="industry-link" data-i18n="industries.learnMore">Learn more</a>
+        <article
+          id="industry-tab-innovation"
+          class="industry-panel"
+          data-industry-panel="innovation"
+          role="tab"
+          tabindex="-1"
+          aria-selected="false"
+          aria-controls="industry-products-innovation"
+          style="--industry-accent: #22d3ee; --industry-tint: rgba(8, 27, 58, 0.48); --industry-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1400&q=85'), url('img/lineops-devices.png');"
+        >
+          <div class="industry-panel-content">
+            <span class="industry-icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48">
+                <path d="M8 38h34"></path>
+                <path d="M12 34V22h8v12"></path>
+                <path d="M24 34V16h8v18"></path>
+                <path d="M36 34V10h8v24"></path>
+                <path d="M10 16c9-1 17-5 26-12"></path>
+                <path d="M36 4h8v8"></path>
+              </svg>
+            </span>
+            <span class="industry-number">04</span>
+            <h3 data-i18n="industries.innovation.title">Innovation & Startups</h3>
+            <span class="industry-line" aria-hidden="true"></span>
+            <p data-i18n="industries.innovation.copy">
+              We build and scale innovative digital products and platforms, turning ideas into real solutions for growing businesses.
+            </p>
+            <span class="industry-link" data-i18n="industries.learnMore">Learn more</span>
+          </div>
+        </article>
+      </div>
+
+      <aside class="industry-products-shell" data-industry-products-shell style="--active-industry-accent: #38bdf8;" aria-live="polite">
+        <div id="industry-products-hospitality" class="industry-products-panel" data-industry-products="hospitality" role="tabpanel" aria-labelledby="industry-tab-hospitality">
+          <span class="industry-products-kicker" data-i18n="industries.productsEyebrow">Selected industry</span>
+          <h3 class="industry-products-title" data-i18n="industries.hospitality.productsTitle">Hospitality products</h3>
+          <p class="industry-products-copy" data-i18n="industries.hospitality.productsCopy">Operational tools for kitchens, restaurants, hotels, and service teams.</p>
+          <div class="industry-product-list">
+            <a href="beoflow.html" class="industry-product-card">
+              <span class="industry-product-meta" data-i18n="products.beoflow.tag">Kitchen operations</span>
+              <strong>Beoflow</strong>
+              <p data-i18n="products.beoflow.body">Kitchen operations platform for menus, inventory, production, staff, service planning, and daily execution.</p>
+              <span class="industry-product-action" data-i18n="industries.openProduct">Open product</span>
+            </a>
+            <a href="https://apps.apple.com/us/app/lineops-shiftrotation/id6767958380?l=es-MX" target="_blank" rel="noopener" class="industry-product-card">
+              <span class="industry-product-meta" data-i18n="products.lineops.tag">Scheduling app</span>
+              <strong>LineOps</strong>
+              <p data-i18n="products.lineops.body">Native scheduling app for restaurants and service teams that need weekly rotations, station coverage, templates, and mobile schedule access.</p>
+              <span class="industry-product-action" data-i18n="industries.openProduct">Open product</span>
+            </a>
+          </div>
         </div>
-      </article>
+
+        <div id="industry-products-environment" class="industry-products-panel" data-industry-products="environment" role="tabpanel" aria-labelledby="industry-tab-environment" hidden>
+          <span class="industry-products-kicker" data-i18n="industries.productsEyebrow">Selected industry</span>
+          <h3 class="industry-products-title" data-i18n="industries.environment.productsTitle">Environmental Care products</h3>
+          <p class="industry-products-copy" data-i18n="industries.environment.productsCopy">Water filtration intelligence and monitoring tools for cleaner operations.</p>
+          <div class="industry-product-list">
+            <a href="filtracore.html" class="industry-product-card">
+              <span class="industry-product-meta" data-i18n="products.filtracore.tag">Filter intelligence</span>
+              <strong>FiltraCore</strong>
+              <p data-i18n="products.filtracore.body">Filtration operations platform for casinos, restaurants, and service teams. Track PSI, filter lifespan, maintenance, and stock readiness in real time.</p>
+              <span class="industry-product-action" data-i18n="industries.openProduct">Open product</span>
+            </a>
+          </div>
+        </div>
+
+        <div id="industry-products-gaming" class="industry-products-panel" data-industry-products="gaming" role="tabpanel" aria-labelledby="industry-gaming" hidden>
+          <span class="industry-products-kicker" data-i18n="industries.productsEyebrow">Selected industry</span>
+          <h3 class="industry-products-title" data-i18n="industries.gaming.productsTitle">Gaming & Entertainment products</h3>
+          <p class="industry-products-copy" data-i18n="industries.gaming.productsCopy">Digital entertainment and visual experience projects already in the Bastida Systems portfolio.</p>
+          <div class="industry-product-list">
+            <a href="https://bastidadavid.github.io/Cocofilms/" target="_blank" rel="noopener" class="industry-product-card">
+              <span class="industry-product-meta" data-i18n="products.cocofilms.tag">Film studio website</span>
+              <strong>CocoFilms</strong>
+              <p data-i18n="products.cocofilms.body">Premium website for CocoFilms, a photography and cinematic video production studio with a luxury dark portfolio experience.</p>
+              <span class="industry-product-action" data-i18n="industries.openProduct">Open product</span>
+            </a>
+          </div>
+        </div>
+
+        <div id="industry-products-innovation" class="industry-products-panel" data-industry-products="innovation" role="tabpanel" aria-labelledby="industry-tab-innovation" hidden>
+          <span class="industry-products-kicker" data-i18n="industries.productsEyebrow">Selected industry</span>
+          <h3 class="industry-products-title" data-i18n="industries.innovation.productsTitle">Innovation & Startups products</h3>
+          <p class="industry-products-copy" data-i18n="industries.innovation.productsCopy">Digital platforms and modern web products for growing brands and emerging ideas.</p>
+          <div class="industry-product-list">
+            <a href="https://bastidadavid.github.io/ESTRATIVA/" target="_blank" rel="noopener" class="industry-product-card">
+              <span class="industry-product-meta" data-i18n="products.estrattiva.tag">Client website</span>
+              <strong>Estrattiva</strong>
+              <p data-i18n="products.estrattiva.body">Informational website for professional consulting and advisory services, with responsive layout, branded welcome screen, contact cards, email, phone, and WhatsApp.</p>
+              <span class="industry-product-action" data-i18n="industries.openProduct">Open product</span>
+            </a>
+            <a href="https://tallador-de-suenos.onrender.com/" target="_blank" rel="noopener" class="industry-product-card">
+              <span class="industry-product-meta" data-i18n="products.tallador.tag">Art e-commerce</span>
+              <strong>Tallador de Sueños</strong>
+              <p data-i18n="products.tallador.body">Premium e-commerce website for a Mexican wood-carving studio, presenting hand-painted sculptures, collections, custom commissions, cart, checkout, and contact flows.</p>
+              <span class="industry-product-action" data-i18n="industries.openProduct">Open product</span>
+            </a>
+          </div>
+        </div>
+      </aside>
     </div>
   </section>
 
@@ -2108,6 +2457,56 @@
       if (rect.top < window.innerHeight && rect.bottom > 0) {
         el.classList.add('visible');
       }
+    });
+
+    const industryAccentMap = {
+      hospitality: '#38bdf8',
+      environment: '#7ddc3f',
+      gaming: '#a855f7',
+      innovation: '#22d3ee'
+    };
+
+    const industryTabs = Array.from(document.querySelectorAll('[data-industry-panel]'));
+    const industryProductPanels = Array.from(document.querySelectorAll('[data-industry-products]'));
+    const industryProductsShell = document.querySelector('[data-industry-products-shell]');
+
+    const setActiveIndustry = industry => {
+      industryTabs.forEach(tab => {
+        const isActive = tab.dataset.industryPanel === industry;
+        tab.classList.toggle('is-active', isActive);
+        tab.setAttribute('aria-selected', String(isActive));
+        tab.setAttribute('tabindex', isActive ? '0' : '-1');
+      });
+
+      industryProductPanels.forEach(panel => {
+        panel.hidden = panel.dataset.industryProducts !== industry;
+      });
+
+      if (industryProductsShell) {
+        industryProductsShell.style.setProperty('--active-industry-accent', industryAccentMap[industry] || '#38bdf8');
+      }
+    };
+
+    industryTabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => {
+        setActiveIndustry(tab.dataset.industryPanel);
+      });
+
+      tab.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          setActiveIndustry(tab.dataset.industryPanel);
+          return;
+        }
+
+        if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+          event.preventDefault();
+          const direction = event.key === 'ArrowRight' ? 1 : -1;
+          const nextIndex = (index + direction + industryTabs.length) % industryTabs.length;
+          industryTabs[nextIndex].focus();
+          setActiveIndustry(industryTabs[nextIndex].dataset.industryPanel);
+        }
+      });
     });
   </script>
 
