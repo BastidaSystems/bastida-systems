@@ -2315,6 +2315,11 @@ function renderModuleList(section, records = state.moduleRecords[section] || [])
     return;
   }
 
+  if (section === 'inventory') {
+    renderInventoryList(records);
+    return;
+  }
+
   const count = records.length;
   els['module-count-badge'].textContent = `${count} ${count === 1 ? moduleConfig.singular : moduleConfig.plural}`;
   els['module-empty-state'].hidden = count > 0;
@@ -2326,6 +2331,118 @@ function renderModuleList(section, records = state.moduleRecords[section] || [])
   }
 
   els['module-record-list'].innerHTML = records.map(record => renderRecordCard(section, record)).join('');
+}
+
+function getInventoryCategoryLabel(record) {
+  const category = String(record?.category || '').trim();
+  return category || 'Other';
+}
+
+function getInventoryCategorySortIndex(category) {
+  const normalizedCategory = normalizeIngredientNameForMatch(category);
+  const index = INVENTORY_CATEGORY_OPTIONS.findIndex(option => (
+    normalizeIngredientNameForMatch(option) === normalizedCategory
+  ));
+  return index >= 0 ? index : INVENTORY_CATEGORY_OPTIONS.length;
+}
+
+function sortInventoryCategories(first, second) {
+  const firstIndex = getInventoryCategorySortIndex(first);
+  const secondIndex = getInventoryCategorySortIndex(second);
+  if (firstIndex !== secondIndex) return firstIndex - secondIndex;
+  return String(first).localeCompare(String(second));
+}
+
+function renderInventoryList(records = state.moduleRecords.inventory || []) {
+  const moduleConfig = getModuleConfig('inventory');
+  const count = records.length;
+  els['module-count-badge'].textContent = `${count} ${count === 1 ? moduleConfig.singular : moduleConfig.plural}`;
+  els['module-empty-state'].hidden = count > 0;
+  els['module-record-list'].hidden = count === 0;
+
+  if (count === 0) {
+    els['module-record-list'].innerHTML = '';
+    return;
+  }
+
+  const recordsByCategory = records.reduce((groups, record) => {
+    const category = getInventoryCategoryLabel(record);
+    if (!groups.has(category)) groups.set(category, []);
+    groups.get(category).push(record);
+    return groups;
+  }, new Map());
+
+  const categories = [...recordsByCategory.keys()].sort(sortInventoryCategories);
+  els['module-record-list'].innerHTML = `
+    <div class="inventory-category-list">
+      ${categories.map(category => renderInventoryCategoryGroup(category, recordsByCategory.get(category))).join('')}
+    </div>
+  `;
+}
+
+function renderInventoryCategoryGroup(category, records = []) {
+  const categoryVisual = getInventoryCategoryVisual(category);
+  const sortedRecords = [...records].sort((first, second) => (
+    String(first.name || '').localeCompare(String(second.name || ''))
+  ));
+
+  return `
+    <section class="inventory-category-group">
+      <header class="inventory-category-header">
+        <span class="inventory-category-icon ${escapeHtml(categoryVisual.className)}">${renderIcon(categoryVisual.icon)}</span>
+        <div>
+          <h4>${escapeHtml(category)}</h4>
+          <p>${sortedRecords.length} ${sortedRecords.length === 1 ? 'ingredient' : 'ingredients'}</p>
+        </div>
+      </header>
+      <div class="inventory-ingredient-list">
+        ${sortedRecords.map(renderInventoryIngredientRow).join('')}
+      </div>
+    </section>
+  `;
+}
+
+function renderInventoryIngredientRow(record) {
+  const categoryVisual = getInventoryCategoryVisual(record);
+  const title = getRecordTitle('inventory', record);
+  const status = record?.status || 'active';
+  const code = record.item_code || '';
+  const supplier = getInventorySupplier(record);
+  const baseUnit = getInventoryBaseUnit(record);
+  const currentStock = formatRecordValue('current_stock', getInventoryCurrentStock(record));
+  const packageQuantity = formatRecordValue('package_quantity', getInventoryPackageQuantity(record));
+  const packageUnit = getInventoryPackageUnit(record);
+  const unitCost = formatMoney(calculateInventoryUnitCost(record) || 0);
+  const packageLabel = [packageQuantity, packageUnit].filter(Boolean).join(' ');
+  const stockLabel = [currentStock, baseUnit].filter(Boolean).join(' ');
+  const stateBadgesHtml = renderRecordStateBadges('inventory', record);
+
+  return `
+    <article class="inventory-ingredient-row">
+      <div class="inventory-ingredient-main">
+        <span class="record-title-icon ${escapeHtml(categoryVisual.className)}">${renderIcon(categoryVisual.icon)}</span>
+        <div>
+          <strong>${escapeHtml(title)}</strong>
+          <span>${escapeHtml([code, supplier].filter(Boolean).join(' / ') || 'No code')}</span>
+        </div>
+      </div>
+      <div class="inventory-ingredient-metrics" aria-label="Ingredient details">
+        <span title="Current stock">${renderIconLabel('box', stockLabel || 'Stock 0')}</span>
+        <span title="Package">${renderIconLabel('package', packageLabel || 'No pack')}</span>
+        <span title="Unit cost">${renderIconLabel('tag', unitCost)}</span>
+      </div>
+      <div class="inventory-ingredient-status">
+        ${stateBadgesHtml}
+        <span class="status-badge">${renderIconLabel(status === 'active' ? 'check' : 'circle', formatRecordValue('status', status))}</span>
+      </div>
+      <div class="inventory-ingredient-actions" aria-label="Inventory actions">
+        <button type="button" class="secondary-action icon-only-button" data-module-action="use-in-recipe" data-section="inventory" data-record-id="${escapeHtml(record.id)}" title="Use in recipe" aria-label="Use ${escapeHtml(title)} in recipe">${renderIcon('add')}<span class="visually-hidden">Use in recipe</span></button>
+        <button type="button" class="secondary-action icon-only-button" data-module-action="add-to-recipe" data-section="inventory" data-record-id="${escapeHtml(record.id)}" title="Add to recipe" aria-label="Add ${escapeHtml(title)} to recipe">${renderIcon('box')}<span class="visually-hidden">Add to recipe</span></button>
+        <button type="button" class="secondary-action icon-only-button" data-module-action="edit" data-section="inventory" data-record-id="${escapeHtml(record.id)}" title="Edit" aria-label="Edit ${escapeHtml(title)}">${renderIcon('pencil')}<span class="visually-hidden">Edit</span></button>
+        <button type="button" class="secondary-action danger-action icon-only-button" data-module-action="archive" data-section="inventory" data-record-id="${escapeHtml(record.id)}" title="Archive" aria-label="Archive ${escapeHtml(title)}">${renderIcon('archive')}<span class="visually-hidden">Archive</span></button>
+      </div>
+    </article>
+  `;
 }
 
 function renderRecipesInlineList(records = state.moduleRecords.recipes || []) {

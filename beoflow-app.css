@@ -85,6 +85,18 @@ button {
   padding: 0;
 }
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+  padding: 0;
+}
+
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,
@@ -1254,60 +1266,70 @@ h1 {
   color: var(--muted-strong);
 }
 
+.inventory-category-icon.category-produce,
 .category-badge.category-produce,
 .record-title-icon.category-produce {
   background: rgba(22, 163, 74, 0.12);
   color: #15803d;
 }
 
+.inventory-category-icon.category-protein,
 .category-badge.category-protein,
 .record-title-icon.category-protein {
   background: rgba(180, 35, 24, 0.1);
   color: #b42318;
 }
 
+.inventory-category-icon.category-dairy,
 .category-badge.category-dairy,
 .record-title-icon.category-dairy {
   background: rgba(14, 165, 233, 0.12);
   color: #0284c7;
 }
 
+.inventory-category-icon.category-seafood,
 .category-badge.category-seafood,
 .record-title-icon.category-seafood {
   background: rgba(8, 145, 178, 0.12);
   color: #0e7490;
 }
 
+.inventory-category-icon.category-dry,
 .category-badge.category-dry,
 .record-title-icon.category-dry {
   background: rgba(184, 137, 84, 0.12);
   color: #8a5b29;
 }
 
+.inventory-category-icon.category-condiment,
 .category-badge.category-condiment,
 .record-title-icon.category-condiment {
   background: rgba(249, 115, 22, 0.12);
   color: #c2410c;
 }
 
+.inventory-category-icon.category-beverage,
 .category-badge.category-beverage,
 .record-title-icon.category-beverage {
   background: rgba(8, 145, 178, 0.12);
   color: #0e7490;
 }
 
+.inventory-category-icon.category-frozen,
 .category-badge.category-frozen,
 .record-title-icon.category-frozen {
   background: rgba(37, 99, 235, 0.1);
   color: #1d4ed8;
 }
 
+.inventory-category-icon.category-canned,
 .category-badge.category-canned,
 .record-title-icon.category-canned {
   background: rgba(100, 116, 139, 0.12);
   color: #475569;
 }
 
+.inventory-category-icon.category-supplies,
 .category-badge.category-supplies,
 .record-title-icon.category-supplies {
   background: rgba(71, 85, 105, 0.1);
@@ -1360,6 +1382,131 @@ h1 {
 
 .record-actions {
   justify-content: flex-end;
+}
+
+.inventory-category-list {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.inventory-category-group {
+  overflow: hidden;
+  border: 1px solid rgba(20, 32, 51, 0.1);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.inventory-category-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.95rem 1rem;
+  border-bottom: 1px solid var(--line-soft);
+  background: linear-gradient(90deg, rgba(22, 163, 74, 0.1), transparent);
+}
+
+.inventory-category-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex: 0 0 auto;
+  border-radius: var(--radius);
+  background: rgba(22, 163, 74, 0.12);
+  color: #15803d;
+}
+
+.inventory-category-header h4 {
+  margin: 0;
+  color: var(--ink-strong);
+  font-size: 1.02rem;
+}
+
+.inventory-category-header p {
+  margin: 0.15rem 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.inventory-ingredient-list {
+  display: grid;
+}
+
+.inventory-ingredient-row {
+  display: grid;
+  grid-template-columns: minmax(15rem, 1.2fr) minmax(18rem, 1fr) minmax(10rem, auto) auto;
+  gap: 0.85rem;
+  align-items: center;
+  min-height: 4.2rem;
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.inventory-ingredient-row:last-child {
+  border-bottom: 0;
+}
+
+.inventory-ingredient-main {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.inventory-ingredient-main strong,
+.inventory-ingredient-main span {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.inventory-ingredient-main strong {
+  color: var(--ink-strong);
+  font-size: 0.98rem;
+}
+
+.inventory-ingredient-main span {
+  margin-top: 0.16rem;
+  color: var(--muted-strong);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.inventory-ingredient-metrics,
+.inventory-ingredient-status,
+.inventory-ingredient-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.42rem;
+}
+
+.inventory-ingredient-metrics span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2rem;
+  border: 1px solid var(--line-soft);
+  border-radius: 999px;
+  background: var(--surface-subtle);
+  color: var(--muted-strong);
+  padding: 0.25rem 0.52rem;
+  font-size: 0.76rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.inventory-ingredient-metrics .ui-icon {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+
+.inventory-ingredient-actions .icon-only-button {
+  width: 2.35rem;
+  min-height: 2.35rem;
 }
 
 .recipe-inline-list {
@@ -1813,6 +1960,15 @@ h1 {
   .reports-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+
+  .inventory-ingredient-row {
+    grid-template-columns: minmax(14rem, 1fr) minmax(16rem, 1fr);
+  }
+
+  .inventory-ingredient-status,
+  .inventory-ingredient-actions {
+    justify-content: flex-start;
+  }
 }
 
 @media (max-width: 960px) {
@@ -1837,6 +1993,16 @@ h1 {
   .module-card-grid,
   .reports-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .inventory-ingredient-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .inventory-ingredient-metrics,
+  .inventory-ingredient-status,
+  .inventory-ingredient-actions {
+    justify-content: flex-start;
   }
 }
 
