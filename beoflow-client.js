@@ -7,6 +7,11 @@ const missingAnonKeyValues = new Set([
 
 const DEFAULT_WASTE_PERCENTAGE = 0.1;
 const DEFAULT_FOOD_FACTOR = 1;
+const INVENTORY_TYPE_OPTIONS = [
+  { value: 'raw_ingredient', label: 'Raw Ingredient', icon: 'leaf' },
+  { value: 'subrecipe', label: 'Subrecipe', icon: 'layers' },
+  { value: 'finished_product', label: 'Finished Product', icon: 'package' }
+];
 
 const state = {
   supabase: null,
@@ -100,10 +105,21 @@ const MODULE_SECTIONS = {
     index: '03',
     titleField: 'name',
     badgeField: 'status',
-    metaFields: ['recipe_number', 'category', 'pax', 'yield_quantity', 'yield_unit', 'total_cost', 'waste_cost', 'suggested_sale_price', 'manual_sale_price', 'cost_percentage', 'margin_percentage', 'profit'],
+    metaFields: ['recipe_number', 'category', 'pax', 'yield_quantity', 'yield_unit', 'prep_time', 'cook_time', 'total_cost', 'waste_cost', 'suggested_sale_price', 'manual_sale_price', 'cost_percentage', 'margin_percentage', 'profit'],
     detailFields: ['procedure', 'notes'],
     fields: [
-      { name: 'name', label: 'Recipe Name', type: 'text', required: true, wide: true }
+      { name: 'name', label: 'Recipe Name', type: 'text', required: true, wide: true },
+      { name: 'category', label: 'Category', type: 'text' },
+      { name: 'recipe_number', label: 'Recipe Number', type: 'text' },
+      { name: 'yield_quantity', label: 'Yield Quantity', type: 'number', min: '0', step: '0.01' },
+      { name: 'yield_unit', label: 'Yield Unit', type: 'text', placeholder: 'portions, oz, trays' },
+      { name: 'pax', label: 'Portions / Pax', type: 'number', min: '0', step: '0.01' },
+      { name: 'prep_time', label: 'Prep Time', type: 'text', placeholder: '20 min' },
+      { name: 'cook_time', label: 'Cook Time', type: 'text', placeholder: '35 min' },
+      { name: 'photo_url', label: 'Recipe Photo URL', type: 'url', placeholder: 'https://example.com/photo.jpg', wide: true },
+      { name: 'procedure', label: 'Procedure', type: 'textarea', wide: true },
+      { name: 'notes', label: 'Notes', type: 'textarea', wide: true },
+      { name: 'status', label: 'Status', type: 'text', defaultValue: 'active' }
     ]
   },
   subrecipes: {
@@ -126,6 +142,7 @@ const MODULE_SECTIONS = {
       { name: 'recipe_number', label: 'Subrecipe Number', type: 'text' },
       { name: 'yield_quantity', label: 'Yield / Rendimiento', type: 'number', min: '0', step: '0.01' },
       { name: 'yield_unit', label: 'Yield Unit', type: 'text', placeholder: 'portions, lb, oz, trays' },
+      { name: 'photo_url', label: 'Subrecipe Photo URL', type: 'url', placeholder: 'https://example.com/photo.jpg', wide: true },
       { name: 'procedure', label: 'Procedure', type: 'textarea', wide: true },
       { name: 'notes', label: 'Notes', type: 'textarea', wide: true },
       { name: 'status', label: 'Status', type: 'text', defaultValue: 'active' }
@@ -143,11 +160,12 @@ const MODULE_SECTIONS = {
     index: '05',
     titleField: 'name',
     badgeField: 'status',
-    metaFields: ['item_code', 'category', 'brand', 'base_unit', 'package_quantity', 'package_unit', 'package_price', 'cost_per_unit', 'supplier'],
+    metaFields: ['item_code', 'inventory_type', 'category', 'brand', 'base_unit', 'package_quantity', 'package_unit', 'package_price', 'cost_per_unit', 'supplier'],
     detailFields: ['current_stock', 'minimum_stock', 'notes'],
     fields: [
       { name: 'item_code', label: 'Input Code', type: 'text', required: true, placeholder: 'INS-001' },
       { name: 'name', label: 'Name / Description', type: 'text', required: true },
+      { name: 'inventory_type', label: 'Inventory Type', type: 'select', options: INVENTORY_TYPE_OPTIONS, defaultValue: 'raw_ingredient' },
       { name: 'category', label: 'Category', type: 'inventory-category-select' },
       { name: 'brand', label: 'Brand', type: 'text' },
       { name: 'base_unit', label: 'Base Unit', type: 'text', required: true, placeholder: 'oz, lb, each' },
@@ -280,6 +298,7 @@ const MODULE_VISUALS = {
 };
 
 const INVENTORY_CATEGORY_VISUALS = [
+  { keywords: ['subrecipe', 'subrecipes', 'preparation', 'preparations', 'prep'], icon: 'layers', className: 'category-subrecipe' },
   { keywords: ['produce', 'vegetable', 'vegetables', 'fruit', 'fruits', 'herb', 'lettuce', 'tomato'], icon: 'apple', className: 'category-produce' },
   { keywords: ['meat', 'beef', 'pork', 'protein'], icon: 'chefHat', className: 'category-protein' },
   { keywords: ['poultry', 'chicken', 'turkey'], icon: 'drumstick', className: 'category-protein' },
@@ -618,6 +637,7 @@ function renderIcon(name, extraClass = '') {
     drumstick: '<path d="M15.5 5.5a5.5 5.5 0 0 1 0 7.8l-4.2 4.2a2.2 2.2 0 0 1-3.1 0l-1.4-1.4a2.2 2.2 0 0 1 0-3.1l4.2-4.2"></path><path d="M17 4a3 3 0 0 1 4 4"></path><path d="M18.5 8.5 21 11"></path>',
     fish: '<path d="M3 12s4-6 10-6 8 6 8 6-2 6-8 6-10-6-10-6Z"></path><path d="m3 12-2-3v6l2-3Z"></path><path d="M16 12h.01"></path>',
     gauge: '<path d="M4 19a8 8 0 1 1 16 0"></path><path d="M12 14l4-4"></path><path d="M12 19h.01"></path>',
+    image: '<rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="8.5" cy="10.5" r="1.5"></circle><path d="m21 15-5-5L5 19"></path>',
     leaf: '<path d="M5 21c8-1 15-8 16-16-8 1-15 8-16 16Z"></path><path d="M5 21c0-5 4-9 9-9"></path>',
     layers: '<path d="m12 2 9 5-9 5-9-5 9-5Z"></path><path d="m3 12 9 5 9-5"></path><path d="m3 17 9 5 9-5"></path>',
     book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-17A2.5 2.5 0 0 1 6.5 2Z"></path>',
@@ -878,7 +898,7 @@ function formatRecordValue(fieldName, value) {
     return `Yield ${value}`;
   }
 
-  if (fieldName === 'prep_time') {
+  if (fieldName === 'prep_time' || fieldName === 'cook_time') {
     return String(value);
   }
 
@@ -895,6 +915,10 @@ function formatRecordValue(fieldName, value) {
 
   if (fieldName === 'status') {
     return formatLabel(value);
+  }
+
+  if (fieldName === 'inventory_type') {
+    return getInventoryTypeLabel(value);
   }
 
   return String(value);
@@ -973,6 +997,33 @@ function getInventoryPackagePrice(record) {
 
 function getInventoryPackageUnit(record) {
   return record?.package_unit ?? record?.presentation_unit ?? '';
+}
+
+function getInventoryTypeValue(recordOrType) {
+  const rawValue = typeof recordOrType === 'string'
+    ? recordOrType
+    : recordOrType?.inventory_type ?? recordOrType?.inventoryType;
+  const normalized = String(rawValue || 'raw_ingredient').trim().toLowerCase().replace(/[\s-]+/g, '_');
+
+  if (normalized === 'finished' || normalized === 'finish_product' || normalized === 'finished_product') {
+    return 'finished_product';
+  }
+  if (normalized === 'sub_recipe') return 'subrecipe';
+  if (normalized === 'raw' || normalized === 'ingredient') return 'raw_ingredient';
+  return INVENTORY_TYPE_OPTIONS.some(option => option.value === normalized) ? normalized : 'raw_ingredient';
+}
+
+function getInventoryTypeOption(recordOrType) {
+  const typeValue = getInventoryTypeValue(recordOrType);
+  return INVENTORY_TYPE_OPTIONS.find(option => option.value === typeValue) || INVENTORY_TYPE_OPTIONS[0];
+}
+
+function getInventoryTypeLabel(recordOrType) {
+  return getInventoryTypeOption(recordOrType).label;
+}
+
+function getInventoryTypeIcon(recordOrType) {
+  return getInventoryTypeOption(recordOrType).icon || 'package';
 }
 
 function calculateInventoryUnitCost(recordOrPayload) {
@@ -1409,6 +1460,18 @@ function getRecipesUsingInventoryItem(inventoryItemId) {
   const itemCode = normalizeInventoryCode(inventoryItem?.item_code);
   return (state.moduleRecords.recipes || []).filter(recipe => (
     normalizeRecipeIngredients(recipe.ingredients)
+      .some(ingredient => (
+        String(ingredient.inventoryItemId) === String(inventoryItemId)
+        || (itemCode && normalizeInventoryCode(ingredient.itemCode) === itemCode)
+      ))
+  ));
+}
+
+function getSubrecipesUsingInventoryItem(inventoryItemId) {
+  const inventoryItem = getRecordById('inventory', inventoryItemId);
+  const itemCode = normalizeInventoryCode(inventoryItem?.item_code);
+  return (state.moduleRecords.subrecipes || []).filter(subrecipe => (
+    normalizeRecipeIngredients(subrecipe.ingredients)
       .some(ingredient => (
         String(ingredient.inventoryItemId) === String(inventoryItemId)
         || (itemCode && normalizeInventoryCode(ingredient.itemCode) === itemCode)
@@ -2421,6 +2484,9 @@ function renderInventoryIngredientRow(record) {
   const status = record?.status || 'active';
   const code = record.item_code || '';
   const supplier = getInventorySupplier(record);
+  const typeLabel = getInventoryTypeLabel(record);
+  const typeIcon = getInventoryTypeIcon(record);
+  const typeClass = `inventory-type-${getInventoryTypeValue(record).replace(/_/g, '-')}`;
   const baseUnit = getInventoryBaseUnit(record);
   const currentStock = formatRecordValue('current_stock', getInventoryCurrentStock(record));
   const packageQuantity = formatRecordValue('package_quantity', getInventoryPackageQuantity(record));
@@ -2440,6 +2506,7 @@ function renderInventoryIngredientRow(record) {
         </div>
       </div>
       <div class="inventory-ingredient-metrics" aria-label="Ingredient details">
+        <span class="inventory-type-badge ${escapeHtml(typeClass)}" title="Inventory type">${renderIconLabel(typeIcon, typeLabel)}</span>
         <span title="Current stock">${renderIconLabel('box', stockLabel || 'Stock 0')}</span>
         <span title="Package">${renderIconLabel('package', packageLabel || 'No pack')}</span>
         <span title="Unit cost">${renderIconLabel('tag', unitCost)}</span>
@@ -2461,22 +2528,230 @@ function renderInventoryIngredientRow(record) {
 function renderRecipesInlineList(records = state.moduleRecords.recipes || []) {
   const moduleConfig = getModuleConfig('recipes');
   const count = records.length;
-  const showNewCard = Boolean(state.recipeInlineNewOpen);
   els['module-count-badge'].textContent = `${count} ${count === 1 ? moduleConfig.singular : moduleConfig.plural}`;
-  els['module-empty-state'].hidden = count > 0 || showNewCard;
-  els['module-record-list'].hidden = count === 0 && !showNewCard;
+  els['module-empty-state'].hidden = count > 0;
+  els['module-record-list'].hidden = count === 0;
 
-  if (count === 0 && !showNewCard) {
+  if (count === 0) {
     els['module-record-list'].innerHTML = '';
     return;
   }
 
-  const newCardHtml = showNewCard ? renderRecipeInlineCard(null, { isNew: true }) : '';
   els['module-record-list'].innerHTML = `
     ${renderInlineRecipeInventoryDatalist()}
-    <div class="recipe-inline-list">
-      ${newCardHtml}
-      ${records.map(record => renderRecipeInlineCard(record)).join('')}
+    <div class="recipe-summary-list">
+      ${records.map(record => renderRecipeSummaryCard(record)).join('')}
+    </div>
+  `;
+}
+
+function getSafeImageUrl(value) {
+  const rawUrl = String(value || '').trim();
+  if (!rawUrl) return '';
+
+  try {
+    const parsedUrl = new URL(rawUrl, window.location.href);
+    return ['http:', 'https:'].includes(parsedUrl.protocol) ? rawUrl : '';
+  } catch {
+    return '';
+  }
+}
+
+function getRecipePhotoUrl(record) {
+  return getSafeImageUrl(record?.photo_url);
+}
+
+function formatRecipeYield(record) {
+  const quantity = record?.yield_quantity;
+  const unit = record?.yield_unit;
+  if (quantity === null || quantity === undefined || quantity === '') return '';
+  return [formatRecordValue('yield_quantity', quantity), unit].filter(Boolean).join(' ');
+}
+
+function getRecipeInventoryConnectionSummary(ingredients) {
+  const normalizedIngredients = normalizeRecipeIngredients(ingredients);
+  const missingCount = normalizedIngredients.filter(ingredient => !getIngredientInventoryStatus(ingredient).connected).length;
+
+  if (normalizedIngredients.length === 0) {
+    return {
+      icon: 'circle',
+      label: 'No ingredients',
+      className: 'status-badge-muted',
+      connected: false,
+      missingCount,
+      ingredientCount: 0
+    };
+  }
+
+  if (missingCount > 0) {
+    return {
+      icon: 'alert',
+      label: `${missingCount} not in inventory`,
+      className: 'status-badge-warning',
+      connected: false,
+      missingCount,
+      ingredientCount: normalizedIngredients.length
+    };
+  }
+
+  return {
+    icon: 'check',
+    label: 'Inventory connected',
+    className: 'status-badge-success',
+    connected: true,
+    missingCount,
+    ingredientCount: normalizedIngredients.length
+  };
+}
+
+function renderRecipeThumbnail(record, title) {
+  const photoUrl = getRecipePhotoUrl(record);
+  if (photoUrl) {
+    return `
+      <div class="recipe-summary-photo">
+        <img src="${escapeHtml(photoUrl)}" alt="${escapeHtml(title)} photo" loading="lazy">
+      </div>
+    `;
+  }
+
+  return `
+    <div class="recipe-summary-photo recipe-summary-photo-empty" aria-hidden="true">
+      ${renderIcon('image')}
+    </div>
+  `;
+}
+
+function renderRecipeSummaryCard(record) {
+  const visual = getModuleVisual('recipes');
+  const title = getRecordTitle('recipes', record);
+  const status = record?.status || 'active';
+  const ingredients = normalizeRecipeIngredients(record?.ingredients);
+  const inventorySummary = getRecipeInventoryConnectionSummary(ingredients);
+  const categoryHtml = record?.category
+    ? `<span class="record-meta-chip">${escapeHtml(record.category)}</span>`
+    : '';
+  const yieldLabel = formatRecipeYield(record);
+
+  return `
+    <article class="record-card module-record-card recipe-summary-card" style="--module-accent: ${escapeHtml(visual.accent)}; --module-accent-soft: ${escapeHtml(visual.soft)};">
+      ${renderRecipeThumbnail(record, title)}
+      <div class="recipe-summary-main">
+        <div class="record-title-row">
+          <div>
+            <p class="eyebrow">Recipe</p>
+            <h4>${escapeHtml(title)}</h4>
+          </div>
+          <div class="record-badges">
+            <span class="status-badge">${renderIconLabel(status === 'active' ? 'check' : 'circle', formatRecordValue('status', status))}</span>
+            <span class="status-badge ${escapeHtml(inventorySummary.className)}">${renderIconLabel(inventorySummary.icon, inventorySummary.label)}</span>
+          </div>
+        </div>
+        <div class="recipe-summary-meta">
+          ${categoryHtml}
+          <span class="record-meta-chip">${renderIconLabel('box', `${ingredients.length} ${ingredients.length === 1 ? 'ingredient' : 'ingredients'}`)}</span>
+          ${yieldLabel ? `<span class="record-meta-chip">${escapeHtml(`Yield ${yieldLabel}`)}</span>` : ''}
+          ${record?.prep_time ? `<span class="record-meta-chip">${renderIconLabel('clock', `Prep ${record.prep_time}`)}</span>` : ''}
+        </div>
+      </div>
+      <div class="record-actions recipe-summary-actions">
+        <button type="button" class="primary-action icon-action" data-module-action="view-recipe" data-section="recipes" data-record-id="${escapeHtml(record.id)}">${renderIconLabel('book', 'View Recipe')}</button>
+        <button type="button" class="secondary-action icon-action" data-module-action="edit" data-section="recipes" data-record-id="${escapeHtml(record.id)}">${renderIconLabel('pencil', 'Edit')}</button>
+        <button type="button" class="secondary-action danger-action icon-action" data-module-action="archive" data-section="recipes" data-record-id="${escapeHtml(record.id)}">${renderIconLabel('archive', 'Archive')}</button>
+      </div>
+    </article>
+  `;
+}
+
+function renderRecipeDetailMetaItem(label, value, icon = 'circle') {
+  const cleanValue = value === null || value === undefined || value === '' ? 'Not set' : String(value);
+  return `
+    <div class="recipe-detail-meta-item">
+      <span>${renderIcon(icon)}${escapeHtml(label)}</span>
+      <strong>${escapeHtml(cleanValue)}</strong>
+    </div>
+  `;
+}
+
+function renderRecipeDetailIngredientRows(ingredients) {
+  const normalizedIngredients = normalizeRecipeIngredients(ingredients);
+  if (normalizedIngredients.length === 0) {
+    return '<p class="recipe-ingredient-empty">No ingredients added yet.</p>';
+  }
+
+  return `
+    <ul class="recipe-detail-ingredient-list">
+      ${normalizedIngredients.map(ingredient => {
+        const status = getIngredientInventoryStatus(ingredient);
+        const quantity = formatIngredientQuantity(ingredient);
+        const lineCost = formatMoney(calculateLineCostFromIngredient(ingredient));
+        const title = [ingredient.itemCode, ingredient.ingredientName].filter(Boolean).join(' - ') || 'Ingredient';
+        return `
+          <li>
+            <div>
+              <strong>${escapeHtml(title)}</strong>
+              <span>${escapeHtml(quantity)} &middot; ${escapeHtml(lineCost)}</span>
+            </div>
+            <span class="inventory-status-pill ${escapeHtml(status.className)}">
+              ${renderIcon(status.icon)}
+              <span>${escapeHtml(status.label)}</span>
+            </span>
+          </li>
+        `;
+      }).join('')}
+    </ul>
+  `;
+}
+
+function renderRecipeDetailTextSection(title, value) {
+  return `
+    <section class="recipe-detail-section">
+      <h4>${escapeHtml(title)}</h4>
+      <p>${escapeHtml(value || 'Not set')}</p>
+    </section>
+  `;
+}
+
+function renderRecipeDetailView(record) {
+  const title = getRecordTitle('recipes', record);
+  const ingredients = normalizeRecipeIngredients(record?.ingredients);
+  const inventorySummary = getRecipeInventoryConnectionSummary(ingredients);
+  const photoUrl = getRecipePhotoUrl(record);
+  const yieldLabel = formatRecipeYield(record) || 'Not set';
+  const photoHtml = photoUrl
+    ? `<img src="${escapeHtml(photoUrl)}" alt="${escapeHtml(title)} photo" loading="lazy">`
+    : `<div class="recipe-detail-photo-empty">${renderIcon('image')}<span>No photo yet</span></div>`;
+
+  return `
+    <div class="recipe-detail-view form-field-wide">
+      <div class="recipe-detail-hero">
+        <div class="recipe-detail-photo">${photoHtml}</div>
+        <div class="recipe-detail-overview">
+          <div class="record-badges">
+            <span class="status-badge">${renderIconLabel((record?.status || 'active') === 'active' ? 'check' : 'circle', formatRecordValue('status', record?.status || 'active'))}</span>
+            <span class="status-badge ${escapeHtml(inventorySummary.className)}">${renderIconLabel(inventorySummary.icon, inventorySummary.label)}</span>
+          </div>
+          <div class="recipe-detail-meta-grid">
+            ${renderRecipeDetailMetaItem('Category', record?.category, 'tag')}
+            ${renderRecipeDetailMetaItem('Yield quantity', yieldLabel, 'box')}
+            ${renderRecipeDetailMetaItem('Prep time', record?.prep_time, 'clock')}
+            ${renderRecipeDetailMetaItem('Cook time', record?.cook_time, 'clock')}
+            ${renderRecipeDetailMetaItem('Ingredients', `${ingredients.length} ${ingredients.length === 1 ? 'ingredient' : 'ingredients'}`, 'checklist')}
+            ${renderRecipeDetailMetaItem('Inventory', inventorySummary.label, inventorySummary.icon)}
+          </div>
+        </div>
+      </div>
+
+      <section class="recipe-detail-section">
+        <h4>Ingredients</h4>
+        ${renderRecipeDetailIngredientRows(ingredients)}
+      </section>
+
+      ${renderRecipeDetailTextSection('Procedure', record?.procedure || record?.instructions)}
+      ${renderRecipeDetailTextSection('Notes', record?.notes)}
+
+      <div class="recipe-detail-actions">
+        <button type="button" class="primary-action icon-action" data-recipe-detail-edit="${escapeHtml(record?.id || '')}">${renderIconLabel('pencil', 'Edit Recipe')}</button>
+      </div>
     </div>
   `;
 }
@@ -2783,19 +3058,25 @@ function renderRecipeIngredientSummary(record) {
 
 function renderInventoryUsageDetails(record) {
   const recipesUsingItem = getRecipesUsingInventoryItem(record.id);
-  if (recipesUsingItem.length === 0) {
+  const subrecipesUsingItem = getSubrecipesUsingInventoryItem(record.id);
+  const usageLabels = [
+    ...recipesUsingItem.map(recipe => recipe.name),
+    ...subrecipesUsingItem.map(subrecipe => `${subrecipe.name} (subrecipe)`)
+  ];
+
+  if (usageLabels.length === 0) {
     return `
       <div class="record-detail">
         <span>Recipe Usage</span>
-        <p>Not used in recipes yet.</p>
+        <p>Not used in recipes or subrecipes yet.</p>
       </div>
     `;
   }
 
   return `
     <div class="record-detail">
-      <span>Recipe Usage</span>
-      <p>${escapeHtml(recipesUsingItem.map(recipe => recipe.name).join(', '))}</p>
+      <span>Recipe / Subrecipe Usage</span>
+      <p>${escapeHtml(usageLabels.join(', '))}</p>
     </div>
   `;
 }
@@ -2876,6 +3157,24 @@ function renderFormField(field, record = null) {
     `;
   }
 
+  if (field.type === 'select' && Array.isArray(field.options)) {
+    const optionsHtml = field.options.map(option => {
+      const optionValue = typeof option === 'string' ? option : option.value;
+      const optionLabel = typeof option === 'string' ? option : option.label;
+      const selected = String(optionValue) === String(value || field.defaultValue || '') ? ' selected' : '';
+      return `<option value="${escapeHtml(optionValue)}"${selected}>${escapeHtml(optionLabel)}</option>`;
+    }).join('');
+
+    return `
+      <label class="form-field${wideClass}">
+        <span>${escapeHtml(field.label)}</span>
+        <select name="${escapeHtml(field.name)}"${requiredAttr}>
+          ${optionsHtml}
+        </select>
+      </label>
+    `;
+  }
+
   return `
     <label class="form-field${wideClass}">
       <span>${escapeHtml(field.label)}</span>
@@ -2886,6 +3185,13 @@ function renderFormField(field, record = null) {
 
 function getInventoryOptions() {
   return (state.moduleRecords.inventory || []).filter(item => String(item.status || 'active') !== 'archived');
+}
+
+function getInventoryOptionsForRecipeBuilder() {
+  const options = getInventoryOptions();
+  if (state.modalSection !== 'subrecipes' || !state.editingRecord?.id) return options;
+
+  return options.filter(item => String(item.source_subrecipe_id || '') !== String(state.editingRecord.id));
 }
 
 function renderInventoryDuplicateSuggestion(name, excludeId = null, { compact = false } = {}) {
@@ -2913,7 +3219,7 @@ function refreshInventoryDuplicateSuggestion() {
 
 function renderRecipeIngredientOptions() {
   const searchTerm = state.recipeIngredientSearch.trim().toLowerCase();
-  const inventoryItems = getInventoryOptions();
+  const inventoryItems = getInventoryOptionsForRecipeBuilder();
   const filteredItems = searchTerm
     ? inventoryItems.filter(item => (
       String(item.name || '').toLowerCase().includes(searchTerm)
@@ -3155,7 +3461,10 @@ function renderRecipeIngredientBuilder() {
         </label>
         <label class="form-field">
           <span>Category</span>
-          <input type="text" id="quick-ingredient-category" placeholder="Produce, dairy, protein">
+          <select id="quick-ingredient-category">
+            <option value="Other">Other</option>
+            ${INVENTORY_CATEGORY_OPTIONS.filter(option => option !== 'Other').map(option => `<option value="${escapeHtml(option)}">${escapeHtml(option)}</option>`).join('')}
+          </select>
         </label>
         <label class="form-field">
           <span>Unit</span>
@@ -3291,6 +3600,7 @@ async function addRecipeIngredientRowToInventory(index) {
   const payload = {
     item_code: createInventoryCodeFromName(name),
     name,
+    inventory_type: 'raw_ingredient',
     category: 'Other',
     base_unit: ingredient.unit || 'each',
     unit: ingredient.unit || 'each',
@@ -3459,6 +3769,7 @@ async function addInlineRecipeIngredientToInventory(card, row) {
   const payload = {
     item_code: createInventoryCodeFromName(ingredient.ingredientName),
     name: ingredient.ingredientName,
+    inventory_type: 'raw_ingredient',
     category: 'Other',
     base_unit: unit,
     unit,
@@ -3550,17 +3861,31 @@ async function saveQuickInventoryIngredient() {
 
   const duplicateCode = findInventoryIngredientByCode(itemCode);
   if (duplicateCode) {
-    throw new Error(`${duplicateCode.item_code} already exists in Inventory. Use the existing ingredient instead of creating a duplicate.`);
+    if (normalizeIngredientNameForMatch(duplicateCode.name) !== normalizeIngredientNameForMatch(name)) {
+      throw new Error(`${duplicateCode.item_code} already exists in Inventory. Use a different input code.`);
+    }
+    addRecipeIngredientToDraft(createRecipeIngredientFromInventory(duplicateCode));
+    state.recipeIngredientSearch = '';
+    state.recipeQuickIngredientOpen = false;
+    refreshRecipeIngredientBuilder();
+    showToast(`${duplicateCode.name} connected from inventory.`);
+    return duplicateCode;
   }
 
   const duplicate = findMatchingInventoryIngredient(name);
   if (duplicate) {
-    throw new Error(`${duplicate.name} already exists in Inventory. Use the existing ingredient instead of creating a duplicate.`);
+    addRecipeIngredientToDraft(createRecipeIngredientFromInventory(duplicate));
+    state.recipeIngredientSearch = '';
+    state.recipeQuickIngredientOpen = false;
+    refreshRecipeIngredientBuilder();
+    showToast(`${duplicate.name} connected from inventory.`);
+    return duplicate;
   }
 
   const payload = {
     item_code: itemCode,
     name,
+    inventory_type: 'raw_ingredient',
     category: document.getElementById('quick-ingredient-category')?.value.trim() || null,
     base_unit: document.getElementById('quick-ingredient-unit')?.value.trim() || null,
     package_quantity: normalizePayloadValue({ type: 'number' }, document.getElementById('quick-ingredient-package-quantity')?.value || '1'),
@@ -3592,15 +3917,6 @@ async function saveQuickInventoryIngredient() {
 function openModuleModal(section, record = null, options = {}) {
   const moduleConfig = getModuleConfig(section);
   if (!moduleConfig.table) return;
-  if (section === 'recipes') {
-    if (record?.id) {
-      renderModuleSection('recipes');
-      return;
-    }
-
-    startInlineNewRecipe(options.preselectedIngredient || null);
-    return;
-  }
 
   state.modalSection = section;
   state.editingRecord = record;
@@ -3610,8 +3926,14 @@ function openModuleModal(section, record = null, options = {}) {
   state.recipeIngredientsDraft = isCostingRecipeSection(section)
     ? normalizeRecipeIngredients(record?.ingredients)
     : [];
+  if (section === 'recipes' && !record?.id && options.preselectedIngredient) {
+    state.recipeIngredientsDraft = [createRecipeIngredientFromInventory(options.preselectedIngredient)];
+  }
 
   showAlert(els['module-form-message'], '');
+  els['module-form'].classList.remove('module-form-detail-mode');
+  els['module-save-button'].hidden = false;
+  els['module-cancel-button'].textContent = 'Cancel';
   els['module-modal-title'].textContent = record
     ? `Edit ${moduleConfig.singular}`
     : moduleConfig.action;
@@ -3643,6 +3965,26 @@ function openModuleModal(section, record = null, options = {}) {
   }
 }
 
+function openRecipeDetailModal(record) {
+  if (!record?.id) return;
+  state.modalSection = 'recipe-details';
+  state.editingRecord = record;
+  state.recipeIngredientsDraft = [];
+  state.recipeIngredientSearch = '';
+  state.subrecipeSearch = '';
+  state.recipeQuickIngredientOpen = false;
+  showAlert(els['module-form-message'], '');
+  els['module-form'].classList.add('module-form-detail-mode');
+  els['module-modal-title'].textContent = getRecordTitle('recipes', record);
+  els['module-modal-subtitle'].textContent = `Complete recipe details for ${state.activeClient?.name || 'this workspace'}.`;
+  els['module-save-button'].hidden = true;
+  els['module-cancel-button'].textContent = 'Close';
+  els['module-modal-close'].textContent = 'Close';
+  els['module-modal-close'].classList.remove('icon-action');
+  els['module-form-fields'].innerHTML = renderRecipeDetailView(record);
+  els['module-modal'].hidden = false;
+}
+
 function closeModuleModal() {
   state.modalSection = null;
   state.editingRecord = null;
@@ -3652,6 +3994,9 @@ function closeModuleModal() {
   state.recipeQuickIngredientOpen = false;
   state.recipeLinkIngredient = null;
   els['module-modal'].hidden = true;
+  els['module-form'].classList.remove('module-form-detail-mode');
+  els['module-save-button'].hidden = false;
+  els['module-cancel-button'].textContent = 'Cancel';
   els['module-form'].reset();
   els['module-form-fields'].innerHTML = '';
   showAlert(els['module-form-message'], '');
@@ -3682,6 +4027,7 @@ function buildModulePayload(section) {
   if (section === 'inventory') {
     payload.item_code = normalizeInventoryCode(payload.item_code);
     if (!payload.item_code) throw new Error('Input Code is required.');
+    payload.inventory_type = getInventoryTypeValue(payload.inventory_type);
     const duplicateCode = findInventoryIngredientByCode(payload.item_code, state.editingRecord?.id);
     if (duplicateCode) {
       throw new Error(`${duplicateCode.item_code} already exists in Inventory. Use a unique input code.`);
@@ -3708,6 +4054,10 @@ function buildModulePayload(section) {
   }
 
   if (isCostingRecipeSection(section)) {
+    if (section === 'recipes' && payload.cook_time === null) {
+      delete payload.cook_time;
+    }
+
     const normalizedIngredients = state.recipeIngredientsDraft
       .map(normalizeRecipeIngredient)
       .filter(ingredient => (
@@ -3815,6 +4165,45 @@ async function recalculateRecipesUsingInventoryItem(inventoryItem) {
   return updatedRecipeIds;
 }
 
+async function recalculateSubrecipesUsingInventoryItem(inventoryItem) {
+  if (!inventoryItem?.id) return [];
+  const inventoryRecords = state.moduleRecords.inventory || [];
+  const existingInventoryIndex = inventoryRecords.findIndex(item => String(item.id) === String(inventoryItem.id));
+  state.moduleRecords.inventory = existingInventoryIndex >= 0
+    ? inventoryRecords.map(item => (String(item.id) === String(inventoryItem.id) ? inventoryItem : item))
+    : [...inventoryRecords, inventoryItem];
+  await loadSubrecipesForRecipeUsage();
+  const itemCode = normalizeInventoryCode(inventoryItem.item_code);
+  const updatedSubrecipes = [];
+
+  for (const subrecipe of state.moduleRecords.subrecipes || []) {
+    const ingredients = normalizeRecipeIngredients(subrecipe.ingredients);
+    const usesIngredient = ingredients.some(ingredient => (
+      String(ingredient.inventoryItemId) === String(inventoryItem.id)
+      || (itemCode && normalizeInventoryCode(ingredient.itemCode) === itemCode)
+    ));
+    if (!usesIngredient) continue;
+
+    const costFields = calculateRecipeCostFields(subrecipe, ingredients);
+    const updatedSubrecipe = await updateRecord(MODULE_SECTIONS.subrecipes.table, subrecipe.id, costFields);
+    updatedSubrecipes.push(updatedSubrecipe);
+  }
+
+  if (updatedSubrecipes.length > 0) {
+    state.moduleRecords.subrecipes = state.moduleRecords.subrecipes.map(subrecipe => {
+      const updatedSubrecipe = updatedSubrecipes.find(item => String(item.id) === String(subrecipe.id));
+      return updatedSubrecipe || subrecipe;
+    });
+
+    for (const updatedSubrecipe of updatedSubrecipes) {
+      await recalculateRecipesUsingSubrecipe(updatedSubrecipe);
+      await upsertSubrecipeInventoryItem(updatedSubrecipe);
+    }
+  }
+
+  return updatedSubrecipes;
+}
+
 async function recalculateRecipesUsingSubrecipe(subrecipe) {
   if (!subrecipe?.id) return [];
   const subrecipeRecords = state.moduleRecords.subrecipes || [];
@@ -3844,6 +4233,93 @@ async function recalculateRecipesUsingSubrecipe(subrecipe) {
   }
 
   return updatedRecipeIds;
+}
+
+function createSubrecipeInventoryCode(subrecipe) {
+  const rawIdentifier = subrecipe?.recipe_number || String(subrecipe?.id || '').slice(0, 8) || subrecipe?.name || 'SUBRECIPE';
+  const normalizedIdentifier = normalizeInventoryCode(
+    String(rawIdentifier)
+      .replace(/^SUB[-_\s]*/i, '')
+      .replace(/[^a-z0-9]+/gi, '-')
+      .replace(/^-+|-+$/g, '')
+  ) || 'SUBRECIPE';
+  return `SUB-${normalizedIdentifier}`;
+}
+
+function createAvailableInventoryCode(preferredCode, excludeId = null) {
+  const base = normalizeInventoryCode(preferredCode || 'ITEM') || 'ITEM';
+  let code = base;
+  let index = 1;
+
+  while (findInventoryIngredientByCode(code, excludeId)) {
+    index += 1;
+    code = `${base}-${index}`;
+  }
+
+  return code;
+}
+
+function findInventoryItemForSubrecipe(subrecipe) {
+  if (!subrecipe?.id) return null;
+  const preferredCode = createSubrecipeInventoryCode(subrecipe);
+  const inventoryItems = getInventoryOptions();
+
+  return inventoryItems.find(item => String(item.source_subrecipe_id || '') === String(subrecipe.id))
+    || inventoryItems.find(item => (
+      getInventoryTypeValue(item) === 'subrecipe'
+      && normalizeInventoryCode(item.item_code) === preferredCode
+    ))
+    || inventoryItems.find(item => (
+      getInventoryTypeValue(item) === 'subrecipe'
+      && normalizeIngredientNameForMatch(item.name) === normalizeIngredientNameForMatch(subrecipe.name)
+    ))
+    || null;
+}
+
+function buildSubrecipeInventoryPayload(subrecipe, existingInventoryItem = null) {
+  const yieldQuantity = Number(subrecipe?.yield_quantity);
+  const packageQuantity = Number.isFinite(yieldQuantity) && yieldQuantity > 0 ? yieldQuantity : 1;
+  const yieldUnit = subrecipe?.yield_unit || existingInventoryItem?.base_unit || 'batch';
+  const totalCost = Number(subrecipe?.unit_cost_total ?? subrecipe?.total_cost ?? subrecipe?.total_ingredient_cost ?? 0);
+  const packagePrice = Number.isFinite(totalCost) ? totalCost : 0;
+  const preferredCode = createSubrecipeInventoryCode(subrecipe);
+  const itemCode = existingInventoryItem?.item_code || createAvailableInventoryCode(preferredCode, existingInventoryItem?.id);
+
+  return {
+    item_code: itemCode,
+    name: subrecipe?.name || 'Subrecipe',
+    inventory_type: 'subrecipe',
+    source_subrecipe_id: subrecipe?.id || null,
+    category: subrecipe?.category || existingInventoryItem?.category || 'Subrecipes',
+    brand: existingInventoryItem?.brand || 'Beoflow Prep',
+    base_unit: yieldUnit,
+    unit: yieldUnit,
+    package_quantity: packageQuantity,
+    package_unit: yieldUnit,
+    package_price: packagePrice,
+    current_stock: Number(existingInventoryItem?.current_stock ?? 0) || 0,
+    minimum_stock: Number(existingInventoryItem?.minimum_stock ?? 0) || 0,
+    cost_per_unit: calculateInventoryUnitCost({
+      package_quantity: packageQuantity,
+      package_price: packagePrice
+    }) || 0,
+    supplier: existingInventoryItem?.supplier || 'Internal prep',
+    status: subrecipe?.status || 'active',
+    notes: subrecipe?.notes || existingInventoryItem?.notes || null
+  };
+}
+
+async function upsertSubrecipeInventoryItem(subrecipe) {
+  if (!subrecipe?.id) return null;
+  await loadModuleData('inventory');
+  const existingInventoryItem = findInventoryItemForSubrecipe(subrecipe);
+  const payload = buildSubrecipeInventoryPayload(subrecipe, existingInventoryItem);
+  const savedInventoryItem = existingInventoryItem?.id
+    ? await updateRecord(MODULE_SECTIONS.inventory.table, existingInventoryItem.id, payload)
+    : await createRecord(MODULE_SECTIONS.inventory.table, payload);
+
+  await loadModuleData('inventory');
+  return savedInventoryItem;
 }
 
 async function saveModuleRecord(event) {
@@ -3890,11 +4366,15 @@ async function saveModuleRecord(event) {
     }
 
     if (section === 'inventory') {
+      const updatedSubrecipes = await recalculateSubrecipesUsingInventoryItem(savedRecord);
+      if (updatedSubrecipes.length > 0) showToast(`${updatedSubrecipes.length} connected subrecipe costs recalculated.`);
       const updatedRecipes = await recalculateRecipesUsingInventoryItem(savedRecord);
       if (updatedRecipes.length > 0) showToast(`${updatedRecipes.length} connected recipe costs recalculated.`);
     }
 
     if (section === 'subrecipes') {
+      const savedSubrecipeInventory = await upsertSubrecipeInventoryItem(savedRecord);
+      if (savedSubrecipeInventory) await recalculateRecipesUsingInventoryItem(savedSubrecipeInventory);
       const updatedRecipes = await recalculateRecipesUsingSubrecipe(savedRecord);
       if (updatedRecipes.length > 0) showToast(`${updatedRecipes.length} recipes using this subrecipe recalculated.`);
     }
@@ -3949,17 +4429,12 @@ function startRecipeWithInventoryItem(recordId) {
 }
 
 function startInlineNewRecipe(preselectedIngredient = null) {
-  state.recipeInlineNewOpen = true;
-  state.recipeInlineNewIngredient = preselectedIngredient;
-
+  state.recipeInlineNewOpen = false;
+  state.recipeInlineNewIngredient = null;
   if (state.activeSection !== 'recipes') {
     renderModuleSection('recipes');
-    return;
   }
-
-  renderModuleList('recipes', state.moduleRecords.recipes || []);
-  const newRecipeCard = els['module-record-list'].querySelector('[data-inline-recipe-card][data-recipe-mode="new"]');
-  newRecipeCard?.querySelector('[data-inline-recipe-name]')?.focus();
+  openModuleModal('recipes', null, { preselectedIngredient });
 }
 
 function renderInventoryRecipeLinkForm(ingredient) {
@@ -4073,9 +4548,17 @@ function addSelectedRecipeIngredient() {
   const selectedId = select?.value;
   const quantity = Number(document.getElementById('recipe-ingredient-add-quantity')?.value || 1);
   const typedCode = normalizeInventoryCode(document.getElementById('recipe-ingredient-search')?.value);
-  const selectedItem = selectedId
-    ? getInventoryOptions().find(item => String(item.id) === String(selectedId))
+  let selectedItem = selectedId
+    ? getInventoryOptionsForRecipeBuilder().find(item => String(item.id) === String(selectedId))
     : findInventoryIngredientByCode(typedCode);
+  if (
+    selectedItem
+    && state.modalSection === 'subrecipes'
+    && state.editingRecord?.id
+    && String(selectedItem.source_subrecipe_id || '') === String(state.editingRecord.id)
+  ) {
+    selectedItem = null;
+  }
   if (!selectedItem) {
     throw new Error(typedCode
       ? `${typedCode} was not found in Inventory. Use "+ Add new ingredient to inventory" to create it.`
@@ -5037,6 +5520,12 @@ function bindEvents() {
 
     const section = actionButton.dataset.section;
     const recordId = actionButton.dataset.recordId;
+    if (actionButton.dataset.moduleAction === 'view-recipe') {
+      const record = getRecordById('recipes', recordId);
+      if (record) openRecipeDetailModal(record);
+      return;
+    }
+
     if (actionButton.dataset.moduleAction === 'edit') {
       const record = getRecordById(section, recordId);
       if (record) openModuleModal(section, record);
@@ -5146,16 +5635,27 @@ function bindEvents() {
       const draftIngredient = state.recipeIngredientsDraft[Number(nameIndex)];
       if (!draftIngredient) return;
       const name = event.target.value;
-      const connectedStatus = getIngredientInventoryStatus({ ...draftIngredient, ingredientName: name });
+      const connectedStatus = getIngredientInventoryStatus({
+        ...draftIngredient,
+        inventoryItemId: '',
+        itemCode: '',
+        ingredientName: name
+      });
+      const existingInventoryItem = draftIngredient.inventoryItemId
+        ? getInventoryOptions().find(item => String(item.id) === String(draftIngredient.inventoryItemId))
+        : null;
+      const shouldKeepExistingInventory = existingInventoryItem
+        && normalizeIngredientNameForMatch(name) === normalizeIngredientNameForMatch(existingInventoryItem.name);
+      const nextInventoryItem = connectedStatus.item || (shouldKeepExistingInventory ? existingInventoryItem : null);
       state.recipeIngredientsDraft[Number(nameIndex)] = normalizeRecipeIngredient({
         ...draftIngredient,
         ingredientName: name,
-        inventoryItemId: connectedStatus.item?.id || draftIngredient.inventoryItemId || '',
-        itemCode: connectedStatus.item?.item_code || draftIngredient.itemCode || '',
-        packagePrice: connectedStatus.item ? getInventoryPackagePrice(connectedStatus.item) : draftIngredient.packagePrice,
-        packageQuantity: connectedStatus.item ? getInventoryPackageQuantity(connectedStatus.item) : draftIngredient.packageQuantity,
-        packageUnit: connectedStatus.item ? getInventoryPackageUnit(connectedStatus.item) : draftIngredient.packageUnit,
-        validationStatus: connectedStatus.connected ? validateInventoryIngredientForRecipe(connectedStatus.item, draftIngredient.quantity).status : 'not_found'
+        inventoryItemId: nextInventoryItem?.id || '',
+        itemCode: nextInventoryItem?.item_code || '',
+        packagePrice: nextInventoryItem ? getInventoryPackagePrice(nextInventoryItem) : null,
+        packageQuantity: nextInventoryItem ? getInventoryPackageQuantity(nextInventoryItem) : null,
+        packageUnit: nextInventoryItem ? getInventoryPackageUnit(nextInventoryItem) : '',
+        validationStatus: nextInventoryItem ? validateInventoryIngredientForRecipe(nextInventoryItem, draftIngredient.quantity).status : 'not_found'
       });
     }
 
@@ -5199,6 +5699,13 @@ function bindEvents() {
   els['module-form-fields'].addEventListener('click', async event => {
     const clickedButton = event.target.closest('button');
     if (!clickedButton) return;
+
+    const recipeDetailEditId = clickedButton.dataset.recipeDetailEdit;
+    if (recipeDetailEditId) {
+      const record = getRecordById('recipes', recipeDetailEditId);
+      if (record) openModuleModal('recipes', record);
+      return;
+    }
 
     if (clickedButton.id === 'recipe-add-selected-ingredient') {
       try {

@@ -135,6 +135,8 @@ create table if not exists public.beoflow_inventory_items (
   client_id uuid not null references public.clients(id) on delete cascade,
   item_code text,
   name text not null,
+  inventory_type text not null default 'raw_ingredient',
+  source_subrecipe_id uuid,
   category text,
   brand text,
   base_unit text,
@@ -155,6 +157,8 @@ create table if not exists public.beoflow_inventory_items (
 
 alter table if exists public.beoflow_inventory_items
   add column if not exists item_code text,
+  add column if not exists inventory_type text not null default 'raw_ingredient',
+  add column if not exists source_subrecipe_id uuid,
   add column if not exists brand text,
   add column if not exists base_unit text,
   add column if not exists unit text,
@@ -230,6 +234,7 @@ create table if not exists public.beoflow_recipes (
   yield_unit text,
   portion_count numeric(12, 3),
   prep_time text,
+  cook_time text,
   procedure text,
   instructions text,
   notes text,
@@ -264,6 +269,7 @@ alter table if exists public.beoflow_recipes
   add column if not exists yield_unit text,
   add column if not exists portion_count numeric(12, 3),
   add column if not exists prep_time text,
+  add column if not exists cook_time text,
   add column if not exists procedure text,
   add column if not exists instructions text,
   add column if not exists notes text,
@@ -349,6 +355,7 @@ create table if not exists public.beoflow_subrecipes (
   recipe_number text,
   yield_quantity numeric(12, 3),
   yield_unit text,
+  photo_url text,
   procedure text,
   notes text,
   ingredients jsonb not null default '[]'::jsonb,
@@ -372,6 +379,9 @@ create table if not exists public.beoflow_subrecipes (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table if exists public.beoflow_subrecipes
+  add column if not exists photo_url text;
 
 create table if not exists public.beoflow_production_logs (
   id uuid primary key default gen_random_uuid(),
@@ -406,11 +416,16 @@ create index if not exists idx_beoflow_menu_items_client_id on public.beoflow_me
 create index if not exists idx_beoflow_menu_items_recipe_id on public.beoflow_menu_items(client_id, recipe_id);
 create index if not exists idx_beoflow_inventory_items_client_id on public.beoflow_inventory_items(client_id);
 create index if not exists idx_beoflow_inventory_items_name on public.beoflow_inventory_items(client_id, name);
+create index if not exists idx_beoflow_inventory_items_type on public.beoflow_inventory_items(client_id, inventory_type);
+create index if not exists idx_beoflow_inventory_items_source_subrecipe_id on public.beoflow_inventory_items(source_subrecipe_id);
 create index if not exists idx_beoflow_inventory_items_client_lower_name
   on public.beoflow_inventory_items(client_id, lower(name));
 create unique index if not exists idx_beoflow_inventory_items_client_code_unique
   on public.beoflow_inventory_items(client_id, upper(item_code))
   where status <> 'archived' and item_code is not null and btrim(item_code) <> '';
+create unique index if not exists idx_beoflow_inventory_items_subrecipe_source_unique
+  on public.beoflow_inventory_items(client_id, source_subrecipe_id)
+  where status <> 'archived' and inventory_type = 'subrecipe' and source_subrecipe_id is not null;
 create index if not exists idx_beoflow_recipes_client_id on public.beoflow_recipes(client_id);
 create index if not exists idx_beoflow_recipes_ingredients on public.beoflow_recipes using gin (ingredients);
 create index if not exists idx_beoflow_subrecipes_client_id on public.beoflow_subrecipes(client_id);
