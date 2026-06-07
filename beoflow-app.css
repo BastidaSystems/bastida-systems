@@ -1272,16 +1272,46 @@ h1 {
   color: #0284c7;
 }
 
+.category-badge.category-seafood,
+.record-title-icon.category-seafood {
+  background: rgba(8, 145, 178, 0.12);
+  color: #0e7490;
+}
+
 .category-badge.category-dry,
 .record-title-icon.category-dry {
   background: rgba(184, 137, 84, 0.12);
   color: #8a5b29;
 }
 
+.category-badge.category-condiment,
+.record-title-icon.category-condiment {
+  background: rgba(249, 115, 22, 0.12);
+  color: #c2410c;
+}
+
 .category-badge.category-beverage,
 .record-title-icon.category-beverage {
   background: rgba(8, 145, 178, 0.12);
   color: #0e7490;
+}
+
+.category-badge.category-frozen,
+.record-title-icon.category-frozen {
+  background: rgba(37, 99, 235, 0.1);
+  color: #1d4ed8;
+}
+
+.category-badge.category-canned,
+.record-title-icon.category-canned {
+  background: rgba(100, 116, 139, 0.12);
+  color: #475569;
+}
+
+.category-badge.category-supplies,
+.record-title-icon.category-supplies {
+  background: rgba(71, 85, 105, 0.1);
+  color: #334155;
 }
 
 .record-meta {

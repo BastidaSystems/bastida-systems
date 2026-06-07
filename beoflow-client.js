@@ -148,7 +148,7 @@ const MODULE_SECTIONS = {
     fields: [
       { name: 'item_code', label: 'Input Code', type: 'text', required: true, placeholder: 'INS-001' },
       { name: 'name', label: 'Name / Description', type: 'text', required: true },
-      { name: 'category', label: 'Category', type: 'text' },
+      { name: 'category', label: 'Category', type: 'inventory-category-select' },
       { name: 'brand', label: 'Brand', type: 'text' },
       { name: 'base_unit', label: 'Base Unit', type: 'text', required: true, placeholder: 'oz, lb, each' },
       { name: 'package_quantity', label: 'Package Quantity', type: 'number', min: '0.01', step: '0.01' },
@@ -280,11 +280,37 @@ const MODULE_VISUALS = {
 };
 
 const INVENTORY_CATEGORY_VISUALS = [
-  { keywords: ['produce', 'vegetable', 'fruit', 'herb', 'lettuce', 'tomato'], icon: 'leaf', className: 'category-produce' },
-  { keywords: ['meat', 'beef', 'pork', 'chicken', 'fish', 'seafood'], icon: 'chefHat', className: 'category-protein' },
+  { keywords: ['produce', 'vegetable', 'vegetables', 'fruit', 'fruits', 'herb', 'lettuce', 'tomato'], icon: 'leaf', className: 'category-produce' },
+  { keywords: ['meat', 'beef', 'pork', 'protein'], icon: 'chefHat', className: 'category-protein' },
+  { keywords: ['poultry', 'chicken', 'turkey'], icon: 'chefHat', className: 'category-protein' },
+  { keywords: ['seafood', 'fish', 'shrimp', 'shellfish'], icon: 'droplet', className: 'category-seafood' },
   { keywords: ['dairy', 'milk', 'cream', 'cheese', 'butter'], icon: 'droplet', className: 'category-dairy' },
-  { keywords: ['dry', 'grain', 'flour', 'rice', 'pasta', 'spice'], icon: 'box', className: 'category-dry' },
-  { keywords: ['beverage', 'drink', 'juice', 'wine', 'beer'], icon: 'cup', className: 'category-beverage' }
+  { keywords: ['dry', 'goods', 'grain', 'grains', 'flour', 'rice', 'pasta', 'spice', 'spices', 'seasoning', 'seasonings', 'bakery'], icon: 'box', className: 'category-dry' },
+  { keywords: ['oil', 'oils', 'vinegar', 'vinegars', 'sauce', 'sauces', 'condiment', 'condiments'], icon: 'cup', className: 'category-condiment' },
+  { keywords: ['beverage', 'beverages', 'drink', 'juice', 'wine', 'beer'], icon: 'cup', className: 'category-beverage' },
+  { keywords: ['frozen', 'ice'], icon: 'package', className: 'category-frozen' },
+  { keywords: ['canned', 'can', 'cans'], icon: 'box', className: 'category-canned' },
+  { keywords: ['cleaning', 'supply', 'supplies', 'disposable', 'disposables'], icon: 'tag', className: 'category-supplies' }
+];
+
+const INVENTORY_CATEGORY_OPTIONS = [
+  'Fruits and Vegetables',
+  'Dairy',
+  'Meat',
+  'Poultry',
+  'Seafood',
+  'Dry Goods',
+  'Grains and Pasta',
+  'Bakery',
+  'Spices and Seasonings',
+  'Oils and Vinegars',
+  'Sauces and Condiments',
+  'Beverages',
+  'Frozen',
+  'Canned Goods',
+  'Cleaning Supplies',
+  'Disposables',
+  'Other'
 ];
 
 const els = {};
@@ -2697,6 +2723,24 @@ function renderFormField(field, record = null) {
         <select name="${escapeHtml(field.name)}"${requiredAttr}${recipes.length ? '' : ' disabled'}>
           <option value="">No linked recipe</option>
           ${recipeOptions}
+        </select>
+      </label>
+    `;
+  }
+
+  if (field.type === 'inventory-category-select') {
+    const hasExistingCustomValue = value && !INVENTORY_CATEGORY_OPTIONS.includes(value);
+    const categoryOptions = INVENTORY_CATEGORY_OPTIONS
+      .map(option => `<option value="${escapeHtml(option)}"${option === value ? ' selected' : ''}>${escapeHtml(option)}</option>`)
+      .join('');
+
+    return `
+      <label class="form-field${wideClass}">
+        <span>${escapeHtml(field.label)}</span>
+        <select name="${escapeHtml(field.name)}"${requiredAttr}>
+          <option value="">Select category</option>
+          ${hasExistingCustomValue ? `<option value="${escapeHtml(value)}" selected>${escapeHtml(value)} (current)</option>` : ''}
+          ${categoryOptions}
         </select>
       </label>
     `;
