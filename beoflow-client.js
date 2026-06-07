@@ -511,6 +511,7 @@ function renderIcon(name, extraClass = '') {
     close: '<path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>',
     leaf: '<path d="M5 21c8-1 15-8 16-16-8 1-15 8-16 16Z"></path><path d="M5 21c0-5 4-9 9-9"></path>',
     package: '<path d="M16.5 9.4 7.5 4.2"></path><path d="M21 16V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.7Z"></path><path d="M3.3 7 12 12l8.7-5"></path><path d="M12 22V12"></path>',
+    packageAdd: '<path d="M16.5 9.4 7.5 4.2"></path><path d="M21 12V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l1.5-.86"></path><path d="M3.3 7 12 12l8.7-5"></path><path d="M12 22V12"></path><path d="M18 14v6"></path><path d="M15 17h6"></path>',
     save: '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"></path><path d="M17 21v-8H7v8"></path><path d="M7 3v5h8"></path>',
     search: '<circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path>',
     tag: '<path d="M20.6 13.2 13.2 20.6a2 2 0 0 1-2.8 0L3 13.2V3h10.2l7.4 7.4a2 2 0 0 1 0 2.8Z"></path><path d="M7.5 7.5h.01"></path>',
@@ -1127,7 +1128,7 @@ function refreshIngredientFromSource(ingredient) {
   const inventoryItem = (state.moduleRecords.inventory || []).find(row => (
     String(row.id) === String(normalized.inventoryItemId)
     || normalizeInventoryCode(row.item_code) === normalizeInventoryCode(normalized.itemCode)
-  ));
+  )) || findMatchingInventoryIngredient(normalized.ingredientName);
   if (!inventoryItem) {
     return normalizeRecipeIngredient({
       ...normalized,
@@ -2499,7 +2500,7 @@ function renderRecipeInventoryStatusCell(ingredient, index) {
   const status = getIngredientInventoryStatus(ingredient);
   const actionHtml = status.connected || ingredient.itemType === 'subrecipe'
     ? ''
-    : `<button type="button" class="secondary-action compact-icon-action" data-recipe-ingredient-add-inventory="${index}" title="Add to inventory">${renderIconLabel('box', 'Add')}</button>`;
+    : `<button type="button" class="secondary-action compact-icon-action recipe-add-inventory-action" data-recipe-ingredient-add-inventory="${index}" title="Add to Inventory" aria-label="Add ${escapeHtml(ingredient.ingredientName || 'ingredient')} to Inventory">${renderIconLabel('packageAdd', 'Add to Inventory')}</button>`;
 
   return `
     <div class="inventory-status-cell">
@@ -2710,6 +2711,22 @@ function addBlankRecipeIngredient() {
   refreshRecipeIngredientBuilder();
 }
 
+function connectRecipeIngredientDraftToInventory(index, inventoryItem, draftIngredient) {
+  const ingredient = normalizeRecipeIngredient(draftIngredient || state.recipeIngredientsDraft[Number(index)]);
+  const quantity = Number(ingredient?.quantity);
+  const safeQuantity = Number.isFinite(quantity) && quantity >= 0 ? quantity : 0;
+  const connectedIngredient = createRecipeIngredientFromInventory(
+    inventoryItem,
+    safeQuantity > 0 ? safeQuantity : 1
+  );
+
+  state.recipeIngredientsDraft[Number(index)] = normalizeRecipeIngredient({
+    ...connectedIngredient,
+    quantity: safeQuantity,
+    unit: ingredient?.unit || getInventoryBaseUnit(inventoryItem)
+  });
+}
+
 async function addRecipeIngredientRowToInventory(index) {
   const draftIngredient = state.recipeIngredientsDraft[Number(index)];
   if (!draftIngredient) throw new Error('Choose a valid recipe ingredient.');
@@ -2719,8 +2736,7 @@ async function addRecipeIngredientRowToInventory(index) {
 
   const duplicate = findMatchingInventoryIngredient(name);
   if (duplicate) {
-    state.recipeIngredientsDraft[Number(index)] = createRecipeIngredientFromInventory(duplicate, ingredient.quantity || 1);
-    state.recipeIngredientsDraft[Number(index)].unit = ingredient.unit || getInventoryBaseUnit(duplicate);
+    connectRecipeIngredientDraftToInventory(index, duplicate, ingredient);
     refreshRecipeIngredientBuilder();
     showToast(`${duplicate.name} connected from inventory.`);
     return duplicate;
@@ -2729,7 +2745,7 @@ async function addRecipeIngredientRowToInventory(index) {
   const payload = {
     item_code: createInventoryCodeFromName(name),
     name,
-    category: null,
+    category: 'Other',
     base_unit: ingredient.unit || 'each',
     unit: ingredient.unit || 'each',
     package_quantity: 1,
@@ -2744,8 +2760,7 @@ async function addRecipeIngredientRowToInventory(index) {
 
   const createdIngredient = await createRecord(MODULE_SECTIONS.inventory.table, payload);
   await loadModuleData('inventory');
-  state.recipeIngredientsDraft[Number(index)] = createRecipeIngredientFromInventory(createdIngredient, ingredient.quantity || 1);
-  state.recipeIngredientsDraft[Number(index)].unit = ingredient.unit || getInventoryBaseUnit(createdIngredient);
+  connectRecipeIngredientDraftToInventory(index, createdIngredient, ingredient);
   refreshRecipeIngredientBuilder();
   showToast(`${createdIngredient.name} added to inventory and connected.`);
   return createdIngredient;
