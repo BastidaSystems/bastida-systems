@@ -1191,6 +1191,55 @@ h1 {
   justify-content: flex-end;
 }
 
+.recipe-inline-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.recipe-inline-card {
+  grid-template-columns: 1fr;
+  gap: 1.05rem;
+}
+
+.recipe-inline-card-header,
+.recipe-inline-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.recipe-inline-card-header h4 {
+  margin: 0;
+  color: var(--ink-strong);
+  font-size: 1.18rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.recipe-inline-name-field {
+  max-width: 42rem;
+}
+
+.recipe-inline-ingredients {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.recipe-inline-ingredient-rows {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.recipe-inline-add-ingredient {
+  width: fit-content;
+}
+
+.recipe-inline-actions {
+  justify-content: flex-start;
+}
+
 .reports-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -1730,6 +1779,18 @@ h1 {
 
   .record-badges {
     justify-content: flex-start;
+  }
+
+  .recipe-inline-card-header,
+  .recipe-inline-actions {
+    display: grid;
+    justify-content: stretch;
+  }
+
+  .recipe-inline-add-ingredient,
+  .recipe-inline-actions .primary-action,
+  .recipe-inline-actions .secondary-action {
+    width: 100%;
   }
 
   .recipe-ingredient-table-head {

@@ -23,6 +23,8 @@ const state = {
   recipeIngredientsDraft: [],
   recipeIngredientSearch: '',
   recipeQuickIngredientOpen: false,
+  recipeInlineNewOpen: false,
+  recipeInlineNewIngredient: null,
   recipeLinkIngredient: null,
   subrecipeSearch: '',
   dashboardCalendarDate: new Date(),
@@ -1269,6 +1271,24 @@ async function loadDashboardEvents() {
   return state.dashboardEvents;
 }
 
+async function loadInventoryForRecipeUsage() {
+  const clientId = getActiveClientId();
+  if (!clientId) return [];
+
+  const { data, error } = await withActiveRecordFilter(
+    requireSupabaseClient()
+      .from(MODULE_SECTIONS.inventory.table)
+      .select('*')
+      .eq('client_id', clientId)
+  ).order('created_at', { ascending: false });
+
+  if (error) throw error;
+
+  state.moduleRecords.inventory = data || [];
+  state.moduleCounts.inventory = state.moduleRecords.inventory.length;
+  return state.moduleRecords.inventory;
+}
+
 async function loadModuleData(section) {
   const moduleConfig = getModuleConfig(section);
   if (section === 'reports') return loadReportsData();
@@ -1297,6 +1317,7 @@ async function loadModuleData(section) {
   }
 
   if (section === 'recipes') {
+    await loadInventoryForRecipeUsage();
     await loadSubrecipesForRecipeUsage();
   }
 
@@ -2057,6 +2078,11 @@ function renderModuleSection(section) {
     return;
   }
 
+  if (section !== 'recipes') {
+    state.recipeInlineNewOpen = false;
+    state.recipeInlineNewIngredient = null;
+  }
+
   renderWorkspaceFrame({ showWorkspaceHeader: false });
   hideWorkspaceSections();
   setActiveSidebarSection(section);
@@ -2064,12 +2090,24 @@ function renderModuleSection(section) {
   els['module-title'].textContent = moduleConfig.title;
   els['module-subtitle'].textContent = moduleConfig.subtitle;
   els['module-count-badge'].textContent = section === 'reports' ? 'Loading metrics' : 'Loading';
-  els['module-header-action-button'].textContent = moduleConfig.action;
+  if (section === 'recipes') {
+    els['module-header-action-button'].innerHTML = renderIconLabel('add', moduleConfig.action);
+    els['module-header-action-button'].classList.add('icon-action');
+  } else {
+    els['module-header-action-button'].textContent = moduleConfig.action;
+    els['module-header-action-button'].classList.remove('icon-action');
+  }
   els['module-header-action-button'].hidden = section === 'reports';
   els['module-empty-icon'].textContent = moduleConfig.index;
   els['module-empty-title'].textContent = moduleConfig.emptyTitle;
   els['module-empty-copy'].textContent = moduleConfig.emptyCopy;
-  els['module-action-button'].textContent = moduleConfig.action;
+  if (section === 'recipes') {
+    els['module-action-button'].innerHTML = renderIconLabel('add', moduleConfig.action);
+    els['module-action-button'].classList.add('icon-action');
+  } else {
+    els['module-action-button'].textContent = moduleConfig.action;
+    els['module-action-button'].classList.remove('icon-action');
+  }
   els['module-action-button'].hidden = section === 'reports';
   els['module-empty-state'].hidden = true;
   els['module-record-list'].hidden = false;
@@ -2096,6 +2134,11 @@ function renderModuleSection(section) {
 
 function renderModuleList(section, records = state.moduleRecords[section] || []) {
   const moduleConfig = getModuleConfig(section);
+  if (section === 'recipes') {
+    renderRecipesInlineList(records);
+    return;
+  }
+
   const count = records.length;
   els['module-count-badge'].textContent = `${count} ${count === 1 ? moduleConfig.singular : moduleConfig.plural}`;
   els['module-empty-state'].hidden = count > 0;
@@ -2107,6 +2150,165 @@ function renderModuleList(section, records = state.moduleRecords[section] || [])
   }
 
   els['module-record-list'].innerHTML = records.map(record => renderRecordCard(section, record)).join('');
+}
+
+function renderRecipesInlineList(records = state.moduleRecords.recipes || []) {
+  const moduleConfig = getModuleConfig('recipes');
+  const count = records.length;
+  const showNewCard = Boolean(state.recipeInlineNewOpen);
+  els['module-count-badge'].textContent = `${count} ${count === 1 ? moduleConfig.singular : moduleConfig.plural}`;
+  els['module-empty-state'].hidden = count > 0 || showNewCard;
+  els['module-record-list'].hidden = count === 0 && !showNewCard;
+
+  if (count === 0 && !showNewCard) {
+    els['module-record-list'].innerHTML = '';
+    return;
+  }
+
+  const newCardHtml = showNewCard ? renderRecipeInlineCard(null, { isNew: true }) : '';
+  els['module-record-list'].innerHTML = `
+    ${renderInlineRecipeInventoryDatalist()}
+    <div class="recipe-inline-list">
+      ${newCardHtml}
+      ${records.map(record => renderRecipeInlineCard(record)).join('')}
+    </div>
+  `;
+}
+
+function renderInlineRecipeInventoryDatalist() {
+  const options = getInventoryOptions().map(item => {
+    const label = [item.item_code, item.category, getInventoryBaseUnit(item)].filter(Boolean).join(' / ');
+    return `<option value="${escapeHtml(item.name)}"${label ? ` label="${escapeHtml(label)}"` : ''}></option>`;
+  }).join('');
+
+  return `<datalist id="recipe-inventory-options">${options}</datalist>`;
+}
+
+function renderRecipeInlineCard(record = null, { isNew = false } = {}) {
+  const title = isNew ? 'New Recipe' : getRecordTitle('recipes', record);
+  const status = record?.status || 'active';
+  const seedIngredient = state.recipeInlineNewIngredient
+    ? [createRecipeIngredientFromInventory(state.recipeInlineNewIngredient)]
+    : [];
+  const ingredients = isNew
+    ? seedIngredient
+    : normalizeRecipeIngredients(record?.ingredients);
+  const recordIdAttr = record?.id ? ` data-record-id="${escapeHtml(record.id)}"` : '';
+  const cardMode = isNew ? 'new' : 'existing';
+
+  return `
+    <article class="record-card recipe-inline-card" data-inline-recipe-card data-recipe-mode="${cardMode}"${recordIdAttr}>
+      <div class="recipe-inline-card-header">
+        <h4>${escapeHtml(title)}</h4>
+        <span class="status-badge">${escapeHtml(formatRecordValue('status', status))}</span>
+      </div>
+
+      <label class="form-field form-field-wide recipe-inline-name-field">
+        <span>Recipe name</span>
+        <input type="text" value="${escapeHtml(isNew ? '' : title)}" placeholder="Recipe name" data-inline-recipe-name>
+      </label>
+
+      <section class="recipe-inline-ingredients">
+        <div class="recipe-builder-heading">
+          <span>Ingredients</span>
+        </div>
+        <div class="recipe-ingredient-list">
+          <div class="recipe-ingredient-table-head">
+            <span>Ingredient</span>
+            <span>Qty</span>
+            <span>Unit</span>
+            <span>Inventory</span>
+            <span></span>
+          </div>
+          <div class="recipe-inline-ingredient-rows" data-inline-recipe-ingredient-rows>
+            ${renderInlineRecipeIngredientRows(ingredients)}
+          </div>
+        </div>
+        <button type="button" class="secondary-action icon-action recipe-inline-add-ingredient" data-inline-recipe-add-ingredient>
+          ${renderIconLabel('add', 'Add Ingredient')}
+        </button>
+      </section>
+
+      <div class="recipe-inline-actions">
+        <button type="button" class="primary-action icon-action" data-inline-recipe-save>
+          ${renderIconLabel('save', isNew ? 'Save Recipe' : 'Save Changes')}
+        </button>
+        ${isNew ? `<button type="button" class="secondary-action icon-action" data-inline-recipe-cancel>${renderIconLabel('close', 'Cancel')}</button>` : ''}
+        ${isNew ? '' : `<button type="button" class="secondary-action danger-action icon-action" data-inline-recipe-archive>${renderIconLabel('trash', 'Archive')}</button>`}
+      </div>
+    </article>
+  `;
+}
+
+function renderInlineRecipeIngredientRows(ingredients) {
+  const normalizedIngredients = normalizeRecipeIngredients(ingredients);
+  if (normalizedIngredients.length === 0) return renderInlineRecipeIngredientEmpty();
+
+  return normalizedIngredients
+    .map((ingredient, index) => renderInlineRecipeIngredientRow(ingredient, index))
+    .join('');
+}
+
+function renderInlineRecipeIngredientEmpty() {
+  return '<p class="recipe-ingredient-empty" data-inline-recipe-empty>No ingredients added yet.</p>';
+}
+
+function renderInlineRecipeIngredientRow(ingredient, index) {
+  const normalized = normalizeRecipeIngredient(ingredient) || normalizeRecipeIngredient({
+    itemType: 'inventory',
+    ingredientName: '',
+    quantity: 1,
+    unit: '',
+    validationStatus: 'not_found'
+  });
+  const status = getIngredientInventoryStatus(normalized);
+  const inventoryItem = status.item;
+  const inventoryItemId = inventoryItem?.id || normalized.inventoryItemId || '';
+  const itemCode = inventoryItem?.item_code || normalized.itemCode || '';
+  const unit = normalized.unit || (inventoryItem ? getInventoryBaseUnit(inventoryItem) : '');
+
+  return `
+    <div class="recipe-ingredient-row recipe-inline-ingredient-row"
+      data-inline-recipe-ingredient-row
+      data-ingredient-index="${index}"
+      data-item-type="${escapeHtml(normalized.itemType || 'inventory')}"
+      data-inventory-item-id="${escapeHtml(inventoryItemId)}"
+      data-subrecipe-id="${escapeHtml(normalized.subrecipeId || '')}"
+      data-item-code="${escapeHtml(itemCode)}">
+      <label class="recipe-ingredient-name-field">
+        <span>Ingredient</span>
+        <input type="text" list="recipe-inventory-options" value="${escapeHtml(normalized.ingredientName)}" placeholder="Ingredient name" data-inline-recipe-ingredient-name>
+        <small>${escapeHtml(status.connected && inventoryItem ? (inventoryItem.item_code || 'Inventory item') : normalized.itemType === 'subrecipe' ? 'Subrecipe' : 'Ingredient')}</small>
+      </label>
+      <label>
+        <span>Qty</span>
+        <input type="number" min="0" step="0.01" value="${escapeHtml(normalized.quantity)}" data-inline-recipe-ingredient-quantity>
+      </label>
+      <label>
+        <span>Unit</span>
+        <input type="text" value="${escapeHtml(unit)}" data-inline-recipe-ingredient-unit>
+      </label>
+      ${renderInlineRecipeInventoryStatusCell(normalized, index)}
+      <button type="button" class="modal-icon-button icon-only-button" data-inline-recipe-ingredient-remove title="Remove ingredient" aria-label="Remove ingredient">${renderIcon('trash')}</button>
+    </div>
+  `;
+}
+
+function renderInlineRecipeInventoryStatusCell(ingredient) {
+  const status = getIngredientInventoryStatus(ingredient);
+  const actionHtml = status.connected || ingredient.itemType === 'subrecipe'
+    ? ''
+    : `<button type="button" class="secondary-action compact-icon-action recipe-add-inventory-action" data-inline-recipe-ingredient-add-inventory title="Add to Inventory" aria-label="Add ${escapeHtml(ingredient.ingredientName || 'ingredient')} to Inventory">${renderIconLabel('packageAdd', 'Add to Inventory')}</button>`;
+
+  return `
+    <div class="inventory-status-cell" data-inline-recipe-inventory-status>
+      <span class="inventory-status-pill ${escapeHtml(status.className)}" title="${escapeHtml(status.label)}">
+        ${renderIcon(status.icon)}
+        <span>${escapeHtml(status.label)}</span>
+      </span>
+      ${actionHtml}
+    </div>
+  `;
 }
 
 function renderRecordCard(section, record) {
@@ -2766,6 +2968,226 @@ async function addRecipeIngredientRowToInventory(index) {
   return createdIngredient;
 }
 
+function getInlineRecipeCardRecord(card) {
+  const recordId = card?.dataset.recordId;
+  return recordId ? getRecordById('recipes', recordId) : null;
+}
+
+function syncInlineRecipeIngredientIndexes(card) {
+  const rows = Array.from(card.querySelectorAll('[data-inline-recipe-ingredient-row]'));
+  rows.forEach((row, index) => {
+    row.dataset.ingredientIndex = String(index);
+  });
+
+  const rowContainer = card.querySelector('[data-inline-recipe-ingredient-rows]');
+  if (!rowContainer) return;
+  const emptyState = rowContainer.querySelector('[data-inline-recipe-empty]');
+  if (rows.length === 0 && !emptyState) {
+    rowContainer.innerHTML = renderInlineRecipeIngredientEmpty();
+  }
+  if (rows.length > 0 && emptyState) {
+    emptyState.remove();
+  }
+}
+
+function getInlineRecipeIngredientFromRow(row, { requireName = false } = {}) {
+  const name = row.querySelector('[data-inline-recipe-ingredient-name]')?.value.trim() || '';
+  const quantity = Number(row.querySelector('[data-inline-recipe-ingredient-quantity]')?.value || 0);
+  const unit = row.querySelector('[data-inline-recipe-ingredient-unit]')?.value.trim() || '';
+  const itemType = row.dataset.itemType || 'inventory';
+  const linkedInventoryItem = row.dataset.inventoryItemId
+    ? getInventoryOptions().find(item => String(item.id) === String(row.dataset.inventoryItemId))
+    : null;
+  const shouldKeepLinkedInventory = itemType === 'subrecipe'
+    || !linkedInventoryItem
+    || normalizeIngredientNameForMatch(name) === normalizeIngredientNameForMatch(linkedInventoryItem.name);
+  if (requireName && !name) throw new Error('Ingredient name is required before adding it to inventory.');
+  if (!Number.isFinite(quantity) || quantity < 0) {
+    throw new Error(`${name || 'Ingredient'} quantity cannot be negative.`);
+  }
+
+  const baseIngredient = normalizeRecipeIngredient({
+    itemType,
+    inventoryItemId: shouldKeepLinkedInventory ? (row.dataset.inventoryItemId || '') : '',
+    subrecipeId: row.dataset.subrecipeId || '',
+    itemCode: shouldKeepLinkedInventory ? (row.dataset.itemCode || '') : '',
+    ingredientName: name,
+    quantity,
+    unit,
+    validationStatus: shouldKeepLinkedInventory && row.dataset.inventoryItemId ? 'valid' : 'not_found'
+  });
+
+  if (!baseIngredient || baseIngredient.itemType === 'subrecipe') return baseIngredient;
+
+  const status = getIngredientInventoryStatus(baseIngredient);
+  if (!status.item) return baseIngredient;
+
+  return normalizeRecipeIngredient({
+    ...createRecipeIngredientFromInventory(status.item, quantity),
+    unit: unit || getInventoryBaseUnit(status.item)
+  });
+}
+
+function collectInlineRecipeIngredients(card) {
+  const rows = Array.from(card.querySelectorAll('[data-inline-recipe-ingredient-row]'));
+  const ingredients = rows
+    .map(row => getInlineRecipeIngredientFromRow(row))
+    .filter(ingredient => (
+      ingredient
+      && (
+        ingredient.ingredientName
+        || ingredient.inventoryItemId
+        || ingredient.subrecipeId
+      )
+    ));
+
+  if (ingredients.length === 0) {
+    throw new Error('Add at least one ingredient before saving this recipe.');
+  }
+
+  ingredients.forEach(ingredient => {
+    if (!String(ingredient.ingredientName || '').trim()) {
+      throw new Error('Every ingredient needs a name before saving.');
+    }
+  });
+
+  return ingredients;
+}
+
+function syncInlineRecipeRowWithInventory(row, inventoryItem, draftIngredient = null) {
+  if (!row || !inventoryItem) return;
+  const nameInput = row.querySelector('[data-inline-recipe-ingredient-name]');
+  const unitInput = row.querySelector('[data-inline-recipe-ingredient-unit]');
+  const quantityInput = row.querySelector('[data-inline-recipe-ingredient-quantity]');
+  const quantity = Number(quantityInput?.value || draftIngredient?.quantity || 0);
+  const safeQuantity = Number.isFinite(quantity) && quantity >= 0 ? quantity : 0;
+  const ingredient = normalizeRecipeIngredient({
+    ...createRecipeIngredientFromInventory(inventoryItem, safeQuantity > 0 ? safeQuantity : 1),
+    quantity: safeQuantity,
+    unit: unitInput?.value.trim() || draftIngredient?.unit || getInventoryBaseUnit(inventoryItem)
+  });
+
+  row.dataset.itemType = 'inventory';
+  row.dataset.inventoryItemId = inventoryItem.id || '';
+  row.dataset.subrecipeId = '';
+  row.dataset.itemCode = inventoryItem.item_code || '';
+  if (nameInput) nameInput.value = inventoryItem.name || nameInput.value;
+  if (unitInput && !unitInput.value.trim()) unitInput.value = getInventoryBaseUnit(inventoryItem) || '';
+  const statusCell = row.querySelector('[data-inline-recipe-inventory-status]');
+  if (statusCell) statusCell.outerHTML = renderInlineRecipeInventoryStatusCell(ingredient);
+  const helper = row.querySelector('.recipe-ingredient-name-field small');
+  if (helper) helper.textContent = inventoryItem.item_code || 'Inventory item';
+}
+
+function syncInlineRecipeRowInventoryStatus(row) {
+  if (!row || row.dataset.itemType === 'subrecipe') return;
+  const ingredient = getInlineRecipeIngredientFromRow(row);
+  const status = getIngredientInventoryStatus(ingredient);
+  if (status.item) {
+    syncInlineRecipeRowWithInventory(row, status.item, ingredient);
+    return;
+  }
+
+  row.dataset.inventoryItemId = '';
+  row.dataset.itemCode = '';
+  const statusCell = row.querySelector('[data-inline-recipe-inventory-status]');
+  if (statusCell) statusCell.outerHTML = renderInlineRecipeInventoryStatusCell({
+    ...ingredient,
+    inventoryItemId: '',
+    itemCode: '',
+    validationStatus: 'not_found'
+  });
+  const helper = row.querySelector('.recipe-ingredient-name-field small');
+  if (helper) helper.textContent = 'Ingredient';
+}
+
+async function addInlineRecipeIngredientToInventory(card, row) {
+  const ingredient = getInlineRecipeIngredientFromRow(row, { requireName: true });
+  if (ingredient.itemType === 'subrecipe') throw new Error('Subrecipes are already connected as reusable preparations.');
+  const duplicate = findMatchingInventoryIngredient(ingredient.ingredientName);
+  if (duplicate) {
+    syncInlineRecipeRowWithInventory(row, duplicate, ingredient);
+    showToast(`${duplicate.name} connected from inventory.`);
+    return duplicate;
+  }
+
+  const unit = ingredient.unit || 'each';
+  const payload = {
+    item_code: createInventoryCodeFromName(ingredient.ingredientName),
+    name: ingredient.ingredientName,
+    category: 'Other',
+    base_unit: unit,
+    unit,
+    package_quantity: 1,
+    package_unit: unit,
+    package_price: 0,
+    current_stock: 0,
+    minimum_stock: 0,
+    cost_per_unit: 0,
+    supplier: null,
+    status: 'active'
+  };
+
+  const createdIngredient = await createRecord(MODULE_SECTIONS.inventory.table, payload);
+  await loadInventoryForRecipeUsage();
+  syncInlineRecipeRowWithInventory(row, createdIngredient, ingredient);
+  showToast(`${createdIngredient.name} added to inventory and connected.`);
+
+  if (card.dataset.recipeMode !== 'new') {
+    await saveInlineRecipeCard(card, { silent: true });
+  }
+
+  return createdIngredient;
+}
+
+function appendInlineRecipeIngredientRow(card, ingredient = null) {
+  const rowContainer = card.querySelector('[data-inline-recipe-ingredient-rows]');
+  if (!rowContainer) return;
+  const emptyState = rowContainer.querySelector('[data-inline-recipe-empty]');
+  if (emptyState) emptyState.remove();
+  const index = rowContainer.querySelectorAll('[data-inline-recipe-ingredient-row]').length;
+  rowContainer.insertAdjacentHTML('beforeend', renderInlineRecipeIngredientRow(ingredient || {
+    itemType: 'inventory',
+    ingredientName: '',
+    quantity: 1,
+    unit: '',
+    validationStatus: 'not_found'
+  }, index));
+  syncInlineRecipeIngredientIndexes(card);
+}
+
+async function saveInlineRecipeCard(card, { silent = false } = {}) {
+  const isNew = card.dataset.recipeMode === 'new';
+  const record = getInlineRecipeCardRecord(card);
+  const name = card.querySelector('[data-inline-recipe-name]')?.value.trim() || '';
+  if (!name) throw new Error('Recipe name is required.');
+  if (!isNew && !record?.id) throw new Error('Recipe record was not found. Reload Recipes and try again.');
+
+  await loadInventoryForRecipeUsage();
+  const ingredients = collectInlineRecipeIngredients(card);
+  const source = { ...record, name };
+  const payload = {
+    name,
+    status: record?.status || 'active',
+    ...calculateRecipeCostFields(source, ingredients)
+  };
+  const savedRecord = isNew
+    ? await createRecord(MODULE_SECTIONS.recipes.table, payload)
+    : await updateRecord(MODULE_SECTIONS.recipes.table, record.id, payload);
+
+  await recalculateMenuItemsForRecipes([savedRecord.id]);
+  if (isNew) {
+    state.recipeInlineNewOpen = false;
+    state.recipeInlineNewIngredient = null;
+  }
+  await loadModuleData('recipes');
+  await loadDashboardCounts();
+  updateDashboardCards();
+  renderModuleList('recipes', state.moduleRecords.recipes || []);
+  if (!silent) showToast(isNew ? 'Recipe created.' : 'Recipe updated.');
+  return savedRecord;
+}
+
 async function loadInventoryOptionsForRecipe() {
   try {
     await loadModuleData('inventory');
@@ -2826,6 +3248,15 @@ async function saveQuickInventoryIngredient() {
 function openModuleModal(section, record = null, options = {}) {
   const moduleConfig = getModuleConfig(section);
   if (!moduleConfig.table) return;
+  if (section === 'recipes') {
+    if (record?.id) {
+      renderModuleSection('recipes');
+      return;
+    }
+
+    startInlineNewRecipe(options.preselectedIngredient || null);
+    return;
+  }
 
   state.modalSection = section;
   state.editingRecord = record;
@@ -2836,30 +3267,17 @@ function openModuleModal(section, record = null, options = {}) {
     ? normalizeRecipeIngredients(record?.ingredients)
     : [];
 
-  if (section === 'recipes' && options.preselectedIngredient) {
-    addRecipeIngredientToDraft(createRecipeIngredientFromInventory(options.preselectedIngredient));
-  }
-
   showAlert(els['module-form-message'], '');
-  els['module-modal-title'].textContent = section === 'recipes'
-    ? (record ? 'Edit Recipe' : 'New Recipe')
-    : record
-      ? `Edit ${moduleConfig.singular}`
-      : moduleConfig.action;
+  els['module-modal-title'].textContent = record
+    ? `Edit ${moduleConfig.singular}`
+    : moduleConfig.action;
   els['module-modal-subtitle'].textContent = record
     ? `Update this ${moduleConfig.singular} for ${state.activeClient?.name || 'this workspace'}.`
     : `Create a new ${moduleConfig.singular} for ${state.activeClient?.name || 'this workspace'}.`;
-  if (section === 'recipes') {
-    els['module-save-button'].innerHTML = renderIconLabel('save', 'Save Recipe');
-    els['module-save-button'].classList.add('icon-action');
-    els['module-modal-close'].innerHTML = renderIconLabel('close', 'Close');
-    els['module-modal-close'].classList.add('icon-action');
-  } else {
-    els['module-save-button'].textContent = record ? 'Save Changes' : moduleConfig.action;
-    els['module-save-button'].classList.remove('icon-action');
-    els['module-modal-close'].textContent = 'Close';
-    els['module-modal-close'].classList.remove('icon-action');
-  }
+  els['module-save-button'].textContent = record ? 'Save Changes' : moduleConfig.action;
+  els['module-save-button'].classList.remove('icon-action');
+  els['module-modal-close'].textContent = 'Close';
+  els['module-modal-close'].classList.remove('icon-action');
   const baseFieldsHtml = moduleConfig.fields
     .map(field => renderFormField(field, record))
     .join('');
@@ -3183,7 +3601,21 @@ async function archiveModuleRecord(section, recordId) {
 function startRecipeWithInventoryItem(recordId) {
   const ingredient = getRecordById('inventory', recordId);
   if (!ingredient) return;
-  openModuleModal('recipes', null, { preselectedIngredient: ingredient });
+  startInlineNewRecipe(ingredient);
+}
+
+function startInlineNewRecipe(preselectedIngredient = null) {
+  state.recipeInlineNewOpen = true;
+  state.recipeInlineNewIngredient = preselectedIngredient;
+
+  if (state.activeSection !== 'recipes') {
+    renderModuleSection('recipes');
+    return;
+  }
+
+  renderModuleList('recipes', state.moduleRecords.recipes || []);
+  const newRecipeCard = els['module-record-list'].querySelector('[data-inline-recipe-card][data-recipe-mode="new"]');
+  newRecipeCard?.querySelector('[data-inline-recipe-name]')?.focus();
 }
 
 function renderInventoryRecipeLinkForm(ingredient) {
@@ -4184,14 +4616,78 @@ function bindEvents() {
   els['operations-calendar']?.addEventListener('click', handleOperationsCalendarClick);
 
   els['module-action-button'].addEventListener('click', () => {
+    if (state.activeSection === 'recipes') {
+      startInlineNewRecipe();
+      return;
+    }
     openModuleModal(state.activeSection);
   });
 
   els['module-header-action-button'].addEventListener('click', () => {
+    if (state.activeSection === 'recipes') {
+      startInlineNewRecipe();
+      return;
+    }
     openModuleModal(state.activeSection);
   });
 
-  els['module-record-list'].addEventListener('click', event => {
+  els['module-record-list'].addEventListener('click', async event => {
+    const inlineButton = event.target.closest('button');
+    const inlineCard = inlineButton?.closest('[data-inline-recipe-card]');
+    if (inlineButton && inlineCard) {
+      if (inlineButton.hasAttribute('data-inline-recipe-add-ingredient')) {
+        appendInlineRecipeIngredientRow(inlineCard);
+        return;
+      }
+
+      if (inlineButton.hasAttribute('data-inline-recipe-ingredient-remove')) {
+        const row = inlineButton.closest('[data-inline-recipe-ingredient-row]');
+        row?.remove();
+        syncInlineRecipeIngredientIndexes(inlineCard);
+        return;
+      }
+
+      if (inlineButton.hasAttribute('data-inline-recipe-ingredient-add-inventory')) {
+        setLoading(true);
+        showAlert(els['workspace-message'], '');
+        try {
+          const row = inlineButton.closest('[data-inline-recipe-ingredient-row]');
+          await addInlineRecipeIngredientToInventory(inlineCard, row);
+        } catch (error) {
+          showAlert(els['workspace-message'], error.message || 'Unable to add ingredient to inventory.');
+        } finally {
+          setLoading(false);
+        }
+        return;
+      }
+
+      if (inlineButton.hasAttribute('data-inline-recipe-save')) {
+        setLoading(true);
+        showAlert(els['workspace-message'], '');
+        try {
+          await saveInlineRecipeCard(inlineCard);
+        } catch (error) {
+          showAlert(els['workspace-message'], error.message || 'Unable to save recipe.');
+        } finally {
+          setLoading(false);
+        }
+        return;
+      }
+
+      if (inlineButton.hasAttribute('data-inline-recipe-cancel')) {
+        state.recipeInlineNewOpen = false;
+        state.recipeInlineNewIngredient = null;
+        renderModuleList('recipes', state.moduleRecords.recipes || []);
+        return;
+      }
+
+      if (inlineButton.hasAttribute('data-inline-recipe-archive')) {
+        const recordId = inlineCard.dataset.recordId;
+        if (recordId) archiveModuleRecord('recipes', recordId);
+        return;
+      }
+    }
+
     const actionButton = event.target.closest('[data-module-action]');
     if (!actionButton) return;
 
@@ -4215,6 +4711,40 @@ function bindEvents() {
 
     if (actionButton.dataset.moduleAction === 'add-to-recipe') {
       openInventoryRecipeLinkModal(recordId);
+    }
+  });
+
+  els['module-record-list'].addEventListener('input', event => {
+    const row = event.target.closest('[data-inline-recipe-ingredient-row]');
+    if (!row) return;
+
+    if (
+      event.target.hasAttribute('data-inline-recipe-ingredient-name')
+      || event.target.hasAttribute('data-inline-recipe-ingredient-unit')
+      || event.target.hasAttribute('data-inline-recipe-ingredient-quantity')
+    ) {
+      try {
+        syncInlineRecipeRowInventoryStatus(row);
+      } catch (error) {
+        showAlert(els['workspace-message'], error.message || 'Unable to update ingredient status.');
+      }
+    }
+  });
+
+  els['module-record-list'].addEventListener('change', event => {
+    const row = event.target.closest('[data-inline-recipe-ingredient-row]');
+    if (!row) return;
+
+    if (
+      event.target.hasAttribute('data-inline-recipe-ingredient-name')
+      || event.target.hasAttribute('data-inline-recipe-ingredient-unit')
+      || event.target.hasAttribute('data-inline-recipe-ingredient-quantity')
+    ) {
+      try {
+        syncInlineRecipeRowInventoryStatus(row);
+      } catch (error) {
+        showAlert(els['workspace-message'], error.message || 'Unable to update ingredient status.');
+      }
     }
   });
 
