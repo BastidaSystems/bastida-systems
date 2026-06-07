@@ -222,6 +222,71 @@ const MODULE_SECTIONS = {
 
 const DATA_SECTIONS = Object.keys(MODULE_SECTIONS).filter(section => MODULE_SECTIONS[section].table);
 
+const MODULE_VISUALS = {
+  dashboard: {
+    icon: 'gauge',
+    accent: '#2563eb',
+    soft: 'rgba(37, 99, 235, 0.1)',
+    copy: 'Live operating overview'
+  },
+  events: {
+    icon: 'calendar',
+    accent: '#0ea5e9',
+    soft: 'rgba(14, 165, 233, 0.12)',
+    copy: 'Service dates and guest counts'
+  },
+  menu: {
+    icon: 'utensils',
+    accent: '#f97316',
+    soft: 'rgba(249, 115, 22, 0.12)',
+    copy: 'Selling prices and margins'
+  },
+  recipes: {
+    icon: 'book',
+    accent: '#2563eb',
+    soft: 'rgba(37, 99, 235, 0.1)',
+    copy: 'Costed kitchen standards'
+  },
+  subrecipes: {
+    icon: 'layers',
+    accent: '#7c3aed',
+    soft: 'rgba(124, 58, 237, 0.1)',
+    copy: 'Reusable prep foundations'
+  },
+  inventory: {
+    icon: 'package',
+    accent: '#16a34a',
+    soft: 'rgba(22, 163, 74, 0.12)',
+    copy: 'Inputs, stock, and costs'
+  },
+  production: {
+    icon: 'checklist',
+    accent: '#0891b2',
+    soft: 'rgba(8, 145, 178, 0.12)',
+    copy: 'Prep plans and execution'
+  },
+  staff: {
+    icon: 'users',
+    accent: '#64748b',
+    soft: 'rgba(100, 116, 139, 0.12)',
+    copy: 'Team roles and contacts'
+  },
+  reports: {
+    icon: 'barChart',
+    accent: '#9333ea',
+    soft: 'rgba(147, 51, 234, 0.1)',
+    copy: 'Cost and margin signals'
+  }
+};
+
+const INVENTORY_CATEGORY_VISUALS = [
+  { keywords: ['produce', 'vegetable', 'fruit', 'herb', 'lettuce', 'tomato'], icon: 'leaf', className: 'category-produce' },
+  { keywords: ['meat', 'beef', 'pork', 'chicken', 'fish', 'seafood'], icon: 'chefHat', className: 'category-protein' },
+  { keywords: ['dairy', 'milk', 'cream', 'cheese', 'butter'], icon: 'droplet', className: 'category-dairy' },
+  { keywords: ['dry', 'grain', 'flour', 'rice', 'pasta', 'spice'], icon: 'box', className: 'category-dry' },
+  { keywords: ['beverage', 'drink', 'juice', 'wine', 'beer'], icon: 'cup', className: 'category-beverage' }
+];
+
 const els = {};
 
 function cacheElements() {
@@ -503,21 +568,33 @@ function renderIcon(name, extraClass = '') {
   const icons = {
     add: '<path d="M12 5v14M5 12h14"></path>',
     alert: '<path d="M12 9v4"></path><path d="M12 17h.01"></path><path d="M10.3 3.9 2.6 17.1A2 2 0 0 0 4.3 20h15.4a2 2 0 0 0 1.7-2.9L13.7 3.9a2 2 0 0 0-3.4 0Z"></path>',
+    archive: '<path d="M21 8v13H3V8"></path><path d="M1 3h22v5H1Z"></path><path d="M10 12h4"></path>',
+    barChart: '<path d="M3 3v18h18"></path><path d="M7 16V9"></path><path d="M12 16V5"></path><path d="M17 16v-3"></path>',
     box: '<path d="m21 8-9-5-9 5 9 5 9-5Z"></path><path d="M3 8v8l9 5 9-5V8"></path><path d="M12 13v8"></path>',
     calendar: '<path d="M8 2v4"></path><path d="M16 2v4"></path><path d="M3 10h18"></path><path d="M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"></path>',
     check: '<path d="m4 12 5 5L20 6"></path>',
+    checklist: '<path d="M9 6h11"></path><path d="M9 12h11"></path><path d="M9 18h11"></path><path d="m3 6 1 1 2-2"></path><path d="m3 12 1 1 2-2"></path><path d="m3 18 1 1 2-2"></path>',
+    chefHat: '<path d="M6 13.9V21h12v-7.1"></path><path d="M6.1 14A4 4 0 0 1 8 6.5 4.5 4.5 0 0 1 16 6.5 4 4 0 0 1 17.9 14"></path><path d="M8 17h8"></path>',
     chevronLeft: '<path d="m15 18-6-6 6-6"></path>',
     chevronRight: '<path d="m9 18 6-6-6-6"></path>',
     circle: '<circle cx="12" cy="12" r="4"></circle>',
     clock: '<circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path>',
     close: '<path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>',
+    cup: '<path d="M4 5h12v8a6 6 0 0 1-12 0V5Z"></path><path d="M16 8h2a3 3 0 0 1 0 6h-2"></path><path d="M3 21h18"></path>',
+    droplet: '<path d="M12 2.5 6.5 9A7 7 0 1 0 17.5 9L12 2.5Z"></path>',
+    gauge: '<path d="M4 19a8 8 0 1 1 16 0"></path><path d="M12 14l4-4"></path><path d="M12 19h.01"></path>',
     leaf: '<path d="M5 21c8-1 15-8 16-16-8 1-15 8-16 16Z"></path><path d="M5 21c0-5 4-9 9-9"></path>',
+    layers: '<path d="m12 2 9 5-9 5-9-5 9-5Z"></path><path d="m3 12 9 5 9-5"></path><path d="m3 17 9 5 9-5"></path>',
+    book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-17A2.5 2.5 0 0 1 6.5 2Z"></path>',
     package: '<path d="M16.5 9.4 7.5 4.2"></path><path d="M21 16V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.7Z"></path><path d="M3.3 7 12 12l8.7-5"></path><path d="M12 22V12"></path>',
     packageAdd: '<path d="M16.5 9.4 7.5 4.2"></path><path d="M21 12V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l1.5-.86"></path><path d="M3.3 7 12 12l8.7-5"></path><path d="M12 22V12"></path><path d="M18 14v6"></path><path d="M15 17h6"></path>',
+    pencil: '<path d="m16 3 5 5L8 21H3v-5L16 3Z"></path><path d="m14 5 5 5"></path>',
     save: '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"></path><path d="M17 21v-8H7v8"></path><path d="M7 3v5h8"></path>',
     search: '<circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path>',
     tag: '<path d="M20.6 13.2 13.2 20.6a2 2 0 0 1-2.8 0L3 13.2V3h10.2l7.4 7.4a2 2 0 0 1 0 2.8Z"></path><path d="M7.5 7.5h.01"></path>',
-    trash: '<path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path>'
+    trash: '<path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path>',
+    users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>',
+    utensils: '<path d="M4 2v8"></path><path d="M7 2v8"></path><path d="M4 6h3"></path><path d="M5.5 10v12"></path><path d="M19 2v20"></path><path d="M15 2v8a4 4 0 0 0 4 4"></path>'
   };
   const body = icons[name] || icons.box;
   const classAttr = extraClass ? ` ${extraClass}` : '';
@@ -526,6 +603,98 @@ function renderIcon(name, extraClass = '') {
 
 function renderIconLabel(iconName, label, extraClass = '') {
   return `${renderIcon(iconName, extraClass)}<span>${escapeHtml(label)}</span>`;
+}
+
+function getModuleVisual(section) {
+  return MODULE_VISUALS[section] || MODULE_VISUALS.dashboard;
+}
+
+function getInventoryCategoryVisual(recordOrCategory) {
+  const category = typeof recordOrCategory === 'string'
+    ? recordOrCategory
+    : recordOrCategory?.category;
+  const normalized = String(category || '').toLowerCase();
+  const match = INVENTORY_CATEGORY_VISUALS.find(visual => (
+    visual.keywords.some(keyword => normalized.includes(keyword))
+  ));
+  return match || { icon: 'box', className: 'category-other' };
+}
+
+function setElementModuleVisual(element, section) {
+  if (!element) return;
+  const visual = getModuleVisual(section);
+  element.dataset.moduleVisual = section;
+  element.style.setProperty('--module-accent', visual.accent);
+  element.style.setProperty('--module-accent-soft', visual.soft);
+}
+
+function getModuleActionIcon(section) {
+  if (section === 'inventory') return 'packageAdd';
+  if (section === 'reports') return 'barChart';
+  if (section === 'production') return 'checklist';
+  return 'add';
+}
+
+function decorateStaticModuleControls() {
+  document.querySelectorAll('.sidebar-link[data-section]').forEach(button => {
+    const section = button.dataset.section;
+    const moduleConfig = MODULE_SECTIONS[section];
+    if (!moduleConfig) return;
+
+    setElementModuleVisual(button, section);
+    if (button.dataset.visualReady === 'true') return;
+    button.innerHTML = renderIconLabel(getModuleVisual(section).icon, moduleConfig.title);
+    button.dataset.visualReady = 'true';
+  });
+
+  document.querySelectorAll('.module-card[data-section]').forEach(card => {
+    const section = card.dataset.section;
+    const moduleConfig = MODULE_SECTIONS[section];
+    const visual = getModuleVisual(section);
+    if (!moduleConfig) return;
+
+    setElementModuleVisual(card, section);
+    const count = card.querySelector('[data-count-section]')?.textContent || '0';
+    const copy = visual.copy || moduleConfig.subtitle;
+    card.innerHTML = `
+      <span class="module-card-icon">${renderIcon(visual.icon)}</span>
+      <span class="module-card-label">${escapeHtml(moduleConfig.title)}</span>
+      <strong data-count-section="${escapeHtml(section)}">${escapeHtml(count)}</strong>
+      <p>${escapeHtml(copy)}</p>
+    `;
+  });
+}
+
+function renderRecordStateBadges(section, record) {
+  const badges = [];
+
+  if (section === 'inventory') {
+    if (isLowStock(record)) badges.push({ label: 'Low Stock', icon: 'alert', className: 'status-badge-warning' });
+    if (!Number(getInventoryPackagePrice(record))) badges.push({ label: 'No Price', icon: 'alert', className: 'status-badge-danger' });
+    if (!Number(getInventoryPackageQuantity(record))) badges.push({ label: 'No Pack', icon: 'box', className: 'status-badge-muted' });
+  }
+
+  if (isCostingRecipeSection(section)) {
+    const ingredients = normalizeRecipeIngredients(record.ingredients);
+    const missingCount = ingredients.filter(ingredient => !getIngredientInventoryStatus(ingredient).connected).length;
+    if (missingCount > 0) {
+      badges.push({ label: `${missingCount} missing`, icon: 'alert', className: 'status-badge-warning' });
+    } else if (ingredients.length > 0) {
+      badges.push({ label: 'Costed', icon: 'check', className: 'status-badge-success' });
+    }
+  }
+
+  if (section === 'menu') {
+    const margin = Number(record.margin_percentage);
+    if (Number.isFinite(margin)) {
+      const className = margin >= 60 ? 'status-badge-success' : margin >= 35 ? 'status-badge-warning' : 'status-badge-danger';
+      badges.push({ label: `${Math.round(margin)}% margin`, icon: margin >= 60 ? 'check' : 'alert', className });
+    }
+  }
+
+  return badges
+    .map(badge => `<span class="status-badge ${badge.className}">${renderIconLabel(badge.icon, badge.label)}</span>`)
+    .join('');
 }
 
 function createCalendarDate(year, monthIndex, day) {
@@ -830,18 +999,7 @@ function findInventoryIngredientByCode(code, excludeId = null) {
 }
 
 function getInventoryIconName(recordOrCategory) {
-  const category = typeof recordOrCategory === 'string'
-    ? recordOrCategory
-    : recordOrCategory?.category;
-  const normalized = String(category || '').toLowerCase();
-  if (/produce|verdura|vegetable|fruit|fruta|leaf|herb/.test(normalized)) return 'leaf';
-  if (/meat|carne|protein|proteina|beef|chicken|pork|fish|seafood/.test(normalized)) return 'package';
-  if (/dairy|lacteo|milk|cheese|cream/.test(normalized)) return 'package';
-  if (/dry|seco|grain|flour|spice|pantry/.test(normalized)) return 'box';
-  if (/drink|beverage|bebida|juice|water|wine|beer/.test(normalized)) return 'package';
-  if (/frozen|congelado|ice/.test(normalized)) return 'package';
-  if (/clean|supply|supplies|limpieza/.test(normalized)) return 'tag';
-  return 'box';
+  return getInventoryCategoryVisual(recordOrCategory).icon;
 }
 
 function getIngredientInventoryStatus(ingredient) {
@@ -2042,11 +2200,12 @@ function renderDashboard() {
   const activeClient = requireActiveClient();
   if (!activeClient) return;
 
+  setElementModuleVisual(els['dashboard-view'], 'dashboard');
   renderWorkspaceFrame({ showWorkspaceHeader: true });
   hideWorkspaceSections();
   setActiveSidebarSection('dashboard');
   els['dashboard-view'].hidden = false;
-  els['dashboard-title'].textContent = state.activeClient.name;
+  els['dashboard-title'].innerHTML = renderIconLabel(getModuleVisual('dashboard').icon, state.activeClient.name);
   els['dashboard-description'].textContent = `Welcome to ${state.activeClient.name}. Your Beoflow modules are ready for real operating data when your team starts building.`;
   updateDashboardCards();
   renderOperationsCalendar();
@@ -2087,27 +2246,18 @@ function renderModuleSection(section) {
   hideWorkspaceSections();
   setActiveSidebarSection(section);
   els['module-view'].hidden = false;
-  els['module-title'].textContent = moduleConfig.title;
+  setElementModuleVisual(els['module-view'], section);
+  els['module-title'].innerHTML = renderIconLabel(getModuleVisual(section).icon, moduleConfig.title);
   els['module-subtitle'].textContent = moduleConfig.subtitle;
   els['module-count-badge'].textContent = section === 'reports' ? 'Loading metrics' : 'Loading';
-  if (section === 'recipes') {
-    els['module-header-action-button'].innerHTML = renderIconLabel('add', moduleConfig.action);
-    els['module-header-action-button'].classList.add('icon-action');
-  } else {
-    els['module-header-action-button'].textContent = moduleConfig.action;
-    els['module-header-action-button'].classList.remove('icon-action');
-  }
+  els['module-header-action-button'].innerHTML = renderIconLabel(getModuleActionIcon(section), moduleConfig.action);
+  els['module-header-action-button'].classList.add('icon-action');
   els['module-header-action-button'].hidden = section === 'reports';
-  els['module-empty-icon'].textContent = moduleConfig.index;
+  els['module-empty-icon'].innerHTML = renderIcon(getModuleVisual(section).icon);
   els['module-empty-title'].textContent = moduleConfig.emptyTitle;
   els['module-empty-copy'].textContent = moduleConfig.emptyCopy;
-  if (section === 'recipes') {
-    els['module-action-button'].innerHTML = renderIconLabel('add', moduleConfig.action);
-    els['module-action-button'].classList.add('icon-action');
-  } else {
-    els['module-action-button'].textContent = moduleConfig.action;
-    els['module-action-button'].classList.remove('icon-action');
-  }
+  els['module-action-button'].innerHTML = renderIconLabel(getModuleActionIcon(section), moduleConfig.action);
+  els['module-action-button'].classList.add('icon-action');
   els['module-action-button'].hidden = section === 'reports';
   els['module-empty-state'].hidden = true;
   els['module-record-list'].hidden = false;
@@ -2185,6 +2335,7 @@ function renderInlineRecipeInventoryDatalist() {
 }
 
 function renderRecipeInlineCard(record = null, { isNew = false } = {}) {
+  const visual = getModuleVisual('recipes');
   const title = isNew ? 'New Recipe' : getRecordTitle('recipes', record);
   const status = record?.status || 'active';
   const seedIngredient = state.recipeInlineNewIngredient
@@ -2195,12 +2346,27 @@ function renderRecipeInlineCard(record = null, { isNew = false } = {}) {
     : normalizeRecipeIngredients(record?.ingredients);
   const recordIdAttr = record?.id ? ` data-record-id="${escapeHtml(record.id)}"` : '';
   const cardMode = isNew ? 'new' : 'existing';
+  const missingCount = ingredients.filter(ingredient => !getIngredientInventoryStatus(ingredient).connected).length;
+  const ingredientCountLabel = `${ingredients.length} ${ingredients.length === 1 ? 'ingredient' : 'ingredients'}`;
+  const inventoryStateLabel = missingCount > 0 ? `${missingCount} missing inventory` : ingredients.length > 0 ? 'Inventory connected' : 'No ingredients yet';
+  const inventoryStateIcon = missingCount > 0 ? 'alert' : ingredients.length > 0 ? 'check' : 'circle';
+  const inventoryStateClass = missingCount > 0 ? 'status-badge-warning' : ingredients.length > 0 ? 'status-badge-success' : 'status-badge-muted';
 
   return `
-    <article class="record-card recipe-inline-card" data-inline-recipe-card data-recipe-mode="${cardMode}"${recordIdAttr}>
+    <article class="record-card module-record-card recipe-inline-card" style="--module-accent: ${escapeHtml(visual.accent)}; --module-accent-soft: ${escapeHtml(visual.soft)};" data-inline-recipe-card data-recipe-mode="${cardMode}"${recordIdAttr}>
       <div class="recipe-inline-card-header">
-        <h4>${escapeHtml(title)}</h4>
-        <span class="status-badge">${escapeHtml(formatRecordValue('status', status))}</span>
+        <div class="recipe-inline-title-block">
+          <span class="record-title-icon">${renderIcon(visual.icon)}</span>
+          <div>
+            <p class="eyebrow">Recipe workspace</p>
+            <h4>${escapeHtml(title)}</h4>
+          </div>
+        </div>
+        <div class="record-badges">
+          <span class="status-badge">${renderIconLabel(status === 'active' ? 'check' : 'circle', formatRecordValue('status', status))}</span>
+          <span class="status-badge">${renderIconLabel('box', ingredientCountLabel)}</span>
+          <span class="status-badge ${inventoryStateClass}">${renderIconLabel(inventoryStateIcon, inventoryStateLabel)}</span>
+        </div>
       </div>
 
       <label class="form-field form-field-wide recipe-inline-name-field">
@@ -2313,15 +2479,17 @@ function renderInlineRecipeInventoryStatusCell(ingredient) {
 
 function renderRecordCard(section, record) {
   const moduleConfig = getModuleConfig(section);
+  const visual = getModuleVisual(section);
   const title = getRecordTitle(section, record);
   const status = record?.[moduleConfig.badgeField] || 'active';
-  const titleIconHtml = section === 'inventory'
-    ? `<span class="record-title-icon" title="${escapeHtml(record.category || 'Inventory item')}">${renderIcon(getInventoryIconName(record))}</span>`
-    : '';
+  const categoryVisual = getInventoryCategoryVisual(record);
+  const titleIcon = section === 'inventory' ? getInventoryIconName(record) : visual.icon;
+  const titleIconTitle = section === 'inventory' ? record.category || 'Inventory item' : moduleConfig.title;
+  const titleIconHtml = `<span class="record-title-icon ${section === 'inventory' ? categoryVisual.className : ''}" title="${escapeHtml(titleIconTitle)}">${renderIcon(titleIcon)}</span>`;
   const metaHtml = (moduleConfig.metaFields || [])
     .map(fieldName => formatRecordValue(fieldName, getRecordDisplayValue(section, fieldName, record)))
     .filter(Boolean)
-    .map(value => `<span>${escapeHtml(value)}</span>`)
+    .map(value => `<span class="record-meta-chip">${escapeHtml(value)}</span>`)
     .join('');
   const detailHtml = (moduleConfig.detailFields || [])
     .map(fieldName => {
@@ -2336,18 +2504,20 @@ function renderRecordCard(section, record) {
     })
     .filter(Boolean)
     .join('');
-  const lowStockHtml = section === 'inventory' && isLowStock(record)
-    ? '<span class="status-badge status-badge-warning">Low Stock</span>'
+  const categoryHtml = section === 'inventory' && record.category
+    ? `<span class="status-badge category-badge ${categoryVisual.className}">${renderIconLabel(categoryVisual.icon, record.category)}</span>`
     : '';
+  const stateBadgesHtml = renderRecordStateBadges(section, record);
 
   return `
-    <article class="record-card">
+    <article class="record-card module-record-card" style="--module-accent: ${escapeHtml(visual.accent)}; --module-accent-soft: ${escapeHtml(visual.soft)};">
       <div class="record-card-main">
         <div class="record-title-row">
           <h4>${titleIconHtml}${escapeHtml(title)}</h4>
           <div class="record-badges">
-            ${lowStockHtml}
-            <span class="status-badge">${escapeHtml(formatRecordValue('status', status))}</span>
+            ${categoryHtml}
+            ${stateBadgesHtml}
+            <span class="status-badge">${renderIconLabel(status === 'active' ? 'check' : 'circle', formatRecordValue('status', status))}</span>
           </div>
         </div>
         ${metaHtml ? `<div class="record-meta">${metaHtml}</div>` : ''}
@@ -2356,8 +2526,8 @@ function renderRecordCard(section, record) {
       </div>
       <div class="record-actions">
         ${renderSpecialRecordActions(section, record)}
-        <button type="button" class="secondary-action" data-module-action="edit" data-section="${escapeHtml(section)}" data-record-id="${escapeHtml(record.id)}">Edit</button>
-        <button type="button" class="secondary-action danger-action" data-module-action="archive" data-section="${escapeHtml(section)}" data-record-id="${escapeHtml(record.id)}">Archive</button>
+        <button type="button" class="secondary-action icon-action" data-module-action="edit" data-section="${escapeHtml(section)}" data-record-id="${escapeHtml(record.id)}">${renderIconLabel('pencil', 'Edit')}</button>
+        <button type="button" class="secondary-action danger-action icon-action" data-module-action="archive" data-section="${escapeHtml(section)}" data-record-id="${escapeHtml(record.id)}">${renderIconLabel('archive', 'Archive')}</button>
       </div>
     </article>
   `;
@@ -4979,6 +5149,7 @@ function bindEvents() {
 
 async function boot() {
   cacheElements();
+  decorateStaticModuleControls();
   bindEvents();
   renderLoadingSession();
 
