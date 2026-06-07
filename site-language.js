@@ -2,11 +2,17 @@ const siteLanguageStorageKey = 'site-language';
 
 const sharedSiteTranslations = {
   en: {
-    'nav.products': 'Work',
+    'nav.home': 'Home',
+    'nav.products': 'Products',
+    'nav.solutions': 'Solutions',
+    'nav.industries': 'Industries',
+    'nav.games': 'Games',
     'nav.websites': 'Websites',
     'nav.systems': 'Systems',
     'nav.about': 'About',
+    'nav.aboutUs': 'About Us',
     'nav.portal': 'Client Portal',
+    'nav.login': 'Login',
     'nav.contact': 'Contact',
     'nav.privacy': 'Privacy',
     'nav.language': 'Language',
@@ -14,11 +20,17 @@ const sharedSiteTranslations = {
     'footer.rights': '© 2026 Bastida Systems. All rights reserved.'
   },
   es: {
-    'nav.products': 'Proyectos',
+    'nav.home': 'Inicio',
+    'nav.products': 'Productos',
+    'nav.solutions': 'Soluciones',
+    'nav.industries': 'Industrias',
+    'nav.games': 'Games',
     'nav.websites': 'Sitios Web',
     'nav.systems': 'Sistemas',
     'nav.about': 'Acerca de',
+    'nav.aboutUs': 'About Us',
     'nav.portal': 'Portal de Clientes',
+    'nav.login': 'Login',
     'nav.contact': 'Contacto',
     'nav.privacy': 'Privacidad',
     'nav.language': 'Idioma',

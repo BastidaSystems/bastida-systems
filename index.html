@@ -199,6 +199,291 @@
       color: #d9b66f;
     }
 
+    .industries-section {
+      position: relative;
+      overflow: hidden;
+      scroll-margin-top: 5.5rem;
+      background:
+        radial-gradient(circle at 8% 18%, rgba(0, 255, 156, 0.12), transparent 26%),
+        radial-gradient(circle at 88% 12%, rgba(55, 120, 255, 0.16), transparent 30%),
+        linear-gradient(180deg, #06111f 0%, #020617 100%);
+    }
+
+    .industries-section::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+      background-size: 44px 44px;
+      mask-image: linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%);
+      opacity: 0.32;
+    }
+
+    .industries-intro {
+      position: relative;
+      z-index: 2;
+      max-width: 58rem;
+      margin: 0 auto;
+      padding: 5.25rem 1.5rem 3.75rem;
+      text-align: center;
+    }
+
+    .industries-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      color: #38bdf8;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+    }
+
+    .industries-eyebrow::before,
+    .industries-eyebrow::after {
+      content: "";
+      width: 2.3rem;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, currentColor);
+      opacity: 0.75;
+    }
+
+    .industries-eyebrow::after {
+      background: linear-gradient(90deg, currentColor, transparent);
+    }
+
+    .industries-title {
+      margin-top: 1rem;
+      color: #f8fafc;
+      font-size: clamp(2.2rem, 5vw, 5.4rem);
+      font-weight: 800;
+      line-height: 0.98;
+      letter-spacing: 0;
+    }
+
+    .industries-copy {
+      max-width: 42rem;
+      margin: 1.25rem auto 0;
+      color: #cbd5e1;
+      font-size: 1.05rem;
+      line-height: 1.8;
+    }
+
+    .industries-panel-row {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      min-height: 43rem;
+      width: 100%;
+      overflow: hidden;
+      background: #020617;
+    }
+
+    .industry-panel {
+      --industry-accent: #38bdf8;
+      position: relative;
+      isolation: isolate;
+      display: flex;
+      align-items: flex-end;
+      min-height: 43rem;
+      flex: 1 1 0;
+      margin-left: -4.6rem;
+      padding: 7rem 4.5rem 4.8rem 6.4rem;
+      clip-path: polygon(11% 0, 100% 0, 89% 100%, 0 100%);
+      color: #fff;
+      background-image:
+        linear-gradient(180deg, rgba(2, 6, 23, 0.16), rgba(2, 6, 23, 0.82)),
+        linear-gradient(120deg, var(--industry-tint), rgba(2, 6, 23, 0.74)),
+        var(--industry-image);
+      background-size: cover;
+      background-position: center;
+      border-left: 1px solid rgba(255, 255, 255, 0.42);
+    }
+
+    .industry-panel:first-child {
+      margin-left: 0;
+      padding-left: 4.5rem;
+      clip-path: polygon(0 0, 100% 0, 89% 100%, 0 100%);
+      border-left: 0;
+    }
+
+    .industry-panel:last-child {
+      clip-path: polygon(11% 0, 100% 0, 100% 100%, 0 100%);
+      padding-right: 4.5rem;
+    }
+
+    .industry-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background:
+        linear-gradient(90deg, rgba(255, 255, 255, 0.08), transparent 22%, transparent 78%, rgba(255, 255, 255, 0.06)),
+        radial-gradient(circle at 72% 30%, color-mix(in srgb, var(--industry-accent) 22%, transparent), transparent 28%);
+      opacity: 0.95;
+    }
+
+    .industry-panel::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(180deg, transparent 18%, rgba(0, 0, 0, 0.74) 100%);
+    }
+
+    .industry-panel-content {
+      max-width: 21rem;
+    }
+
+    .industry-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 4.25rem;
+      height: 4.25rem;
+      margin-bottom: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.42);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 20px 70px rgba(0, 0, 0, 0.28);
+    }
+
+    .industry-icon svg {
+      width: 2.25rem;
+      height: 2.25rem;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.75;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .industry-number {
+      display: block;
+      color: var(--industry-accent);
+      font-size: 1.45rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+    }
+
+    .industry-panel h3 {
+      margin: 0.55rem 0 1.05rem;
+      color: #fff;
+      font-size: clamp(1.85rem, 2.4vw, 3rem);
+      font-weight: 800;
+      line-height: 1.04;
+      letter-spacing: 0;
+    }
+
+    .industry-line {
+      display: block;
+      width: 2.8rem;
+      height: 3px;
+      margin-bottom: 1.55rem;
+      background: var(--industry-accent);
+      box-shadow: 0 0 28px color-mix(in srgb, var(--industry-accent) 80%, transparent);
+    }
+
+    .industry-panel p {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.9);
+      line-height: 1.65;
+    }
+
+    .industry-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      margin-top: 2.1rem;
+      color: var(--industry-accent);
+      font-weight: 800;
+      transition: gap 180ms ease, color 180ms ease;
+    }
+
+    .industry-link::after {
+      content: "->";
+      font-weight: 900;
+    }
+
+    .industry-link:hover {
+      gap: 0.8rem;
+      color: #fff;
+    }
+
+    @media (max-width: 1180px) {
+      .industries-panel-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        min-height: 0;
+      }
+
+      .industry-panel,
+      .industry-panel:first-child,
+      .industry-panel:last-child {
+        min-height: 34rem;
+        margin-left: 0;
+        padding: 4.5rem 2.25rem 3.25rem;
+        clip-path: polygon(0 0, 100% 0, 94% 100%, 0 100%);
+        border-left: 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.24);
+      }
+
+      .industry-panel:nth-child(2n) {
+        clip-path: polygon(6% 0, 100% 0, 100% 100%, 0 100%);
+      }
+    }
+
+    @media (max-width: 720px) {
+      .industries-intro {
+        padding: 4rem 1.25rem 2.75rem;
+      }
+
+      .industries-eyebrow {
+        gap: 0.45rem;
+        font-size: 0.7rem;
+        letter-spacing: 0.16em;
+      }
+
+      .industries-eyebrow::before,
+      .industries-eyebrow::after {
+        width: 1.4rem;
+      }
+
+      .industries-title {
+        font-size: clamp(2.25rem, 12vw, 3.4rem);
+      }
+
+      .industries-copy {
+        font-size: 1rem;
+      }
+
+      .industries-panel-row {
+        grid-template-columns: 1fr;
+      }
+
+      .industry-panel,
+      .industry-panel:first-child,
+      .industry-panel:last-child,
+      .industry-panel:nth-child(2n) {
+        min-height: 31rem;
+        padding: 3.5rem 1.5rem 2.75rem;
+        clip-path: none;
+      }
+
+      .industry-panel-content {
+        max-width: 100%;
+      }
+
+      .industry-panel h3 {
+        max-width: 18rem;
+      }
+    }
+
     .product-panel--tallador {
       background:
         radial-gradient(circle at 78% 8%, rgba(184, 95, 62, 0.22), transparent 34%),
@@ -834,12 +1119,18 @@
     const siteTranslations = {
       en: {
         'meta.title': 'Bastida Systems',
-        'nav.products': 'Work',
+        'nav.home': 'Home',
+        'nav.products': 'Products',
+        'nav.solutions': 'Solutions',
+        'nav.industries': 'Industries',
+        'nav.games': 'Games',
         'nav.websites': 'Websites',
         'nav.systems': 'Systems',
         'nav.about': 'About',
+        'nav.aboutUs': 'About Us',
         'nav.privacy': 'Privacy',
         'nav.portal': 'Client Portal',
+        'nav.login': 'Login',
         'nav.contact': 'Contact',
         'nav.language': 'Language',
         'nav.languageSelector': 'Language selector',
@@ -906,6 +1197,18 @@
         'products.openLogin': 'Open Login',
         'products.visitSite': 'Visit Site',
         'products.viewCode': 'View Code',
+        'industries.eyebrow': 'Industries we serve',
+        'industries.heading': 'Powering a Better Future',
+        'industries.intro': 'Bastida Systems builds innovative digital solutions across the industries that matter most.',
+        'industries.learnMore': 'Learn more',
+        'industries.hospitality.title': 'Hospitality',
+        'industries.hospitality.copy': 'Technology solutions for hotels, restaurants, food & beverage, tourism, and transportation. We help businesses streamline operations and deliver better experiences.',
+        'industries.environment.title': 'Environmental Care',
+        'industries.environment.copy': 'Smart water filtration and monitoring solutions designed to protect resources, improve efficiency, and support a cleaner future.',
+        'industries.gaming.title': 'Gaming & Entertainment',
+        'industries.gaming.copy': 'We create immersive games and digital entertainment experiences that connect, inspire, and engage users.',
+        'industries.innovation.title': 'Innovation & Startups',
+        'industries.innovation.copy': 'We build and scale innovative digital products and platforms, turning ideas into real solutions for growing businesses.',
         'collab.heading': 'Companies & Collaborations',
         'collab.intro': 'Companies and founders working with Bastida Systems across operations software, client websites, scheduling, e-commerce, and production brands.',
         'collab.portalCta': 'Open Client Portal',
@@ -929,12 +1232,18 @@
       },
       es: {
         'meta.title': 'Bastida Systems',
-        'nav.products': 'Proyectos',
+        'nav.home': 'Inicio',
+        'nav.products': 'Productos',
+        'nav.solutions': 'Soluciones',
+        'nav.industries': 'Industrias',
+        'nav.games': 'Games',
         'nav.websites': 'Sitios Web',
         'nav.systems': 'Sistemas',
         'nav.about': 'Acerca de',
+        'nav.aboutUs': 'About Us',
         'nav.privacy': 'Privacidad',
         'nav.portal': 'Portal de Clientes',
+        'nav.login': 'Login',
         'nav.contact': 'Contacto',
         'nav.language': 'Idioma',
         'nav.languageSelector': 'Selector de idioma',
@@ -1001,6 +1310,18 @@
         'products.openLogin': 'Abrir Login',
         'products.visitSite': 'Ver Sitio',
         'products.viewCode': 'Ver Código',
+        'industries.eyebrow': 'Industrias que servimos',
+        'industries.heading': 'Impulsando un mejor futuro',
+        'industries.intro': 'Bastida Systems crea soluciones digitales innovadoras para las industrias que mas importan.',
+        'industries.learnMore': 'Conocer mas',
+        'industries.hospitality.title': 'Hospitality',
+        'industries.hospitality.copy': 'Soluciones tecnologicas para hoteles, restaurantes, food & beverage, turismo y transporte. Ayudamos a optimizar operaciones y entregar mejores experiencias.',
+        'industries.environment.title': 'Environmental Care',
+        'industries.environment.copy': 'Soluciones inteligentes de filtracion y monitoreo de agua para proteger recursos, mejorar eficiencia y apoyar un futuro mas limpio.',
+        'industries.gaming.title': 'Gaming & Entertainment',
+        'industries.gaming.copy': 'Creamos videojuegos y experiencias digitales inmersivas que conectan, inspiran y atraen a los usuarios.',
+        'industries.innovation.title': 'Innovation & Startups',
+        'industries.innovation.copy': 'Construimos y escalamos productos y plataformas digitales innovadoras, convirtiendo ideas en soluciones reales para negocios en crecimiento.',
         'collab.heading': 'Empresas y Colaboraciones',
         'collab.intro': 'Empresas y fundadores que trabajan con Bastida Systems en software operativo, sitios web, horarios, e-commerce y marcas de producción.',
         'collab.portalCta': 'Abrir Portal de Clientes',
@@ -1077,12 +1398,14 @@
         </div>
 
         <div class="flex items-center gap-4 md:gap-8 text-sm font-medium text-gray-600">
-          <a href="index.html#products" class="hover:text-black transition">Work</a>
-          <a href="websites.html" class="hover:text-black transition">Websites</a>
-          <a href="systems.html" class="hover:text-black transition">Systems</a>
-          <a href="about.html" class="hover:text-black transition">About</a>
-          <a href="portal.html" class="hover:text-black transition">Client Portal</a>
+          <a href="index.html" class="hover:text-black transition">Home</a>
+          <a href="index.html#products" class="hover:text-black transition">Products</a>
+          <a href="systems.html" class="hover:text-black transition">Solutions</a>
+          <a href="index.html#industries" class="hover:text-black transition">Industries</a>
+          <a href="index.html#industry-gaming" class="hover:text-black transition">Games</a>
+          <a href="about.html" class="hover:text-black transition">About Us</a>
           <a href="index.html#contact" class="hover:text-black transition">Contact</a>
+          <a href="login.html" class="hover:text-black transition">Login</a>
         </div>
       </nav>
     `;
@@ -1096,12 +1419,16 @@
       navLinks.classList.add('site-nav');
 
       const navMap = {
+        'index.html': 'nav.home',
         'index.html#products': 'nav.products',
+        'systems.html': 'nav.solutions',
+        'index.html#industries': 'nav.industries',
+        'index.html#industry-gaming': 'nav.games',
+        'about.html': 'nav.aboutUs',
+        'index.html#contact': 'nav.contact',
+        'login.html': 'nav.login',
         'websites.html': 'nav.websites',
-        'systems.html': 'nav.systems',
-        'about.html': 'nav.about',
-        'portal.html': 'nav.portal',
-        'index.html#contact': 'nav.contact'
+        'portal.html': 'nav.portal'
       };
 
       navLinks.querySelectorAll('a').forEach(link => {
@@ -1473,6 +1800,117 @@
     </div>
   </section>
 
+  <!-- INDUSTRIES -->
+  <section id="industries" class="industries-section fade-in" aria-labelledby="industries-heading">
+    <div class="industries-intro">
+      <p class="industries-eyebrow" data-i18n="industries.eyebrow">Industries we serve</p>
+      <h2 id="industries-heading" class="industries-title" data-i18n="industries.heading">Powering a Better Future</h2>
+      <p class="industries-copy" data-i18n="industries.intro">
+        Bastida Systems builds innovative digital solutions across the industries that matter most.
+      </p>
+    </div>
+
+    <div class="industries-panel-row" aria-label="Industries served by Bastida Systems">
+      <article
+        class="industry-panel"
+        style="--industry-accent: #38bdf8; --industry-tint: rgba(8, 47, 73, 0.82); --industry-image: url('https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1400&q=85'), url('img/beoflow-dashboard.jpeg');"
+      >
+        <div class="industry-panel-content">
+          <span class="industry-icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48">
+              <path d="M8 30h32"></path>
+              <path d="M12 30a12 12 0 0 1 24 0"></path>
+              <path d="M24 14v-4"></path>
+              <path d="M19 10h10"></path>
+              <path d="M11 36h26"></path>
+            </svg>
+          </span>
+          <span class="industry-number">01</span>
+          <h3 data-i18n="industries.hospitality.title">Hospitality</h3>
+          <span class="industry-line" aria-hidden="true"></span>
+          <p data-i18n="industries.hospitality.copy">
+            Technology solutions for hotels, restaurants, food & beverage, tourism, and transportation. We help businesses streamline operations and deliver better experiences.
+          </p>
+          <a href="beoflow.html" class="industry-link" data-i18n="industries.learnMore">Learn more</a>
+        </div>
+      </article>
+
+      <article
+        class="industry-panel"
+        style="--industry-accent: #7ddc3f; --industry-tint: rgba(20, 83, 45, 0.8); --industry-image: url('https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=1400&q=85'), url('img/filtracore-dashboard.jpeg');"
+      >
+        <div class="industry-panel-content">
+          <span class="industry-icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48">
+              <path d="M24 6c8 9 12 15 12 22a12 12 0 0 1-24 0c0-7 4-13 12-22Z"></path>
+              <path d="M20 34c5-10 12-13 18-13"></path>
+              <path d="M31 23c.8 5-.8 9-4.7 12"></path>
+            </svg>
+          </span>
+          <span class="industry-number">02</span>
+          <h3 data-i18n="industries.environment.title">Environmental Care</h3>
+          <span class="industry-line" aria-hidden="true"></span>
+          <p data-i18n="industries.environment.copy">
+            Smart water filtration and monitoring solutions designed to protect resources, improve efficiency, and support a cleaner future.
+          </p>
+          <a href="filtracore.html" class="industry-link" data-i18n="industries.learnMore">Learn more</a>
+        </div>
+      </article>
+
+      <article
+        id="industry-gaming"
+        class="industry-panel"
+        style="--industry-accent: #a855f7; --industry-tint: rgba(58, 12, 102, 0.82); --industry-image: url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=85');"
+      >
+        <div class="industry-panel-content">
+          <span class="industry-icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48">
+              <path d="M15 18h18a8 8 0 0 1 7.7 5.8l2.2 8.1a5 5 0 0 1-8.7 4.4l-4.1-4.6H17.9l-4.1 4.6a5 5 0 0 1-8.7-4.4l2.2-8.1A8 8 0 0 1 15 18Z"></path>
+              <path d="M17 24v7"></path>
+              <path d="M13.5 27.5h7"></path>
+              <path d="M31 26h.1"></path>
+              <path d="M36 30h.1"></path>
+              <path d="M31 18v-5"></path>
+              <path d="M35 13h-8"></path>
+            </svg>
+          </span>
+          <span class="industry-number">03</span>
+          <h3 data-i18n="industries.gaming.title">Gaming & Entertainment</h3>
+          <span class="industry-line" aria-hidden="true"></span>
+          <p data-i18n="industries.gaming.copy">
+            We create immersive games and digital entertainment experiences that connect, inspire, and engage users.
+          </p>
+          <a href="index.html#contact" class="industry-link" data-i18n="industries.learnMore">Learn more</a>
+        </div>
+      </article>
+
+      <article
+        class="industry-panel"
+        style="--industry-accent: #22d3ee; --industry-tint: rgba(8, 27, 58, 0.84); --industry-image: url('img/lineops-devices.png');"
+      >
+        <div class="industry-panel-content">
+          <span class="industry-icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48">
+              <path d="M8 38h34"></path>
+              <path d="M12 34V22h8v12"></path>
+              <path d="M24 34V16h8v18"></path>
+              <path d="M36 34V10h8v24"></path>
+              <path d="M10 16c9-1 17-5 26-12"></path>
+              <path d="M36 4h8v8"></path>
+            </svg>
+          </span>
+          <span class="industry-number">04</span>
+          <h3 data-i18n="industries.innovation.title">Innovation & Startups</h3>
+          <span class="industry-line" aria-hidden="true"></span>
+          <p data-i18n="industries.innovation.copy">
+            We build and scale innovative digital products and platforms, turning ideas into real solutions for growing businesses.
+          </p>
+          <a href="systems.html" class="industry-link" data-i18n="industries.learnMore">Learn more</a>
+        </div>
+      </article>
+    </div>
+  </section>
+
   <!-- COMPANIES & COLLABORATIONS -->
   <section id="collaborations" class="px-6 md:px-8 py-24 border-t border-gray-800 fade-in">
     <div class="max-w-7xl mx-auto">
@@ -1639,13 +2077,15 @@
   <!-- FOOTER -->
   <footer class="px-8 py-10 border-t border-gray-800 text-gray-500 text-sm text-center">
 
-    <div class="flex justify-center gap-6 mb-4 text-gray-400">
-      <a href="index.html#products" class="hover:text-white transition" data-i18n="nav.products">Work</a>
-      <a href="websites.html" class="hover:text-white transition" data-i18n="nav.websites">Websites</a>
-      <a href="systems.html" class="hover:text-white transition" data-i18n="nav.systems">Systems</a>
-      <a href="about.html" class="hover:text-white transition" data-i18n="nav.about">About</a>
-      <a href="portal.html" class="hover:text-white transition" data-i18n="nav.portal">Client Portal</a>
+    <div class="flex flex-wrap justify-center gap-6 mb-4 text-gray-400">
+      <a href="index.html" class="hover:text-white transition" data-i18n="nav.home">Home</a>
+      <a href="index.html#products" class="hover:text-white transition" data-i18n="nav.products">Products</a>
+      <a href="systems.html" class="hover:text-white transition" data-i18n="nav.solutions">Solutions</a>
+      <a href="index.html#industries" class="hover:text-white transition" data-i18n="nav.industries">Industries</a>
+      <a href="index.html#industry-gaming" class="hover:text-white transition" data-i18n="nav.games">Games</a>
+      <a href="about.html" class="hover:text-white transition" data-i18n="nav.aboutUs">About Us</a>
       <a href="index.html#contact" class="hover:text-white transition" data-i18n="nav.contact">Contact</a>
+      <a href="login.html" class="hover:text-white transition" data-i18n="nav.login">Login</a>
       <a href="privacy.html" class="hover:text-white transition" data-i18n="nav.privacy">Privacy</a>
     </div>
 
