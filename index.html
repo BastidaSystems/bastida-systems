@@ -200,7 +200,7 @@
     }
 
     .industries-section {
-      --industries-panel-height: clamp(31rem, calc(100vh - 17rem), 43rem);
+      --industries-panel-height: clamp(35rem, calc(100vh - 8rem), 48rem);
       position: relative;
       display: flex;
       flex-direction: column;
@@ -252,56 +252,6 @@
       100% {
         transform: translate3d(6%, 5%, 0) scale(1.12);
       }
-    }
-
-    .industries-intro {
-      position: relative;
-      z-index: 2;
-      max-width: 58rem;
-      margin: 0 auto;
-      padding: clamp(1.6rem, 3vw, 3rem) 1.5rem clamp(1.7rem, 3vw, 2.65rem);
-      text-align: center;
-    }
-
-    .industries-eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.6rem;
-      color: #38bdf8;
-      font-size: 0.78rem;
-      font-weight: 800;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-    }
-
-    .industries-eyebrow::before,
-    .industries-eyebrow::after {
-      content: "";
-      width: 2.3rem;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, currentColor);
-      opacity: 0.75;
-    }
-
-    .industries-eyebrow::after {
-      background: linear-gradient(90deg, currentColor, transparent);
-    }
-
-    .industries-title {
-      margin-top: 1rem;
-      color: #f8fafc;
-      font-size: clamp(2.05rem, 4vw, 4.35rem);
-      font-weight: 800;
-      line-height: 0.98;
-      letter-spacing: 0;
-    }
-
-    .industries-copy {
-      max-width: 42rem;
-      margin: 1.25rem auto 0;
-      color: #cbd5e1;
-      font-size: 1.05rem;
-      line-height: 1.8;
     }
 
     .industries-panel-row {
@@ -672,29 +622,6 @@
     }
 
     @media (max-width: 720px) {
-      .industries-intro {
-        padding: 4rem 1.25rem 2.75rem;
-      }
-
-      .industries-eyebrow {
-        gap: 0.45rem;
-        font-size: 0.7rem;
-        letter-spacing: 0.16em;
-      }
-
-      .industries-eyebrow::before,
-      .industries-eyebrow::after {
-        width: 1.4rem;
-      }
-
-      .industries-title {
-        font-size: clamp(2.25rem, 12vw, 3.4rem);
-      }
-
-      .industries-copy {
-        font-size: 1rem;
-      }
-
       .industries-panel-row {
         grid-template-columns: 1fr;
       }
@@ -1437,9 +1364,6 @@
         'products.openLogin': 'Open Login',
         'products.visitSite': 'Visit Site',
         'products.viewCode': 'View Code',
-        'industries.eyebrow': 'Industries we serve',
-        'industries.heading': 'Industries & Digital Systems',
-        'industries.intro': 'Explore the industries and products built across the Bastida Systems ecosystem.',
         'industries.learnMore': 'Learn more',
         'industries.openProduct': 'Open product',
         'industries.productsEyebrow': 'Selected industry',
@@ -1560,9 +1484,6 @@
         'products.openLogin': 'Abrir Login',
         'products.visitSite': 'Ver Sitio',
         'products.viewCode': 'Ver Código',
-        'industries.eyebrow': 'Industrias que servimos',
-        'industries.heading': 'Industrias y Sistemas Digitales',
-        'industries.intro': 'Explora las industrias y productos construidos dentro del ecosistema de Bastida Systems.',
         'industries.learnMore': 'Conocer mas',
         'industries.openProduct': 'Abrir producto',
         'industries.productsEyebrow': 'Industria seleccionada',
@@ -1736,15 +1657,7 @@
   </script>
 
   <!-- INDUSTRIES -->
-  <section id="industries" class="industries-section fade-in" aria-labelledby="industries-heading">
-    <div class="industries-intro">
-      <p class="industries-eyebrow" data-i18n="industries.eyebrow">Industries we serve</p>
-      <h2 id="industries-heading" class="industries-title" data-i18n="industries.heading">Industries & Digital Systems</h2>
-      <p class="industries-copy" data-i18n="industries.intro">
-        Explore the industries and products built across the Bastida Systems ecosystem.
-      </p>
-    </div>
-
+  <section id="industries" class="industries-section fade-in" aria-label="Industries served by Bastida Systems">
     <div class="industries-interactive-layout">
       <div class="industries-panel-row" role="tablist" aria-label="Industries served by Bastida Systems">
         <article
