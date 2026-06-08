@@ -9,16 +9,369 @@ const DEFAULT_WASTE_PERCENTAGE = 0.1;
 const DEFAULT_FOOD_FACTOR = 1;
 const MAX_INLINE_RECIPE_IMAGE_BYTES = 1.5 * 1024 * 1024;
 const RECIPE_IMAGE_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
-const INVENTORY_TYPE_OPTIONS = [
-  { value: 'raw_ingredient', label: 'Raw Ingredient', icon: 'leaf' },
-  { value: 'subrecipe', label: 'Subrecipe', icon: 'layers' },
-  { value: 'finished_product', label: 'Finished Product', icon: 'package' }
-];
+const COMMON_UNIT_OPTIONS = ['each', 'oz', 'lb', 'g', 'kg', 'ml', 'l', 'cup', 'tbsp', 'tsp', 'batch', 'portion'];
+const LANGUAGE_STORAGE_KEY = 'beoflow_language';
+const SUPPORTED_LANGUAGES = new Set(['en', 'es']);
+const LANGUAGE_LABELS = {
+  en: 'English',
+  es: 'Español'
+};
+
+const UI_TRANSLATIONS_ES = {
+  'Beoflow App | Bastida Systems': 'Beoflow App | Bastida Systems',
+  'Loading session': 'Cargando sesión',
+  'Preparing your secure Beoflow workspace.': 'Preparando tu espacio seguro de Beoflow.',
+  'Kitchen operations workspace': 'Espacio de operaciones de cocina',
+  'Sign in or create an account to manage your restaurant, events, recipes, inventory, staff, and reports.': 'Inicia sesión o crea una cuenta para administrar tu restaurante, eventos, recetas, inventario, personal y reportes.',
+  'Sign in': 'Iniciar sesión',
+  'Create account': 'Crear cuenta',
+  'Full name': 'Nombre completo',
+  'Your name': 'Tu nombre',
+  'Email': 'Correo electrónico',
+  'Password': 'Contraseña',
+  'Minimum 6 characters': 'Mínimo 6 caracteres',
+  'Confirm password': 'Confirmar contraseña',
+  'Forgot password?': '¿Olvidaste tu contraseña?',
+  'Send reset email': 'Enviar correo de recuperación',
+  'Back to sign in': 'Volver a iniciar sesión',
+  'Reset your password': 'Restablecer contraseña',
+  'Enter and confirm your new Beoflow password.': 'Ingresa y confirma tu nueva contraseña de Beoflow.',
+  'New password': 'Nueva contraseña',
+  'Confirm new password': 'Confirmar nueva contraseña',
+  'Minimum 8 characters': 'Mínimo 8 caracteres',
+  'Update password': 'Actualizar contraseña',
+  'Show password': 'Mostrar contraseña',
+  'Hide password': 'Ocultar contraseña',
+  'Step 1 of 1': 'Paso 1 de 1',
+  'Set up your first restaurant': 'Configura tu primer restaurante',
+  'Create a workspace for your restaurant, kitchen, or operation.': 'Crea un espacio para tu restaurante, cocina u operación.',
+  'Restaurant / Operation Name': 'Nombre del restaurante / operación',
+  'Restaurant name': 'Nombre del restaurante',
+  'Business Type': 'Tipo de negocio',
+  'Restaurant': 'Restaurante',
+  'Catering': 'Catering',
+  'Casino Kitchen': 'Cocina de casino',
+  'Hotel Kitchen': 'Cocina de hotel',
+  'Bar': 'Bar',
+  'Food Truck': 'Food truck',
+  'Company': 'Empresa',
+  'Other': 'Otro',
+  'City optional': 'Ciudad opcional',
+  'State optional': 'Estado opcional',
+  'Timezone optional': 'Zona horaria opcional',
+  'Create Workspace': 'Crear espacio',
+  'Beoflow Workspace': 'Espacio Beoflow',
+  'Workspace created': 'Espacio creado',
+  'Your Beoflow workspace is ready.': 'Tu espacio Beoflow está listo.',
+  'Continue to dashboard': 'Continuar al dashboard',
+  'Choose workspace': 'Elegir espacio',
+  'Choose your workspace': 'Elige tu espacio',
+  'Select the restaurant or operation you want to manage.': 'Selecciona el restaurante u operación que quieres administrar.',
+  'Add another restaurant': 'Agregar otro restaurante',
+  'Open menu': 'Abrir menú',
+  'Close menu': 'Cerrar menú',
+  'Beoflow navigation': 'Navegación de Beoflow',
+  'Beoflow modules': 'Módulos de Beoflow',
+  'Workspace actions': 'Acciones del espacio',
+  'Dashboard': 'Dashboard',
+  'Events': 'Eventos',
+  'Menu': 'Menú',
+  'Recipes': 'Recetas',
+  'Subrecipes': 'Subrecetas',
+  'Inventory': 'Inventario',
+  'Production': 'Producción',
+  'Staff': 'Personal',
+  'Reports': 'Reportes',
+  'Switch workspace': 'Cambiar espacio',
+  'Switch restaurant': 'Cambiar restaurante',
+  'Add restaurant': 'Agregar restaurante',
+  'Workspace settings': 'Configuración del espacio',
+  'Sign out': 'Cerrar sesión',
+  'Loading your restaurant workspace.': 'Cargando el espacio de tu restaurante.',
+  'Current workspace': 'Espacio actual',
+  'Restaurant workspace': 'Espacio del restaurante',
+  'Welcome to your Beoflow workspace. Your operating modules are ready for real restaurant data when your team starts building.': 'Bienvenido a tu espacio Beoflow. Tus módulos operativos están listos para datos reales del restaurante cuando tu equipo empiece a trabajar.',
+  'Operations Calendar': 'Calendario de operaciones',
+  'Beoflow module empty states': 'Estados vacíos de módulos Beoflow',
+  'No events yet': 'Sin eventos todavía',
+  'No menu items yet': 'Sin elementos de menú todavía',
+  'No recipes yet': 'Sin recetas todavía',
+  'No subrecipes yet': 'Sin subrecetas todavía',
+  'No inventory items yet': 'Sin inventario todavía',
+  'Search': 'Buscar',
+  'Selected': 'Seleccionado',
+  'Selected product': 'Producto seleccionado',
+  'No image': 'Sin imagen',
+  'No production logs yet': 'Sin registros de producción todavía',
+  'No staff members yet': 'Sin personal todavía',
+  'No reports yet': 'Sin reportes todavía',
+  'Beoflow Module': 'Módulo Beoflow',
+  '0 records': '0 registros',
+  'New Event': 'Nuevo evento',
+  'No events yet.': 'No hay eventos todavía.',
+  'Create your first event to start planning service operations.': 'Crea tu primer evento para empezar a planear la operación.',
+  'This module is ready for the next build.': 'Este módulo está listo para la siguiente etapa.',
+  'Add record': 'Agregar registro',
+  'Create a new workspace record.': 'Crea un nuevo registro del espacio.',
+  'Close': 'Cerrar',
+  'Cancel': 'Cancelar',
+  'Save': 'Guardar',
+  'Save Changes': 'Guardar cambios',
+  'Save settings': 'Guardar configuración',
+  'Edit the business name and type for the active Beoflow workspace.': 'Edita el nombre y tipo de negocio del espacio Beoflow activo.',
+  'Business name': 'Nombre del negocio',
+  'Business type': 'Tipo de negocio',
+  'Default waste percentage': 'Porcentaje de merma predeterminado',
+  'Food factor': 'Factor de alimento',
+  'Plan catering events, service days, banquets, and production schedules.': 'Planea eventos de catering, días de servicio, banquetes y calendarios de producción.',
+  'Link menu items to recipes and track selling price, cost, margin, and profit.': 'Vincula elementos de menú con recetas y controla precio de venta, costo, margen y utilidad.',
+  'Standardize recipes, ingredients, procedures, and consistency.': 'Estandariza recetas, ingredientes, procedimientos y consistencia.',
+  'Create reusable preparations such as sauces, bases, doughs, and garnishes.': 'Crea preparaciones reutilizables como salsas, bases, masas y guarniciones.',
+  'Register kitchen inputs by code, presentation, supplier, and cost.': 'Registra insumos de cocina por presentación, proveedor y costo.',
+  'Organize prep tasks, production logs, and kitchen execution.': 'Organiza tareas de preparación, registros de producción y ejecución de cocina.',
+  'Manage team members, roles, schedules, and responsibilities.': 'Administra miembros del equipo, roles, horarios y responsabilidades.',
+  'View operational insights once Beoflow has activity.': 'Consulta indicadores operativos cuando Beoflow tenga actividad.',
+  'New Menu Item': 'Nuevo elemento de menú',
+  'New Recipe': 'Nueva receta',
+  'New Subrecipe': 'Nueva subreceta',
+  'New Ingredient': 'Nuevo ingrediente',
+  'New Production Plan': 'Nuevo plan de producción',
+  'Add Staff Member': 'Agregar miembro del personal',
+  'View Reports': 'Ver reportes',
+  'No menu items yet.': 'No hay elementos de menú todavía.',
+  'Add your first menu item once a recipe is ready.': 'Agrega tu primer elemento de menú cuando una receta esté lista.',
+  'No recipes yet.': 'No hay recetas todavía.',
+  'Add your first recipe to begin building your recipe library.': 'Agrega tu primera receta para empezar tu biblioteca.',
+  'No subrecipes yet.': 'No hay subrecetas todavía.',
+  'Create reusable preparations manually when you are ready.': 'Crea preparaciones reutilizables cuando estés listo.',
+  'No inventory items yet.': 'No hay inventario todavía.',
+  'Add your first input to start building recipe costs.': 'Agrega tu primer insumo para empezar a costear recetas.',
+  'No production records yet.': 'No hay registros de producción todavía.',
+  'Start a production log when operations begin.': 'Inicia un registro cuando empiece la operación.',
+  'No staff members yet.': 'No hay miembros del personal todavía.',
+  'Add your first staff member or invite a user.': 'Agrega tu primer miembro del personal o invita a un usuario.',
+  'No reports yet.': 'No hay reportes todavía.',
+  'Reports will appear after events, inventory, and production activity.': 'Los reportes aparecerán después de actividad en eventos, inventario y producción.',
+  'Event Name': 'Nombre del evento',
+  'Event Type': 'Tipo de evento',
+  'Event Date': 'Fecha del evento',
+  'Start Time': 'Hora de inicio',
+  'End Time': 'Hora de fin',
+  'Guest Count': 'Número de invitados',
+  'Location': 'Ubicación',
+  'Status': 'Estado',
+  'Notes': 'Notas',
+  'Item Name': 'Nombre del elemento',
+  'Linked Recipe': 'Receta vinculada',
+  'Category': 'Categoría',
+  'Sale Price': 'Precio de venta',
+  'Recipe Name': 'Nombre de receta',
+  'Recipe Number': 'Número de receta',
+  'Yield Quantity': 'Rendimiento',
+  'Yield Unit': 'Unidad de rendimiento',
+  'Portions / Pax': 'Porciones / Pax',
+  'Prep Time': 'Tiempo de preparación',
+  'Cook Time': 'Tiempo de cocción',
+  'Recipe Photo': 'Foto de receta',
+  'Procedure': 'Procedimiento',
+  'Subrecipe Name': 'Nombre de subreceta',
+  'Subrecipe Number': 'Número de subreceta',
+  'Automatic': 'Automático',
+  'Yield / Rendimiento': 'Rendimiento',
+  'Name / Description': 'Nombre / descripción',
+  'Base Unit': 'Unidad base',
+  'Package Quantity': 'Cantidad por paquete',
+  'Package Unit': 'Unidad del paquete',
+  'Package Price': 'Precio del paquete',
+  'Current Stock': 'Stock actual',
+  'Minimum Stock': 'Stock mínimo',
+  'Supplier': 'Proveedor',
+  'Log Title': 'Título del registro',
+  'Production Date': 'Fecha de producción',
+  'Shift': 'Turno',
+  'Assigned To': 'Asignado a',
+  'Full Name': 'Nombre completo',
+  'Role': 'Rol',
+  'Phone': 'Teléfono',
+  'Ingredient': 'Ingrediente',
+  'Ingredients': 'Ingredientes',
+  'Inventory ingredient': 'Ingrediente de inventario',
+  'Search inventory': 'Buscar inventario',
+  'Search by ingredient, category, or supplier': 'Buscar por ingrediente, categoría o proveedor',
+  'Quantity': 'Cantidad',
+  'Unit': 'Unidad',
+  'Select unit': 'Seleccionar unidad',
+  'Add selected': 'Agregar seleccionado',
+  'Create inventory item': 'Crear ingrediente de inventario',
+  'Create new': 'Crear nuevo',
+  'Create': 'Crear',
+  'Create and add': 'Crear y agregar',
+  'Qty to add': 'Cantidad a agregar',
+  'Cost / Price': 'Costo / precio',
+  'Ingredient name': 'Nombre del ingrediente',
+  'Add Ingredient': 'Agregar ingrediente',
+  'Ingredient list': 'Lista de ingredientes',
+  'Cost summary': 'Resumen de costos',
+  'Cost': 'Costo',
+  'Actions': 'Acciones',
+  'Inventory connection': 'Conexión con inventario',
+  'In inventory': 'En inventario',
+  'Not in inventory': 'No está en inventario',
+  'Add to Inventory': 'Agregar a inventario',
+  'Total ingredient cost': 'Costo total de ingredientes',
+  'Waste': 'Merma',
+  'Suggested sale price': 'Precio de venta sugerido',
+  'Cost per yield/unit': 'Costo por unidad de rendimiento',
+  'Cost per portion': 'Costo por porción',
+  'Margin': 'Margen',
+  'Not set': 'Sin definir',
+  'View Recipe': 'Ver receta',
+  'View Details': 'Ver detalles',
+  'Edit': 'Editar',
+  'Edit Recipe': 'Editar receta',
+  'Edit Subrecipe': 'Editar subreceta',
+  'Edit Ingredient': 'Editar ingrediente',
+  'Archive': 'Archivar',
+  'Active': 'Activo',
+  'Low Stock': 'Stock bajo',
+  'No Price': 'Sin precio',
+  'No Pack': 'Sin empaque',
+  'Costed': 'Costeado',
+  'Valid': 'Válido',
+  'Invalid': 'No válido',
+  'Connected': 'Conectado',
+  'Unconnected': 'Sin conectar',
+  'Missing inventory': 'Falta inventario',
+  'Inventory connected': 'Inventario conectado',
+  'No ingredients yet.': 'No hay ingredientes todavía.',
+  'Recipe workspace': 'Espacio de receta',
+  'Subrecipe': 'Subreceta',
+  'Stock': 'Stock',
+  'Package': 'Paquete',
+  'Unit cost': 'Costo unitario',
+  'Recipe Usage': 'Uso en recetas',
+  'Not used in recipes or subrecipes yet.': 'Aún no se usa en recetas o subrecetas.',
+  'Use in recipe': 'Usar en receta',
+  'Add to recipe': 'Agregar a receta',
+  'Add to Recipe': 'Agregar a receta',
+  'Remove ingredient': 'Eliminar ingrediente',
+  'Delete ingredient': 'Eliminar ingrediente',
+  'Ingredient details': 'Detalles del ingrediente',
+  'Inventory actions': 'Acciones de inventario',
+  'Calendar controls': 'Controles de calendario',
+  'Loading recipes.': 'Cargando recetas.',
+  'Recipe': 'Receta',
+  'Recipe workspace': 'Espacio de receta',
+  'No linked recipe': 'Sin receta vinculada',
+  'No recipes available': 'No hay recetas disponibles',
+  'No inventory ingredient found': 'No se encontró ingrediente en inventario',
+  'Select inventory ingredient': 'Seleccionar ingrediente de inventario',
+  'No subrecipes available': 'No hay subrecetas disponibles',
+  'Select subrecipe': 'Seleccionar subreceta',
+  'Subrecipe search': 'Buscar subreceta',
+  'Add Subrecipe': 'Agregar subreceta',
+  'Today': 'Hoy',
+  'No events scheduled for this date.': 'No hay eventos programados para esta fecha.',
+  'Event calendar': 'Calendario de eventos',
+  'Previous month': 'Mes anterior',
+  'Next month': 'Mes siguiente',
+  'Monthly operations': 'Operaciones mensuales',
+  'Create event': 'Crear evento',
+  'Loading': 'Cargando',
+  'Loading metrics': 'Cargando métricas',
+  'Unable to load': 'No se pudo cargar',
+  'Loading workspace records.': 'Cargando registros del espacio.',
+  'Add workspace': 'Agregar espacio',
+  'Create another Beoflow workspace for a restaurant, kitchen, or operation.': 'Crea otro espacio Beoflow para un restaurante, cocina u operación.',
+  'Complete recipe details for this workspace.': 'Completa los detalles de la receta para este espacio.',
+  'Complete subrecipe details for this workspace.': 'Completa los detalles de la subreceta para este espacio.',
+  'Reset password. Enter and confirm your new password.': 'Restablece tu contraseña. Ingresa y confirma tu nueva contraseña.',
+  'Creating account': 'Creando cuenta',
+  'Signing in': 'Iniciando sesión',
+  'Sending reset email': 'Enviando correo de recuperación',
+  'Updating password': 'Actualizando contraseña',
+  'Password reset email sent. Check your inbox.': 'Correo de recuperación enviado. Revisa tu bandeja.',
+  'Password updated successfully.': 'Contraseña actualizada correctamente.',
+  'Password updated successfully. Sign in with your new password.': 'Contraseña actualizada correctamente. Inicia sesión con tu nueva contraseña.',
+  'Check your email to confirm your account. After confirmation, return to Beoflow to continue.': 'Revisa tu correo para confirmar tu cuenta. Después de confirmar, vuelve a Beoflow para continuar.',
+  'Authentication failed.': 'No se pudo autenticar.',
+  'Unable to send password reset email.': 'No se pudo enviar el correo de recuperación.',
+  'Unable to update password.': 'No se pudo actualizar la contraseña.',
+  'Unable to create restaurant.': 'No se pudo crear el restaurante.',
+  'Unable to update workspace settings.': 'No se pudo actualizar la configuración del espacio.',
+  'Unable to load session.': 'No se pudo cargar la sesión.',
+  'Unable to load your Beoflow workspace.': 'No se pudo cargar tu espacio Beoflow.',
+  'Unable to load dashboard counts.': 'No se pudieron cargar los conteos del dashboard.',
+  'Unable to load dashboard calendar.': 'No se pudo cargar el calendario del dashboard.',
+  'Unable to save recipe.': 'No se pudo guardar la receta.',
+  'Unable to add ingredient.': 'No se pudo agregar el ingrediente.',
+  'Unable to add subrecipe.': 'No se pudo agregar la subreceta.',
+  'Unable to create ingredient.': 'No se pudo crear el ingrediente.',
+  'Unable to add ingredient to inventory.': 'No se pudo agregar el ingrediente al inventario.',
+  'Unable to connect ingredient to recipe.': 'No se pudo conectar el ingrediente a la receta.',
+  'Unable to load recipes.': 'No se pudieron cargar las recetas.',
+  'Unable to load image.': 'No se pudo cargar la imagen.',
+  'Choose a JPG, PNG, or WebP image.': 'Elige una imagen JPG, PNG o WebP.',
+  'Image is too large. Choose an image under 1.5 MB.': 'La imagen es muy grande. Elige una imagen menor a 1.5 MB.',
+  'Password must be at least 8 characters.': 'La contraseña debe tener al menos 8 caracteres.',
+  'Passwords do not match.': 'Las contraseñas no coinciden.',
+  'Restaurant / Operation Name is required.': 'El nombre del restaurante u operación es obligatorio.',
+  'Business name is required.': 'El nombre del negocio es obligatorio.',
+  'Open a workspace before editing settings.': 'Abre un espacio antes de editar la configuración.',
+  'Open a restaurant workspace before creating records.': 'Abre un espacio de restaurante antes de crear registros.',
+  'Open a restaurant workspace before updating records.': 'Abre un espacio de restaurante antes de actualizar registros.',
+  'Sign in before managing Beoflow records.': 'Inicia sesión antes de administrar registros de Beoflow.',
+  'Sign in before creating a restaurant.': 'Inicia sesión antes de crear un restaurante.',
+  'Client-prod is not configured.': 'Client-prod no está configurado.',
+  'Supabase client library failed to load.': 'No se pudo cargar la librería cliente de Supabase.',
+  'Workspace settings updated.': 'Configuración del espacio actualizada.',
+  'Recipe created.': 'Receta creada.',
+  'Recipe updated.': 'Receta actualizada.',
+  'Recipe name is required.': 'El nombre de la receta es obligatorio.',
+  'Recipe record was not found. Reload Recipes and try again.': 'No se encontró la receta. Recarga Recipes e inténtalo de nuevo.',
+  'Choose or name an ingredient first.': 'Elige o escribe un ingrediente primero.',
+  'Choose a valid recipe ingredient.': 'Elige un ingrediente válido para la receta.',
+  'Ingredient name is required.': 'El nombre del ingrediente es obligatorio.',
+  'Ingredient name is required before adding it to inventory.': 'El nombre del ingrediente es obligatorio antes de agregarlo al inventario.',
+  'Ingredient quantity cannot be negative.': 'La cantidad del ingrediente no puede ser negativa.',
+  'Package Price cannot be negative.': 'El precio del paquete no puede ser negativo.',
+  'Subrecipe quantity cannot be negative.': 'La cantidad de la subreceta no puede ser negativa.',
+  'Add at least one ingredient before saving this recipe.': 'Agrega al menos un ingrediente antes de guardar esta receta.',
+  'Every ingredient needs a name before saving.': 'Cada ingrediente necesita nombre antes de guardar.',
+  'Package Quantity cannot be 0.': 'La cantidad por paquete no puede ser 0.',
+  'Choose a valid linked recipe.': 'Elige una receta vinculada válida.',
+  'Choose a recipe to connect this ingredient.': 'Elige una receta para conectar este ingrediente.',
+  'Choose a valid inventory ingredient.': 'Elige un ingrediente de inventario válido.',
+  'Choose an inventory ingredient first.': 'Elige primero un ingrediente de inventario.',
+  'Choose a subrecipe first.': 'Elige primero una subreceta.',
+  'Ingredient quantity must be greater than zero.': 'La cantidad del ingrediente debe ser mayor que cero.',
+  'Subrecipes are already connected as reusable preparations.': 'Las subrecetas ya están conectadas como preparaciones reutilizables.',
+  'This recipe cost is 0. Add ingredients and costs before activating this menu item.': 'El costo de esta receta es 0. Agrega ingredientes y costos antes de activar este elemento de menú.',
+  'Language': 'Idioma',
+  'English': 'Inglés',
+  'Spanish': 'Español'
+};
+
+let isApplyingLanguage = false;
+let languageObserver = null;
+
+function getInitialLanguage() {
+  try {
+    const storedLanguage = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+    if (SUPPORTED_LANGUAGES.has(storedLanguage)) return storedLanguage;
+  } catch (error) {
+    // Ignore storage errors and fall back to the browser language.
+  }
+
+  const browserLanguage = String(navigator.language || '').toLowerCase();
+  return browserLanguage.startsWith('es') ? 'es' : 'en';
+}
 
 const state = {
   supabase: null,
   user: null,
   profile: null,
+  language: getInitialLanguage(),
   userClients: [],
   activeClient: null,
   activeSection: 'dashboard',
@@ -44,6 +397,261 @@ const state = {
   passwordUpdatePending: false,
   loading: false
 };
+
+function normalizeLanguage(language) {
+  return SUPPORTED_LANGUAGES.has(language) ? language : 'en';
+}
+
+function translateSingular(value) {
+  const labels = {
+    event: 'evento',
+    'menu item': 'elemento de menú',
+    recipe: 'receta',
+    subrecipe: 'subreceta',
+    'inventory item': 'ingrediente',
+    'production log': 'registro de producción',
+    'staff member': 'miembro del personal'
+  };
+
+  return labels[String(value || '').toLowerCase()] || value;
+}
+
+function translateModuleTitle(value) {
+  return UI_TRANSLATIONS_ES[value] || value;
+}
+
+function translateCountLabel(count, singular, plural) {
+  const labels = {
+    event: ['evento', 'eventos'],
+    events: ['evento', 'eventos'],
+    'menu item': ['elemento de menú', 'elementos de menú'],
+    'menu items': ['elemento de menú', 'elementos de menú'],
+    recipe: ['receta', 'recetas'],
+    recipes: ['receta', 'recetas'],
+    subrecipe: ['subreceta', 'subrecetas'],
+    subrecipes: ['subreceta', 'subrecetas'],
+    'inventory item': ['ingrediente', 'ingredientes'],
+    'inventory items': ['ingrediente', 'ingredientes'],
+    'production log': ['registro de producción', 'registros de producción'],
+    'production logs': ['registro de producción', 'registros de producción'],
+    'staff member': ['miembro del personal', 'miembros del personal'],
+    'staff members': ['miembro del personal', 'miembros del personal'],
+    ingredient: ['ingrediente', 'ingredientes'],
+    ingredients: ['ingrediente', 'ingredientes'],
+    metric: ['métrica', 'métricas'],
+    metrics: ['métrica', 'métricas'],
+    product: ['producto', 'productos'],
+    products: ['producto', 'productos'],
+    record: ['registro', 'registros'],
+    records: ['registro', 'registros']
+  };
+  const labelKey = String(Number(count) === 1 ? singular : plural || singular || 'records').toLowerCase();
+  const fallbackKey = String(singular || plural || 'records').toLowerCase();
+  const pair = labels[labelKey] || labels[fallbackKey] || labels.records;
+  return `${count} ${Number(count) === 1 ? pair[0] : pair[1]}`;
+}
+
+function translateCoreText(text) {
+  if (state.language !== 'es') return text;
+  if (!text) return text;
+
+  const exactTranslation = UI_TRANSLATIONS_ES[text];
+  if (exactTranslation) return exactTranslation;
+
+  let match = text.match(/^(\d+)\s+(event|events|menu item|menu items|recipe|recipes|subrecipe|subrecipes|inventory item|inventory items|production log|production logs|staff member|staff members|ingredient|ingredients|metric|metrics|product|products|record|records)$/i);
+  if (match) {
+    return translateCountLabel(match[1], match[2], match[2]);
+  }
+
+  match = text.match(/^Update this (.+?) for (.+)\.$/);
+  if (match) {
+    return `Actualiza este registro de ${translateSingular(match[1])} para ${match[2]}.`;
+  }
+
+  match = text.match(/^Create a new (.+?) for (.+)\.$/);
+  if (match) {
+    return `Crea un nuevo registro de ${translateSingular(match[1])} para ${match[2]}.`;
+  }
+
+  match = text.match(/^Welcome to (.+)\. Your Beoflow modules are ready for real operating data when your team starts building\.$/);
+  if (match) {
+    return `Bienvenido a ${match[1]}. Tus módulos Beoflow están listos para datos operativos reales cuando tu equipo empiece a trabajar.`;
+  }
+
+  match = text.match(/^(.+) is ready in Beoflow\.$/);
+  if (match) return `${match[1]} está listo en Beoflow.`;
+
+  match = text.match(/^Complete (.+?) details for (.+)\.$/);
+  if (match) {
+    return `Completa los detalles de ${translateSingular(match[1])} para ${match[2]}.`;
+  }
+
+  match = text.match(/^(.+) record updated\.$/);
+  if (match) return `Registro de ${translateModuleTitle(match[1])} actualizado.`;
+
+  match = text.match(/^(.+) record created\.$/);
+  if (match) return `Registro de ${translateModuleTitle(match[1])} creado.`;
+
+  match = text.match(/^(.+) record archived\.$/);
+  if (match) return `Registro de ${translateModuleTitle(match[1])} archivado.`;
+
+  match = text.match(/^Archive (.+)\?$/);
+  if (match) return `¿Archivar ${match[1]}?`;
+
+  match = text.match(/^Unable to load (.+)\.$/);
+  if (match) return `No se pudo cargar ${translateModuleTitle(match[1])}.`;
+
+  match = text.match(/^Unable to save (.+)\.$/);
+  if (match) return `No se pudo guardar ${translateSingular(match[1])}.`;
+
+  match = text.match(/^Unable to archive (.+)\.$/);
+  if (match) return `No se pudo archivar ${translateSingular(match[1])}.`;
+
+  match = text.match(/^(.+) is required\.$/);
+  if (match) return `${translateModuleTitle(match[1])} es obligatorio.`;
+
+  match = text.match(/^(.+) must be a valid number\.$/);
+  if (match) return `${translateModuleTitle(match[1])} debe ser un número válido.`;
+
+  match = text.match(/^(.+) cannot be negative\.$/);
+  if (match) return `${translateModuleTitle(match[1])} no puede ser negativo.`;
+
+  match = text.match(/^(.+) already exists in Inventory\. Use the existing ingredient instead of creating a duplicate\.$/);
+  if (match) return `${match[1]} ya existe en Inventario. Usa el ingrediente existente en vez de crear un duplicado.`;
+
+  match = text.match(/^Add at least one inventory input before saving this (.+)\.$/);
+  if (match) return `Agrega al menos un insumo de inventario antes de guardar esta ${translateSingular(match[1])}.`;
+
+  match = text.match(/^(.+) added to inventory and connected\.$/);
+  if (match) return `${match[1]} agregado al inventario y conectado.`;
+
+  match = text.match(/^(.+) connected from inventory\.$/);
+  if (match) return `${match[1]} conectado desde inventario.`;
+
+  match = text.match(/^(.+) added to inventory and recipe\.$/);
+  if (match) return `${match[1]} agregado al inventario y a la receta.`;
+
+  match = text.match(/^(.+) added to (.+)\.$/);
+  if (match) return `${match[1]} agregado a ${match[2]}.`;
+
+  return text;
+}
+
+function translateText(value) {
+  const rawText = String(value ?? '');
+  if (state.language !== 'es') return rawText;
+  const match = rawText.match(/^(\s*)([\s\S]*?)(\s*)$/);
+  if (!match) return rawText;
+  return `${match[1]}${translateCoreText(match[2])}${match[3]}`;
+}
+
+function applyLanguageToTextNode(node) {
+  if (!node?.nodeValue || !node.nodeValue.trim()) return;
+  const parent = node.parentElement;
+  if (!parent || parent.closest('script, style, textarea, [contenteditable="true"]')) return;
+
+  const currentText = node.nodeValue;
+  if (
+    node.__beoflowOriginalText === undefined
+    || (currentText !== node.__beoflowLastAppliedText && currentText !== node.__beoflowOriginalText)
+  ) {
+    node.__beoflowOriginalText = currentText;
+  }
+
+  const nextText = state.language === 'es' ? translateText(node.__beoflowOriginalText) : node.__beoflowOriginalText;
+  node.__beoflowLastAppliedText = nextText;
+  if (node.nodeValue !== nextText) node.nodeValue = nextText;
+}
+
+function applyLanguageToElementAttributes(element) {
+  if (!(element instanceof Element)) return;
+  const translatableAttributes = ['placeholder', 'title', 'aria-label', 'alt'];
+
+  translatableAttributes.forEach(attribute => {
+    if (!element.hasAttribute(attribute)) return;
+    const currentValue = element.getAttribute(attribute);
+    element.__beoflowOriginalAttributes = element.__beoflowOriginalAttributes || {};
+    element.__beoflowLastAppliedAttributes = element.__beoflowLastAppliedAttributes || {};
+
+    if (
+      element.__beoflowOriginalAttributes[attribute] === undefined
+      || (
+        currentValue !== element.__beoflowLastAppliedAttributes[attribute]
+        && currentValue !== element.__beoflowOriginalAttributes[attribute]
+      )
+    ) {
+      element.__beoflowOriginalAttributes[attribute] = currentValue;
+    }
+
+    const originalValue = element.__beoflowOriginalAttributes[attribute];
+    const nextValue = state.language === 'es' ? translateText(originalValue) : originalValue;
+    element.__beoflowLastAppliedAttributes[attribute] = nextValue;
+    if (element.getAttribute(attribute) !== nextValue) {
+      element.setAttribute(attribute, nextValue);
+    }
+  });
+}
+
+function applyLanguageToDocument(root = document.body) {
+  if (!root || isApplyingLanguage) return;
+  isApplyingLanguage = true;
+
+  try {
+    document.documentElement.lang = state.language;
+    document.title = state.language === 'es'
+      ? translateText('Beoflow App | Bastida Systems')
+      : 'Beoflow App | Bastida Systems';
+
+    document.querySelectorAll('[data-language-select]').forEach(select => {
+      select.value = state.language;
+    });
+
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    let textNode = walker.nextNode();
+    while (textNode) {
+      applyLanguageToTextNode(textNode);
+      textNode = walker.nextNode();
+    }
+
+    const attributeRoot = root.nodeType === Node.ELEMENT_NODE ? root : document.body;
+    if (attributeRoot instanceof Element) applyLanguageToElementAttributes(attributeRoot);
+    attributeRoot.querySelectorAll?.('*').forEach(applyLanguageToElementAttributes);
+  } finally {
+    isApplyingLanguage = false;
+  }
+}
+
+function scheduleLanguageApply(root = document.body) {
+  window.requestAnimationFrame(() => applyLanguageToDocument(root));
+}
+
+function startLanguageObserver() {
+  if (languageObserver || !document.body) return;
+  languageObserver = new MutationObserver(mutations => {
+    if (isApplyingLanguage) return;
+    const targetMutation = mutations.find(mutation => mutation.target);
+    const target = targetMutation?.target;
+    const root = target?.nodeType === Node.ELEMENT_NODE ? target : document.body;
+    scheduleLanguageApply(root);
+  });
+
+  languageObserver.observe(document.body, {
+    childList: true,
+    characterData: true,
+    subtree: true
+  });
+}
+
+function setLanguage(language) {
+  state.language = normalizeLanguage(language);
+  try {
+    localStorage.setItem(LANGUAGE_STORAGE_KEY, state.language);
+  } catch (error) {
+    // Ignore storage errors; the current session still switches language.
+  }
+
+  applyLanguageToDocument(document.body);
+}
 
 const MODULE_SECTIONS = {
   events: {
@@ -141,12 +749,12 @@ const MODULE_SECTIONS = {
     fields: [
       { name: 'name', label: 'Subrecipe Name', type: 'text', required: true },
       { name: 'category', label: 'Category', type: 'text' },
-      { name: 'recipe_number', label: 'Subrecipe Number', type: 'text' },
+      { name: 'recipe_number', label: 'Subrecipe Number', type: 'text', placeholder: 'Automatic', readonly: true },
       { name: 'yield_quantity', label: 'Yield / Rendimiento', type: 'number', min: '0', step: '0.01' },
       { name: 'yield_unit', label: 'Yield Unit', type: 'text', placeholder: 'portions, lb, oz, trays' },
+      { name: 'status', label: 'Status', type: 'text', defaultValue: 'active' },
       { name: 'procedure', label: 'Procedure', type: 'textarea', wide: true },
-      { name: 'notes', label: 'Notes', type: 'textarea', wide: true },
-      { name: 'status', label: 'Status', type: 'text', defaultValue: 'active' }
+      { name: 'notes', label: 'Notes', type: 'textarea', wide: true }
     ]
   },
   inventory: {
@@ -161,12 +769,10 @@ const MODULE_SECTIONS = {
     index: '05',
     titleField: 'name',
     badgeField: 'status',
-    metaFields: ['item_code', 'inventory_type', 'category', 'brand', 'base_unit', 'package_quantity', 'package_unit', 'package_price', 'cost_per_unit', 'supplier'],
+    metaFields: ['category', 'brand', 'base_unit', 'package_quantity', 'package_unit', 'package_price', 'cost_per_unit', 'supplier'],
     detailFields: ['current_stock', 'minimum_stock', 'notes'],
     fields: [
-      { name: 'item_code', label: 'Input Code', type: 'text', required: true, placeholder: 'INS-001' },
       { name: 'name', label: 'Name / Description', type: 'text', required: true },
-      { name: 'inventory_type', label: 'Inventory Type', type: 'select', options: INVENTORY_TYPE_OPTIONS, defaultValue: 'raw_ingredient' },
       { name: 'category', label: 'Category', type: 'inventory-category-select' },
       { name: 'brand', label: 'Brand', type: 'text' },
       { name: 'base_unit', label: 'Base Unit', type: 'text', required: true, placeholder: 'oz, lb, each' },
@@ -560,6 +1166,7 @@ function showAlert(element, message, type = 'error') {
   element.textContent = message;
   element.hidden = !message;
   element.classList.toggle('app-alert-success', type === 'success');
+  if (message) applyLanguageToDocument(element);
 }
 
 function clearAlerts() {
@@ -918,10 +1525,6 @@ function formatRecordValue(fieldName, value) {
     return formatLabel(value);
   }
 
-  if (fieldName === 'inventory_type') {
-    return getInventoryTypeLabel(value);
-  }
-
   return String(value);
 }
 
@@ -1000,33 +1603,6 @@ function getInventoryPackageUnit(record) {
   return record?.package_unit ?? record?.presentation_unit ?? '';
 }
 
-function getInventoryTypeValue(recordOrType) {
-  const rawValue = typeof recordOrType === 'string'
-    ? recordOrType
-    : recordOrType?.inventory_type ?? recordOrType?.inventoryType;
-  const normalized = String(rawValue || 'raw_ingredient').trim().toLowerCase().replace(/[\s-]+/g, '_');
-
-  if (normalized === 'finished' || normalized === 'finish_product' || normalized === 'finished_product') {
-    return 'finished_product';
-  }
-  if (normalized === 'sub_recipe') return 'subrecipe';
-  if (normalized === 'raw' || normalized === 'ingredient') return 'raw_ingredient';
-  return INVENTORY_TYPE_OPTIONS.some(option => option.value === normalized) ? normalized : 'raw_ingredient';
-}
-
-function getInventoryTypeOption(recordOrType) {
-  const typeValue = getInventoryTypeValue(recordOrType);
-  return INVENTORY_TYPE_OPTIONS.find(option => option.value === typeValue) || INVENTORY_TYPE_OPTIONS[0];
-}
-
-function getInventoryTypeLabel(recordOrType) {
-  return getInventoryTypeOption(recordOrType).label;
-}
-
-function getInventoryTypeIcon(recordOrType) {
-  return getInventoryTypeOption(recordOrType).icon || 'package';
-}
-
 function calculateInventoryUnitCost(recordOrPayload) {
   const packageQuantity = Number(getInventoryPackageQuantity(recordOrPayload));
   const packagePrice = Number(getInventoryPackagePrice(recordOrPayload));
@@ -1089,8 +1665,63 @@ function findInventoryIngredientByCode(code, excludeId = null) {
   )) || null;
 }
 
+function getSubrecipeNumberIndex(value) {
+  const match = String(value || '').match(/(\d+)/);
+  if (!match) return 0;
+  const index = Number(match[1]);
+  return Number.isFinite(index) ? index : 0;
+}
+
+function formatSubrecipeNumber(index) {
+  const safeIndex = Number.isFinite(Number(index)) && Number(index) > 0 ? Number(index) : 1;
+  return `Subrecipe ${String(safeIndex).padStart(3, '0')}`;
+}
+
+function getNextSubrecipeNumberFromRecords(records = state.moduleRecords.subrecipes || []) {
+  const maxIndex = (records || []).reduce((max, record) => {
+    const index = getSubrecipeNumberIndex(record?.recipe_number);
+    return index > max ? index : max;
+  }, 0);
+  return formatSubrecipeNumber(maxIndex + 1);
+}
+
+async function getNextSubrecipeNumber() {
+  const clientId = getActiveClientId();
+  if (!clientId || !state.supabase) return getNextSubrecipeNumberFromRecords();
+
+  const { data, error } = await requireSupabaseClient()
+    .from(MODULE_SECTIONS.subrecipes.table)
+    .select('recipe_number')
+    .eq('client_id', clientId);
+
+  if (error) return getNextSubrecipeNumberFromRecords();
+  return getNextSubrecipeNumberFromRecords(data || []);
+}
+
+function getSubrecipeFormRecord(record = null) {
+  if (record?.id) {
+    return {
+      ...record,
+      recipe_number: record.recipe_number || getNextSubrecipeNumberFromRecords()
+    };
+  }
+
+  return {
+    ...(record || {}),
+    recipe_number: getNextSubrecipeNumberFromRecords()
+  };
+}
+
 function getInventoryIconName(recordOrCategory) {
   return getInventoryCategoryVisual(recordOrCategory).icon;
+}
+
+function getInventorySummaryLabel(record) {
+  return [record?.category, getInventorySupplier(record)].filter(Boolean).join(' / ') || 'Inventory item';
+}
+
+function getInventoryHelperLabel(record) {
+  return record?.category || getInventoryBaseUnit(record) || getInventorySupplier(record) || 'Inventory item';
 }
 
 function getIngredientInventoryStatus(ingredient) {
@@ -1111,22 +1742,6 @@ function getIngredientInventoryStatus(ingredient) {
   }
 
   return { connected: false, label: 'Not in inventory', icon: 'alert', className: 'is-missing' };
-}
-
-function createInventoryCodeFromName(name) {
-  const base = normalizeInventoryCode(
-    String(name || 'ITEM')
-      .replace(/[^a-z0-9]+/gi, '-')
-      .replace(/^-+|-+$/g, '')
-      .slice(0, 18)
-  ) || 'ITEM';
-  let code = base;
-  let index = 1;
-  while (findInventoryIngredientByCode(code)) {
-    index += 1;
-    code = `${base}-${index}`;
-  }
-  return code;
 }
 
 function requireNonNegativeNumber(value, label, { allowNull = true } = {}) {
@@ -1236,7 +1851,6 @@ function createRecipeIngredientFromInventory(item, quantity = 1) {
   return normalizeRecipeIngredient({
     itemType: 'inventory',
     inventoryItemId: item?.id,
-    itemCode: item?.item_code,
     ingredientName: item?.name,
     quantity: safeQuantity,
     unit: getInventoryBaseUnit(item),
@@ -1274,7 +1888,7 @@ function createRecipeIngredientFromSubrecipe(subrecipe, quantity = 1) {
 }
 
 function validateInventoryIngredientForRecipe(item, quantity = 0) {
-  if (!item) return { status: 'not_found', message: 'Ingredient code not found.' };
+  if (!item) return { status: 'not_found', message: 'Ingredient not found.' };
   if (!Number.isFinite(Number(quantity)) || Number(quantity) < 0) {
     return { status: 'invalid_quantity', message: 'Quantity cannot be negative.' };
   }
@@ -2069,6 +2683,7 @@ function showModuleToast(message = 'This module is ready for the next build.') {
   if (!toast) return;
 
   toast.textContent = message;
+  applyLanguageToDocument(toast);
   toast.hidden = false;
   window.clearTimeout(showModuleToast.timeoutId);
   showModuleToast.timeoutId = window.setTimeout(() => {
@@ -2488,11 +3103,7 @@ function renderInventoryIngredientRow(record) {
   const categoryVisual = getInventoryCategoryVisual(record);
   const title = getRecordTitle('inventory', record);
   const status = record?.status || 'active';
-  const code = record.item_code || '';
-  const supplier = getInventorySupplier(record);
-  const typeLabel = getInventoryTypeLabel(record);
-  const typeIcon = getInventoryTypeIcon(record);
-  const typeClass = `inventory-type-${getInventoryTypeValue(record).replace(/_/g, '-')}`;
+  const summaryLabel = getInventorySummaryLabel(record);
   const baseUnit = getInventoryBaseUnit(record);
   const currentStock = formatRecordValue('current_stock', getInventoryCurrentStock(record));
   const packageQuantity = formatRecordValue('package_quantity', getInventoryPackageQuantity(record));
@@ -2508,11 +3119,10 @@ function renderInventoryIngredientRow(record) {
         <span class="record-title-icon ${escapeHtml(categoryVisual.className)}">${renderIcon(categoryVisual.icon)}</span>
         <div>
           <strong>${escapeHtml(title)}</strong>
-          <span>${escapeHtml([code, supplier].filter(Boolean).join(' / ') || 'No code')}</span>
+          <span>${escapeHtml(summaryLabel)}</span>
         </div>
       </div>
       <div class="inventory-ingredient-metrics" aria-label="Ingredient details">
-        <span class="inventory-type-badge ${escapeHtml(typeClass)}" title="Inventory type">${renderIconLabel(typeIcon, typeLabel)}</span>
         <span title="Current stock">${renderIconLabel('box', stockLabel || 'Stock 0')}</span>
         <span title="Package">${renderIconLabel('package', packageLabel || 'No pack')}</span>
         <span title="Unit cost">${renderIconLabel('tag', unitCost)}</span>
@@ -2706,26 +3316,37 @@ function renderRecipeDetailIngredientRows(ingredients) {
   }
 
   return `
-    <ul class="recipe-detail-ingredient-list">
+    <div class="recipe-detail-ingredient-table">
+      <div class="recipe-detail-ingredient-head">
+        <span>Ingredient</span>
+        <span>Quantity</span>
+        <span>Inventory</span>
+        <span>Cost</span>
+      </div>
       ${normalizedIngredients.map(ingredient => {
         const status = getIngredientInventoryStatus(ingredient);
         const quantity = formatIngredientQuantity(ingredient);
         const lineCost = formatMoney(calculateLineCostFromIngredient(ingredient));
-        const title = [ingredient.itemCode, ingredient.ingredientName].filter(Boolean).join(' - ') || 'Ingredient';
+        const title = ingredient.ingredientName || 'Ingredient';
+        const detailLabel = ingredient.itemType === 'subrecipe'
+          ? 'Subrecipe'
+          : status.connected && status.item ? getInventoryHelperLabel(status.item) : 'Not in inventory';
         return `
-          <li>
+          <div class="recipe-detail-ingredient-row">
             <div>
               <strong>${escapeHtml(title)}</strong>
-              <span>${escapeHtml(quantity)} &middot; ${escapeHtml(lineCost)}</span>
+              <span>${escapeHtml(detailLabel)}</span>
             </div>
+            <span>${escapeHtml(quantity)}</span>
             <span class="inventory-status-pill ${escapeHtml(status.className)}">
               ${renderIcon(status.icon)}
               <span>${escapeHtml(status.label)}</span>
             </span>
-          </li>
+            <strong>${escapeHtml(lineCost)}</strong>
+          </div>
         `;
       }).join('')}
-    </ul>
+    </div>
   `;
 }
 
@@ -2794,7 +3415,7 @@ function renderCostingDetailView(section, record) {
 
 function renderInlineRecipeInventoryDatalist() {
   const options = getInventoryOptions().map(item => {
-    const label = [item.item_code, item.category, getInventoryBaseUnit(item)].filter(Boolean).join(' / ');
+    const label = [item.category, getInventoryBaseUnit(item)].filter(Boolean).join(' / ');
     return `<option value="${escapeHtml(item.name)}"${label ? ` label="${escapeHtml(label)}"` : ''}></option>`;
   }).join('');
 
@@ -2897,8 +3518,10 @@ function renderInlineRecipeIngredientRow(ingredient, index) {
   const status = getIngredientInventoryStatus(normalized);
   const inventoryItem = status.item;
   const inventoryItemId = inventoryItem?.id || normalized.inventoryItemId || '';
-  const itemCode = inventoryItem?.item_code || normalized.itemCode || '';
   const unit = normalized.unit || (inventoryItem ? getInventoryBaseUnit(inventoryItem) : '');
+  const helperLabel = status.connected && inventoryItem
+    ? getInventoryHelperLabel(inventoryItem)
+    : normalized.itemType === 'subrecipe' ? 'Subrecipe' : 'Ingredient';
 
   return `
     <div class="recipe-ingredient-row recipe-inline-ingredient-row"
@@ -2907,11 +3530,11 @@ function renderInlineRecipeIngredientRow(ingredient, index) {
       data-item-type="${escapeHtml(normalized.itemType || 'inventory')}"
       data-inventory-item-id="${escapeHtml(inventoryItemId)}"
       data-subrecipe-id="${escapeHtml(normalized.subrecipeId || '')}"
-      data-item-code="${escapeHtml(itemCode)}">
+      data-item-code="${escapeHtml(normalized.itemCode || '')}">
       <label class="recipe-ingredient-name-field">
         <span>Ingredient</span>
         <input type="text" list="recipe-inventory-options" value="${escapeHtml(normalized.ingredientName)}" placeholder="Ingredient name" data-inline-recipe-ingredient-name>
-        <small>${escapeHtml(status.connected && inventoryItem ? (inventoryItem.item_code || 'Inventory item') : normalized.itemType === 'subrecipe' ? 'Subrecipe' : 'Ingredient')}</small>
+        <small>${escapeHtml(helperLabel)}</small>
       </label>
       <label>
         <span>Qty</span>
@@ -3073,6 +3696,24 @@ function formatIngredientQuantity(ingredient) {
   return `${quantityText}${ingredient.unit ? ` ${ingredient.unit}` : ''}`;
 }
 
+function renderUnitOptions(selectedUnit = '') {
+  const normalizedSelectedUnit = String(selectedUnit || '').trim();
+  const hasCustomUnit = normalizedSelectedUnit
+    && !COMMON_UNIT_OPTIONS.some(unit => unit.toLowerCase() === normalizedSelectedUnit.toLowerCase());
+  const customOption = hasCustomUnit
+    ? `<option value="${escapeHtml(normalizedSelectedUnit)}" selected>${escapeHtml(normalizedSelectedUnit)} (current)</option>`
+    : '';
+
+  return `
+    <option value="">Select unit</option>
+    ${customOption}
+    ${COMMON_UNIT_OPTIONS.map(unit => {
+      const selected = unit.toLowerCase() === normalizedSelectedUnit.toLowerCase() ? ' selected' : '';
+      return `<option value="${escapeHtml(unit)}"${selected}>${escapeHtml(unit)}</option>`;
+    }).join('')}
+  `;
+}
+
 function renderRecipeIngredientSummary(record) {
   const ingredients = normalizeRecipeIngredients(record.ingredients);
   if (ingredients.length === 0) return '';
@@ -3083,7 +3724,7 @@ function renderRecipeIngredientSummary(record) {
       <ul>
         ${ingredients.map(ingredient => `
           <li>
-            <span>${escapeHtml([ingredient.itemCode, ingredient.ingredientName].filter(Boolean).join(' - '))}</span>
+            <span>${escapeHtml(ingredient.ingredientName || 'Ingredient')}</span>
             <span>${escapeHtml(formatIngredientQuantity(ingredient))} &middot; ${escapeHtml(formatMoney(calculateLineCostFromIngredient(ingredient)))} &middot; ${escapeHtml(formatLabel(ingredient.validationStatus))}</span>
           </li>
         `).join('')}
@@ -3206,19 +3847,29 @@ function clearImageFileField(button) {
 }
 
 function renderFormField(field, record = null) {
+  if (field.type === 'section-heading') {
+    return `
+      <div class="form-section-heading${field.wide ? ' form-field-wide' : ''}">
+        <span>${escapeHtml(field.label)}</span>
+      </div>
+    `;
+  }
+
   const rawValue = record?.[field.name] ?? field.defaultValue ?? '';
   const value = rawValue === null || rawValue === undefined ? '' : String(rawValue);
   const requiredAttr = field.required ? ' required' : '';
   const minAttr = field.min !== undefined ? ` min="${escapeHtml(field.min)}"` : '';
   const stepAttr = field.step !== undefined ? ` step="${escapeHtml(field.step)}"` : '';
   const placeholderAttr = field.placeholder ? ` placeholder="${escapeHtml(field.placeholder)}"` : '';
+  const readonlyAttr = field.readonly ? ' readonly aria-readonly="true"' : '';
   const wideClass = field.wide || field.type === 'textarea' ? ' form-field-wide' : '';
+  const readonlyClass = field.readonly ? ' form-field-readonly' : '';
 
   if (field.type === 'textarea') {
     return `
-      <label class="form-field${wideClass}">
+      <label class="form-field${wideClass}${readonlyClass}">
         <span>${escapeHtml(field.label)}</span>
-        <textarea name="${escapeHtml(field.name)}"${requiredAttr}${placeholderAttr}>${escapeHtml(value)}</textarea>
+        <textarea name="${escapeHtml(field.name)}"${requiredAttr}${placeholderAttr}${readonlyAttr}>${escapeHtml(value)}</textarea>
       </label>
     `;
   }
@@ -3285,9 +3936,9 @@ function renderFormField(field, record = null) {
   }
 
   return `
-    <label class="form-field${wideClass}">
+    <label class="form-field${wideClass}${readonlyClass}">
       <span>${escapeHtml(field.label)}</span>
-      <input type="${escapeHtml(field.type || 'text')}" name="${escapeHtml(field.name)}" value="${escapeHtml(value)}"${requiredAttr}${minAttr}${stepAttr}${placeholderAttr}>
+      <input type="${escapeHtml(field.type || 'text')}" name="${escapeHtml(field.name)}" value="${escapeHtml(value)}"${requiredAttr}${minAttr}${stepAttr}${placeholderAttr}${readonlyAttr}>
     </label>
   `;
 }
@@ -3300,7 +3951,12 @@ function getInventoryOptionsForRecipeBuilder() {
   const options = getInventoryOptions();
   if (state.modalSection !== 'subrecipes' || !state.editingRecord?.id) return options;
 
-  return options.filter(item => String(item.source_subrecipe_id || '') !== String(state.editingRecord.id));
+  const editingName = normalizeIngredientNameForMatch(state.editingRecord.name);
+  const editingCategory = String(state.editingRecord.category || 'Subrecipes').toLowerCase();
+  return options.filter(item => !(
+    normalizeIngredientNameForMatch(item.name) === editingName
+    && String(item.category || '').toLowerCase() === editingCategory
+  ));
 }
 
 function renderInventoryDuplicateSuggestion(name, excludeId = null, { compact = false } = {}) {
@@ -3308,7 +3964,7 @@ function renderInventoryDuplicateSuggestion(name, excludeId = null, { compact = 
   if (!match) return '';
 
   const stock = formatRecordValue('current_stock', getInventoryCurrentStock(match));
-  const details = [match.item_code, match.category, stock, getInventoryBaseUnit(match)].filter(Boolean).join(' / ');
+  const details = [match.category, stock, getInventoryBaseUnit(match)].filter(Boolean).join(' / ');
 
   return `
     <div class="inventory-duplicate-suggestion${compact ? ' inventory-duplicate-suggestion-compact' : ''}">
@@ -3332,7 +3988,6 @@ function renderRecipeIngredientOptions() {
   const filteredItems = searchTerm
     ? inventoryItems.filter(item => (
       String(item.name || '').toLowerCase().includes(searchTerm)
-      || String(item.item_code || '').toLowerCase().includes(searchTerm)
       || String(item.category || '').toLowerCase().includes(searchTerm)
       || String(item.supplier || item.vendor || '').toLowerCase().includes(searchTerm)
     ))
@@ -3347,10 +4002,18 @@ function renderRecipeIngredientOptions() {
     ...filteredItems.map(item => {
       const cost = formatMoney(calculateInventoryUnitCost(item) || 0);
       const unit = getInventoryBaseUnit(item) ? ` / ${getInventoryBaseUnit(item)}` : '';
-      const code = item.item_code ? `${item.item_code} - ` : '';
-      return `<option value="${escapeHtml(item.id)}">${escapeHtml(code)}${escapeHtml(item.name)}${cost ? ` &middot; ${escapeHtml(cost)}${escapeHtml(unit)}` : ''}</option>`;
+      return `<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}${cost ? ` &middot; ${escapeHtml(cost)}${escapeHtml(unit)}` : ''}</option>`;
     })
   ].join('');
+}
+
+function renderInventoryCategoryOptions(selectedValue = 'Other') {
+  const normalizedValue = String(selectedValue || 'Other');
+  const hasExistingCustomValue = normalizedValue && !INVENTORY_CATEGORY_OPTIONS.includes(normalizedValue);
+  return `
+    ${hasExistingCustomValue ? `<option value="${escapeHtml(normalizedValue)}" selected>${escapeHtml(normalizedValue)} (current)</option>` : ''}
+    ${INVENTORY_CATEGORY_OPTIONS.map(option => `<option value="${escapeHtml(option)}"${option === normalizedValue ? ' selected' : ''}>${escapeHtml(option)}</option>`).join('')}
+  `;
 }
 
 function getSubrecipeOptions() {
@@ -3411,33 +4074,55 @@ function renderSubrecipePicker() {
 
 function renderRecipeIngredientRows() {
   if (state.recipeIngredientsDraft.length === 0) {
-    return '<p class="recipe-ingredient-empty">No ingredients added yet.</p>';
+    return `
+      <div class="recipe-ingredient-list recipe-builder-ingredient-list">
+        <div class="recipe-ingredient-table-head recipe-builder-ingredient-table-head">
+          <span>Ingredient</span>
+          <span>Qty</span>
+          <span>Unit</span>
+          <span>Inventory</span>
+          <span>Cost</span>
+          <span>Actions</span>
+        </div>
+        <p class="recipe-ingredient-empty">No ingredients added yet.</p>
+      </div>
+    `;
   }
 
   return `
-    <div class="recipe-ingredient-list">
-      <div class="recipe-ingredient-table-head">
+    <div class="recipe-ingredient-list recipe-builder-ingredient-list">
+      <div class="recipe-ingredient-table-head recipe-builder-ingredient-table-head">
         <span>Ingredient</span>
         <span>Qty</span>
         <span>Unit</span>
         <span>Inventory</span>
-        <span></span>
+        <span>Cost</span>
+        <span>Actions</span>
       </div>
-      ${state.recipeIngredientsDraft.map((ingredient, index) => `
-        <div class="recipe-ingredient-row" data-ingredient-index="${index}">
-          ${renderRecipeIngredientNameCell(ingredient, index)}
-          <label>
-            <span>Qty</span>
-            <input type="number" min="0" step="0.01" value="${escapeHtml(ingredient.quantity)}" data-recipe-ingredient-quantity="${index}">
-          </label>
-          <label>
-            <span>Unit</span>
-            <input type="text" value="${escapeHtml(ingredient.unit)}" data-recipe-ingredient-unit="${index}">
-          </label>
-          ${renderRecipeInventoryStatusCell(ingredient, index)}
-          <button type="button" class="modal-icon-button icon-only-button" data-recipe-ingredient-remove="${index}" title="Remove ingredient" aria-label="Remove ingredient">${renderIcon('trash')}</button>
-        </div>
-      `).join('')}
+      ${state.recipeIngredientsDraft.map((ingredient, index) => {
+        const lineCost = formatMoney(calculateLineCostFromIngredient(ingredient));
+        return `
+          <div class="recipe-ingredient-row recipe-builder-ingredient-row" data-ingredient-index="${index}">
+            ${renderRecipeIngredientNameCell(ingredient, index)}
+            <label>
+              <span>Qty</span>
+              <input type="number" min="0" step="0.01" value="${escapeHtml(ingredient.quantity)}" data-recipe-ingredient-quantity="${index}">
+            </label>
+            <label>
+              <span>Unit</span>
+              <select data-recipe-ingredient-unit="${index}">
+                ${renderUnitOptions(ingredient.unit)}
+              </select>
+            </label>
+            ${renderRecipeInventoryStatusCell(ingredient, index)}
+            <div class="recipe-ingredient-line-cost">
+              <span>Cost</span>
+              <strong>${escapeHtml(lineCost)}</strong>
+            </div>
+            <button type="button" class="modal-icon-button icon-only-button" data-recipe-ingredient-remove="${index}" title="Delete ingredient" aria-label="Delete ingredient">${renderIcon('trash')}</button>
+          </div>
+        `;
+      }).join('')}
     </div>
   `;
 }
@@ -3446,22 +4131,27 @@ function renderRecipeIngredientNameCell(ingredient, index) {
   const status = getIngredientInventoryStatus(ingredient);
   const subtitle = ingredient.itemType === 'subrecipe'
     ? 'Subrecipe'
-    : status.item?.item_code || ingredient.itemCode || 'Ingredient';
+    : status.item ? getInventoryHelperLabel(status.item) : 'Ingredient';
+  const helperHtml = state.modalSection === 'subrecipes'
+    ? ''
+    : `<small>${escapeHtml(subtitle)}</small>`;
 
   return `
     <label class="recipe-ingredient-name-field">
       <span>Ingredient</span>
       <input type="text" value="${escapeHtml(ingredient.ingredientName)}" placeholder="Ingredient name" data-recipe-ingredient-name="${index}">
-      <small>${escapeHtml(subtitle)}</small>
+      ${helperHtml}
     </label>
   `;
 }
 
 function renderRecipeInventoryStatusCell(ingredient, index) {
   const status = getIngredientInventoryStatus(ingredient);
+  const isSubrecipeModal = state.modalSection === 'subrecipes';
+  const addInventoryLabel = 'Add to Inventory';
   const actionHtml = status.connected || ingredient.itemType === 'subrecipe'
     ? ''
-    : `<button type="button" class="secondary-action compact-icon-action recipe-add-inventory-action" data-recipe-ingredient-add-inventory="${index}" title="Add to Inventory" aria-label="Add ${escapeHtml(ingredient.ingredientName || 'ingredient')} to Inventory">${renderIconLabel('packageAdd', 'Add to Inventory')}</button>`;
+    : `<button type="button" class="secondary-action ${isSubrecipeModal ? 'icon-only-button subrecipe-modal-icon-action' : 'compact-icon-action'} recipe-add-inventory-action" data-recipe-ingredient-add-inventory="${index}" title="${escapeHtml(addInventoryLabel)}" aria-label="Add ${escapeHtml(ingredient.ingredientName || 'ingredient')} to Inventory">${isSubrecipeModal ? `${renderIcon('packageAdd')}<span class="visually-hidden">${escapeHtml(addInventoryLabel)}</span>` : renderIconLabel('packageAdd', addInventoryLabel)}</button>`;
 
   return `
     <div class="inventory-status-cell">
@@ -3520,97 +4210,109 @@ function renderRecipeCostSummary() {
 
 function renderRecipeIngredientBuilder() {
   const searchValue = state.recipeIngredientSearch;
-  const quickPanelHidden = state.recipeQuickIngredientOpen ? '' : ' hidden';
   const isSubrecipeModal = state.modalSection === 'subrecipes';
   const isRecipeModal = state.modalSection === 'recipes';
+  const builderClass = isSubrecipeModal ? ' recipe-ingredient-builder-subrecipe' : '';
+  const inventoryIntro = isSubrecipeModal
+    ? 'Search Inventory, choose quantity and unit, then add the ingredient to this subrecipe.'
+    : 'Search Inventory, choose quantity and unit, then add the ingredient to this recipe.';
+  const headingCopy = isSubrecipeModal
+    ? ''
+    : '<p>Add ingredients to calculate this recipe cost.</p>';
+  const inventoryIntroHtml = isSubrecipeModal
+    ? ''
+    : `<span>${escapeHtml(inventoryIntro)}</span>`;
 
   return `
-    <section class="recipe-ingredient-builder form-field-wide" data-recipe-ingredient-builder>
+    <section class="recipe-ingredient-builder${builderClass} form-field-wide" data-recipe-ingredient-builder>
       <div class="recipe-builder-heading">
-        <span>${isSubrecipeModal ? 'Subrecipe Ingredients' : 'Ingredients'}</span>
-        ${isRecipeModal ? '' : '<p>Add inputs by inventory code. If the code does not exist, create the input without leaving this form.</p>'}
+        <span>Ingredients</span>
+        ${headingCopy}
       </div>
 
-      <div class="recipe-ingredient-picker">
-        <label class="form-field">
-          <span>${renderIconLabel('search', 'Find inventory')}</span>
-          <input type="search" id="recipe-ingredient-search" value="${escapeHtml(searchValue)}" placeholder="Type code or search inventory">
-        </label>
-        <label class="form-field">
-          <span>Inventory input</span>
-          <select id="recipe-ingredient-select">
-            ${renderRecipeIngredientOptions()}
-          </select>
-        </label>
-        <label class="form-field">
-          <span>Quantity</span>
-          <input type="number" id="recipe-ingredient-add-quantity" min="0" step="0.01" value="1">
-        </label>
-        <button type="button" class="secondary-action icon-action" id="recipe-add-selected-ingredient">${renderIconLabel('add', 'Add selected')}</button>
+      <div class="recipe-builder-panel recipe-builder-panel-inventory">
+        <div class="recipe-builder-panel-heading">
+          <strong>${renderIconLabel('search', 'Inventory ingredient')}</strong>
+          ${inventoryIntroHtml}
+        </div>
+        <div class="recipe-ingredient-picker">
+          <label class="form-field">
+            <span>Search inventory</span>
+            <input type="search" id="recipe-ingredient-search" value="${escapeHtml(searchValue)}" placeholder="Search by ingredient, category, or supplier">
+          </label>
+          <label class="form-field">
+            <span>Inventory ingredient</span>
+            <select id="recipe-ingredient-select">
+              ${renderRecipeIngredientOptions()}
+            </select>
+          </label>
+          <label class="form-field">
+            <span>Quantity</span>
+            <input type="number" id="recipe-ingredient-add-quantity" min="0" step="0.01" value="1">
+          </label>
+          <label class="form-field">
+            <span>Unit</span>
+            <select id="recipe-ingredient-add-unit">
+              ${renderUnitOptions()}
+            </select>
+          </label>
+          <button type="button" class="secondary-action icon-action" id="recipe-add-selected-ingredient">${renderIconLabel('add', 'Add selected')}</button>
+        </div>
       </div>
 
       ${renderSubrecipePicker()}
 
-      <div class="recipe-builder-actions">
-        <button type="button" class="primary-action icon-action" id="recipe-add-blank-ingredient">${renderIconLabel('add', 'Add Ingredient')}</button>
-        ${isRecipeModal ? '' : `<button type="button" class="text-action recipe-quick-add-toggle" id="recipe-quick-add-ingredient">${renderIconLabel('box', 'Add new ingredient to inventory')}</button>`}
-      </div>
-
-      <div class="recipe-quick-add-panel"${isRecipeModal ? ' hidden' : quickPanelHidden}>
-        <div class="form-field-wide" data-quick-ingredient-duplicate-suggestion>
-          ${renderInventoryDuplicateSuggestion(searchValue, null, { compact: true })}
+      ${isSubrecipeModal ? `
+        <div class="recipe-builder-panel recipe-builder-panel-create-inventory">
+          <div class="recipe-builder-panel-heading">
+            <strong>${renderIconLabel('packageAdd', 'Create inventory item')}</strong>
+          </div>
+          <div class="recipe-create-inventory-picker">
+            <label class="form-field">
+              <span>Ingredient name</span>
+              <input type="text" id="recipe-new-inventory-name" value="${escapeHtml(searchValue)}" placeholder="Ingredient name" title="${escapeHtml(searchValue || 'Ingredient name')}">
+            </label>
+            <label class="form-field">
+              <span>Category</span>
+              <select id="recipe-new-inventory-category">
+                ${renderInventoryCategoryOptions('Other')}
+              </select>
+            </label>
+            <label class="form-field">
+              <span>Base Unit</span>
+              <select id="recipe-new-inventory-base-unit">
+                ${renderUnitOptions()}
+              </select>
+            </label>
+            <label class="form-field">
+              <span>Cost / Price</span>
+              <input type="number" id="recipe-new-inventory-package-price" min="0" step="0.01" value="0">
+            </label>
+            <label class="form-field">
+              <span>Qty to add</span>
+              <input type="number" id="recipe-new-inventory-add-quantity" min="0" step="0.01" value="1">
+            </label>
+            <button type="button" class="primary-action icon-action subrecipe-modal-icon-action" id="recipe-create-inventory-ingredient" title="Create and add" aria-label="Create inventory ingredient and add it to this subrecipe">${renderIconLabel('packageAdd', 'Create')}</button>
+          </div>
         </div>
-        <label class="form-field">
-          <span>Input Code</span>
-          <input type="text" id="quick-ingredient-code" value="${escapeHtml(normalizeInventoryCode(searchValue))}" placeholder="INS-001">
-        </label>
-        <label class="form-field">
-          <span>Ingredient name</span>
-          <input type="text" id="quick-ingredient-name" placeholder="Ingredient name">
-        </label>
-        <label class="form-field">
-          <span>Category</span>
-          <select id="quick-ingredient-category">
-            <option value="Other">Other</option>
-            ${INVENTORY_CATEGORY_OPTIONS.filter(option => option !== 'Other').map(option => `<option value="${escapeHtml(option)}">${escapeHtml(option)}</option>`).join('')}
-          </select>
-        </label>
-        <label class="form-field">
-          <span>Unit</span>
-          <input type="text" id="quick-ingredient-unit" placeholder="lb, oz, each">
-        </label>
-        <label class="form-field">
-          <span>Package Quantity</span>
-          <input type="number" id="quick-ingredient-package-quantity" min="0.01" step="0.01" value="1">
-        </label>
-        <label class="form-field">
-          <span>Package Unit</span>
-          <input type="text" id="quick-ingredient-package-unit" placeholder="bag, case, bottle">
-        </label>
-        <label class="form-field">
-          <span>Package Price</span>
-          <input type="number" id="quick-ingredient-package-price" min="0" step="0.01" value="0">
-        </label>
-        <label class="form-field">
-          <span>Current Stock</span>
-          <input type="number" id="quick-ingredient-current-stock" min="0" step="0.01" value="0">
-        </label>
-        <label class="form-field">
-          <span>Minimum Stock</span>
-          <input type="number" id="quick-ingredient-minimum-stock" min="0" step="0.01" value="0">
-        </label>
-        <label class="form-field">
-          <span>Supplier</span>
-          <input type="text" id="quick-ingredient-supplier" placeholder="Optional supplier">
-        </label>
-        <div class="recipe-quick-add-actions">
-          <button type="button" class="secondary-action" id="recipe-cancel-quick-ingredient">Cancel</button>
-          <button type="button" class="primary-action" id="recipe-save-quick-ingredient">Save and add</button>
+      ` : `
+        <div class="recipe-builder-actions">
+          <button type="button" class="primary-action icon-action" id="recipe-add-blank-ingredient">${renderIconLabel('add', 'Add Ingredient')}</button>
         </div>
-      </div>
+      `}
 
+      <div class="recipe-builder-heading recipe-builder-list-heading">
+        <span>Ingredient list</span>
+        ${isSubrecipeModal ? '' : `<p>Edit quantities or units here before saving the ${escapeHtml(isSubrecipeModal ? 'subrecipe' : 'recipe')}.</p>`}
+      </div>
       ${renderRecipeIngredientRows()}
-      ${isRecipeModal ? '' : renderRecipeCostSummary()}
+      ${isRecipeModal ? '' : `
+        <div class="recipe-builder-heading recipe-builder-cost-heading">
+          <span>Cost summary</span>
+          ${isSubrecipeModal ? '' : '<p>Costs update from the ingredient table and Inventory package costs.</p>'}
+        </div>
+        ${renderRecipeCostSummary()}
+      `}
     </section>
   `;
 }
@@ -3675,6 +4377,54 @@ function addBlankRecipeIngredient() {
   refreshRecipeIngredientBuilder();
 }
 
+async function createInventoryIngredientFromSubrecipeModal() {
+  const name = document.getElementById('recipe-new-inventory-name')?.value.trim();
+  const category = document.getElementById('recipe-new-inventory-category')?.value.trim() || 'Other';
+  const baseUnit = document.getElementById('recipe-new-inventory-base-unit')?.value.trim() || 'each';
+  const packagePrice = Number(document.getElementById('recipe-new-inventory-package-price')?.value || 0);
+  const quantityToAdd = Number(document.getElementById('recipe-new-inventory-add-quantity')?.value || 1);
+
+  if (!name) throw new Error('Ingredient name is required.');
+  if (!Number.isFinite(packagePrice) || packagePrice < 0) throw new Error('Package Price cannot be negative.');
+  if (!Number.isFinite(quantityToAdd) || quantityToAdd < 0) throw new Error('Ingredient quantity cannot be negative.');
+
+  const duplicate = findMatchingInventoryIngredient(name);
+  if (duplicate) {
+    const connectedIngredient = createRecipeIngredientFromInventory(duplicate, quantityToAdd || 1);
+    addRecipeIngredientToDraft(normalizeRecipeIngredient({
+      ...connectedIngredient,
+      unit: baseUnit || connectedIngredient.unit
+    }));
+    state.recipeIngredientSearch = '';
+    refreshRecipeIngredientBuilder();
+    showToast(`${duplicate.name} connected from inventory.`);
+    return duplicate;
+  }
+
+  const payload = {
+    name,
+    category,
+    base_unit: baseUnit,
+    unit: baseUnit,
+    package_quantity: 1,
+    package_unit: baseUnit,
+    package_price: packagePrice,
+    current_stock: 0,
+    minimum_stock: 0,
+    supplier: null,
+    status: 'active'
+  };
+  payload.cost_per_unit = calculateInventoryUnitCost(payload) || 0;
+
+  const createdIngredient = await createRecord(MODULE_SECTIONS.inventory.table, payload);
+  await loadModuleData('inventory');
+  addRecipeIngredientToDraft(createRecipeIngredientFromInventory(createdIngredient, quantityToAdd || 1));
+  state.recipeIngredientSearch = '';
+  refreshRecipeIngredientBuilder();
+  showToast(`${createdIngredient.name} added to inventory and connected.`);
+  return createdIngredient;
+}
+
 function connectRecipeIngredientDraftToInventory(index, inventoryItem, draftIngredient) {
   const ingredient = normalizeRecipeIngredient(draftIngredient || state.recipeIngredientsDraft[Number(index)]);
   const quantity = Number(ingredient?.quantity);
@@ -3707,9 +4457,7 @@ async function addRecipeIngredientRowToInventory(index) {
   }
 
   const payload = {
-    item_code: createInventoryCodeFromName(name),
     name,
-    inventory_type: 'raw_ingredient',
     category: 'Other',
     base_unit: ingredient.unit || 'each',
     unit: ingredient.unit || 'each',
@@ -3833,13 +4581,13 @@ function syncInlineRecipeRowWithInventory(row, inventoryItem, draftIngredient = 
   row.dataset.itemType = 'inventory';
   row.dataset.inventoryItemId = inventoryItem.id || '';
   row.dataset.subrecipeId = '';
-  row.dataset.itemCode = inventoryItem.item_code || '';
+  row.dataset.itemCode = draftIngredient?.itemCode || '';
   if (nameInput) nameInput.value = inventoryItem.name || nameInput.value;
   if (unitInput && !unitInput.value.trim()) unitInput.value = getInventoryBaseUnit(inventoryItem) || '';
   const statusCell = row.querySelector('[data-inline-recipe-inventory-status]');
   if (statusCell) statusCell.outerHTML = renderInlineRecipeInventoryStatusCell(ingredient);
   const helper = row.querySelector('.recipe-ingredient-name-field small');
-  if (helper) helper.textContent = inventoryItem.item_code || 'Inventory item';
+  if (helper) helper.textContent = getInventoryHelperLabel(inventoryItem);
 }
 
 function syncInlineRecipeRowInventoryStatus(row) {
@@ -3876,9 +4624,7 @@ async function addInlineRecipeIngredientToInventory(card, row) {
 
   const unit = ingredient.unit || 'each';
   const payload = {
-    item_code: createInventoryCodeFromName(ingredient.ingredientName),
     name: ingredient.ingredientName,
-    inventory_type: 'raw_ingredient',
     category: 'Other',
     base_unit: unit,
     unit,
@@ -3963,23 +4709,8 @@ async function loadInventoryOptionsForRecipe() {
 }
 
 async function saveQuickInventoryIngredient() {
-  const itemCode = normalizeInventoryCode(document.getElementById('quick-ingredient-code')?.value);
   const name = document.getElementById('quick-ingredient-name')?.value.trim();
-  if (!itemCode) throw new Error('Input code is required.');
   if (!name) throw new Error('Ingredient name is required.');
-
-  const duplicateCode = findInventoryIngredientByCode(itemCode);
-  if (duplicateCode) {
-    if (normalizeIngredientNameForMatch(duplicateCode.name) !== normalizeIngredientNameForMatch(name)) {
-      throw new Error(`${duplicateCode.item_code} already exists in Inventory. Use a different input code.`);
-    }
-    addRecipeIngredientToDraft(createRecipeIngredientFromInventory(duplicateCode));
-    state.recipeIngredientSearch = '';
-    state.recipeQuickIngredientOpen = false;
-    refreshRecipeIngredientBuilder();
-    showToast(`${duplicateCode.name} connected from inventory.`);
-    return duplicateCode;
-  }
 
   const duplicate = findMatchingInventoryIngredient(name);
   if (duplicate) {
@@ -3992,9 +4723,7 @@ async function saveQuickInventoryIngredient() {
   }
 
   const payload = {
-    item_code: itemCode,
     name,
-    inventory_type: 'raw_ingredient',
     category: document.getElementById('quick-ingredient-category')?.value.trim() || null,
     base_unit: document.getElementById('quick-ingredient-unit')?.value.trim() || null,
     package_quantity: normalizePayloadValue({ type: 'number' }, document.getElementById('quick-ingredient-package-quantity')?.value || '1'),
@@ -4053,8 +4782,10 @@ function openModuleModal(section, record = null, options = {}) {
   els['module-save-button'].classList.remove('icon-action');
   els['module-modal-close'].textContent = 'Close';
   els['module-modal-close'].classList.remove('icon-action');
+  els['module-modal'].dataset.modalSection = section;
+  const formRecord = section === 'subrecipes' ? getSubrecipeFormRecord(record) : record;
   const baseFieldsHtml = moduleConfig.fields
-    .map(field => renderFormField(field, record))
+    .map(field => renderFormField(field, formRecord))
     .join('');
   els['module-form-fields'].innerHTML = isCostingRecipeSection(section)
     ? `${baseFieldsHtml}${renderRecipeIngredientBuilder()}`
@@ -4095,6 +4826,7 @@ function openCostingDetailModal(section, record) {
   els['module-cancel-button'].textContent = 'Close';
   els['module-modal-close'].textContent = 'Close';
   els['module-modal-close'].classList.remove('icon-action');
+  els['module-modal'].dataset.modalSection = `${section}-details`;
   els['module-form-fields'].innerHTML = renderCostingDetailView(section, record);
   els['module-modal'].hidden = false;
 }
@@ -4108,6 +4840,7 @@ function closeModuleModal() {
   state.recipeQuickIngredientOpen = false;
   state.recipeLinkIngredient = null;
   els['module-modal'].hidden = true;
+  delete els['module-modal'].dataset.modalSection;
   els['module-form'].classList.remove('module-form-detail-mode');
   els['module-save-button'].hidden = false;
   els['module-cancel-button'].textContent = 'Cancel';
@@ -4122,6 +4855,8 @@ function buildModulePayload(section) {
   const payload = {};
 
   moduleConfig.fields.forEach(field => {
+    if (field.type === 'section-heading') return;
+
     const rawValue = String(formData.get(field.name) || '').trim();
     if (field.required && !rawValue) {
       throw new Error(`${field.label} is required.`);
@@ -4139,14 +4874,6 @@ function buildModulePayload(section) {
   });
 
   if (section === 'inventory') {
-    payload.item_code = normalizeInventoryCode(payload.item_code);
-    if (!payload.item_code) throw new Error('Input Code is required.');
-    payload.inventory_type = getInventoryTypeValue(payload.inventory_type);
-    const duplicateCode = findInventoryIngredientByCode(payload.item_code, state.editingRecord?.id);
-    if (duplicateCode) {
-      throw new Error(`${duplicateCode.item_code} already exists in Inventory. Use a unique input code.`);
-    }
-
     const duplicate = findMatchingInventoryIngredient(payload.name, state.editingRecord?.id);
     if (duplicate) {
       throw new Error(`${duplicate.name} already exists in Inventory. Use the existing ingredient instead of creating a duplicate.`);
@@ -4349,43 +5076,16 @@ async function recalculateRecipesUsingSubrecipe(subrecipe) {
   return updatedRecipeIds;
 }
 
-function createSubrecipeInventoryCode(subrecipe) {
-  const rawIdentifier = subrecipe?.recipe_number || String(subrecipe?.id || '').slice(0, 8) || subrecipe?.name || 'SUBRECIPE';
-  const normalizedIdentifier = normalizeInventoryCode(
-    String(rawIdentifier)
-      .replace(/^SUB[-_\s]*/i, '')
-      .replace(/[^a-z0-9]+/gi, '-')
-      .replace(/^-+|-+$/g, '')
-  ) || 'SUBRECIPE';
-  return `SUB-${normalizedIdentifier}`;
-}
-
-function createAvailableInventoryCode(preferredCode, excludeId = null) {
-  const base = normalizeInventoryCode(preferredCode || 'ITEM') || 'ITEM';
-  let code = base;
-  let index = 1;
-
-  while (findInventoryIngredientByCode(code, excludeId)) {
-    index += 1;
-    code = `${base}-${index}`;
-  }
-
-  return code;
-}
-
 function findInventoryItemForSubrecipe(subrecipe) {
   if (!subrecipe?.id) return null;
-  const preferredCode = createSubrecipeInventoryCode(subrecipe);
   const inventoryItems = getInventoryOptions();
 
-  return inventoryItems.find(item => String(item.source_subrecipe_id || '') === String(subrecipe.id))
-    || inventoryItems.find(item => (
-      getInventoryTypeValue(item) === 'subrecipe'
-      && normalizeInventoryCode(item.item_code) === preferredCode
+  return inventoryItems.find(item => (
+      normalizeIngredientNameForMatch(item.name) === normalizeIngredientNameForMatch(subrecipe.name)
+      && String(item.category || '').toLowerCase() === String(subrecipe.category || 'Subrecipes').toLowerCase()
     ))
     || inventoryItems.find(item => (
-      getInventoryTypeValue(item) === 'subrecipe'
-      && normalizeIngredientNameForMatch(item.name) === normalizeIngredientNameForMatch(subrecipe.name)
+      normalizeIngredientNameForMatch(item.name) === normalizeIngredientNameForMatch(subrecipe.name)
     ))
     || null;
 }
@@ -4396,14 +5096,9 @@ function buildSubrecipeInventoryPayload(subrecipe, existingInventoryItem = null)
   const yieldUnit = subrecipe?.yield_unit || existingInventoryItem?.base_unit || 'batch';
   const totalCost = Number(subrecipe?.unit_cost_total ?? subrecipe?.total_cost ?? subrecipe?.total_ingredient_cost ?? 0);
   const packagePrice = Number.isFinite(totalCost) ? totalCost : 0;
-  const preferredCode = createSubrecipeInventoryCode(subrecipe);
-  const itemCode = existingInventoryItem?.item_code || createAvailableInventoryCode(preferredCode, existingInventoryItem?.id);
 
   return {
-    item_code: itemCode,
     name: subrecipe?.name || 'Subrecipe',
-    inventory_type: 'subrecipe',
-    source_subrecipe_id: subrecipe?.id || null,
     category: subrecipe?.category || existingInventoryItem?.category || 'Subrecipes',
     brand: existingInventoryItem?.brand || 'Beoflow Prep',
     base_unit: yieldUnit,
@@ -4470,6 +5165,12 @@ async function saveModuleRecord(event) {
     }
 
     const payload = buildModulePayload(section);
+    if (section === 'subrecipes') {
+      payload.recipe_number = state.editingRecord?.id
+        ? (payload.recipe_number || state.editingRecord.recipe_number || getNextSubrecipeNumberFromRecords())
+        : await getNextSubrecipeNumber();
+    }
+
     let savedRecord = null;
     if (state.editingRecord?.id) {
       savedRecord = await updateRecord(moduleConfig.table, state.editingRecord.id, payload);
@@ -4517,7 +5218,7 @@ async function archiveModuleRecord(section, recordId) {
   const moduleConfig = getModuleConfig(section);
   const record = getRecordById(section, recordId);
   const recordName = getRecordTitle(section, record);
-  const shouldArchive = window.confirm(`Archive ${recordName}?`);
+  const shouldArchive = window.confirm(translateText(`Archive ${recordName}?`));
   if (!shouldArchive) return;
 
   setLoading(true);
@@ -4661,26 +5362,20 @@ function addSelectedRecipeIngredient() {
   const select = document.getElementById('recipe-ingredient-select');
   const selectedId = select?.value;
   const quantity = Number(document.getElementById('recipe-ingredient-add-quantity')?.value || 1);
-  const typedCode = normalizeInventoryCode(document.getElementById('recipe-ingredient-search')?.value);
-  let selectedItem = selectedId
+  const unit = document.getElementById('recipe-ingredient-add-unit')?.value.trim() || '';
+  const selectedItem = selectedId
     ? getInventoryOptionsForRecipeBuilder().find(item => String(item.id) === String(selectedId))
-    : findInventoryIngredientByCode(typedCode);
-  if (
-    selectedItem
-    && state.modalSection === 'subrecipes'
-    && state.editingRecord?.id
-    && String(selectedItem.source_subrecipe_id || '') === String(state.editingRecord.id)
-  ) {
-    selectedItem = null;
-  }
+    : null;
   if (!selectedItem) {
-    throw new Error(typedCode
-      ? `${typedCode} was not found in Inventory. Use "+ Add new ingredient to inventory" to create it.`
-      : 'Choose an inventory ingredient first.');
+    throw new Error('Choose an inventory ingredient first.');
   }
   if (!Number.isFinite(quantity) || quantity < 0) throw new Error('Ingredient quantity cannot be negative.');
 
-  addRecipeIngredientToDraft(createRecipeIngredientFromInventory(selectedItem, quantity));
+  const ingredient = createRecipeIngredientFromInventory(selectedItem, quantity);
+  addRecipeIngredientToDraft(normalizeRecipeIngredient({
+    ...ingredient,
+    unit: unit || ingredient.unit
+  }));
   refreshRecipeIngredientBuilder();
 }
 
@@ -5341,6 +6036,12 @@ async function refreshAuthenticatedState(user) {
 }
 
 function bindEvents() {
+  document.addEventListener('change', event => {
+    if (event.target.matches('[data-language-select]')) {
+      setLanguage(event.target.value);
+    }
+  });
+
   document.querySelectorAll('[data-password-toggle]').forEach(button => {
     button.addEventListener('click', () => {
       const input = document.getElementById(button.dataset.target);
@@ -5700,6 +6401,13 @@ function bindEvents() {
     if (event.target.id === 'recipe-ingredient-search') {
       state.recipeIngredientSearch = event.target.value;
       refreshRecipeIngredientOptions();
+      if (state.modalSection === 'subrecipes') {
+        const newInventoryName = document.getElementById('recipe-new-inventory-name');
+        if (newInventoryName && document.activeElement !== newInventoryName) {
+          newInventoryName.value = event.target.value;
+          newInventoryName.title = event.target.value || 'Ingredient name';
+        }
+      }
     }
 
     if (event.target.id === 'subrecipe-search') {
@@ -5766,7 +6474,7 @@ function bindEvents() {
         ...draftIngredient,
         ingredientName: name,
         inventoryItemId: nextInventoryItem?.id || '',
-        itemCode: nextInventoryItem?.item_code || '',
+        itemCode: draftIngredient.itemCode || '',
         packagePrice: nextInventoryItem ? getInventoryPackagePrice(nextInventoryItem) : null,
         packageQuantity: nextInventoryItem ? getInventoryPackageQuantity(nextInventoryItem) : null,
         packageUnit: nextInventoryItem ? getInventoryPackageUnit(nextInventoryItem) : '',
@@ -5793,6 +6501,18 @@ function bindEvents() {
       } catch (error) {
         showAlert(els['module-form-message'], error.message || 'Unable to load image.');
       }
+      return;
+    }
+
+    const unitIndex = event.target.dataset.recipeIngredientUnit;
+    if (unitIndex !== undefined) {
+      const draftIngredient = state.recipeIngredientsDraft[Number(unitIndex)];
+      if (!draftIngredient) return;
+      state.recipeIngredientsDraft[Number(unitIndex)] = normalizeRecipeIngredient({
+        ...draftIngredient,
+        unit: event.target.value
+      });
+      refreshRecipeCostSummary();
       return;
     }
 
@@ -5858,6 +6578,19 @@ function bindEvents() {
 
     if (clickedButton.id === 'recipe-add-blank-ingredient') {
       addBlankRecipeIngredient();
+      return;
+    }
+
+    if (clickedButton.id === 'recipe-create-inventory-ingredient') {
+      setLoading(true);
+      showAlert(els['module-form-message'], '');
+      try {
+        await createInventoryIngredientFromSubrecipeModal();
+      } catch (error) {
+        showAlert(els['module-form-message'], error.message || 'Unable to create ingredient.');
+      } finally {
+        setLoading(false);
+      }
       return;
     }
 
@@ -5963,7 +6696,9 @@ async function boot() {
   cacheElements();
   decorateStaticModuleControls();
   bindEvents();
+  startLanguageObserver();
   renderLoadingSession();
+  applyLanguageToDocument(document.body);
 
   const supabase = initializeSupabase();
   if (!supabase) {
@@ -6032,5 +6767,7 @@ window.BeoflowClientApp = {
   clearActiveClient,
   setActiveClient,
   requireActiveClient,
+  setLanguage,
+  applyLanguageToDocument,
   state
 };

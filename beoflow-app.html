@@ -6,10 +6,10 @@
   <title>Beoflow App | Bastida Systems</title>
   <link rel="icon" type="image/png" href="img/logobeoflow.png">
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="beoflow-app.css?v=subrecipe-summary-20260607">
+  <link rel="stylesheet" href="beoflow-app.css?v=beoflow-vintage-modules-20260608">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="beoflow-client-config.js?v=client-prod-recovery-20260603"></script>
-  <script src="beoflow-client.js?v=subrecipe-summary-20260607" defer></script>
+  <script src="beoflow-client.js?v=beoflow-vintage-modules-20260608" defer></script>
 </head>
 <body class="beoflow-app-shell">
   <main class="beoflow-app" data-testid="beoflow-app">
@@ -29,6 +29,14 @@
       </div>
 
       <div class="auth-card">
+        <label class="language-switcher auth-language-switcher">
+          <span>Language</span>
+          <select data-language-select aria-label="Language">
+            <option value="en">EN</option>
+            <option value="es">ES</option>
+          </select>
+        </label>
+
         <div class="auth-tabs" id="auth-tabs" role="tablist" aria-label="Authentication mode">
           <button type="button" class="auth-tab is-active" id="show-sign-in" data-auth-mode="signin">Sign in</button>
           <button type="button" class="auth-tab" id="show-sign-up" data-auth-mode="signup">Create account</button>
@@ -145,6 +153,13 @@
     <section class="workspace-gate" id="onboarding-view" hidden aria-labelledby="onboarding-title">
       <div class="workspace-gate-card onboarding-card">
         <img src="img/logobeoflow.png" alt="Beoflow" class="gate-logo">
+        <label class="language-switcher gate-language-switcher">
+          <span>Language</span>
+          <select data-language-select aria-label="Language">
+            <option value="en">EN</option>
+            <option value="es">ES</option>
+          </select>
+        </label>
         <p class="eyebrow" id="onboarding-step">Step 1 of 1</p>
         <h3 id="onboarding-title">Set up your first restaurant</h3>
         <p id="onboarding-description">Create a workspace for your restaurant, kitchen, or operation.</p>
@@ -188,6 +203,13 @@
     <section class="workspace-gate" id="workspace-created-view" hidden aria-labelledby="workspace-created-title">
       <div class="workspace-gate-card workspace-created-card">
         <img src="img/logobeoflow.png" alt="Beoflow" class="gate-logo">
+        <label class="language-switcher gate-language-switcher">
+          <span>Language</span>
+          <select data-language-select aria-label="Language">
+            <option value="en">EN</option>
+            <option value="es">ES</option>
+          </select>
+        </label>
         <p class="eyebrow">Beoflow Workspace</p>
         <h3 id="workspace-created-title">Workspace created</h3>
         <p id="workspace-created-description">Your Beoflow workspace is ready.</p>
@@ -198,6 +220,13 @@
     <section class="workspace-gate" id="client-selector-view" hidden aria-labelledby="client-selector-title">
       <div class="workspace-gate-card workspace-selector-card">
         <img src="img/logobeoflow.png" alt="Beoflow" class="gate-logo">
+        <label class="language-switcher gate-language-switcher">
+          <span>Language</span>
+          <select data-language-select aria-label="Language">
+            <option value="en">EN</option>
+            <option value="es">ES</option>
+          </select>
+        </label>
         <p class="eyebrow">Choose workspace</p>
         <h3 id="client-selector-title">Choose your workspace</h3>
         <p>Select the restaurant or operation you want to manage.</p>
@@ -241,6 +270,13 @@
           <button type="button" class="sidebar-link" data-section="reports">Reports</button>
         </nav>
         <div class="mobile-drawer-actions" aria-label="Workspace actions">
+          <label class="sidebar-language-switcher">
+            <span>Language</span>
+            <select data-language-select aria-label="Language">
+              <option value="en">EN</option>
+              <option value="es">ES</option>
+            </select>
+          </label>
           <button type="button" class="sidebar-link" id="mobile-switch-client-button" data-mobile-action="switch-workspace">Switch workspace</button>
           <button type="button" class="sidebar-link" id="mobile-add-restaurant-button" data-mobile-action="add-restaurant">Add restaurant</button>
           <button type="button" class="sidebar-link" id="mobile-workspace-settings-button" data-mobile-action="workspace-settings">Workspace settings</button>
@@ -256,6 +292,13 @@
             <p id="workspace-subtitle">Loading your restaurant workspace.</p>
           </div>
           <div class="header-actions">
+            <label class="language-switcher workspace-language-switcher">
+              <span>Language</span>
+              <select data-language-select aria-label="Language">
+                <option value="en">EN</option>
+                <option value="es">ES</option>
+              </select>
+            </label>
             <button type="button" class="secondary-action" id="switch-client-button" hidden>Switch restaurant</button>
             <button type="button" class="secondary-action" id="add-restaurant-button">Add restaurant</button>
             <button type="button" class="secondary-action" id="workspace-settings-button">Workspace settings</button>
