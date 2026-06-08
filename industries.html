@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bastida Systems</title>
+  <title>Industries | Bastida Systems</title>
   <link rel="icon" type="image/png" href="img/logo_bastida_sys.png">
 
   <!-- Tailwind CDN -->
@@ -952,102 +952,49 @@
     .hero-spotlight {
       position: relative;
       overflow: hidden;
-      min-height: calc(100vh - 88px);
-      padding: clamp(4.5rem, 8vw, 7rem) 1.5rem clamp(4rem, 7vw, 6rem);
-      color: #fff;
-      isolation: isolate;
-      background-image:
-        linear-gradient(
-          90deg,
-          rgba(2, 5, 10, 0.68) 0%,
-          rgba(2, 5, 10, 0.48) 42%,
-          rgba(2, 5, 10, 0.34) 100%
-        ),
-        url("./img/bg_bastida01.png");
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-    }
-
-    .hero-light-left,
-    .hero-vignette {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-    }
-
-    .hero-light-left {
-      z-index: 1;
+      min-height: auto;
+      padding: clamp(2.75rem, 5vw, 4.5rem) 1.5rem clamp(2.75rem, 4vw, 4rem);
       background:
-        radial-gradient(
-          ellipse at 14% 22%,
-          rgba(255, 224, 170, 0.24) 0%,
-          rgba(255, 205, 135, 0.13) 14%,
-          rgba(58, 210, 159, 0.04) 28%,
-          transparent 43%
-        );
-      mix-blend-mode: screen;
-      opacity: 0.5;
-    }
-
-    .hero-vignette {
-      z-index: 2;
-      background:
-        linear-gradient(
-          90deg,
-          rgba(0, 0, 0, 0.1) 0%,
-          rgba(0, 0, 0, 0.04) 22%,
-          rgba(0, 0, 0, 0.16) 52%,
-          rgba(0, 0, 0, 0.3) 100%
-        ),
-        radial-gradient(
-          circle at 58% 48%,
-          transparent 0%,
-          rgba(0, 0, 0, 0.08) 55%,
-          rgba(0, 0, 0, 0.28) 100%
-        );
+        linear-gradient(128deg, #050607 0%, #0a0f16 46%, #062019 78%, #020304 100%);
     }
 
     .hero-grid {
       position: relative;
-      z-index: 3;
+      z-index: 1;
       display: grid;
       width: min(980px, 100%);
       margin: 0 auto;
       grid-template-columns: 1fr;
-      gap: clamp(2.25rem, 6vw, 6rem);
-      justify-items: end;
+      justify-items: center;
       align-items: center;
     }
 
     .hero-copy {
-      max-width: 44rem;
-      margin: 0 0 0 auto;
-      text-align: left;
-      text-shadow: 0 10px 35px rgba(0, 0, 0, 0.38);
+      max-width: 58rem;
+      margin: 0 auto;
+      text-align: center;
     }
 
     .hero-title {
       max-width: 46rem;
-      margin: 0 0 1.55rem;
+      margin: 0 auto 1.55rem;
       padding: 0;
       font-size: clamp(2.5rem, 4.25vw, 4rem);
       font-weight: 800;
       line-height: 1.05;
       letter-spacing: 0;
-      text-shadow: 0 18px 55px rgba(0, 0, 0, 0.45);
     }
 
     .hero-copy .gradient-text {
       width: min(100%, 46rem);
-      margin-left: 0;
-      margin-right: 0;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .hero-body {
       width: min(100%, 42rem);
-      margin-left: 0;
-      margin-right: 0;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .hero-actions {
@@ -1055,19 +1002,17 @@
     }
 
     .hero-copy .hero-actions {
-      justify-content: flex-start;
-      margin-left: 0;
-      margin-right: 0;
+      justify-content: center;
+      margin-left: auto;
+      margin-right: auto;
       margin-top: 2rem;
     }
 
     .hero-system-points {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: flex-start;
+      display: grid;
       gap: 0.7rem;
       width: min(100%, 41rem);
-      margin: 1.35rem 0 0;
+      margin: 1.35rem auto 0;
       padding: 0;
       list-style: none;
     }
@@ -1293,7 +1238,6 @@
     @media (max-width: 1024px) {
       .hero-grid {
         grid-template-columns: 1fr;
-        width: min(760px, 100%);
       }
 
       .hero-copy {
@@ -1307,12 +1251,6 @@
         margin-right: auto;
       }
 
-      .hero-title,
-      .hero-body {
-        margin-left: auto;
-        margin-right: auto;
-      }
-
       .hero-copy .hero-actions {
         justify-content: center;
       }
@@ -1320,7 +1258,6 @@
       .hero-system-points {
         margin-left: auto;
         margin-right: auto;
-        justify-content: center;
       }
 
     }
@@ -1368,21 +1305,19 @@
         'nav.languageSelector': 'Language selector',
         'hero.brand': 'Bastida Systems',
         'hero.brandMeta': 'Intelligent operations software',
-        'hero.kicker': 'Bastida Systems',
-        'hero.heading': 'Digital systems for real-world operations.',
-        'hero.body': 'We design and build business tools, mobile apps, websites, and operational platforms that help companies work smarter, move faster, and grow with purpose.',
-        'hero.point1': 'Operational software',
-        'hero.point2': 'Mobile apps',
-        'hero.point3': 'Client websites',
-        'hero.point4': 'Business tools',
+        'hero.heading': 'Bastida Systems Introduces LineOps ShiftRotation',
+        'hero.body': 'LineOps ShiftRotation is our new scheduling system for restaurants and service teams that need smarter weekly rotations, station coverage, and schedule control across mobile and desktop.',
+        'hero.point1': 'Smart rotation planning by station and shift',
+        'hero.point2': 'Saved weeks, templates, and quick adjustments',
+        'hero.point3': 'Mobile schedule access for active teams',
         'hero.previewTitle': 'LineOps ShiftRotation',
         'hero.previewMeta': 'New scheduling system',
         'hero.storeKicker': 'Download on the',
         'hero.storeName': 'App Store',
         'hero.storeAria': 'Download LineOps ShiftRotation on the App Store',
-        'hero.explore': 'Explore Ecosystem',
+        'hero.explore': 'Explore Work',
         'hero.websites': 'Website Packages',
-        'hero.systems': 'View Solutions',
+        'hero.systems': 'System Packages',
         'products.heading': 'Products, Apps & Web Projects',
         'products.intro': 'Software products and client websites built to support real operations, service businesses, and growing brands.',
         'products.appStore': 'App Store',
@@ -1490,21 +1425,19 @@
         'nav.languageSelector': 'Selector de idioma',
         'hero.brand': 'Bastida Systems',
         'hero.brandMeta': 'Software inteligente para operaciones',
-        'hero.kicker': 'Bastida Systems',
-        'hero.heading': 'Sistemas digitales para operaciones reales.',
-        'hero.body': 'Diseñamos y construimos herramientas de negocio, apps móviles, sitios web y plataformas operativas que ayudan a las empresas a trabajar mejor, moverse más rápido y crecer con propósito.',
-        'hero.point1': 'Software operativo',
-        'hero.point2': 'Apps móviles',
-        'hero.point3': 'Sitios web para clientes',
-        'hero.point4': 'Herramientas de negocio',
+        'hero.heading': 'Bastida Systems presenta LineOps ShiftRotation',
+        'hero.body': 'LineOps ShiftRotation es nuestro nuevo sistema de horarios para restaurantes y equipos de servicio que necesitan rotaciones semanales, cobertura por estación y control de turnos en móvil y escritorio.',
+        'hero.point1': 'Rotaciones inteligentes por estación y turno',
+        'hero.point2': 'Semanas guardadas, plantillas y ajustes rápidos',
+        'hero.point3': 'Horarios móviles para equipos activos',
         'hero.previewTitle': 'LineOps ShiftRotation',
         'hero.previewMeta': 'Nuevo sistema de horarios',
         'hero.storeKicker': 'Descargar en',
         'hero.storeName': 'App Store',
         'hero.storeAria': 'Descargar LineOps ShiftRotation en App Store',
-        'hero.explore': 'Explorar ecosistema',
+        'hero.explore': 'Ver Proyectos',
         'hero.websites': 'Precios Web',
-        'hero.systems': 'Ver soluciones',
+        'hero.systems': 'Precios Sistemas',
         'products.heading': 'Productos, Apps y Sitios Web',
         'products.intro': 'Productos de software y sitios web para apoyar operaciones reales, negocios de servicio y marcas en crecimiento.',
         'products.appStore': 'App Store',
@@ -1611,7 +1544,7 @@
     const applyLanguage = language => {
       activeLanguage = siteTranslations[language] ? language : 'en';
       document.documentElement.lang = activeLanguage;
-      document.title = translate('meta.title');
+      document.title = activeLanguage === 'es' ? 'Industrias | Bastida Systems' : 'Industries | Bastida Systems';
       localStorage.setItem(languageStorageKey, activeLanguage);
 
       document.querySelectorAll('[data-i18n]').forEach(element => {
@@ -1721,468 +1654,201 @@
     }
   </script>
 
-  <!-- HERO -->
-  <section class="hero-spotlight fade-in">
-    <div class="hero-light-left" aria-hidden="true"></div>
-    <div class="hero-vignette" aria-hidden="true"></div>
+  <!-- INDUSTRIES -->
+  <section id="industries" class="industries-section fade-in" aria-label="Industries served by Bastida Systems">
+    <div class="industries-interactive-layout">
+      <div class="industries-panel-row" role="tablist" aria-label="Industries served by Bastida Systems">
+        <article
+          id="industry-tab-hospitality"
+          class="industry-panel is-active"
+          data-industry-panel="hospitality"
+          role="tab"
+          tabindex="0"
+          aria-selected="true"
+          aria-controls="industry-products-hospitality"
+          style="--industry-accent: #38bdf8; --industry-tint: rgba(8, 47, 73, 0.46); --industry-image: url('https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1400&q=85'), url('img/beoflow-dashboard.jpeg');"
+        >
+          <div class="industry-panel-content">
+            <span class="industry-icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48">
+                <path d="M8 30h32"></path>
+                <path d="M12 30a12 12 0 0 1 24 0"></path>
+                <path d="M24 14v-4"></path>
+                <path d="M19 10h10"></path>
+                <path d="M11 36h26"></path>
+              </svg>
+            </span>
+            <span class="industry-number">01</span>
+            <h3 data-i18n="industries.hospitality.title">Hospitality</h3>
+            <span class="industry-line" aria-hidden="true"></span>
+            <p data-i18n="industries.hospitality.copy">
+              Technology solutions for hotels, restaurants, food & beverage, tourism, and transportation. We help businesses streamline operations and deliver better experiences.
+            </p>
+            <span class="industry-link" data-i18n="industries.learnMore">Learn more</span>
+          </div>
+        </article>
 
-    <div class="hero-grid">
-      <div class="hero-copy">
-        <h1 class="hero-title gradient-text" data-i18n="hero.heading">
-          Digital systems for real-world operations.
-        </h1>
+        <article
+          id="industry-tab-environment"
+          class="industry-panel"
+          data-industry-panel="environment"
+          role="tab"
+          tabindex="-1"
+          aria-selected="false"
+          aria-controls="industry-products-environment"
+          style="--industry-accent: #7ddc3f; --industry-tint: rgba(20, 83, 45, 0.42); --industry-image: url('https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=1400&q=85'), url('img/filtracore-dashboard.jpeg');"
+        >
+          <div class="industry-panel-content">
+            <span class="industry-icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48">
+                <path d="M24 6c8 9 12 15 12 22a12 12 0 0 1-24 0c0-7 4-13 12-22Z"></path>
+                <path d="M20 34c5-10 12-13 18-13"></path>
+                <path d="M31 23c.8 5-.8 9-4.7 12"></path>
+              </svg>
+            </span>
+            <span class="industry-number">02</span>
+            <h3 data-i18n="industries.environment.title">Environmental Care</h3>
+            <span class="industry-line" aria-hidden="true"></span>
+            <p data-i18n="industries.environment.copy">
+              Smart water filtration and monitoring solutions designed to protect resources, improve efficiency, and support a cleaner future.
+            </p>
+            <span class="industry-link" data-i18n="industries.learnMore">Learn more</span>
+          </div>
+        </article>
 
-        <p class="hero-body text-lg text-gray-400 relative z-20" data-i18n="hero.body">
-          We design and build business tools, mobile apps, websites, and operational platforms that help companies work smarter, move faster, and grow with purpose.
-        </p>
+        <article
+          id="industry-gaming"
+          class="industry-panel"
+          data-industry-panel="gaming"
+          role="tab"
+          tabindex="-1"
+          aria-selected="false"
+          aria-controls="industry-products-gaming"
+          style="--industry-accent: #a855f7; --industry-tint: rgba(58, 12, 102, 0.5); --industry-image: url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=85');"
+        >
+          <div class="industry-panel-content">
+            <span class="industry-icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48">
+                <path d="M15 18h18a8 8 0 0 1 7.7 5.8l2.2 8.1a5 5 0 0 1-8.7 4.4l-4.1-4.6H17.9l-4.1 4.6a5 5 0 0 1-8.7-4.4l2.2-8.1A8 8 0 0 1 15 18Z"></path>
+                <path d="M17 24v7"></path>
+                <path d="M13.5 27.5h7"></path>
+                <path d="M31 26h.1"></path>
+                <path d="M36 30h.1"></path>
+                <path d="M31 18v-5"></path>
+                <path d="M35 13h-8"></path>
+              </svg>
+            </span>
+            <span class="industry-number">03</span>
+            <h3 data-i18n="industries.gaming.title">Gaming & Entertainment</h3>
+            <span class="industry-line" aria-hidden="true"></span>
+            <p data-i18n="industries.gaming.copy">
+              We create immersive games and digital entertainment experiences that connect, inspire, and engage users.
+            </p>
+            <span class="industry-link" data-i18n="industries.learnMore">Learn more</span>
+          </div>
+        </article>
 
-        <ul class="hero-system-points" aria-label="Bastida Systems capabilities">
-          <li data-i18n="hero.point1">Operational software</li>
-          <li data-i18n="hero.point2">Mobile apps</li>
-          <li data-i18n="hero.point3">Client websites</li>
-          <li data-i18n="hero.point4">Business tools</li>
-        </ul>
+        <article
+          id="industry-tab-innovation"
+          class="industry-panel"
+          data-industry-panel="innovation"
+          role="tab"
+          tabindex="-1"
+          aria-selected="false"
+          aria-controls="industry-products-innovation"
+          style="--industry-accent: #22d3ee; --industry-tint: rgba(8, 27, 58, 0.48); --industry-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1400&q=85'), url('img/lineops-devices.png');"
+        >
+          <div class="industry-panel-content">
+            <span class="industry-icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48">
+                <path d="M8 38h34"></path>
+                <path d="M12 34V22h8v12"></path>
+                <path d="M24 34V16h8v18"></path>
+                <path d="M36 34V10h8v24"></path>
+                <path d="M10 16c9-1 17-5 26-12"></path>
+                <path d="M36 4h8v8"></path>
+              </svg>
+            </span>
+            <span class="industry-number">04</span>
+            <h3 data-i18n="industries.innovation.title">Innovation & Startups</h3>
+            <span class="industry-line" aria-hidden="true"></span>
+            <p data-i18n="industries.innovation.copy">
+              We build and scale innovative digital products and platforms, turning ideas into real solutions for growing businesses.
+            </p>
+            <span class="industry-link" data-i18n="industries.learnMore">Learn more</span>
+          </div>
+        </article>
+      </div>
 
-        <div class="hero-actions flex flex-wrap justify-center gap-4 relative z-20">
-          <a href="#products" class="px-6 py-3 bg-white text-black rounded-full font-medium hover:opacity-80 transition duration-300 hover:scale-105 inline-block" data-i18n="hero.explore">
-            Explore Ecosystem
-          </a>
-          <a href="systems.html" class="px-6 py-3 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105 inline-block" data-i18n="hero.systems">
-            View Solutions
-          </a>
-          <a href="#contact" class="px-6 py-3 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105 inline-block" data-i18n="nav.contact">
-            Contact
-          </a>
+      <aside class="industry-products-shell" data-industry-products-shell style="--industry-accent: #38bdf8;" aria-live="polite" hidden>
+        <div id="industry-products-hospitality" class="industry-products-panel" data-industry-products="hospitality" role="tabpanel" aria-labelledby="industry-tab-hospitality">
+          <span class="industry-products-kicker" data-i18n="industries.productsEyebrow">Selected industry</span>
+          <h3 class="industry-products-title" data-i18n="industries.hospitality.productsTitle">Hospitality products</h3>
+          <p class="industry-products-copy" data-i18n="industries.hospitality.productsCopy">Operational tools for kitchens, restaurants, hotels, and service teams.</p>
+          <div class="industry-product-list">
+            <a href="beoflow.html" class="industry-product-card">
+              <span class="industry-product-meta" data-i18n="products.beoflow.tag">Kitchen operations</span>
+              <strong>Beoflow</strong>
+              <p data-i18n="products.beoflow.body">Kitchen operations platform for menus, inventory, production, staff, service planning, and daily execution.</p>
+              <span class="industry-product-action" data-i18n="industries.openProduct">Open product</span>
+            </a>
+            <a href="https://apps.apple.com/us/app/lineops-shiftrotation/id6767958380?l=es-MX" target="_blank" rel="noopener" class="industry-product-card">
+              <span class="industry-product-meta" data-i18n="products.lineops.tag">Scheduling app</span>
+              <strong>LineOps</strong>
+              <p data-i18n="products.lineops.body">Native scheduling app for restaurants and service teams that need weekly rotations, station coverage, templates, and mobile schedule access.</p>
+              <span class="industry-product-action" data-i18n="industries.openProduct">Open product</span>
+            </a>
+          </div>
         </div>
-      </div>
 
-    </div>
-
-  </section>
-
-  <!-- PRODUCTS -->
-  <section id="products" class="px-6 md:px-8 py-24 border-t border-gray-800 fade-in">
-    <div class="max-w-7xl mx-auto">
-      <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-12">
-        <h2 class="text-3xl md:text-4xl font-semibold" data-i18n="products.heading">Products, Apps & Web Projects</h2>
-        <p class="text-gray-400 max-w-2xl leading-7" data-i18n="products.intro">
-          Software products and client websites built to support real operations, service businesses, and growing brands.
-        </p>
-      </div>
-
-      <div class="grid gap-6 lg:grid-cols-2 xl:grid-cols-4">
-        <article class="product-panel">
-          <div class="relative z-10 p-6 md:p-8">
-            <div class="flex flex-wrap items-start justify-between gap-4 mb-7">
-              <div class="flex items-center gap-4">
-                <img src="img/logobeoflow.png" alt="Beoflow Logo" class="h-10 w-12 object-contain">
-                <div>
-                  <h3 class="text-2xl md:text-3xl font-semibold">Beoflow</h3>
-                </div>
-              </div>
-              <span class="product-tag" data-i18n="products.beoflow.tag">Kitchen operations</span>
-            </div>
-
-            <p class="text-gray-300 leading-7" data-i18n="products.beoflow.body">
-              Kitchen operations platform for menus, inventory, production, staff, service planning, and daily execution.
-            </p>
-
-            <ul class="product-points" aria-label="Beoflow features">
-              <li data-i18n="products.beoflow.point1">Inventory, recipes, and menu control</li>
-              <li data-i18n="products.beoflow.point2">Service planning and production visibility</li>
-              <li data-i18n="products.beoflow.point3">Staff schedules, stations, and reports</li>
-            </ul>
-
-            <div class="flex flex-wrap gap-3">
-              <a href="beoflow.html" class="px-5 py-2 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105 inline-block" data-i18n="products.learnMore">
-                Learn More
-              </a>
-              <a href="beoflow-app.html" class="px-5 py-2 bg-white text-black rounded-full font-medium hover:opacity-80 transition duration-300 hover:scale-105 inline-block" data-i18n="products.openLogin">
-                Open Login
-              </a>
-            </div>
+        <div id="industry-products-environment" class="industry-products-panel" data-industry-products="environment" role="tabpanel" aria-labelledby="industry-tab-environment" hidden>
+          <span class="industry-products-kicker" data-i18n="industries.productsEyebrow">Selected industry</span>
+          <h3 class="industry-products-title" data-i18n="industries.environment.productsTitle">Environmental Care products</h3>
+          <p class="industry-products-copy" data-i18n="industries.environment.productsCopy">Water filtration intelligence and monitoring tools for cleaner operations.</p>
+          <div class="industry-product-list">
+            <a href="filtracore.html" class="industry-product-card">
+              <span class="industry-product-meta" data-i18n="products.filtracore.tag">Filter intelligence</span>
+              <strong>FiltraCore</strong>
+              <p data-i18n="products.filtracore.body">Filtration operations platform for casinos, restaurants, and service teams. Track PSI, filter lifespan, maintenance, and stock readiness in real time.</p>
+              <span class="industry-product-action" data-i18n="industries.openProduct">Open product</span>
+            </a>
           </div>
-
-          <div class="product-preview">
-            <img src="img/beoflow-dashboard.jpeg" alt="Beoflow dashboard preview">
-            <div class="preview-caption">
-              <span data-i18n="products.beoflow.preview">Kitchen command center</span>
-              <span data-i18n="products.previewStatus">Live workflow</span>
-            </div>
-          </div>
-        </article>
-
-        <article class="product-panel">
-          <div class="relative z-10 p-6 md:p-8">
-            <div class="flex flex-wrap items-start justify-between gap-4 mb-7">
-              <div class="flex items-center gap-4">
-                <img src="img/LOGO_FILTRACOREXCODE.png" alt="FiltraCore Logo" class="h-10 w-10 object-contain">
-                <div>
-                  <h3 class="text-2xl md:text-3xl font-semibold">FiltraCore</h3>
-                </div>
-              </div>
-              <span class="product-tag" data-i18n="products.filtracore.tag">Filter intelligence</span>
-            </div>
-
-            <p class="text-gray-300 leading-7" data-i18n="products.filtracore.body">
-              Filtration operations platform for casinos, restaurants, and service teams. Track PSI, filter lifespan, maintenance, and stock readiness in real time.
-            </p>
-
-            <ul class="product-points" aria-label="FiltraCore features">
-              <li data-i18n="products.filtracore.point1">PSI monitoring and pressure history</li>
-              <li data-i18n="products.filtracore.point2">Filter lifecycle and due dates</li>
-              <li data-i18n="products.filtracore.point3">Maintenance records and stock readiness</li>
-            </ul>
-
-            <div class="flex flex-wrap gap-3">
-              <a href="filtracore.html" class="px-5 py-2 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105 inline-block" data-i18n="products.learnMore">
-                Learn More
-              </a>
-              <a href="filtracore-app.html" class="px-5 py-2 bg-white text-black rounded-full font-medium hover:opacity-80 transition duration-300 hover:scale-105 inline-block" data-i18n="products.openLogin">
-                Open Login
-              </a>
-              <a href="https://apps.apple.com/us/app/filtracore/id6767891950" target="_blank" rel="noopener" class="product-app-link px-5 py-2 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105" aria-label="Download FiltraCore on the App Store" data-i18n-aria-label="products.filtracore.appStoreAria">
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                  <path d="M16.6 13.05c-.02-2.2 1.8-3.25 1.88-3.3-1.03-1.5-2.63-1.71-3.19-1.73-1.35-.14-2.64.8-3.32.8-.69 0-1.74-.78-2.86-.76-1.47.02-2.83.86-3.59 2.18-1.53 2.65-.39 6.58 1.1 8.74.73 1.05 1.6 2.23 2.74 2.19 1.1-.04 1.51-.71 2.84-.71 1.32 0 1.7.71 2.86.69 1.18-.02 1.93-1.07 2.65-2.12.84-1.22 1.18-2.4 1.2-2.46-.03-.01-2.29-.88-2.31-3.52ZM14.4 6.6c.6-.72 1-1.72.89-2.72-.86.03-1.9.57-2.52 1.29-.55.64-1.03 1.66-.9 2.64.96.07 1.94-.49 2.53-1.21Z"></path>
-                </svg>
-                <span data-i18n="products.appStore">App Store</span>
-              </a>
-            </div>
-          </div>
-
-          <div class="product-preview">
-            <img src="img/filtracore-dashboard.jpeg" alt="FiltraCore dashboard preview">
-            <div class="preview-caption">
-              <span data-i18n="products.filtracore.preview">Filter operations view</span>
-              <span data-i18n="products.previewStatus">Live workflow</span>
-            </div>
-          </div>
-        </article>
-
-        <article class="product-panel product-panel--lineops">
-          <div class="relative z-10 p-6 md:p-8">
-            <div class="flex flex-wrap items-start justify-between gap-4 mb-7">
-              <div class="flex items-center gap-4">
-                <img src="img/linopsmark.png" alt="LineOps Logo" class="product-mark">
-                <div>
-                  <h3 class="text-2xl md:text-3xl font-semibold">LineOps</h3>
-                </div>
-              </div>
-              <span class="product-tag" data-i18n="products.lineops.tag">Scheduling app</span>
-            </div>
-
-            <p class="text-gray-300 leading-7" data-i18n="products.lineops.body">
-              Native scheduling app for restaurants and service teams that need weekly rotations, station coverage, templates, and mobile schedule access.
-            </p>
-
-            <ul class="product-points" aria-label="LineOps features">
-              <li data-i18n="products.lineops.point1">Weekly shift rotation planning</li>
-              <li data-i18n="products.lineops.point2">Station coverage and saved templates</li>
-              <li data-i18n="products.lineops.point3">Published on the App Store</li>
-            </ul>
-
-            <div class="flex flex-wrap gap-3">
-              <a href="https://apps.apple.com/us/app/lineops-shiftrotation/id6767958380?l=es-MX" target="_blank" rel="noopener" class="product-app-link px-5 py-2 bg-white text-black rounded-full font-medium hover:opacity-80 transition duration-300 hover:scale-105" aria-label="Download LineOps ShiftRotation on the App Store" data-i18n-aria-label="products.lineops.appStoreAria">
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                  <path d="M16.6 13.05c-.02-2.2 1.8-3.25 1.88-3.3-1.03-1.5-2.63-1.71-3.19-1.73-1.35-.14-2.64.8-3.32.8-.69 0-1.74-.78-2.86-.76-1.47.02-2.83.86-3.59 2.18-1.53 2.65-.39 6.58 1.1 8.74.73 1.05 1.6 2.23 2.74 2.19 1.1-.04 1.51-.71 2.84-.71 1.32 0 1.7.71 2.86.69 1.18-.02 1.93-1.07 2.65-2.12.84-1.22 1.18-2.4 1.2-2.46-.03-.01-2.29-.88-2.31-3.52ZM14.4 6.6c.6-.72 1-1.72.89-2.72-.86.03-1.9.57-2.52 1.29-.55.64-1.03 1.66-.9 2.64.96.07 1.94-.49 2.53-1.21Z"></path>
-                </svg>
-                <span data-i18n="products.appStore">App Store</span>
-              </a>
-            </div>
-          </div>
-
-          <div class="product-preview product-preview--contain">
-            <img src="img/lineops-devices.png" alt="LineOps ShiftRotation app preview on phone and tablet">
-            <div class="preview-caption">
-              <span data-i18n="products.lineops.preview">Shift scheduling app</span>
-              <span data-i18n="products.appStatus">Published app</span>
-            </div>
-          </div>
-        </article>
-
-        <article class="product-panel product-panel--estrattiva">
-          <div class="relative z-10 p-6 md:p-8">
-            <div class="flex flex-wrap items-start justify-between gap-4 mb-7">
-              <div class="flex items-center gap-4">
-                <img src="img/estrattiva-mark.png" alt="Estrattiva Logo" class="product-mark">
-                <div>
-                  <h3 class="text-2xl md:text-3xl font-semibold">Estrattiva</h3>
-                </div>
-              </div>
-              <span class="product-tag" data-i18n="products.estrattiva.tag">Client website</span>
-            </div>
-
-            <p class="text-gray-300 leading-7" data-i18n="products.estrattiva.body">
-              Informational website for professional consulting and advisory services, with responsive layout, branded welcome screen, contact cards, email, phone, and WhatsApp.
-            </p>
-
-            <ul class="product-points" aria-label="Estrattiva features">
-              <li data-i18n="products.estrattiva.point1">Responsive business landing page</li>
-              <li data-i18n="products.estrattiva.point2">Branded welcome experience</li>
-              <li data-i18n="products.estrattiva.point3">Direct contact through phone, email, and WhatsApp</li>
-            </ul>
-
-            <div class="flex flex-wrap gap-3">
-              <a href="https://bastidadavid.github.io/ESTRATIVA/" target="_blank" rel="noopener" class="px-5 py-2 bg-white text-black rounded-full font-medium hover:opacity-80 transition duration-300 hover:scale-105 inline-block" data-i18n="products.visitSite">
-                Visit Site
-              </a>
-              <a href="https://github.com/BastidaDavid/ESTRATIVA" target="_blank" rel="noopener" class="px-5 py-2 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105 inline-block" data-i18n="products.viewCode">
-                View Code
-              </a>
-            </div>
-          </div>
-
-          <div class="product-preview product-preview--center">
-            <img src="img/estrattiva-preview.png" alt="Estrattiva website preview">
-            <div class="preview-caption">
-              <span data-i18n="products.estrattiva.preview">Consulting website</span>
-              <span data-i18n="products.publishedStatus">Published site</span>
-            </div>
-          </div>
-        </article>
-
-        <article class="product-panel product-panel--tallador">
-          <div class="relative z-10 p-6 md:p-8">
-            <div class="flex flex-wrap items-start justify-between gap-4 mb-7">
-              <div class="flex items-center gap-4">
-                <span class="product-mark product-mark--tallador" aria-hidden="true">MJ</span>
-                <div>
-                  <h3 class="text-2xl md:text-3xl font-semibold">Tallador de Sueños</h3>
-                </div>
-              </div>
-              <span class="product-tag" data-i18n="products.tallador.tag">Art e-commerce</span>
-            </div>
-
-            <p class="text-gray-300 leading-7" data-i18n="products.tallador.body">
-              Premium e-commerce website for a Mexican wood-carving studio, presenting hand-painted sculptures, collections, custom commissions, cart, checkout, and contact flows.
-            </p>
-
-            <ul class="product-points" aria-label="Tallador de Sueños features">
-              <li data-i18n="products.tallador.point1">Collection storefront and product pages</li>
-              <li data-i18n="products.tallador.point2">Custom commission storytelling</li>
-              <li data-i18n="products.tallador.point3">Cart, checkout, and contact paths</li>
-            </ul>
-
-            <div class="flex flex-wrap gap-3">
-              <a href="https://tallador-de-suenos.onrender.com/" target="_blank" rel="noopener" class="px-5 py-2 bg-white text-black rounded-full font-medium hover:opacity-80 transition duration-300 hover:scale-105 inline-block" data-i18n="products.visitSite">
-                Visit Site
-              </a>
-              <a href="https://github.com/BastidaDavid/tallador-de-suenos" target="_blank" rel="noopener" class="px-5 py-2 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105 inline-block" data-i18n="products.viewCode">
-                View Code
-              </a>
-            </div>
-          </div>
-
-          <div class="product-preview product-preview--center">
-            <img src="img/tallador-preview.jpg" alt="Tallador de Sueños website preview">
-            <div class="preview-caption">
-              <span data-i18n="products.tallador.preview">Artisan e-commerce</span>
-              <span data-i18n="products.publishedStatus">Published site</span>
-            </div>
-          </div>
-        </article>
-
-        <article class="product-panel product-panel--cocofilms">
-          <div class="relative z-10 p-6 md:p-8">
-            <div class="flex flex-wrap items-start justify-between gap-4 mb-7">
-              <div class="flex items-center gap-4">
-                <span class="product-mark product-mark--cocofilms" aria-hidden="true">CF</span>
-                <div>
-                  <h3 class="text-2xl md:text-3xl font-semibold">CocoFilms</h3>
-                </div>
-              </div>
-              <span class="product-tag" data-i18n="products.cocofilms.tag">Film studio website</span>
-            </div>
-
-            <p class="text-gray-300 leading-7" data-i18n="products.cocofilms.body">
-              Premium website for CocoFilms, a photography and cinematic video production studio with a luxury dark portfolio experience.
-            </p>
-
-            <ul class="product-points" aria-label="CocoFilms features">
-              <li data-i18n="products.cocofilms.point1">Cinematic hero and portfolio gallery</li>
-              <li data-i18n="products.cocofilms.point2">Booking/contact flow for sessions</li>
-              <li data-i18n="products.cocofilms.point3">Responsive luxury visual system</li>
-            </ul>
-
-            <div class="flex flex-wrap gap-3">
-              <a href="https://bastidadavid.github.io/Cocofilms/" target="_blank" rel="noopener" class="px-5 py-2 bg-white text-black rounded-full font-medium hover:opacity-80 transition duration-300 hover:scale-105 inline-block" data-i18n="products.visitSite">
-                Visit Site
-              </a>
-            </div>
-          </div>
-
-          <div class="product-preview product-preview--center">
-            <img src="img/cocofilms-preview.jpg" alt="CocoFilms cinematic website preview">
-            <div class="preview-caption">
-              <span data-i18n="products.cocofilms.preview">Cinematic production site</span>
-              <span data-i18n="products.publishedStatus">Published site</span>
-            </div>
-          </div>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <!-- COMPANIES & COLLABORATIONS -->
-  <section id="collaborations" class="px-6 md:px-8 py-24 border-t border-gray-800 fade-in">
-    <div class="max-w-7xl mx-auto">
-      <div class="flex flex-col gap-5 md:flex-row md:items-end md:justify-between mb-12">
-        <div>
-          <h2 class="text-3xl md:text-4xl font-semibold" data-i18n="collab.heading">Companies & Collaborations</h2>
-          <p class="text-gray-400 max-w-3xl leading-7 mt-4" data-i18n="collab.intro">
-            Companies and founders working with Bastida Systems across operations software, client websites, scheduling, e-commerce, and production brands.
-          </p>
         </div>
-        <a href="portal.html" class="px-5 py-2 bg-white text-black rounded-full font-medium hover:opacity-80 transition duration-300 hover:scale-105 inline-block" data-i18n="collab.portalCta">
-          Open Client Portal
-        </a>
-      </div>
 
-      <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-        <article class="collaboration-card p-6">
-          <div class="flex items-start justify-between gap-4 mb-7">
-            <div class="flex items-center gap-4">
-              <img src="img/LOGO_FILTRACOREXCODE.png" alt="FiltraCore logo" class="collaboration-mark">
-              <div>
-                <h3 class="text-2xl font-semibold">FiltraCore</h3>
-                <span class="text-sm text-gray-500" data-i18n="collab.ownerLabel">CEO / Owner</span>
-              </div>
-            </div>
-            <span class="collaboration-status" data-i18n="collab.status.activePlatform">Active platform</span>
+        <div id="industry-products-gaming" class="industry-products-panel" data-industry-products="gaming" role="tabpanel" aria-labelledby="industry-gaming" hidden>
+          <span class="industry-products-kicker" data-i18n="industries.productsEyebrow">Selected industry</span>
+          <h3 class="industry-products-title" data-i18n="industries.gaming.productsTitle">Gaming & Entertainment products</h3>
+          <p class="industry-products-copy" data-i18n="industries.gaming.productsCopy">Digital entertainment and visual experience projects already in the Bastida Systems portfolio.</p>
+          <div class="industry-product-list">
+            <a href="https://bastidadavid.github.io/Cocofilms/" target="_blank" rel="noopener" class="industry-product-card">
+              <span class="industry-product-meta" data-i18n="products.cocofilms.tag">Film studio website</span>
+              <strong>CocoFilms</strong>
+              <p data-i18n="products.cocofilms.body">Premium website for CocoFilms, a photography and cinematic video production studio with a luxury dark portfolio experience.</p>
+              <span class="industry-product-action" data-i18n="industries.openProduct">Open product</span>
+            </a>
           </div>
-          <div class="collaboration-owner mb-5">
-            <strong class="text-white">David Bastida</strong>
-          </div>
-          <p class="text-gray-300 leading-7 mb-6" data-i18n="collab.filtracore.description">
-            Filtration operations platform for PSI monitoring, filter lifecycle tracking, maintenance readiness, and reporting.
-          </p>
-          <a href="filtracore.html" class="collaboration-link" data-i18n="collab.website">Website</a>
-        </article>
+        </div>
 
-        <article class="collaboration-card p-6">
-          <div class="flex items-start justify-between gap-4 mb-7">
-            <div class="flex items-center gap-4">
-              <img src="img/logobeoflow.png" alt="BEOFlow logo" class="collaboration-mark">
-              <div>
-                <h3 class="text-2xl font-semibold">BEOFlow</h3>
-                <span class="text-sm text-gray-500" data-i18n="collab.ownerLabel">CEO / Owner</span>
-              </div>
-            </div>
-            <span class="collaboration-status" data-i18n="collab.status.activePlatform">Active platform</span>
+        <div id="industry-products-innovation" class="industry-products-panel" data-industry-products="innovation" role="tabpanel" aria-labelledby="industry-tab-innovation" hidden>
+          <span class="industry-products-kicker" data-i18n="industries.productsEyebrow">Selected industry</span>
+          <h3 class="industry-products-title" data-i18n="industries.innovation.productsTitle">Innovation & Startups products</h3>
+          <p class="industry-products-copy" data-i18n="industries.innovation.productsCopy">Digital platforms and modern web products for growing brands and emerging ideas.</p>
+          <div class="industry-product-list">
+            <a href="https://bastidadavid.github.io/ESTRATIVA/" target="_blank" rel="noopener" class="industry-product-card">
+              <span class="industry-product-meta" data-i18n="products.estrattiva.tag">Client website</span>
+              <strong>Estrattiva</strong>
+              <p data-i18n="products.estrattiva.body">Informational website for professional consulting and advisory services, with responsive layout, branded welcome screen, contact cards, email, phone, and WhatsApp.</p>
+              <span class="industry-product-action" data-i18n="industries.openProduct">Open product</span>
+            </a>
+            <a href="https://tallador-de-suenos.onrender.com/" target="_blank" rel="noopener" class="industry-product-card">
+              <span class="industry-product-meta" data-i18n="products.tallador.tag">Art e-commerce</span>
+              <strong>Tallador de Sueños</strong>
+              <p data-i18n="products.tallador.body">Premium e-commerce website for a Mexican wood-carving studio, presenting hand-painted sculptures, collections, custom commissions, cart, checkout, and contact flows.</p>
+              <span class="industry-product-action" data-i18n="industries.openProduct">Open product</span>
+            </a>
           </div>
-          <div class="collaboration-owner mb-5">
-            <strong class="text-white">Rodrigo Bastida</strong>
-          </div>
-          <p class="text-gray-300 leading-7 mb-6" data-i18n="collab.beoflow.description">
-            Kitchen operations platform for menu control, inventory, production planning, staff coordination, and service execution.
-          </p>
-          <a href="beoflow.html" class="collaboration-link" data-i18n="collab.website">Website</a>
-        </article>
-
-        <article class="collaboration-card p-6">
-          <div class="flex items-start justify-between gap-4 mb-7">
-            <div class="flex items-center gap-4">
-              <img src="img/linopsmark.png" alt="LineOps logo" class="collaboration-mark">
-              <div>
-                <h3 class="text-2xl font-semibold">LineOps</h3>
-                <span class="text-sm text-gray-500" data-i18n="collab.ownerLabel">CEO / Owner</span>
-              </div>
-            </div>
-            <span class="collaboration-status" data-i18n="collab.status.publishedApp">Published app</span>
-          </div>
-          <div class="collaboration-owner mb-5">
-            <strong class="text-white">David Bastida</strong>
-          </div>
-          <p class="text-gray-300 leading-7 mb-6" data-i18n="collab.lineops.description">
-            Scheduling app for shift rotations, station coverage, weekly templates, and mobile schedule access.
-          </p>
-          <a href="https://apps.apple.com/us/app/lineops-shiftrotation/id6767958380?l=es-MX" target="_blank" rel="noopener" class="collaboration-link" data-i18n="collab.website">Website</a>
-        </article>
-
-        <article class="collaboration-card p-6">
-          <div class="flex items-start justify-between gap-4 mb-7">
-            <div class="flex items-center gap-4">
-              <img src="img/estrattiva-mark.png" alt="Estrativa logo" class="collaboration-mark">
-              <div>
-                <h3 class="text-2xl font-semibold">Estrativa</h3>
-                <span class="text-sm text-gray-500" data-i18n="collab.ownerLabel">CEO / Owner</span>
-              </div>
-            </div>
-            <span class="collaboration-status" data-i18n="collab.status.publishedSite">Published site</span>
-          </div>
-          <div class="collaboration-owner mb-5">
-            <strong class="text-white">Blanca Gordon</strong>
-          </div>
-          <p class="text-gray-300 leading-7 mb-6" data-i18n="collab.estrativa.description">
-            Professional consulting and advisory collaboration with a responsive public website and direct contact experience.
-          </p>
-          <a href="https://bastidadavid.github.io/ESTRATIVA/" target="_blank" rel="noopener" class="collaboration-link" data-i18n="collab.website">Website</a>
-        </article>
-
-        <article class="collaboration-card p-6">
-          <div class="flex items-start justify-between gap-4 mb-7">
-            <div class="flex items-center gap-4">
-              <span class="collaboration-mark" aria-hidden="true">CF</span>
-              <div>
-                <h3 class="text-2xl font-semibold">CocoFilms</h3>
-                <span class="text-sm text-gray-500" data-i18n="collab.ownerLabel">CEO / Owner</span>
-              </div>
-            </div>
-            <span class="collaboration-status" data-i18n="collab.status.publishedSite">Published site</span>
-          </div>
-          <div class="collaboration-owner mb-5">
-            <strong class="text-white">Rafael Amezquita</strong>
-          </div>
-          <p class="text-gray-300 leading-7 mb-6" data-i18n="collab.cocofilms.description">
-            Photography and cinematic video production studio presented through a premium dark portfolio website.
-          </p>
-          <a href="https://bastidadavid.github.io/Cocofilms/" target="_blank" rel="noopener" class="collaboration-link" data-i18n="collab.website">Website</a>
-        </article>
-
-        <article class="collaboration-card p-6">
-          <div class="flex items-start justify-between gap-4 mb-7">
-            <div class="flex items-center gap-4">
-              <span class="collaboration-mark" aria-hidden="true">TS</span>
-              <div>
-                <h3 class="text-2xl font-semibold">Tallador de Sueños</h3>
-                <span class="text-sm text-gray-500" data-i18n="collab.ownerLabel">CEO / Owner</span>
-              </div>
-            </div>
-            <span class="collaboration-status" data-i18n="collab.status.publishedSite">Published site</span>
-          </div>
-          <div class="collaboration-owner mb-5">
-            <strong class="text-white">Jiménez Isaías</strong>
-          </div>
-          <p class="text-gray-300 leading-7 mb-6" data-i18n="collab.tallador.description">
-            Artisan e-commerce collaboration for hand-painted wood sculptures, custom commissions, cart, checkout, and contact flow.
-          </p>
-          <a href="https://tallador-de-suenos.onrender.com/" target="_blank" rel="noopener" class="collaboration-link" data-i18n="collab.website">Website</a>
-        </article>
-      </div>
-
-      <div class="collaboration-note mt-8 p-6 md:p-8">
-        <h3 class="text-xl font-semibold mb-3" data-i18n="collab.privateNoteTitle">Private dashboard details stay behind login.</h3>
-        <p class="text-gray-400 leading-7 max-w-4xl" data-i18n="collab.privateNoteBody">
-          The public website shows only the ecosystem. Each company dashboard is available only to authorized owners inside the client portal.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- CONTACT -->
-  <section id="contact" class="px-8 py-20 border-t border-gray-800 fade-in">
-    <h2 class="text-3xl font-semibold mb-8" data-i18n="contact.heading">Contact</h2>
-    <p class="text-gray-400 max-w-2xl leading-8 mb-6" data-i18n="contact.body">
-      Interested in a product, a client website, or a custom intelligent system for your operation? Let’s connect.
-    </p>
-    <div class="flex flex-col items-start gap-4">
-      <a href="mailto:bastidasystems@gmail.com" class="inline-block px-6 py-3 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105">
-        bastidasystems@gmail.com
-      </a>
-
-      <a href="tel:+17020000000" class="inline-block px-6 py-3 border border-gray-600 rounded-full hover:border-white transition duration-300 hover:scale-105">
-        +1 (702) 661-7149
-      </a>
+        </div>
+      </aside>
     </div>
   </section>
 
