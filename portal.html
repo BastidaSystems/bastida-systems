@@ -222,6 +222,30 @@
       min-width: 0;
     }
 
+    .language-switcher {
+      display: inline-grid;
+      gap: 4px;
+      min-width: 92px;
+    }
+
+    .language-select {
+      min-height: 38px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      padding: 0 10px;
+      box-shadow: var(--shadow-soft);
+      font-size: 13px;
+      font-weight: 800;
+      outline: none;
+    }
+
+    .language-select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1);
+    }
+
     .workspace-switcher {
       display: grid;
       grid-template-columns: minmax(170px, 240px);
@@ -1732,6 +1756,15 @@
         width: 100%;
       }
 
+      .language-switcher {
+        order: 3;
+        width: 100%;
+      }
+
+      .language-select {
+        width: 100%;
+      }
+
       .profile-meta {
         text-align: left;
       }
@@ -1789,8 +1822,8 @@
   <div id="app">
     <div class="loading-state">
       <div>
-        <p class="empty-title">Loading Bastida OS</p>
-        <p class="empty-copy">Validating your Supabase session.</p>
+        <p class="empty-title">Loading Bastida OS / Cargando Bastida OS</p>
+        <p class="empty-copy">Validating your Supabase session / Validando tu sesión de Supabase.</p>
       </div>
     </div>
   </div>
@@ -1800,23 +1833,150 @@
       const app = document.getElementById('app');
       const authRedirects = window.BASTIDA_AUTH_REDIRECTS || {};
       const config = window.BASTIDA_SUPABASE_CONFIG || {};
+      const portalLanguageStorageKey = 'bastida-portal-language';
+      const portalTranslations = {
+        en: {
+          'auth.acceptInvitation': 'Accept invitation',
+          'auth.copy': 'Bastida OS is private. Sign in with your Supabase account or accept your invitation before opening the portal.',
+          'auth.login': 'Open login',
+          'auth.required': 'Sign in required',
+          'auth.user': 'Authenticated user',
+          'common.cancel': 'Cancel',
+          'common.close': 'Close',
+          'common.done': 'Done',
+          'common.retry': 'Retry',
+          'common.refresh': 'Refresh',
+          'common.logout': 'Logout',
+          'dashboard.allCopy': 'Company-level operating summary across every project, collaborator, deliverable, document, and payment record visible to this account.',
+          'dashboard.allTitle': 'All Bastida Systems Overview',
+          'dashboard.managedCopy': 'Aggregated summary across every workspace you can access, with team metrics only for projects you can manage.',
+          'dashboard.managedScope': 'Managed scope',
+          'dashboard.myCopy': 'Personal operating summary across your assigned projects, approved hours, earnings, deliverables, documents, and recent activity.',
+          'dashboard.myTitle': 'My Overview',
+          'dashboard.personalScope': 'Personal scope',
+          'dashboard.projectCopy': 'Dashboard filtered to {project} with metrics scoped to your role and permissions.',
+          'dashboard.projectFallback': 'Project',
+          'dashboard.projectSuffix': 'Dashboard',
+          'dashboard.selectedProject': 'the selected project',
+          'footer.supabase': 'Real-time operating data from Supabase. No local records are generated in the browser.',
+          'language.label': 'Language',
+          'language.selector': 'Portal language',
+          'language.english': 'English',
+          'language.spanish': 'Spanish',
+          'nav.selectSection': 'Select section',
+          'portal.errorTitle': 'Portal is not ready',
+          'portal.loadingCopy': 'Validating your Supabase session.',
+          'portal.loadingTitle': 'Loading Bastida OS',
+          'portal.subtitle': 'Operations portal',
+          'role.contractor': 'Contractor',
+          'role.core_collaborator': 'Core Collaborator',
+          'role.designer': 'Designer',
+          'role.developer': 'Developer',
+          'role.founder': 'Founder',
+          'role.member': 'Member',
+          'role.owner': 'Owner',
+          'role.overview': 'Overview',
+          'workspace.active': 'Active workspace',
+          'workspace.allBastida': 'All Bastida Systems',
+          'workspace.allMine': 'All My Workspaces',
+          'workspace.allProjects': 'All Projects',
+          'workspace.label': 'Workspace',
+          'workspace.mine': 'My Overview',
+          'workspace.select': 'Select workspace',
+          'view.dashboard': 'Dashboard',
+          'view.people': 'Team',
+          'view.projects': 'Projects',
+          'view.organization': 'Organization Tree',
+          'view.documents': 'Documents',
+          'view.deliverables': 'Deliverables',
+          'view.workLogs': 'Work Logs',
+          'view.payments': 'Payments'
+        },
+        es: {
+          'auth.acceptInvitation': 'Aceptar invitación',
+          'auth.copy': 'Bastida OS es privado. Inicia sesión con tu cuenta de Supabase o acepta tu invitación antes de abrir el portal.',
+          'auth.login': 'Abrir login',
+          'auth.required': 'Inicio de sesión requerido',
+          'auth.user': 'Usuario autenticado',
+          'common.cancel': 'Cancelar',
+          'common.close': 'Cerrar',
+          'common.done': 'Listo',
+          'common.retry': 'Reintentar',
+          'common.refresh': 'Actualizar',
+          'common.logout': 'Cerrar sesión',
+          'dashboard.allCopy': 'Resumen operativo de la empresa en todos los proyectos, colaboradores, entregables, documentos y pagos visibles para esta cuenta.',
+          'dashboard.allTitle': 'Vista general de Bastida Systems',
+          'dashboard.managedCopy': 'Resumen agregado de todos los espacios a los que tienes acceso, con métricas de equipo solo en proyectos que puedes administrar.',
+          'dashboard.managedScope': 'Alcance administrado',
+          'dashboard.myCopy': 'Resumen operativo personal de tus proyectos asignados, horas aprobadas, ganancias, entregables, documentos y actividad reciente.',
+          'dashboard.myTitle': 'Mi vista general',
+          'dashboard.personalScope': 'Alcance personal',
+          'dashboard.projectCopy': 'Dashboard filtrado a {project}, con métricas limitadas a tu rol y permisos.',
+          'dashboard.projectFallback': 'Proyecto',
+          'dashboard.projectSuffix': 'Dashboard',
+          'dashboard.selectedProject': 'el proyecto seleccionado',
+          'footer.supabase': 'Datos operativos en tiempo real desde Supabase. No se generan registros locales en el navegador.',
+          'language.label': 'Idioma',
+          'language.selector': 'Idioma del portal',
+          'language.english': 'Inglés',
+          'language.spanish': 'Español',
+          'nav.selectSection': 'Seleccionar sección',
+          'portal.errorTitle': 'El portal no está listo',
+          'portal.loadingCopy': 'Validando tu sesión de Supabase.',
+          'portal.loadingTitle': 'Cargando Bastida OS',
+          'portal.subtitle': 'Portal de operaciones',
+          'role.contractor': 'Contratista',
+          'role.core_collaborator': 'Colaborador principal',
+          'role.designer': 'Diseñador',
+          'role.developer': 'Desarrollador',
+          'role.founder': 'Fundador',
+          'role.member': 'Miembro',
+          'role.owner': 'Owner',
+          'role.overview': 'Vista general',
+          'workspace.active': 'Espacio activo',
+          'workspace.allBastida': 'Todo Bastida Systems',
+          'workspace.allMine': 'Todos mis espacios',
+          'workspace.allProjects': 'Todos los proyectos',
+          'workspace.label': 'Espacio',
+          'workspace.mine': 'Mi vista general',
+          'workspace.select': 'Seleccionar espacio',
+          'view.dashboard': 'Dashboard',
+          'view.people': 'Equipo',
+          'view.projects': 'Proyectos',
+          'view.organization': 'Árbol de organización',
+          'view.documents': 'Documentos',
+          'view.deliverables': 'Entregables',
+          'view.workLogs': 'Registros de trabajo',
+          'view.payments': 'Pagos'
+        }
+      };
+      let activePortalLanguage = localStorage.getItem(portalLanguageStorageKey) || (navigator.language.startsWith('es') ? 'es' : 'en');
+
+      if (!portalTranslations[activePortalLanguage]) {
+        activePortalLanguage = 'en';
+      }
+
+      function t(key) {
+        return portalTranslations[activePortalLanguage][key] || portalTranslations.en[key] || key;
+      }
+
       const viewLabels = {
-        dashboard: 'Dashboard',
-        people: 'Team',
-        projects: 'Projects',
-        organization: 'Organization Tree',
-        documents: 'Documents',
-        deliverables: 'Deliverables',
-        workLogs: 'Work Logs',
-        payments: 'Payments'
+        dashboard: t('view.dashboard'),
+        people: t('view.people'),
+        projects: t('view.projects'),
+        organization: t('view.organization'),
+        documents: t('view.documents'),
+        deliverables: t('view.deliverables'),
+        workLogs: t('view.workLogs'),
+        payments: t('view.payments')
       };
       const roleLabels = {
-        founder: 'Founder',
-        owner: 'Owner',
-        core_collaborator: 'Core Collaborator',
-        designer: 'Designer',
-        developer: 'Developer',
-        contractor: 'Contractor'
+        founder: t('role.founder'),
+        owner: t('role.owner'),
+        core_collaborator: t('role.core_collaborator'),
+        designer: t('role.designer'),
+        developer: t('role.developer'),
+        contractor: t('role.contractor')
       };
       const state = {
         client: null,
@@ -1941,6 +2101,26 @@
         day: 'numeric'
       });
       const TABLE_PAGE_SIZE = 8;
+
+      function syncPortalLanguageLabels() {
+        document.documentElement.lang = activePortalLanguage;
+        viewLabels.dashboard = t('view.dashboard');
+        viewLabels.people = t('view.people');
+        viewLabels.projects = t('view.projects');
+        viewLabels.organization = t('view.organization');
+        viewLabels.documents = t('view.documents');
+        viewLabels.deliverables = t('view.deliverables');
+        viewLabels.workLogs = t('view.workLogs');
+        viewLabels.payments = t('view.payments');
+        roleLabels.founder = t('role.founder');
+        roleLabels.owner = t('role.owner');
+        roleLabels.core_collaborator = t('role.core_collaborator');
+        roleLabels.designer = t('role.designer');
+        roleLabels.developer = t('role.developer');
+        roleLabels.contractor = t('role.contractor');
+      }
+
+      syncPortalLanguageLabels();
 
       init();
 
@@ -2092,36 +2272,42 @@
       }
 
       function renderSignedOut() {
+        syncPortalLanguageLabels();
         app.innerHTML = `
           <main class="auth-wall">
             <section class="auth-panel" aria-labelledby="auth-title">
               <p class="page-kicker">Bastida Systems</p>
-              <h1 id="auth-title">Sign in required</h1>
-              <p>Bastida OS is private. Sign in with your Supabase account or accept your invitation before opening the portal.</p>
+              <h1 id="auth-title">${escapeHtml(t('auth.required'))}</h1>
+              <p>${escapeHtml(t('auth.copy'))}</p>
               <div class="auth-actions">
-                <a class="button button-primary" href="${escapeAttr(authRedirects.login || 'login.html')}">Open login</a>
-                <a class="button" href="${escapeAttr(authRedirects.setPassword || 'set-password.html')}">Accept invitation</a>
+                <a class="button button-primary" href="${escapeAttr(authRedirects.login || 'login.html')}">${escapeHtml(t('auth.login'))}</a>
+                <a class="button" href="${escapeAttr(authRedirects.setPassword || 'set-password.html')}">${escapeHtml(t('auth.acceptInvitation'))}</a>
+                ${renderLanguageSwitcher()}
               </div>
             </section>
           </main>
         `;
+        bindLanguageSwitcher();
       }
 
       function renderFatalError(error) {
+        syncPortalLanguageLabels();
         app.innerHTML = `
           <main class="auth-wall">
             <section class="auth-panel" aria-labelledby="error-title">
               <p class="page-kicker">Bastida Systems</p>
-              <h1 id="error-title">Portal is not ready</h1>
+              <h1 id="error-title">${escapeHtml(t('portal.errorTitle'))}</h1>
               <p>${escapeHtml(formatOperationalError(error))}</p>
               <div class="auth-actions">
-                <button class="button button-primary" type="button" data-retry>Retry</button>
-                <a class="button" href="${escapeAttr(authRedirects.login || 'login.html')}">Open login</a>
+                <button class="button button-primary" type="button" data-retry>${escapeHtml(t('common.retry'))}</button>
+                <a class="button" href="${escapeAttr(authRedirects.login || 'login.html')}">${escapeHtml(t('auth.login'))}</a>
+                ${renderLanguageSwitcher()}
               </div>
             </section>
           </main>
         `;
         app.querySelector('[data-retry]')?.addEventListener('click', init);
+        bindLanguageSwitcher();
       }
 
       function formatOperationalError(error) {
@@ -2135,6 +2321,7 @@
       }
 
       function renderApp() {
+        syncPortalLanguageLabels();
         app.innerHTML = `
           <div class="app-shell">
             <aside class="sidebar" aria-label="Primary">
@@ -2142,19 +2329,19 @@
                 <div class="brand-mark">BS</div>
                 <div class="brand-text">
                   <p class="brand-title">Bastida OS</p>
-                  <p class="brand-subtitle">Operations portal</p>
+                  <p class="brand-subtitle">${escapeHtml(t('portal.subtitle'))}</p>
                 </div>
               </div>
               <nav class="nav">
                 ${Object.entries(viewLabels).map(([view, label]) => navButton(view, label)).join('')}
               </nav>
               <div class="sidebar-footer">
-                Real-time operating data from Supabase. No local records are generated in the browser.
+                ${escapeHtml(t('footer.supabase'))}
               </div>
             </aside>
             <main class="main">
               <div class="mobile-nav">
-                <select aria-label="Select section" data-mobile-nav>
+                <select aria-label="${escapeAttr(t('nav.selectSection'))}" data-mobile-nav>
                   ${Object.entries(viewLabels).map(([view, label]) => `<option value="${view}" ${view === state.activeView ? 'selected' : ''}>${label}</option>`).join('')}
                 </select>
               </div>
@@ -2169,8 +2356,9 @@
                     <p class="profile-role">${escapeHtml(activeWorkspaceRoleLine())}</p>
                   </div>
                   ${renderWorkspaceSwitcher()}
-                  <button class="button" type="button" data-refresh>Refresh</button>
-                  <button class="button" type="button" data-sign-out>Logout</button>
+                  ${renderLanguageSwitcher()}
+                  <button class="button" type="button" data-refresh>${escapeHtml(t('common.refresh'))}</button>
+                  <button class="button" type="button" data-sign-out>${escapeHtml(t('common.logout'))}</button>
                 </div>
               </header>
               <section class="view ${state.activeView === 'dashboard' ? 'is-active' : ''}" data-view="dashboard">
@@ -2226,6 +2414,38 @@
         `;
       }
 
+      function renderLanguageSwitcher() {
+        return `
+          <label class="language-switcher">
+            <span class="workspace-label">${escapeHtml(t('language.label'))}</span>
+            <select class="language-select" data-language-select aria-label="${escapeAttr(t('language.selector'))}">
+              <option value="en" ${activePortalLanguage === 'en' ? 'selected' : ''}>EN</option>
+              <option value="es" ${activePortalLanguage === 'es' ? 'selected' : ''}>ES</option>
+            </select>
+          </label>
+        `;
+      }
+
+      function bindLanguageSwitcher() {
+        app.querySelectorAll('[data-language-select]').forEach((select) => {
+          select.value = activePortalLanguage;
+          select.addEventListener('change', (event) => {
+            activePortalLanguage = portalTranslations[event.target.value] ? event.target.value : 'en';
+            localStorage.setItem(portalLanguageStorageKey, activePortalLanguage);
+            syncPortalLanguageLabels();
+            if (state.session) {
+              renderApp();
+              return;
+            }
+            if (state.error) {
+              renderFatalError(state.error);
+              return;
+            }
+            renderSignedOut();
+          });
+        });
+      }
+
       function renderWorkspaceSwitcher() {
         const projectOptions = workspaceProjectOptions();
         const options = workspaceOptions();
@@ -2237,8 +2457,8 @@
 
         if (options.length <= 1) {
           return `
-            <div class="workspace-switcher" aria-label="Active workspace">
-              <span class="workspace-label">Workspace</span>
+            <div class="workspace-switcher" aria-label="${escapeAttr(t('workspace.active'))}">
+              <span class="workspace-label">${escapeHtml(t('workspace.label'))}</span>
               <span class="workspace-static">${escapeHtml(activeWorkspaceRoleLine())}</span>
             </div>
           `;
@@ -2246,8 +2466,8 @@
 
         return `
           <label class="workspace-switcher">
-            <span class="workspace-label">Workspace</span>
-            <select class="workspace-select" data-workspace-switcher aria-label="Select workspace">
+            <span class="workspace-label">${escapeHtml(t('workspace.label'))}</span>
+            <select class="workspace-select" data-workspace-switcher aria-label="${escapeAttr(t('workspace.select'))}">
               ${options.map((option) => `<option value="${escapeAttr(option.id)}" ${option.id === state.workspace.projectId ? 'selected' : ''}>${escapeHtml(option.label)}</option>`).join('')}
             </select>
           </label>
@@ -2272,23 +2492,23 @@
 
       function workspaceOverviewLabel() {
         if (isGlobalFounderOrAdmin()) {
-          return 'All Bastida Systems';
+          return t('workspace.allBastida');
         }
 
         if (currentUserProjectAssignments().some((assignment) => ['founder', 'owner'].includes(assignment.role))) {
-          return 'All My Workspaces';
+          return t('workspace.allMine');
         }
 
-        return 'My Overview';
+        return t('workspace.mine');
       }
 
       function workspaceOverviewRole() {
         if (isGlobalFounderOrAdmin()) {
-          return 'Founder';
+          return t('role.founder');
         }
 
         const role = topRoleForAssignments(currentUserProjectAssignments());
-        return role ? roleLabel(role) : 'Overview';
+        return role ? roleLabel(role) : t('role.overview');
       }
 
       function workspaceProjectOptions() {
@@ -2317,8 +2537,8 @@
             if (!optionsByProject.has(project.id)) {
               optionsByProject.set(project.id, {
                 id: project.id,
-                label: `${project.name} - Founder`,
-                role: 'Founder',
+                label: `${project.name} - ${t('role.founder')}`,
+                role: t('role.founder'),
                 projectName: project.name
               });
             }
@@ -2460,7 +2680,7 @@
           return profileRole();
         }
 
-        if (active.id === 'all' && active.role === 'Overview') {
+        if (active.id === 'all' && active.role === t('role.overview')) {
           return active.projectName;
         }
 
@@ -2470,11 +2690,11 @@
       function workspaceRoleForProject(projectId) {
         if (isGlobalFounderOrAdmin()) {
           const assignmentRole = topRoleForAssignments(currentUserProjectAssignments().filter((assignment) => assignment.project_id === projectId));
-          return assignmentRole ? roleLabel(assignmentRole) : 'Founder';
+          return assignmentRole ? roleLabel(assignmentRole) : t('role.founder');
         }
 
         const role = topRoleForAssignments(currentUserProjectAssignments().filter((assignment) => assignment.project_id === projectId));
-        return role ? roleLabel(role) : 'Member';
+        return role ? roleLabel(role) : t('role.member');
       }
 
       function topRoleForAssignments(assignments) {
@@ -2483,6 +2703,8 @@
       }
 
       function bindAppEvents() {
+        bindLanguageSwitcher();
+
         app.querySelectorAll('[data-nav]').forEach((button) => {
           button.addEventListener('click', () => setActiveView(button.dataset.nav));
         });
@@ -3868,8 +4090,8 @@
         return {
           title: dashboardOverviewTitle(canShowCollaboratorBreakdown),
           copy: dashboardOverviewCopy(canShowCollaboratorBreakdown),
-          scopeLabel: isAllWorkspaceActive() ? workspaceOverviewLabel() : activeWorkspaceOption()?.projectName || 'Project',
-          modeLabel: personalOnly ? 'Personal scope' : 'Managed scope',
+          scopeLabel: isAllWorkspaceActive() ? workspaceOverviewLabel() : activeWorkspaceOption()?.projectName || t('dashboard.projectFallback'),
+          modeLabel: personalOnly ? t('dashboard.personalScope') : t('dashboard.managedScope'),
           personalOnly,
           canShowCollaboratorBreakdown,
           projects,
@@ -3903,31 +4125,31 @@
       function dashboardOverviewTitle(canShowCollaboratorBreakdown) {
         const active = activeWorkspaceOption();
         if (!isAllWorkspaceActive()) {
-          return `${active?.projectName || 'Project'} Dashboard`;
+          return `${active?.projectName || t('dashboard.projectFallback')} ${t('dashboard.projectSuffix')}`;
         }
 
         if (isGlobalFounderOrAdmin()) {
-          return 'All Bastida Systems Overview';
+          return t('dashboard.allTitle');
         }
 
-        return canShowCollaboratorBreakdown ? 'My Workspaces Overview' : 'My Overview';
+        return canShowCollaboratorBreakdown ? t('workspace.allMine') : t('dashboard.myTitle');
       }
 
       function dashboardOverviewCopy(canShowCollaboratorBreakdown) {
         const active = activeWorkspaceOption();
         if (!isAllWorkspaceActive()) {
-          return `Dashboard filtered to ${active?.projectName || 'the selected project'} with metrics scoped to your role and permissions.`;
+          return t('dashboard.projectCopy').replace('{project}', active?.projectName || t('dashboard.selectedProject'));
         }
 
         if (isGlobalFounderOrAdmin()) {
-          return 'Company-level operating summary across every project, collaborator, deliverable, document, and payment record visible to this account.';
+          return t('dashboard.allCopy');
         }
 
         if (canShowCollaboratorBreakdown) {
-          return 'Aggregated summary across every workspace you can access, with team metrics only for projects you can manage.';
+          return t('dashboard.managedCopy');
         }
 
-        return 'Personal operating summary across your assigned projects, approved hours, earnings, deliverables, documents, and recent activity.';
+        return t('dashboard.myCopy');
       }
 
       function dashboardMetricCards(overview) {
@@ -8504,12 +8726,12 @@
       }
 
       function profileName() {
-        return state.profile?.full_name || state.authUser?.email || 'Authenticated user';
+        return state.profile?.full_name || state.authUser?.email || t('auth.user');
       }
 
       function profileRole() {
         if (isGlobalFounderOrAdmin()) {
-          return 'Founder';
+          return t('role.founder');
         }
 
         const assignments = state.projectRoles.filter((assignment) => (
@@ -8517,7 +8739,7 @@
           && assignment.active === true
         ));
 
-        return roleSummaryForAssignments(assignments, state.profile) || 'Member';
+        return roleSummaryForAssignments(assignments, state.profile) || t('role.member');
       }
 
       function roleLabel(role) {
@@ -8530,7 +8752,7 @@
         const platformRole = profile?.platform_role || profile?.platformRole;
 
         if (['founder', 'platform_admin'].includes(platformRole) || activeAssignments.some((assignment) => assignment.role === 'founder')) {
-          return 'Founder';
+          return t('role.founder');
         }
 
         const priority = ['owner', 'core_collaborator', 'designer', 'developer', 'contractor'];
@@ -8541,7 +8763,7 @@
             return labelize(platformRole);
           }
 
-          return 'Member';
+          return t('role.member');
         }
 
         const projectNames = uniqueValues(
