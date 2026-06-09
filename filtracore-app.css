@@ -149,28 +149,24 @@ p {
   align-items: center;
   gap: 0.45rem;
   width: fit-content;
-  min-height: 2.4rem;
-  margin-bottom: 1.15rem;
-  border: 1px solid rgba(19, 34, 48, 0.12);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.72);
-  color: var(--muted-strong);
-  padding: 0 0.85rem;
-  font-size: 0.86rem;
+  margin-top: 1.25rem;
+  color: var(--accent-strong);
+  font-size: 0.92rem;
   font-weight: 800;
-  box-shadow: 0 10px 28px rgba(9, 23, 34, 0.06);
 }
 
 .back-home-link::before {
-  content: "<";
-  color: var(--accent-strong);
-  font-size: 1rem;
+  content: "";
+  width: 0.42rem;
+  height: 0.42rem;
+  border-bottom: 2px solid currentColor;
+  border-left: 2px solid currentColor;
+  transform: rotate(45deg);
   line-height: 1;
 }
 
 .back-home-link:hover {
-  border-color: rgba(18, 128, 111, 0.26);
-  color: var(--accent-strong);
+  color: var(--ink-strong);
 }
 
 .app-logo {
