@@ -144,6 +144,35 @@ p {
   max-width: 42rem;
 }
 
+.back-home-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  width: fit-content;
+  min-height: 2.4rem;
+  margin-bottom: 1.15rem;
+  border: 1px solid rgba(19, 34, 48, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--muted-strong);
+  padding: 0 0.85rem;
+  font-size: 0.86rem;
+  font-weight: 800;
+  box-shadow: 0 10px 28px rgba(9, 23, 34, 0.06);
+}
+
+.back-home-link::before {
+  content: "<";
+  color: var(--accent-strong);
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.back-home-link:hover {
+  border-color: rgba(18, 128, 111, 0.26);
+  color: var(--accent-strong);
+}
+
 .app-logo {
   width: 8.5rem;
   height: 4.4rem;
