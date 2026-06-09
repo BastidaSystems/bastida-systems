@@ -4378,6 +4378,22 @@ function refreshRecipeCostSummary() {
   if (summary) summary.outerHTML = renderRecipeCostSummary();
 }
 
+function getModuleModalDialog() {
+  return els['module-modal']?.querySelector('.module-modal') || null;
+}
+
+function setModuleModalSection(section) {
+  els['module-modal'].dataset.modalSection = section;
+  const dialog = getModuleModalDialog();
+  if (dialog) dialog.dataset.modalSection = section;
+}
+
+function clearModuleModalSection() {
+  delete els['module-modal'].dataset.modalSection;
+  const dialog = getModuleModalDialog();
+  if (dialog) delete dialog.dataset.modalSection;
+}
+
 function removeRecipeIngredientFromDraft(index) {
   const normalizedIndex = Number(index);
   if (!Number.isInteger(normalizedIndex) || normalizedIndex < 0 || normalizedIndex >= state.recipeIngredientsDraft.length) {
@@ -4834,7 +4850,7 @@ function openModuleModal(section, record = null, options = {}) {
   els['module-save-button'].classList.remove('icon-action');
   els['module-modal-close'].textContent = 'Close';
   els['module-modal-close'].classList.remove('icon-action');
-  els['module-modal'].dataset.modalSection = section;
+  setModuleModalSection(section);
   const formRecord = section === 'subrecipes' ? getSubrecipeFormRecord(record) : record;
   const baseFieldsHtml = moduleConfig.fields
     .map(field => renderFormField(field, formRecord))
@@ -4878,7 +4894,7 @@ function openCostingDetailModal(section, record) {
   els['module-cancel-button'].textContent = 'Close';
   els['module-modal-close'].textContent = 'Close';
   els['module-modal-close'].classList.remove('icon-action');
-  els['module-modal'].dataset.modalSection = `${section}-details`;
+  setModuleModalSection(`${section}-details`);
   els['module-form-fields'].innerHTML = renderCostingDetailView(section, record);
   els['module-modal'].hidden = false;
 }
@@ -4892,7 +4908,7 @@ function closeModuleModal() {
   state.recipeQuickIngredientOpen = false;
   state.recipeLinkIngredient = null;
   els['module-modal'].hidden = true;
-  delete els['module-modal'].dataset.modalSection;
+  clearModuleModalSection();
   els['module-form'].classList.remove('module-form-detail-mode');
   els['module-save-button'].hidden = false;
   els['module-cancel-button'].textContent = 'Cancel';
@@ -5346,6 +5362,7 @@ async function openInventoryRecipeLinkModal(recordId) {
   state.editingRecord = null;
   state.recipeLinkIngredient = ingredient;
   showAlert(els['module-form-message'], '');
+  setModuleModalSection('recipe-link');
   els['module-modal-title'].textContent = 'Add to recipe';
   els['module-modal-subtitle'].textContent = `Connect ${ingredient.name} to an existing recipe.`;
   els['module-save-button'].textContent = 'Add to Recipe';
