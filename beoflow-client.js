@@ -255,6 +255,7 @@ const UI_TRANSLATIONS_ES = {
   'Add to recipe': 'Agregar a receta',
   'Add to Recipe': 'Agregar a receta',
   'Remove ingredient': 'Eliminar ingrediente',
+  'Remove this ingredient?': 'Eliminar este ingrediente?',
   'Delete ingredient': 'Eliminar ingrediente',
   'Ingredient details': 'Detalles del ingrediente',
   'Inventory actions': 'Acciones de inventario',
@@ -6636,6 +6637,7 @@ function bindEvents() {
 
     const removeIndex = clickedButton.dataset.recipeIngredientRemove;
     if (removeIndex !== undefined) {
+      if (!window.confirm(translateText('Remove this ingredient?'))) return;
       state.recipeIngredientsDraft.splice(Number(removeIndex), 1);
       refreshRecipeIngredientBuilder();
       return;
