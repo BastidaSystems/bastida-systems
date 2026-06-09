@@ -981,25 +981,31 @@
       z-index: 1;
       background:
         radial-gradient(
-          ellipse at 15% 38%,
-          rgba(255, 226, 178, 0.14) 0%,
-          rgba(196, 145, 82, 0.078) 18%,
-          rgba(92, 64, 38, 0.038) 34%,
-          transparent 52%
+          ellipse at 15% 36%,
+          rgba(255, 236, 198, 0.23) 0%,
+          rgba(196, 145, 82, 0.13) 18%,
+          rgba(92, 64, 38, 0.055) 36%,
+          transparent 58%
+        ),
+        radial-gradient(
+          ellipse at 14% 47%,
+          rgba(255, 245, 220, 0.12) 0%,
+          rgba(196, 145, 82, 0.055) 22%,
+          transparent 48%
         ),
         linear-gradient(
           90deg,
-          rgba(0, 0, 0, 0.04) 0%,
-          rgba(0, 0, 0, 0.12) 30%,
+          rgba(0, 0, 0, 0.02) 0%,
+          rgba(0, 0, 0, 0.08) 30%,
           transparent 64%
         );
-      opacity: 0.66;
+      opacity: 0.76;
       mix-blend-mode: screen;
       mask-image: radial-gradient(
-        ellipse at 15% 38%,
+        ellipse at 15% 40%,
         #000 0%,
-        #000 38%,
-        transparent 68%
+        #000 46%,
+        transparent 72%
       );
     }
 
@@ -1017,19 +1023,19 @@
     .hero-spotlight::before {
       content: "";
       position: absolute;
-      left: clamp(1.2rem, 3.5vw, 4rem);
-      top: 37%;
+      left: clamp(1rem, 3.2vw, 3.8rem);
+      top: 39%;
       z-index: 2;
-      width: min(20rem, 26vw);
-      height: min(11rem, 24vh);
+      width: min(24rem, 30vw);
+      height: min(13rem, 27vh);
       pointer-events: none;
       border-radius: 999px;
-      background: radial-gradient(circle at 45% 50%, rgba(255, 232, 190, 0.095), transparent 60%);
+      background: radial-gradient(circle at 44% 48%, rgba(255, 232, 190, 0.14), transparent 62%);
       filter: blur(10px);
-      opacity: 0.38;
+      opacity: 0.48;
       transform: translateY(-50%);
       mix-blend-mode: screen;
-      mask-image: radial-gradient(ellipse at center, #000 0%, #000 44%, transparent 72%);
+      mask-image: radial-gradient(ellipse at center, #000 0%, #000 52%, transparent 78%);
     }
 
     .hero-spotlight::after {
