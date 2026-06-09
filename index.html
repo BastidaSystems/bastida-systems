@@ -1007,7 +1007,7 @@
         #000 46%,
         transparent 72%
       );
-      animation: heroWallLightFlicker 5.8s ease-in-out infinite;
+      animation: heroWallLightStartup 1.85s ease-out 1 both;
     }
 
     .hero-vignette {
@@ -1037,7 +1037,7 @@
       transform: translateY(-50%);
       mix-blend-mode: screen;
       mask-image: radial-gradient(ellipse at center, #000 0%, #000 52%, transparent 78%);
-      animation: heroWallLightPulse 5.8s ease-in-out infinite;
+      animation: heroWallLightStartupPulse 1.85s ease-out 1 both;
     }
 
     .hero-spotlight::after {
@@ -1045,72 +1045,97 @@
       content: none;
     }
 
-    @keyframes heroWallLightFlicker {
-      0%, 100% {
-        opacity: 0.64;
-        filter: brightness(1);
+    @keyframes heroWallLightStartup {
+      0% {
+        opacity: 0;
+        filter: brightness(0.55);
       }
 
-      18% {
+      8% {
+        opacity: 0.72;
+        filter: brightness(1.16);
+      }
+
+      13% {
+        opacity: 0.22;
+        filter: brightness(0.72);
+      }
+
+      20% {
+        opacity: 0.78;
+        filter: brightness(1.18);
+      }
+
+      27% {
+        opacity: 0.36;
+        filter: brightness(0.82);
+      }
+
+      36% {
         opacity: 0.7;
         filter: brightness(1.08);
       }
 
-      21% {
+      52% {
         opacity: 0.58;
-        filter: brightness(0.92);
-      }
-
-      24% {
-        opacity: 0.67;
-        filter: brightness(1.05);
-      }
-
-      62% {
-        opacity: 0.62;
         filter: brightness(0.98);
       }
 
       72% {
-        opacity: 0.69;
-        filter: brightness(1.06);
+        opacity: 0.66;
+        filter: brightness(1.02);
       }
 
-      75% {
-        opacity: 0.61;
-        filter: brightness(0.96);
+      100% {
+        opacity: 0.64;
+        filter: brightness(1);
       }
     }
 
-    @keyframes heroWallLightPulse {
-      0%, 100% {
-        opacity: 0.39;
-        filter: blur(10px) brightness(1);
+    @keyframes heroWallLightStartupPulse {
+      0% {
+        opacity: 0;
+        filter: blur(10px) brightness(0.55);
       }
 
-      18% {
-        opacity: 0.46;
-        filter: blur(10px) brightness(1.1);
+      8% {
+        opacity: 0.52;
+        filter: blur(10px) brightness(1.18);
       }
 
-      21% {
-        opacity: 0.34;
-        filter: blur(10px) brightness(0.92);
+      13% {
+        opacity: 0.14;
+        filter: blur(10px) brightness(0.72);
       }
 
-      24% {
-        opacity: 0.43;
-        filter: blur(10px) brightness(1.06);
+      20% {
+        opacity: 0.56;
+        filter: blur(10px) brightness(1.2);
       }
 
-      72% {
-        opacity: 0.45;
+      27% {
+        opacity: 0.2;
+        filter: blur(10px) brightness(0.82);
+      }
+
+      36% {
+        opacity: 0.48;
         filter: blur(10px) brightness(1.08);
       }
 
-      75% {
-        opacity: 0.36;
-        filter: blur(10px) brightness(0.95);
+      52% {
+        opacity: 0.34;
+        filter: blur(10px) brightness(0.96);
+      }
+
+      72% {
+        opacity: 0.42;
+        filter: blur(10px) brightness(1.02);
+      }
+
+      100% {
+        opacity: 0.39;
+        filter: blur(10px) brightness(1);
       }
     }
 
