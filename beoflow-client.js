@@ -4339,6 +4339,18 @@ function refreshRecipeCostSummary() {
   if (summary) summary.outerHTML = renderRecipeCostSummary();
 }
 
+function removeRecipeIngredientFromDraft(index) {
+  const normalizedIndex = Number(index);
+  if (!Number.isInteger(normalizedIndex) || normalizedIndex < 0 || normalizedIndex >= state.recipeIngredientsDraft.length) {
+    return false;
+  }
+
+  state.recipeIngredientsDraft.splice(normalizedIndex, 1);
+  refreshRecipeIngredientBuilder();
+  refreshRecipeCostSummary();
+  return true;
+}
+
 function addRecipeIngredientToDraft(ingredient) {
   if (!ingredient?.inventoryItemId && !ingredient?.subrecipeId && !ingredient?.ingredientName) {
     throw new Error('Choose or name an ingredient first.');
@@ -6638,8 +6650,7 @@ function bindEvents() {
     const removeIndex = clickedButton.dataset.recipeIngredientRemove;
     if (removeIndex !== undefined) {
       if (!window.confirm(translateText('Remove this ingredient?'))) return;
-      state.recipeIngredientsDraft.splice(Number(removeIndex), 1);
-      refreshRecipeIngredientBuilder();
+      removeRecipeIngredientFromDraft(removeIndex);
       return;
     }
 
