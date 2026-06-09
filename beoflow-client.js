@@ -4075,11 +4075,20 @@ function renderSubrecipePicker() {
 
 function renderRecipeIngredientRows() {
   const isSubrecipeModal = state.modalSection === 'subrecipes';
+  const isRecipeModal = state.modalSection === 'recipes';
+  const usesIngredientCards = isSubrecipeModal || isRecipeModal;
+  const listCardClass = isSubrecipeModal
+    ? ' recipe-builder-ingredient-list-subrecipe'
+    : isRecipeModal ? ' recipe-builder-ingredient-list-recipe' : '';
+  const cardClass = isSubrecipeModal ? 'subrecipe-ingredient-card' : 'recipe-edit-ingredient-card';
+  const mainClass = isSubrecipeModal ? 'subrecipe-ingredient-main' : 'recipe-edit-ingredient-main';
+  const fieldsClass = isSubrecipeModal ? 'subrecipe-ingredient-fields' : 'recipe-edit-ingredient-fields';
+  const actionsClass = isSubrecipeModal ? 'subrecipe-ingredient-actions' : 'recipe-edit-ingredient-actions';
 
   if (state.recipeIngredientsDraft.length === 0) {
     return `
-      <div class="recipe-ingredient-list recipe-builder-ingredient-list${isSubrecipeModal ? ' recipe-builder-ingredient-list-subrecipe' : ''}">
-        ${isSubrecipeModal ? '' : `<div class="recipe-ingredient-table-head recipe-builder-ingredient-table-head">
+      <div class="recipe-ingredient-list recipe-builder-ingredient-list${listCardClass}">
+        ${usesIngredientCards ? '' : `<div class="recipe-ingredient-table-head recipe-builder-ingredient-table-head">
           <span>Ingredient</span>
           <span>Qty</span>
           <span>Unit</span>
@@ -4092,16 +4101,16 @@ function renderRecipeIngredientRows() {
     `;
   }
 
-  if (isSubrecipeModal) {
+  if (usesIngredientCards) {
     return `
-      <div class="recipe-ingredient-list recipe-builder-ingredient-list recipe-builder-ingredient-list-subrecipe">
+      <div class="recipe-ingredient-list recipe-builder-ingredient-list${listCardClass}">
         ${state.recipeIngredientsDraft.map((ingredient, index) => {
           const lineCost = formatMoney(calculateLineCostFromIngredient(ingredient));
           return `
-            <article class="subrecipe-ingredient-card recipe-ingredient-row recipe-builder-ingredient-row" data-ingredient-index="${index}">
-              <div class="subrecipe-ingredient-main">
+            <article class="${cardClass} recipe-ingredient-row recipe-builder-ingredient-row" data-ingredient-index="${index}">
+              <div class="${mainClass}">
                 ${renderRecipeIngredientNameCell(ingredient, index)}
-                <div class="subrecipe-ingredient-fields">
+                <div class="${fieldsClass}">
                   <label>
                     <span>Qty</span>
                     <input type="number" min="0" step="0.01" value="${escapeHtml(ingredient.quantity)}" data-recipe-ingredient-quantity="${index}">
@@ -4115,7 +4124,7 @@ function renderRecipeIngredientRows() {
                   ${renderRecipeInventoryStatusCell(ingredient, index)}
                 </div>
               </div>
-              <div class="subrecipe-ingredient-actions">
+              <div class="${actionsClass}">
                 <div class="recipe-ingredient-line-cost">
                   <span>Cost</span>
                   <strong>${escapeHtml(lineCost)}</strong>

@@ -2318,7 +2318,13 @@ h1 {
   overflow: hidden;
 }
 
-.module-modal[data-modal-section="subrecipes"] .subrecipe-ingredient-card {
+.module-modal[data-modal-section="recipes"] .recipe-builder-ingredient-list-recipe {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.module-modal[data-modal-section="subrecipes"] .subrecipe-ingredient-card,
+.module-modal[data-modal-section="recipes"] .recipe-edit-ingredient-card {
   display: grid;
   grid-template-columns: minmax(180px, 1.1fr) minmax(260px, 1fr) minmax(130px, auto);
   gap: 0.9rem;
@@ -2334,25 +2340,30 @@ h1 {
   transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
 }
 
-.module-modal[data-modal-section="subrecipes"] .subrecipe-ingredient-card:hover {
+.module-modal[data-modal-section="subrecipes"] .subrecipe-ingredient-card:hover,
+.module-modal[data-modal-section="recipes"] .recipe-edit-ingredient-card:hover {
   border-color: rgba(90, 64, 168, 0.22);
   box-shadow: 0 16px 34px rgba(15, 23, 42, 0.075);
   transform: translateY(-1px);
 }
 
-.module-modal[data-modal-section="subrecipes"] .subrecipe-ingredient-card > * {
+.module-modal[data-modal-section="subrecipes"] .subrecipe-ingredient-card > *,
+.module-modal[data-modal-section="recipes"] .recipe-edit-ingredient-card > * {
   min-width: 0;
 }
 
-.module-modal[data-modal-section="subrecipes"] .subrecipe-ingredient-main {
+.module-modal[data-modal-section="subrecipes"] .subrecipe-ingredient-main,
+.module-modal[data-modal-section="recipes"] .recipe-edit-ingredient-main {
   display: contents;
 }
 
-.module-modal[data-modal-section="subrecipes"] .recipe-ingredient-name-field {
+.module-modal[data-modal-section="subrecipes"] .recipe-ingredient-name-field,
+.module-modal[data-modal-section="recipes"] .recipe-ingredient-name-field {
   min-width: 0;
 }
 
-.module-modal[data-modal-section="subrecipes"] .subrecipe-ingredient-fields {
+.module-modal[data-modal-section="subrecipes"] .subrecipe-ingredient-fields,
+.module-modal[data-modal-section="recipes"] .recipe-edit-ingredient-fields {
   display: grid;
   grid-template-columns: minmax(64px, 0.7fr) minmax(82px, 0.8fr) minmax(112px, 1fr);
   gap: 0.55rem;
@@ -2360,11 +2371,13 @@ h1 {
   min-width: 0;
 }
 
-.module-modal[data-modal-section="subrecipes"] .subrecipe-ingredient-fields > * {
+.module-modal[data-modal-section="subrecipes"] .subrecipe-ingredient-fields > *,
+.module-modal[data-modal-section="recipes"] .recipe-edit-ingredient-fields > * {
   min-width: 0;
 }
 
-.module-modal[data-modal-section="subrecipes"] .recipe-ingredient-name-field input {
+.module-modal[data-modal-section="subrecipes"] .recipe-ingredient-name-field input,
+.module-modal[data-modal-section="recipes"] .recipe-ingredient-name-field input {
   overflow: hidden;
   text-overflow: ellipsis;
   font-size: 1rem;
@@ -2374,7 +2387,9 @@ h1 {
 }
 
 .module-modal[data-modal-section="subrecipes"] .subrecipe-ingredient-card label > span,
+.module-modal[data-modal-section="recipes"] .recipe-edit-ingredient-card label > span,
 .module-modal[data-modal-section="subrecipes"] .recipe-ingredient-line-cost span,
+.module-modal[data-modal-section="recipes"] .recipe-ingredient-line-cost span,
 .module-modal[data-modal-section="subrecipes"] .inventory-status-cell::before {
   color: var(--muted-strong);
   font-size: 0.7rem;
@@ -2383,7 +2398,8 @@ h1 {
   text-transform: uppercase;
 }
 
-.module-modal[data-modal-section="subrecipes"] .recipe-ingredient-line-cost {
+.module-modal[data-modal-section="subrecipes"] .recipe-ingredient-line-cost,
+.module-modal[data-modal-section="recipes"] .recipe-ingredient-line-cost {
   display: grid;
   gap: 0.15rem;
   min-width: 6.8rem;
@@ -2397,7 +2413,9 @@ h1 {
 }
 
 .module-modal[data-modal-section="subrecipes"] .recipe-ingredient-line-cost span,
-.module-modal[data-modal-section="subrecipes"] .recipe-ingredient-line-cost strong {
+.module-modal[data-modal-section="subrecipes"] .recipe-ingredient-line-cost strong,
+.module-modal[data-modal-section="recipes"] .recipe-ingredient-line-cost span,
+.module-modal[data-modal-section="recipes"] .recipe-ingredient-line-cost strong {
   display: block;
   width: 100%;
   max-width: 100%;
@@ -2407,13 +2425,15 @@ h1 {
   white-space: nowrap;
 }
 
-.module-modal[data-modal-section="subrecipes"] .recipe-ingredient-line-cost strong {
+.module-modal[data-modal-section="subrecipes"] .recipe-ingredient-line-cost strong,
+.module-modal[data-modal-section="recipes"] .recipe-ingredient-line-cost strong {
   color: var(--ink-strong);
   font-size: 1.05rem;
   font-weight: 900;
 }
 
-.module-modal[data-modal-section="subrecipes"] .subrecipe-ingredient-actions {
+.module-modal[data-modal-section="subrecipes"] .subrecipe-ingredient-actions,
+.module-modal[data-modal-section="recipes"] .recipe-edit-ingredient-actions {
   display: flex;
   align-items: end;
   justify-content: flex-end;
@@ -2424,7 +2444,8 @@ h1 {
   border-top: 0;
 }
 
-.module-modal[data-modal-section="subrecipes"] .ingredient-delete-btn {
+.module-modal[data-modal-section="subrecipes"] .ingredient-delete-btn,
+.module-modal[data-modal-section="recipes"] .ingredient-delete-btn {
   display: inline-flex;
   flex: 0 0 auto;
   align-items: center;
@@ -2440,7 +2461,8 @@ h1 {
   box-shadow: none;
 }
 
-.module-modal[data-modal-section="subrecipes"] .ingredient-delete-btn:hover {
+.module-modal[data-modal-section="subrecipes"] .ingredient-delete-btn:hover,
+.module-modal[data-modal-section="recipes"] .ingredient-delete-btn:hover {
   border-color: rgba(180, 35, 24, 0.36);
   background: var(--danger-bg);
   color: #8f1d15;
@@ -2449,18 +2471,22 @@ h1 {
 
 
 @media (max-width: 900px) {
-  .module-modal[data-modal-section="subrecipes"] .subrecipe-ingredient-main {
+  .module-modal[data-modal-section="subrecipes"] .subrecipe-ingredient-main,
+  .module-modal[data-modal-section="recipes"] .recipe-edit-ingredient-main {
     grid-template-columns: 1fr;
   }
 
-  .module-modal[data-modal-section="subrecipes"] .subrecipe-ingredient-fields {
+  .module-modal[data-modal-section="subrecipes"] .subrecipe-ingredient-fields,
+  .module-modal[data-modal-section="recipes"] .recipe-edit-ingredient-fields {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 760px) {
   .module-modal[data-modal-section="subrecipes"] .subrecipe-ingredient-main,
-  .module-modal[data-modal-section="subrecipes"] .subrecipe-ingredient-fields {
+  .module-modal[data-modal-section="subrecipes"] .subrecipe-ingredient-fields,
+  .module-modal[data-modal-section="recipes"] .recipe-edit-ingredient-main,
+  .module-modal[data-modal-section="recipes"] .recipe-edit-ingredient-fields {
     grid-template-columns: 1fr;
   }
 }
@@ -2809,6 +2835,52 @@ h1 {
   }
 
   .module-modal[data-modal-section="subrecipes"] .subrecipe-ingredient-actions {
+    justify-content: space-between;
+    width: 100%;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--line-soft);
+  }
+
+  .module-modal[data-modal-section="recipes"] .recipe-edit-ingredient-card {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .module-modal[data-modal-section="recipes"] .recipe-edit-ingredient-main {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+
+  .module-modal[data-modal-section="recipes"] .recipe-edit-ingredient-fields {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .module-modal[data-modal-section="recipes"] .inventory-status-cell {
+    display: grid;
+    align-items: flex-start;
+    justify-items: start;
+    grid-column: 1 / -1;
+  }
+
+  .module-modal[data-modal-section="recipes"] .inventory-status-cell::before {
+    content: "Inventory";
+    color: var(--muted-strong);
+    font-size: 0.78rem;
+    font-weight: 800;
+  }
+
+  .module-modal[data-modal-section="recipes"] .recipe-ingredient-line-cost {
+    justify-items: start;
+    max-width: 100%;
+  }
+
+  .module-modal[data-modal-section="recipes"] .recipe-ingredient-line-cost span,
+  .module-modal[data-modal-section="recipes"] .recipe-ingredient-line-cost strong {
+    text-align: left;
+  }
+
+  .module-modal[data-modal-section="recipes"] .recipe-edit-ingredient-actions {
     justify-content: space-between;
     width: 100%;
     padding-top: 0.75rem;
