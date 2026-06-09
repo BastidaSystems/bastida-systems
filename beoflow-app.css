@@ -2320,9 +2320,9 @@ h1 {
 
 .module-modal[data-modal-section="subrecipes"] .subrecipe-ingredient-card {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-  align-items: center;
+  grid-template-columns: minmax(180px, 1.1fr) minmax(260px, 1fr) minmax(130px, auto);
+  gap: 0.9rem;
+  align-items: end;
   width: 100%;
   max-width: 100%;
   padding: 1rem;
@@ -2345,17 +2345,17 @@ h1 {
 }
 
 .module-modal[data-modal-section="subrecipes"] .subrecipe-ingredient-main {
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-  gap: 0.85rem;
-  align-items: end;
+  display: contents;
+}
+
+.module-modal[data-modal-section="subrecipes"] .recipe-ingredient-name-field {
   min-width: 0;
 }
 
 .module-modal[data-modal-section="subrecipes"] .subrecipe-ingredient-fields {
   display: grid;
-  grid-template-columns: minmax(4.8rem, 0.6fr) minmax(5.8rem, 0.7fr) minmax(8.4rem, 1fr);
-  gap: 0.6rem;
+  grid-template-columns: minmax(64px, 0.7fr) minmax(82px, 0.8fr) minmax(112px, 1fr);
+  gap: 0.55rem;
   align-items: end;
   min-width: 0;
 }
@@ -2385,15 +2385,15 @@ h1 {
 
 .module-modal[data-modal-section="subrecipes"] .recipe-ingredient-line-cost {
   display: grid;
-  gap: 0.18rem;
-  min-width: 7.3rem;
-  max-width: 100%;
-  padding: 0.58rem 0.7rem;
+  gap: 0.15rem;
+  min-width: 6.8rem;
+  max-width: 7.6rem;
+  padding: 0.55rem 0.65rem;
   border: 1px solid rgba(90, 64, 168, 0.13);
   border-radius: var(--radius);
   background: rgba(90, 64, 168, 0.06);
   overflow: hidden;
-  justify-items: start;
+  justify-items: end;
 }
 
 .module-modal[data-modal-section="subrecipes"] .recipe-ingredient-line-cost span,
@@ -2403,7 +2403,7 @@ h1 {
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
-  text-align: left;
+  text-align: right;
   white-space: nowrap;
 }
 
@@ -2415,13 +2415,13 @@ h1 {
 
 .module-modal[data-modal-section="subrecipes"] .subrecipe-ingredient-actions {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  width: 100%;
+  align-items: end;
+  justify-content: flex-end;
+  gap: 0.6rem;
   min-width: 0;
-  padding-top: 0.85rem;
-  border-top: 1px solid var(--line-soft);
+  width: auto;
+  padding-top: 0;
+  border-top: 0;
 }
 
 .module-modal[data-modal-section="subrecipes"] .ingredient-delete-btn {
@@ -2771,15 +2771,17 @@ h1 {
 
   .module-modal[data-modal-section="subrecipes"] .subrecipe-ingredient-card {
     grid-template-columns: 1fr;
-    gap: 0.85rem;
+    align-items: stretch;
   }
 
   .module-modal[data-modal-section="subrecipes"] .subrecipe-ingredient-main {
+    display: grid;
     grid-template-columns: 1fr;
+    gap: 0.85rem;
   }
 
   .module-modal[data-modal-section="subrecipes"] .subrecipe-ingredient-fields {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr 1fr;
   }
 
   .module-modal[data-modal-section="subrecipes"] .inventory-status-cell {
@@ -2798,8 +2800,7 @@ h1 {
 
   .module-modal[data-modal-section="subrecipes"] .recipe-ingredient-line-cost {
     justify-items: start;
-    width: auto;
-    max-width: none;
+    max-width: 100%;
   }
 
   .module-modal[data-modal-section="subrecipes"] .recipe-ingredient-line-cost span,
@@ -2810,6 +2811,8 @@ h1 {
   .module-modal[data-modal-section="subrecipes"] .subrecipe-ingredient-actions {
     justify-content: space-between;
     width: 100%;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--line-soft);
   }
 
   .inventory-ingredient-metrics,
