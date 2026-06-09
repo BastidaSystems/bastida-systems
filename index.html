@@ -980,6 +980,24 @@
       z-index: 1;
       background:
         radial-gradient(
+          ellipse at 22% 46%,
+          rgba(0, 255, 156, 0.16) 0%,
+          rgba(0, 255, 156, 0.08) 20%,
+          transparent 45%
+        ),
+        radial-gradient(
+          ellipse at 19% 42%,
+          rgba(184, 137, 84, 0.16) 0%,
+          rgba(184, 137, 84, 0.08) 26%,
+          transparent 50%
+        ),
+        linear-gradient(
+          90deg,
+          rgba(4, 22, 18, 0.22) 0%,
+          rgba(4, 22, 18, 0.08) 26%,
+          transparent 54%
+        ),
+        radial-gradient(
           ellipse at 14% 22%,
           rgba(255, 224, 170, 0.24) 0%,
           rgba(255, 205, 135, 0.13) 14%,
@@ -987,7 +1005,7 @@
           transparent 43%
         );
       mix-blend-mode: screen;
-      opacity: 0.5;
+      opacity: 0.68;
     }
 
     .hero-vignette {
@@ -1206,6 +1224,10 @@
 
       .hero-spotlight {
         padding: 2rem 1rem 3rem;
+      }
+
+      .hero-light-left {
+        opacity: 0.54;
       }
 
       .hero-grid {
