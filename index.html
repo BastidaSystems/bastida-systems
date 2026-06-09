@@ -980,32 +980,27 @@
       z-index: 1;
       background:
         radial-gradient(
-          ellipse at 22% 46%,
-          rgba(0, 255, 156, 0.16) 0%,
-          rgba(0, 255, 156, 0.08) 20%,
-          transparent 45%
+          ellipse at 17% 42%,
+          rgba(0, 255, 156, 0.2) 0%,
+          rgba(0, 255, 156, 0.11) 18%,
+          rgba(0, 255, 156, 0.03) 34%,
+          transparent 52%
         ),
         radial-gradient(
-          ellipse at 19% 42%,
-          rgba(184, 137, 84, 0.16) 0%,
-          rgba(184, 137, 84, 0.08) 26%,
-          transparent 50%
+          ellipse at 16% 38%,
+          rgba(220, 177, 103, 0.22) 0%,
+          rgba(220, 177, 103, 0.1) 20%,
+          rgba(220, 177, 103, 0.03) 36%,
+          transparent 55%
         ),
         linear-gradient(
           90deg,
-          rgba(4, 22, 18, 0.22) 0%,
-          rgba(4, 22, 18, 0.08) 26%,
-          transparent 54%
-        ),
-        radial-gradient(
-          ellipse at 14% 22%,
-          rgba(255, 224, 170, 0.24) 0%,
-          rgba(255, 205, 135, 0.13) 14%,
-          rgba(58, 210, 159, 0.04) 28%,
-          transparent 43%
+          rgba(0, 0, 0, 0.12) 0%,
+          rgba(0, 0, 0, 0.04) 28%,
+          transparent 58%
         );
       mix-blend-mode: screen;
-      opacity: 0.68;
+      opacity: 0.82;
     }
 
     .hero-vignette {
@@ -1013,17 +1008,52 @@
       background:
         linear-gradient(
           90deg,
-          rgba(0, 0, 0, 0.1) 0%,
-          rgba(0, 0, 0, 0.04) 22%,
-          rgba(0, 0, 0, 0.16) 52%,
-          rgba(0, 0, 0, 0.3) 100%
+          rgba(0, 0, 0, 0.18) 0%,
+          rgba(0, 0, 0, 0.1) 22%,
+          rgba(0, 0, 0, 0.2) 52%,
+          rgba(0, 0, 0, 0.38) 100%
         ),
         radial-gradient(
           circle at 58% 48%,
           transparent 0%,
-          rgba(0, 0, 0, 0.08) 55%,
-          rgba(0, 0, 0, 0.28) 100%
+          rgba(0, 0, 0, 0.1) 55%,
+          rgba(0, 0, 0, 0.3) 100%
         );
+    }
+
+    .hero-spotlight::before {
+      content: "";
+      position: absolute;
+      left: clamp(1rem, 5vw, 5rem);
+      top: 50%;
+      z-index: 2;
+      width: min(34rem, 42vw);
+      height: min(22rem, 46vh);
+      pointer-events: none;
+      border-radius: 999px;
+      background:
+        radial-gradient(circle at 42% 48%, rgba(0, 255, 156, 0.13), transparent 46%),
+        radial-gradient(circle at 50% 52%, rgba(218, 180, 110, 0.12), transparent 58%);
+      filter: blur(18px);
+      opacity: 0.72;
+      transform: translateY(-50%);
+    }
+
+    .hero-spotlight::after {
+      content: "";
+      position: absolute;
+      left: clamp(3.5rem, 10vw, 10rem);
+      top: 50%;
+      z-index: 2;
+      width: min(18rem, 26vw);
+      height: 1px;
+      pointer-events: none;
+      background: linear-gradient(90deg, transparent, rgba(0, 255, 156, 0.42), rgba(220, 177, 103, 0.32), transparent);
+      box-shadow:
+        0 0 22px rgba(0, 255, 156, 0.28),
+        0 0 52px rgba(220, 177, 103, 0.18);
+      opacity: 0.7;
+      transform: translateY(-50%);
     }
 
     .hero-grid {
@@ -1042,7 +1072,7 @@
     .hero-copy {
       max-width: 44rem;
       margin: 0 0 clamp(2.5rem, 5vw, 5rem) auto;
-      text-align: left;
+      text-align: right;
       text-shadow: 0 10px 35px rgba(0, 0, 0, 0.38);
     }
 
@@ -1059,13 +1089,13 @@
 
     .hero-copy .gradient-text {
       width: min(100%, 46rem);
-      margin-left: 0;
+      margin-left: auto;
       margin-right: 0;
     }
 
     .hero-body {
       width: min(100%, 42rem);
-      margin-left: 0;
+      margin-left: auto;
       margin-right: 0;
     }
 
@@ -1074,7 +1104,7 @@
     }
 
     .hero-copy .hero-actions {
-      justify-content: flex-start;
+      justify-content: flex-end;
       margin-left: 0;
       margin-right: 0;
       margin-top: 2rem;
@@ -1083,17 +1113,17 @@
     .hero-system-points {
       display: flex;
       flex-wrap: wrap;
-      justify-content: flex-start;
+      justify-content: flex-end;
       gap: 0.7rem;
       width: min(100%, 41rem);
-      margin: 1.35rem 0 0;
+      margin: 1.35rem 0 0 auto;
       padding: 0;
       list-style: none;
     }
 
     .hero-system-points li {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       gap: 0.7rem;
       color: #d1d5db;
       font-size: 0.95rem;
@@ -1227,7 +1257,12 @@
       }
 
       .hero-light-left {
-        opacity: 0.54;
+        opacity: 0.52;
+      }
+
+      .hero-spotlight::before,
+      .hero-spotlight::after {
+        display: none;
       }
 
       .hero-grid {
