@@ -953,7 +953,7 @@
       position: relative;
       overflow: hidden;
       min-height: calc(100vh - 88px);
-      padding: clamp(4.5rem, 8vw, 7rem) 1.5rem clamp(4rem, 7vw, 6rem);
+      padding: 0 1.5rem;
       color: #fff;
       isolation: isolate;
       background-image:
@@ -1012,17 +1012,18 @@
       position: relative;
       z-index: 3;
       display: grid;
-      width: min(980px, 100%);
+      width: min(1180px, 100%);
+      min-height: calc(100vh - 88px);
       margin: 0 auto;
       grid-template-columns: 1fr;
       gap: clamp(2.25rem, 6vw, 6rem);
       justify-items: end;
-      align-items: center;
+      align-items: end;
     }
 
     .hero-copy {
       max-width: 44rem;
-      margin: 0 0 0 auto;
+      margin: 0 0 clamp(2.5rem, 5vw, 5rem) auto;
       text-align: left;
       text-shadow: 0 10px 35px rgba(0, 0, 0, 0.38);
     }
@@ -1298,7 +1299,7 @@
 
       .hero-copy {
         max-width: 48rem;
-        margin: 0 auto;
+        margin: 0 auto clamp(2.25rem, 5vw, 4rem);
         text-align: center;
       }
 
