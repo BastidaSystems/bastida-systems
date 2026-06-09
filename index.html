@@ -981,26 +981,20 @@
       z-index: 1;
       background:
         radial-gradient(
-          ellipse at 15% 44%,
-          rgba(0, 255, 156, 0.16) 0%,
-          rgba(0, 255, 156, 0.08) 16%,
-          rgba(0, 255, 156, 0.025) 30%,
-          transparent 46%
-        ),
-        radial-gradient(
-          ellipse at 16% 41%,
-          rgba(220, 177, 103, 0.13) 0%,
-          rgba(220, 177, 103, 0.06) 18%,
-          rgba(220, 177, 103, 0.018) 32%,
-          transparent 48%
+          ellipse at 16% 42%,
+          rgba(255, 255, 255, 0.18) 0%,
+          rgba(0, 255, 156, 0.16) 16%,
+          rgba(220, 177, 103, 0.08) 30%,
+          rgba(255, 255, 255, 0.025) 42%,
+          transparent 56%
         );
-      opacity: 0.78;
-      mask-image: linear-gradient(
-        180deg,
-        transparent 0%,
-        #000 18%,
-        #000 72%,
-        transparent 100%
+      opacity: 0.88;
+      mix-blend-mode: screen;
+      mask-image: radial-gradient(
+        ellipse at 16% 42%,
+        #000 0%,
+        #000 46%,
+        transparent 72%
       );
     }
 
@@ -1008,30 +1002,31 @@
       z-index: 2;
       background: linear-gradient(
         90deg,
-        rgba(0, 0, 0, 0.16) 0%,
-        rgba(0, 0, 0, 0.12) 32%,
+        rgba(0, 0, 0, 0.04) 0%,
+        rgba(0, 0, 0, 0.08) 26%,
         rgba(0, 0, 0, 0.24) 64%,
-        rgba(0, 0, 0, 0.4) 100%
+        rgba(0, 0, 0, 0.42) 100%
       );
     }
 
     .hero-spotlight::before {
       content: "";
       position: absolute;
-      left: clamp(1.5rem, 4vw, 4.5rem);
-      top: 45%;
+      left: clamp(1.6rem, 4.5vw, 5rem);
+      top: 42%;
       z-index: 2;
-      width: min(24rem, 30vw);
-      height: min(15rem, 30vh);
+      width: min(25rem, 31vw);
+      height: min(16rem, 31vh);
       pointer-events: none;
       border-radius: 999px;
       background:
-        radial-gradient(circle at 42% 48%, rgba(0, 255, 156, 0.1), transparent 48%),
-        radial-gradient(circle at 48% 52%, rgba(218, 180, 110, 0.08), transparent 58%);
-      filter: blur(16px);
-      opacity: 0.54;
+        radial-gradient(circle at 42% 48%, rgba(255, 255, 255, 0.09), transparent 42%),
+        radial-gradient(circle at 46% 50%, rgba(0, 255, 156, 0.09), transparent 55%);
+      filter: blur(12px);
+      opacity: 0.62;
       transform: translateY(-50%);
-      mask-image: linear-gradient(180deg, transparent 0%, #000 18%, #000 78%, transparent 100%);
+      mix-blend-mode: screen;
+      mask-image: radial-gradient(ellipse at center, #000 0%, #000 55%, transparent 78%);
     }
 
     .hero-spotlight::after {
