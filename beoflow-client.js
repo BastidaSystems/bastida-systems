@@ -4074,18 +4074,57 @@ function renderSubrecipePicker() {
 }
 
 function renderRecipeIngredientRows() {
+  const isSubrecipeModal = state.modalSection === 'subrecipes';
+
   if (state.recipeIngredientsDraft.length === 0) {
     return `
-      <div class="recipe-ingredient-list recipe-builder-ingredient-list">
-        <div class="recipe-ingredient-table-head recipe-builder-ingredient-table-head">
+      <div class="recipe-ingredient-list recipe-builder-ingredient-list${isSubrecipeModal ? ' recipe-builder-ingredient-list-subrecipe' : ''}">
+        ${isSubrecipeModal ? '' : `<div class="recipe-ingredient-table-head recipe-builder-ingredient-table-head">
           <span>Ingredient</span>
           <span>Qty</span>
           <span>Unit</span>
           <span>Inventory</span>
           <span>Cost</span>
           <span>Actions</span>
-        </div>
+        </div>`}
         <p class="recipe-ingredient-empty">No ingredients added yet.</p>
+      </div>
+    `;
+  }
+
+  if (isSubrecipeModal) {
+    return `
+      <div class="recipe-ingredient-list recipe-builder-ingredient-list recipe-builder-ingredient-list-subrecipe">
+        ${state.recipeIngredientsDraft.map((ingredient, index) => {
+          const lineCost = formatMoney(calculateLineCostFromIngredient(ingredient));
+          return `
+            <article class="subrecipe-ingredient-card recipe-ingredient-row recipe-builder-ingredient-row" data-ingredient-index="${index}">
+              <div class="subrecipe-ingredient-main">
+                ${renderRecipeIngredientNameCell(ingredient, index)}
+                <div class="subrecipe-ingredient-fields">
+                  <label>
+                    <span>Qty</span>
+                    <input type="number" min="0" step="0.01" value="${escapeHtml(ingredient.quantity)}" data-recipe-ingredient-quantity="${index}">
+                  </label>
+                  <label>
+                    <span>Unit</span>
+                    <select data-recipe-ingredient-unit="${index}">
+                      ${renderUnitOptions(ingredient.unit)}
+                    </select>
+                  </label>
+                  ${renderRecipeInventoryStatusCell(ingredient, index)}
+                </div>
+              </div>
+              <div class="subrecipe-ingredient-actions">
+                <div class="recipe-ingredient-line-cost">
+                  <span>Cost</span>
+                  <strong>${escapeHtml(lineCost)}</strong>
+                </div>
+                <button type="button" class="modal-icon-button icon-only-button ingredient-delete-btn" data-recipe-ingredient-remove="${index}" title="Delete ingredient" aria-label="Delete ingredient">${renderIcon('trash')}</button>
+              </div>
+            </article>
+          `;
+        }).join('')}
       </div>
     `;
   }
