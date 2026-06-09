@@ -160,6 +160,28 @@ a:focus-visible {
   max-width: 42rem;
 }
 
+.auth-back-link {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 2.45rem;
+  margin-bottom: 1.25rem;
+  border: 1px solid rgba(31, 138, 112, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--accent-strong);
+  padding: 0 0.95rem;
+  font-size: 0.86rem;
+  font-weight: 800;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.055);
+}
+
+.auth-back-link:hover {
+  border-color: rgba(31, 138, 112, 0.34);
+  background: #fff;
+  color: var(--ink-strong);
+}
+
 .app-logo {
   width: 8rem;
   height: 4.2rem;
