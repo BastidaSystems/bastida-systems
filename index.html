@@ -1007,6 +1007,7 @@
         #000 46%,
         transparent 72%
       );
+      animation: heroWallLightFlicker 5.8s ease-in-out infinite;
     }
 
     .hero-vignette {
@@ -1036,11 +1037,81 @@
       transform: translateY(-50%);
       mix-blend-mode: screen;
       mask-image: radial-gradient(ellipse at center, #000 0%, #000 52%, transparent 78%);
+      animation: heroWallLightPulse 5.8s ease-in-out infinite;
     }
 
     .hero-spotlight::after {
       display: none;
       content: none;
+    }
+
+    @keyframes heroWallLightFlicker {
+      0%, 100% {
+        opacity: 0.64;
+        filter: brightness(1);
+      }
+
+      18% {
+        opacity: 0.7;
+        filter: brightness(1.08);
+      }
+
+      21% {
+        opacity: 0.58;
+        filter: brightness(0.92);
+      }
+
+      24% {
+        opacity: 0.67;
+        filter: brightness(1.05);
+      }
+
+      62% {
+        opacity: 0.62;
+        filter: brightness(0.98);
+      }
+
+      72% {
+        opacity: 0.69;
+        filter: brightness(1.06);
+      }
+
+      75% {
+        opacity: 0.61;
+        filter: brightness(0.96);
+      }
+    }
+
+    @keyframes heroWallLightPulse {
+      0%, 100% {
+        opacity: 0.39;
+        filter: blur(10px) brightness(1);
+      }
+
+      18% {
+        opacity: 0.46;
+        filter: blur(10px) brightness(1.1);
+      }
+
+      21% {
+        opacity: 0.34;
+        filter: blur(10px) brightness(0.92);
+      }
+
+      24% {
+        opacity: 0.43;
+        filter: blur(10px) brightness(1.06);
+      }
+
+      72% {
+        opacity: 0.45;
+        filter: blur(10px) brightness(1.08);
+      }
+
+      75% {
+        opacity: 0.36;
+        filter: blur(10px) brightness(0.95);
+      }
     }
 
     .hero-grid {
@@ -1455,7 +1526,9 @@
       .product-preview img,
       .industry-panel,
       .industry-panel::before,
-      .collaboration-card {
+      .collaboration-card,
+      .hero-light-left,
+      .hero-spotlight::before {
         animation: none;
         transition: none;
       }
