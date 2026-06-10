@@ -69,8 +69,18 @@
     }
 
     .site-nav {
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       justify-content: flex-end;
+      white-space: nowrap;
+    }
+
+    #site-header nav {
+      flex-wrap: nowrap;
+    }
+
+    #site-header nav > div:last-child {
+      flex-wrap: nowrap;
+      white-space: nowrap;
     }
 
     .product-panel {
@@ -1511,10 +1521,11 @@
       }
 
       #site-header nav {
-        align-items: flex-start;
+        align-items: center;
+        justify-content: center !important;
         gap: 0.8rem;
-        padding-top: 0.95rem !important;
-        padding-bottom: 0.95rem !important;
+        padding-top: 0.75rem !important;
+        padding-bottom: 0.75rem !important;
       }
 
       #site-header nav > div:last-child {
@@ -1525,12 +1536,15 @@
         padding-bottom: 0.1rem;
       }
 
+      #site-header nav > div:first-child {
+        width: 100%;
+        justify-content: center;
+      }
+
       #site-header nav > div:last-child > a {
         flex: 0 0 auto;
       }
 
-      .language-picker {
-      }
 
       .hero-vignette {
         background:
