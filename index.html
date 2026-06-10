@@ -1040,13 +1040,20 @@
 
     .hero-vignette {
       z-index: 3;
-      background: linear-gradient(
-        90deg,
-        rgba(0, 0, 0, 0.1) 0%,
-        rgba(0, 0, 0, 0.12) 28%,
-        rgba(0, 0, 0, 0.24) 62%,
-        rgba(0, 0, 0, 0.42) 100%
-      );
+      background:
+        linear-gradient(
+          90deg,
+          rgba(0, 0, 0, 0.32) 0%,
+          rgba(0, 0, 0, 0.26) 28%,
+          rgba(0, 0, 0, 0.38) 62%,
+          rgba(0, 0, 0, 0.58) 100%
+        ),
+        linear-gradient(
+          180deg,
+          rgba(0, 0, 0, 0.22) 0%,
+          rgba(0, 0, 0, 0.16) 42%,
+          rgba(0, 0, 0, 0.42) 100%
+        );
     }
 
     .hero-spotlight::before {
@@ -1518,6 +1525,21 @@
       }
 
       .language-picker {
+      }
+
+      .hero-vignette {
+        background:
+          linear-gradient(
+            180deg,
+            rgba(0, 0, 0, 0.46) 0%,
+            rgba(0, 0, 0, 0.34) 36%,
+            rgba(0, 0, 0, 0.62) 100%
+          ),
+          linear-gradient(
+            90deg,
+            rgba(0, 0, 0, 0.22) 0%,
+            rgba(0, 0, 0, 0.36) 100%
+          );
         padding: 0.22rem;
         margin-left: 0;
         flex: 0 0 auto;
