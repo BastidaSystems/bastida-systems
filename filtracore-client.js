@@ -20,7 +20,8 @@
     authMode: 'signin',
     mobileDrawerOpen: false,
     editing: null,
-    records: createEmptyRecords()
+    records: createEmptyRecords(),
+    importPreview: createEmptyImportPreview()
   };
 
   const MODULES = {
@@ -63,8 +64,13 @@
       title: 'Reports',
       subtitle: 'Reports will use the same workspace data once report generation is added.'
     },
-    settings: {
+    import: {
       index: '08',
+      title: 'Import',
+      subtitle: 'Preview CSV inventory files before creating locations, systems, and filters.'
+    },
+    settings: {
+      index: '09',
       title: 'Settings',
       subtitle: 'Client, workspace, auth, and product connection details.'
     }
@@ -123,6 +129,34 @@
     ['other', 'Other']
   ];
 
+  const IMPORT_COLUMNS = [
+    { key: 'venue', source: 'Venue', target: 'filtracore_locations.name' },
+    { key: 'machine', source: 'Machine', target: 'filtracore_systems.name' },
+    { key: 'sku', source: 'ReOrder#', target: 'filtracore_filters.sku' },
+    { key: 'filterName', source: 'Filter Type', target: 'filtracore_filters.filter_name' },
+    { key: 'filterQuantity', source: 'Filter Amount', target: 'filtracore_filters.filter_quantity' }
+  ];
+
+  const IMPORT_HEADER_ALIASES = {
+    venue: 'venue',
+    location: 'venue',
+    machine: 'machine',
+    equipment: 'machine',
+    system: 'machine',
+    reorder: 'sku',
+    reorderid: 'sku',
+    reorderno: 'sku',
+    reordernumber: 'sku',
+    sku: 'sku',
+    filtertype: 'filterName',
+    filtername: 'filterName',
+    filter: 'filterName',
+    filteramount: 'filterQuantity',
+    filterquantity: 'filterQuantity',
+    quantity: 'filterQuantity',
+    amount: 'filterQuantity'
+  };
+
   const els = {};
 
   function createEmptyRecords() {
@@ -136,6 +170,27 @@
       maintenanceLogs: [],
       alerts: [],
       reports: []
+    };
+  }
+
+  function createEmptyImportPreview() {
+    return {
+      status: 'idle',
+      fileName: '',
+      rows: [],
+      locations: [],
+      systems: [],
+      filters: [],
+      groups: [],
+      detected: {
+        locations: 0,
+        systems: 0,
+        filters: 0
+      },
+      validations: [],
+      warnings: [],
+      duplicates: [],
+      errors: []
     };
   }
 
@@ -374,6 +429,7 @@
     state.workspaces = [];
     state.activeWorkspace = null;
     state.records = createEmptyRecords();
+    state.importPreview = createEmptyImportPreview();
     localStorage.removeItem(config.activeClientStorageKey);
     localStorage.removeItem(config.activeWorkspaceStorageKey);
     renderAuthView();
@@ -386,6 +442,7 @@
     state.workspaces = [];
     state.activeWorkspace = null;
     state.records = createEmptyRecords();
+    state.importPreview = createEmptyImportPreview();
 
     if (!state.user) {
       renderAuthView();
@@ -511,7 +568,7 @@
     const client = initializeSupabase();
     const primary = await client
       .from('clients')
-      .select('id, name, legal_name, client_type, status, created_at')
+      .select('id, name, legal_name, client_type, status, lifecycle_state, created_at')
       .in('id', clientIds)
       .eq('status', 'active')
       .order('created_at', { ascending: true });
@@ -520,6 +577,19 @@
 
     if (!String(primary.error.message || '').toLowerCase().includes('column')) {
       throw primary.error;
+    }
+
+    const lifecycleFallback = await client
+      .from('clients')
+      .select('id, name, status, lifecycle_state, created_at')
+      .in('id', clientIds)
+      .eq('status', 'active')
+      .order('created_at', { ascending: true });
+
+    if (!lifecycleFallback.error) return lifecycleFallback.data || [];
+
+    if (!isMissingColumnError(lifecycleFallback.error)) {
+      throw lifecycleFallback.error;
     }
 
     const fallback = await client
@@ -584,23 +654,36 @@
       name,
       client_type: 'business',
       status: 'active',
+      lifecycle_state: 'pending_onboarding',
       created_by: state.user.id
     };
 
     let insertResult = await client
       .from('clients')
       .insert(clientPayload)
-      .select('id, name, legal_name, client_type, status, created_at')
+      .select('id, name, legal_name, client_type, status, lifecycle_state, created_at')
       .single();
 
     if (insertResult.error && isMissingColumnError(insertResult.error)) {
       const fallbackPayload = { ...clientPayload };
       delete fallbackPayload.client_type;
+      delete fallbackPayload.lifecycle_state;
+
+      const lifecyclePayload = { ...clientPayload };
+      delete lifecyclePayload.client_type;
       insertResult = await client
         .from('clients')
-        .insert(fallbackPayload)
-        .select('id, name, status, created_at')
+        .insert(lifecyclePayload)
+        .select('id, name, status, lifecycle_state, created_at')
         .single();
+
+      if (insertResult.error && isMissingColumnError(insertResult.error)) {
+        insertResult = await client
+          .from('clients')
+          .insert(fallbackPayload)
+          .select('id, name, status, created_at')
+          .single();
+      }
     }
 
     if (insertResult.error) throw insertResult.error;
@@ -637,6 +720,35 @@
     };
   }
 
+  async function activatePendingClientLifecycle(clientId) {
+    if (!clientId) return null;
+
+    const client = initializeSupabase();
+    const { data, error } = await client
+      .from('clients')
+      .update({ lifecycle_state: 'active' })
+      .eq('id', clientId)
+      .eq('lifecycle_state', 'pending_onboarding')
+      .select('id, lifecycle_state')
+      .maybeSingle();
+
+    if (error && error.code !== 'PGRST116') throw error;
+
+    if (data) {
+      state.userClients = state.userClients.map(clientRecord => (
+        clientRecord.id === data.id
+          ? { ...clientRecord, ...data }
+          : clientRecord
+      ));
+
+      if (state.activeClient?.id === data.id) {
+        state.activeClient = { ...state.activeClient, ...data };
+      }
+    }
+
+    return data;
+  }
+
   async function setActiveClient(clientOrId) {
     const clientId = typeof clientOrId === 'string' ? clientOrId : clientOrId?.id;
     const clientRecord = state.userClients.find(row => row.id === clientId) || clientOrId;
@@ -654,6 +766,7 @@
     state.activeClient = clientRecord;
     state.activeWorkspace = null;
     state.records = createEmptyRecords();
+    state.importPreview = createEmptyImportPreview();
     localStorage.setItem(config.activeClientStorageKey, clientRecord.id);
     await loadWorkspaces();
     await routeAfterClientSelected();
@@ -684,6 +797,7 @@
     if (!workspace || !workspace.id) return null;
 
     state.activeWorkspace = workspace;
+    state.importPreview = createEmptyImportPreview();
     localStorage.setItem(config.activeWorkspaceStorageKey, workspace.id);
     await loadWorkspaceData();
     renderWorkspace();
@@ -919,6 +1033,7 @@
     }
 
     await client.from('filtracore_workspaces').select('id').eq('id', workspace.id).single();
+    await activatePendingClientLifecycle(clientId);
     return workspace;
   }
 
@@ -1374,6 +1489,15 @@
       return;
     }
 
+    const clearImportButton = event.target.closest('[data-clear-import-preview]');
+    if (clearImportButton) {
+      event.preventDefault();
+      state.importPreview = createEmptyImportPreview();
+      renderSections();
+      switchSection('import', false);
+      return;
+    }
+
     const resolveButton = event.target.closest('[data-resolve-alert]');
     if (!resolveButton) return;
     event.preventDefault();
@@ -1386,6 +1510,44 @@
     } finally {
       setBusy(resolveButton, false);
     }
+  }
+
+  async function handleWorkspaceChange(event) {
+    const fileInput = event.target.closest('[data-csv-import-file]');
+    if (!fileInput) return;
+
+    const file = fileInput.files?.[0];
+    if (!file) return;
+
+    state.importPreview = {
+      ...createEmptyImportPreview(),
+      status: 'reading',
+      fileName: file.name
+    };
+    renderSections();
+    switchSection('import', false);
+
+    try {
+      validateCsvFile(file);
+      const csvText = await readCsvFile(file);
+      state.importPreview = {
+        ...state.importPreview,
+        status: 'parsing'
+      };
+      renderSections();
+      switchSection('import', false);
+      state.importPreview = buildImportPreview(csvText, file.name);
+    } catch (error) {
+      state.importPreview = {
+        ...createEmptyImportPreview(),
+        status: 'error',
+        fileName: file.name,
+        errors: [error.message || 'Could not read the CSV file.']
+      };
+    }
+
+    renderSections();
+    switchSection('import', false);
   }
 
   async function refreshWorkspace() {
@@ -1531,6 +1693,7 @@
       if (key === 'maintenance') section.innerHTML = renderMaintenanceSection();
       if (key === 'alerts') section.innerHTML = renderAlertsSection();
       if (key === 'reports') section.innerHTML = renderReportsSection();
+      if (key === 'import') section.innerHTML = renderImportSection();
       if (key === 'settings') section.innerHTML = renderSettingsSection();
     });
   }
@@ -1901,6 +2064,229 @@
     `;
   }
 
+  function renderImportSection() {
+    const preview = state.importPreview || createEmptyImportPreview();
+    const parsedText = preview.rows.length ? `${preview.rows.length} rows parsed` : 'Preview only';
+    const statusText = previewStatusText(preview) || parsedText;
+
+    return `
+      ${renderSectionHeader('import', statusText)}
+      <div class="import-layout">
+        <section class="module-form import-upload-panel" aria-labelledby="import-upload-title">
+          <div>
+            <h4 id="import-upload-title">CSV import preview</h4>
+            <p class="muted-note">Upload a CSV inventory file to preview locations, systems, and filters. This module does not save or import records yet.</p>
+          </div>
+          <label class="import-dropzone">
+            <span>Upload CSV</span>
+            <strong>${preview.fileName ? escapeHtml(preview.fileName) : 'Choose inventory file'}</strong>
+            <small>Required columns: Venue, Machine, ReOrder#, Filter Type, Filter Amount</small>
+            <input type="file" accept=".csv,text/csv" data-csv-import-file aria-label="Upload filter inventory CSV">
+          </label>
+          <div class="import-upload-notes">
+            <span>No Supabase writes</span>
+            <span>Preview only</span>
+            <span>CSV validation enabled</span>
+          </div>
+          <div class="import-mapping-grid" aria-label="CSV column mapping">
+            ${IMPORT_COLUMNS.map(column => `
+              <div class="import-mapping-item">
+                <span>${escapeHtml(column.source)}</span>
+                <strong>${escapeHtml(column.target)}</strong>
+              </div>
+            `).join('')}
+          </div>
+          <div class="inline-actions">
+            <button type="button" class="secondary-action compact-action" data-clear-import-preview${preview.fileName || preview.errors.length ? '' : ' disabled'}>Clear preview</button>
+          </div>
+        </section>
+        <section class="record-panel import-preview-panel" aria-live="polite">
+          <div class="import-preview-heading">
+            <div>
+              <h4>Import preview</h4>
+              <p>${escapeHtml(importPreviewDescription(preview))}</p>
+            </div>
+            <span class="status-badge status-${escapeHtml(previewStatusTone(preview))}">${escapeHtml(previewStatusLabel(preview))}</span>
+          </div>
+          ${renderImportPreview(preview)}
+        </section>
+      </div>
+    `;
+  }
+
+  function renderImportPreview(preview) {
+    if (preview.status === 'reading' || preview.status === 'parsing') {
+      return renderImportLoadingState(preview.status);
+    }
+
+    if (!preview.fileName && !preview.errors.length) {
+      return `
+        ${emptyState('Upload a CSV to start', 'The preview will show locations, systems, filters, duplicate checks, and warnings before any database write exists.')}
+        ${renderImportEmptyGuide()}
+      `;
+    }
+
+    return `
+      ${renderImportValidationMessages(preview)}
+      ${renderImportNoticeList('Errors', preview.errors, 'error')}
+      ${renderImportNoticeList('Warnings', preview.warnings, 'warning')}
+      ${renderImportNoticeList('Duplicates detected', preview.duplicates, 'duplicate')}
+      <div class="import-summary-grid">
+        ${metricCard('Locations detected', String(preview.detected.locations), 'Unique Venue values')}
+        ${metricCard('Systems detected', String(preview.detected.systems), 'Unique Venue + Machine pairs')}
+        ${metricCard('Filters detected', String(preview.detected.filters), 'Unique filter records')}
+        ${metricCard('Warnings', String(preview.warnings.length), preview.warnings.length ? 'Rows need review' : 'No row warnings')}
+        ${metricCard('Duplicates', String(preview.duplicates.length), preview.duplicates.length ? 'CSV or workspace matches' : 'No duplicates detected')}
+      </div>
+      ${renderGroupedImportPreview(preview)}
+    `;
+  }
+
+  function renderImportLoadingState(status) {
+    const title = status === 'parsing' ? 'Parsing CSV' : 'Reading file';
+    const copy = status === 'parsing'
+      ? 'Validating columns, rows, duplicates, warnings, and grouped inventory preview.'
+      : 'Loading the selected CSV in the browser. No records are being saved.';
+    return `
+      <div class="import-loading-state" role="status">
+        <span class="import-spinner" aria-hidden="true"></span>
+        <div>
+          <h5>${escapeHtml(title)}</h5>
+          <p>${escapeHtml(copy)}</p>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderImportEmptyGuide() {
+    return `
+      <div class="import-empty-guide">
+        <article>
+          <strong>Expected CSV</strong>
+          <span>Venue, Machine, ReOrder#, Filter Type, Filter Amount</span>
+        </article>
+        <article>
+          <strong>Preview output</strong>
+          <span>Location -> System -> Filter, with validation messages before any import action exists.</span>
+        </article>
+      </div>
+    `;
+  }
+
+  function renderImportValidationMessages(preview) {
+    if (!preview.validations.length) return '';
+    return `
+      <div class="import-validation-list" aria-label="CSV validation messages">
+        ${preview.validations.map(item => `
+          <div class="import-validation-item import-validation-${escapeHtml(item.type || 'info')}">
+            <strong>${escapeHtml(item.label || 'Validation')}</strong>
+            <span>${escapeHtml(item.message || '')}</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  function renderGroupedImportPreview(preview) {
+    if (preview.errors.length && !preview.groups.length) {
+      return emptyState('No preview rows available', 'Fix the CSV validation errors and upload the file again.');
+    }
+
+    if (!preview.groups.length) {
+      return emptyState('No valid filters detected', 'Rows with missing required values or invalid quantities are excluded from the grouped preview.');
+    }
+
+    return `
+      <div class="import-grouped-preview" aria-label="Grouped CSV preview">
+        ${preview.groups.map(location => `
+          <article class="import-location-group">
+            <div class="import-group-header">
+              <div>
+                <span>Location</span>
+                <strong>${escapeHtml(location.name)}</strong>
+              </div>
+              <small>${escapeHtml(location.systems.length)} systems</small>
+            </div>
+            <div class="import-system-list">
+              ${location.systems.map(system => `
+                <section class="import-system-group">
+                  <div class="import-system-header">
+                    <div>
+                      <span>System</span>
+                      <strong>${escapeHtml(system.name)}</strong>
+                    </div>
+                    <small>${escapeHtml(system.filters.length)} filters</small>
+                  </div>
+                  <div class="import-filter-list">
+                    ${system.filters.map(filter => `
+                      <div class="import-filter-row">
+                        <div>
+                          <strong>${escapeHtml(filter.filterName)}</strong>
+                          <span>SKU ${escapeHtml(filter.sku)}</span>
+                        </div>
+                        <div class="import-filter-meta">
+                          <span>Qty ${escapeHtml(filter.filterQuantity)}</span>
+                          <span>Rows ${escapeHtml(filter.sourceRows.join(', '))}</span>
+                        </div>
+                      </div>
+                    `).join('')}
+                  </div>
+                </section>
+              `).join('')}
+            </div>
+          </article>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  function renderImportNoticeList(title, notices, type) {
+    if (!notices.length) return '';
+    return `
+      <div class="import-notice-list import-notice-${escapeHtml(type)}">
+        <strong>${escapeHtml(title)}</strong>
+        <ul>
+          ${notices.map(notice => `<li>${escapeHtml(importNoticeText(notice))}</li>`).join('')}
+        </ul>
+      </div>
+    `;
+  }
+
+  function importNoticeText(notice) {
+    if (typeof notice === 'string') return notice;
+    const rows = notice.rows?.length ? ` Rows: ${notice.rows.join(', ')}.` : '';
+    return `${notice.message || ''}${rows}`;
+  }
+
+  function renderImportEntityTable(title, items, columns) {
+    if (!items.length) return `
+      <article class="import-preview-section">
+        <h5>${escapeHtml(title)}</h5>
+        ${emptyState('Nothing new detected', 'Existing records and invalid rows are skipped in this preview.')}
+      </article>
+    `;
+
+    return `
+      <article class="import-preview-section">
+        <h5>${escapeHtml(title)}</h5>
+        <div class="import-table-wrap">
+          <table class="import-table">
+            <thead>
+              <tr>${columns.map(([, label]) => `<th>${escapeHtml(label)}</th>`).join('')}</tr>
+            </thead>
+            <tbody>
+              ${items.map(item => `
+                <tr>
+                  ${columns.map(([key]) => `<td>${escapeHtml(formatImportCellValue(item[key]))}</td>`).join('')}
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </article>
+    `;
+  }
+
   function renderSettingsSection() {
     const workspace = state.activeWorkspace;
     return `
@@ -1926,6 +2312,432 @@
         </article>
       </div>
     `;
+  }
+
+  function buildImportPreview(csvText, fileName = '') {
+    const preview = createEmptyImportPreview();
+    preview.fileName = fileName;
+    preview.status = 'ready';
+
+    const csvRows = parseCsv(csvText).filter(row => row.some(value => cleanImportValue(value)));
+    if (!csvRows.length) {
+      preview.status = 'error';
+      preview.errors.push('The CSV file is empty.');
+      preview.validations.push({ type: 'error', label: 'File content', message: 'The CSV file has no readable rows.' });
+      return preview;
+    }
+
+    const header = csvRows[0];
+    const columnIndexes = mapImportColumns(header);
+    const missingColumns = IMPORT_COLUMNS.filter(column => columnIndexes[column.key] == null);
+    if (missingColumns.length) {
+      preview.status = 'error';
+      preview.errors.push(`Missing required columns: ${missingColumns.map(column => column.source).join(', ')}.`);
+      preview.validations.push({ type: 'error', label: 'Required columns', message: `Missing ${missingColumns.map(column => column.source).join(', ')}.` });
+      return preview;
+    }
+    preview.validations.push({ type: 'success', label: 'Required columns', message: 'All required CSV columns were detected.' });
+
+    const dataRows = csvRows.slice(1);
+    if (!dataRows.length) {
+      preview.status = 'error';
+      preview.errors.push('The CSV has headers but no inventory rows.');
+      preview.validations.push({ type: 'error', label: 'Inventory rows', message: 'The file only contains headers.' });
+      return preview;
+    }
+    preview.validations.push({ type: 'success', label: 'Inventory rows', message: `${dataRows.length} data rows found.` });
+
+    preview.rows = dataRows.map((values, index) => normalizeImportRow(values, columnIndexes, index + 2));
+    preview.rows.forEach(row => {
+      if (row.missingFields.length) {
+        preview.warnings.push({
+          message: `Row ${row.lineNumber} is missing ${row.missingFields.join(', ')}.`,
+          rows: [row.lineNumber]
+        });
+      }
+      if (row.invalidQuantity) {
+        preview.warnings.push({
+          message: `Row ${row.lineNumber} has an invalid Filter Amount. Use a positive whole number.`,
+          rows: [row.lineNumber]
+        });
+      }
+    });
+
+    const validRows = preview.rows.filter(row => row.isValid);
+    const invalidRows = preview.rows.length - validRows.length;
+    if (invalidRows) {
+      preview.validations.push({ type: 'warning', label: 'Skipped rows', message: `${invalidRows} rows have missing fields or invalid quantities.` });
+    }
+    if (!validRows.length) {
+      preview.status = 'error';
+      preview.errors.push('No valid rows are ready to preview. Fix the warnings and upload the CSV again.');
+      preview.validations.push({ type: 'error', label: 'Valid rows', message: 'No rows passed validation.' });
+      return preview;
+    }
+    preview.validations.push({ type: 'success', label: 'Valid rows', message: `${validRows.length} rows are available for preview.` });
+
+    if (state.activeWorkspace?.mode && state.activeWorkspace.mode !== 'business') {
+      preview.warnings.push('This CSV maps Venue to filtracore_locations, which is intended for business workspaces. Home workspaces use properties.');
+    }
+
+    preview.groups = buildImportPreviewGroups(validRows);
+    preview.detected = {
+      locations: preview.groups.length,
+      systems: preview.groups.reduce((total, location) => total + location.systems.length, 0),
+      filters: preview.groups.reduce((total, location) => total + location.systems.reduce((systemTotal, system) => systemTotal + system.filters.length, 0), 0)
+    };
+    collectImportLocations(preview, validRows);
+    collectImportSystems(preview, validRows);
+    collectImportFilters(preview, validRows);
+    return preview;
+  }
+
+  function validateCsvFile(file) {
+    const name = String(file?.name || '');
+    const type = String(file?.type || '');
+    if (!name.toLowerCase().endsWith('.csv') && type && type !== 'text/csv' && type !== 'application/vnd.ms-excel') {
+      throw new Error('Upload a CSV file with a .csv extension.');
+    }
+    if (file?.size === 0) {
+      throw new Error('The selected CSV file is empty.');
+    }
+  }
+
+  function buildImportPreviewGroups(rows) {
+    const locationMap = new Map();
+
+    rows.forEach(row => {
+      const locationKey = canonicalImportKey(row.venue);
+      const systemKey = canonicalImportKey(row.machine);
+      const filterKey = `${canonicalImportKey(row.sku)}|${canonicalImportKey(row.filterName)}`;
+
+      if (!locationMap.has(locationKey)) {
+        locationMap.set(locationKey, {
+          name: row.venue,
+          systems: [],
+          systemMap: new Map()
+        });
+      }
+
+      const location = locationMap.get(locationKey);
+      if (!location.systemMap.has(systemKey)) {
+        const system = {
+          name: row.machine,
+          filters: [],
+          filterMap: new Map()
+        };
+        location.systemMap.set(systemKey, system);
+        location.systems.push(system);
+      }
+
+      const system = location.systemMap.get(systemKey);
+      if (!system.filterMap.has(filterKey)) {
+        const filter = {
+          sku: row.sku,
+          filterName: row.filterName,
+          filterQuantity: row.filterQuantity,
+          sourceRows: []
+        };
+        system.filterMap.set(filterKey, filter);
+        system.filters.push(filter);
+      }
+
+      system.filterMap.get(filterKey).sourceRows.push(row.lineNumber);
+    });
+
+    return Array.from(locationMap.values()).map(location => ({
+      name: location.name,
+      systems: location.systems.map(system => ({
+        name: system.name,
+        filters: system.filters.map(filter => ({
+          sku: filter.sku,
+          filterName: filter.filterName,
+          filterQuantity: filter.filterQuantity,
+          sourceRows: filter.sourceRows
+        }))
+      }))
+    }));
+  }
+
+  function parseCsv(text) {
+    const rows = [];
+    let row = [];
+    let field = '';
+    let inQuotes = false;
+    const content = String(text || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+
+    for (let index = 0; index < content.length; index += 1) {
+      const char = content[index];
+
+      if (inQuotes) {
+        if (char === '"' && content[index + 1] === '"') {
+          field += '"';
+          index += 1;
+        } else if (char === '"') {
+          inQuotes = false;
+        } else {
+          field += char;
+        }
+        continue;
+      }
+
+      if (char === '"') {
+        inQuotes = true;
+      } else if (char === ',') {
+        row.push(field);
+        field = '';
+      } else if (char === '\n') {
+        row.push(field);
+        rows.push(row);
+        row = [];
+        field = '';
+      } else {
+        field += char;
+      }
+    }
+
+    if (field !== '' || row.length) {
+      row.push(field);
+      rows.push(row);
+    }
+
+    return rows;
+  }
+
+  function readCsvFile(file) {
+    if (typeof file.text === 'function') return file.text();
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || ''));
+      reader.onerror = () => reject(reader.error || new Error('Could not read file.'));
+      reader.readAsText(file);
+    });
+  }
+
+  function mapImportColumns(headerRow) {
+    return headerRow.reduce((columns, label, index) => {
+      const normalized = normalizeImportHeader(label);
+      const key = IMPORT_HEADER_ALIASES[normalized];
+      if (key && columns[key] == null) columns[key] = index;
+      return columns;
+    }, {});
+  }
+
+  function normalizeImportRow(values, columnIndexes, lineNumber) {
+    const row = {
+      lineNumber,
+      venue: cleanImportValue(values[columnIndexes.venue]),
+      machine: cleanImportValue(values[columnIndexes.machine]),
+      sku: cleanImportValue(values[columnIndexes.sku]),
+      filterName: cleanImportValue(values[columnIndexes.filterName]),
+      filterQuantity: parseImportQuantity(cleanImportValue(values[columnIndexes.filterQuantity])),
+      rawFilterQuantity: cleanImportValue(values[columnIndexes.filterQuantity]),
+      missingFields: [],
+      invalidQuantity: false,
+      isValid: true
+    };
+
+    if (!row.venue) row.missingFields.push('Venue');
+    if (!row.machine) row.missingFields.push('Machine');
+    if (!row.sku) row.missingFields.push('ReOrder#');
+    if (!row.filterName) row.missingFields.push('Filter Type');
+    if (row.rawFilterQuantity && (row.filterQuantity == null || row.filterQuantity < 1)) row.invalidQuantity = true;
+    if (!row.rawFilterQuantity) row.missingFields.push('Filter Amount');
+    row.isValid = row.missingFields.length === 0 && !row.invalidQuantity;
+    return row;
+  }
+
+  function collectImportLocations(preview, rows) {
+    const existingLocations = new Map(state.records.locations.map(location => [
+      canonicalImportKey(location.name),
+      location
+    ]));
+    const locationMap = new Map();
+
+    rows.forEach(row => {
+      const key = canonicalImportKey(row.venue);
+      if (!locationMap.has(key)) {
+        locationMap.set(key, {
+          name: row.venue,
+          sourceRows: []
+        });
+      }
+      locationMap.get(key).sourceRows.push(row.lineNumber);
+    });
+
+    locationMap.forEach((location, key) => {
+      if (location.sourceRows.length > 1) {
+        preview.duplicates.push({
+          message: `Venue "${location.name}" appears more than once in the CSV. Preview keeps one location.`,
+          rows: location.sourceRows
+        });
+      }
+      if (existingLocations.has(key)) {
+        preview.duplicates.push({
+          message: `Location "${location.name}" already exists in this workspace and will not be created again.`,
+          rows: location.sourceRows
+        });
+        return;
+      }
+      preview.locations.push(location);
+    });
+  }
+
+  function collectImportSystems(preview, rows) {
+    const existingLocationNameById = new Map(state.records.locations.map(location => [
+      location.id,
+      canonicalImportKey(location.name)
+    ]));
+    const existingSystemKeys = new Set(state.records.systems.map(system => {
+      const locationKey = system.location_id ? existingLocationNameById.get(system.location_id) : '';
+      return locationKey ? `${locationKey}|${canonicalImportKey(system.name)}` : '';
+    }).filter(Boolean));
+    const systemMap = new Map();
+
+    rows.forEach(row => {
+      const key = `${canonicalImportKey(row.venue)}|${canonicalImportKey(row.machine)}`;
+      if (!systemMap.has(key)) {
+        systemMap.set(key, {
+          name: row.machine,
+          locationName: row.venue,
+          sourceRows: []
+        });
+      }
+      systemMap.get(key).sourceRows.push(row.lineNumber);
+    });
+
+    systemMap.forEach((system, key) => {
+      if (system.sourceRows.length > 1) {
+        preview.duplicates.push({
+          message: `Machine "${system.name}" at "${system.locationName}" appears in multiple rows. Preview keeps one system and attaches the filters to it.`,
+          rows: system.sourceRows
+        });
+      }
+      if (existingSystemKeys.has(key)) {
+        preview.duplicates.push({
+          message: `System "${system.name}" already exists at "${system.locationName}" and will not be created again.`,
+          rows: system.sourceRows
+        });
+        return;
+      }
+      preview.systems.push(system);
+    });
+  }
+
+  function collectImportFilters(preview, rows) {
+    const existingLocationNameById = new Map(state.records.locations.map(location => [
+      location.id,
+      canonicalImportKey(location.name)
+    ]));
+    const existingSystemKeyById = new Map(state.records.systems.map(system => {
+      const locationKey = system.location_id ? existingLocationNameById.get(system.location_id) : '';
+      return [
+        system.id,
+        locationKey ? `${locationKey}|${canonicalImportKey(system.name)}` : ''
+      ];
+    }));
+    const existingFilterKeys = new Set(state.records.filters.map(filter => {
+      const systemKey = existingSystemKeyById.get(filter.system_id);
+      if (!systemKey) return '';
+      return `${systemKey}|${canonicalImportKey(filter.sku)}|${canonicalImportKey(filter.filter_name)}`;
+    }).filter(Boolean));
+    const filterMap = new Map();
+
+    rows.forEach(row => {
+      const systemKey = `${canonicalImportKey(row.venue)}|${canonicalImportKey(row.machine)}`;
+      const filterKey = `${systemKey}|${canonicalImportKey(row.sku)}|${canonicalImportKey(row.filterName)}`;
+      const existingPreview = filterMap.get(filterKey);
+
+      if (existingPreview) {
+        existingPreview.sourceRows.push(row.lineNumber);
+        preview.duplicates.push({
+          message: `Filter "${row.filterName}" with SKU "${row.sku}" appears more than once for "${row.machine}". Preview keeps one filter.`,
+          rows: existingPreview.sourceRows
+        });
+        if (existingPreview.filterQuantity !== row.filterQuantity) {
+          preview.warnings.push({
+            message: `Filter "${row.filterName}" has conflicting quantities in the CSV.`,
+            rows: existingPreview.sourceRows
+          });
+        }
+        return;
+      }
+
+      if (existingFilterKeys.has(filterKey)) {
+        preview.duplicates.push({
+          message: `Filter "${row.filterName}" with SKU "${row.sku}" already exists for "${row.machine}" and will not be created again.`,
+          rows: [row.lineNumber]
+        });
+        return;
+      }
+
+      const item = {
+        sku: row.sku,
+        filterName: row.filterName,
+        filterQuantity: row.filterQuantity,
+        systemName: row.machine,
+        locationName: row.venue,
+        sourceRows: [row.lineNumber]
+      };
+      filterMap.set(filterKey, item);
+      preview.filters.push(item);
+    });
+  }
+
+  function normalizeImportHeader(value) {
+    return String(value || '')
+      .replace(/^\uFEFF/, '')
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, '');
+  }
+
+  function cleanImportValue(value) {
+    return String(value == null ? '' : value).trim();
+  }
+
+  function parseImportQuantity(value) {
+    if (!value) return null;
+    const parsed = Number(value);
+    if (!Number.isFinite(parsed) || !Number.isInteger(parsed) || parsed < 1) return null;
+    return parsed;
+  }
+
+  function canonicalImportKey(value) {
+    return cleanImportValue(value).toLowerCase().replace(/\s+/g, ' ');
+  }
+
+  function formatImportCellValue(value) {
+    if (Array.isArray(value)) return value.join(', ');
+    return value == null || value === '' ? '--' : value;
+  }
+
+  function importPreviewDescription(preview) {
+    if (preview.status === 'reading') return `Reading ${preview.fileName}.`;
+    if (preview.status === 'parsing') return `Parsing ${preview.fileName}.`;
+    if (preview.fileName && preview.errors.length) return `Validation issues found in ${preview.fileName}.`;
+    if (preview.fileName) return `Preview generated from ${preview.fileName}.`;
+    return 'No CSV selected yet.';
+  }
+
+  function previewStatusText(preview) {
+    if (preview.status === 'reading') return 'Reading file';
+    if (preview.status === 'parsing') return 'Parsing CSV';
+    if (preview.errors.length) return 'Needs review';
+    return preview.rows.length ? `${preview.rows.length} rows parsed` : 'Preview only';
+  }
+
+  function previewStatusTone(preview) {
+    if (preview.status === 'reading' || preview.status === 'parsing') return 'unknown';
+    if (preview.errors.length) return 'warning';
+    return preview.rows.length ? 'active' : 'unknown';
+  }
+
+  function previewStatusLabel(preview) {
+    if (preview.status === 'reading') return 'Reading';
+    if (preview.status === 'parsing') return 'Parsing';
+    if (preview.errors.length) return 'Review';
+    return preview.rows.length ? 'Ready' : 'Waiting';
   }
 
   function metricCard(label, value, copy) {
@@ -2450,6 +3262,7 @@
     els.signOutButton.addEventListener('click', signOut);
     els.workspaceView.addEventListener('submit', handleWorkspaceSubmit);
     els.workspaceView.addEventListener('click', handleWorkspaceClick);
+    els.workspaceView.addEventListener('change', handleWorkspaceChange);
     els.refreshWorkspaceButton.addEventListener('click', refreshWorkspace);
 
     els.activeWorkspaceSelect.addEventListener('change', event => {
@@ -2664,7 +3477,9 @@
     createPsiReading,
     createMaintenanceLog,
     resolveAlert,
-    getPsiStatus
+    getPsiStatus,
+    parseCsv,
+    buildImportPreview
   };
 
   document.addEventListener('DOMContentLoaded', boot);
