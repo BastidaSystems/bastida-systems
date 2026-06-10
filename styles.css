@@ -542,7 +542,14 @@ footer {
   }
 
   .hero {
-    padding-top: 54px;
+    align-items: start;
+    min-height: calc(100vh - 210px);
+    padding-top: 18px;
+    padding-bottom: 44px;
+  }
+
+  .hero > div:first-child {
+    margin-top: 0;
   }
 
   .hero h1 {
