@@ -1037,33 +1037,6 @@
       background: #00ff9c;
       box-shadow: 0 0 18px rgba(0, 255, 156, 0.82);
     }
-
-    .language-picker {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.45rem;
-      min-height: 2.45rem;
-      padding: 0.28rem 0.35rem 0.28rem 0.75rem;
-      border: 1px solid #d1d5db;
-      border-radius: 8px;
-      background: #fff;
-      color: #4b5563;
-      font-size: 0.875rem;
-      font-weight: 500;
-      text-transform: uppercase;
-    }
-
-    .language-picker select {
-      min-width: 3.25rem;
-      border: 0;
-      border-radius: 6px;
-      background: #10182d;
-      color: #fff;
-      font-size: 0.78rem;
-      font-weight: 800;
-      cursor: pointer;
-    }
-
     .collaboration-card {
       position: relative;
       overflow: hidden;
@@ -1173,49 +1146,7 @@
 
       .hero-system-points {
         width: min(100%, 20.5rem);
-      }
-
-      #site-header nav {
-        align-items: flex-start;
-        gap: 0.8rem;
-        padding-top: 0.95rem !important;
-        padding-bottom: 0.95rem !important;
-      }
-
-      #site-header .site-menu-links {
-        width: 100%;
-        justify-content: flex-start;
-        gap: 1rem;
-        overflow-x: auto;
-        padding-bottom: 0.1rem;
-      }
-
-      #site-header .site-menu-links > a {
-        flex: 0 0 auto;
-      }
-
-      .language-picker {
-        padding: 0.22rem;
-        flex: 0 0 auto;
-      }
-
-      .language-picker span {
-        display: none;
-      }
-    }
-
-    @media print {
-      #site-header,
-      #site-header nav {
-        position: static !important;
-        top: auto !important;
-        z-index: auto !important;
-      }
-
-      #site-header nav {
-        break-after: avoid;
-      }
-
+      }    }
       .fade-in {
         opacity: 1 !important;
         transform: none !important;
@@ -1283,6 +1214,7 @@
 <body class="text-white">
 
   <div id="site-header"></div>
+  <script src="site-header.js" defer></script>
 
   <script>
     const siteTranslations = {
@@ -1561,89 +1493,24 @@
       }
     };
 
-    const languagePicker = `
-      <label class="language-picker">
-        <span data-i18n="nav.language">Language</span>
-        <select id="language-select" aria-label="Language selector" data-i18n-aria-label="nav.languageSelector">
-          <option value="en">EN</option>
-          <option value="es">ES</option>
-        </select>
-      </label>
-    `;
-
-    const sharedHeader = `
-      <nav class="flex justify-between items-center px-4 md:px-8 py-5 border-b border-gray-200 bg-white sticky top-0 z-50">
-        <div class="flex items-center gap-3">
-          <a href="index.html" class="flex items-center gap-3">
-            <img src="img/logo_bastida_sys.png" alt="Bastida Systems Logo" class="h-8 w-auto object-contain">
-            <span class="hidden md:inline text-base font-semibold tracking-[0.08em] text-black uppercase">Bastida Systems LLC</span>
-          </a>
-        </div>
-
-        <div class="flex items-center gap-4 md:gap-8 text-sm font-medium text-gray-600">
-          <a href="index.html" class="hover:text-black transition">Home</a>
-          <a href="systems.html" class="hover:text-black transition">Solutions</a>
-          <a href="industries.html" class="hover:text-black transition">Industries</a>
-          <a href="about.html" class="hover:text-black transition">About Us</a>
-          <a href="index.html#contact" class="hover:text-black transition">Contact</a>
-          <a href="login.html" class="hover:text-black transition">Login</a>
-        </div>
-      </nav>
-    `;
-
     const headerTarget = document.getElementById('site-header');
 
-    const enhanceHeader = () => {
-      const navLinks = headerTarget.querySelector('.site-menu-links');
-      if (!navLinks) return;
-
-      navLinks.classList.add('site-nav');
-
-      const navMap = {
-        'index.html': 'nav.home',
-        'systems.html': 'nav.solutions',
-        'industries.html': 'nav.industries',
-        'about.html': 'nav.aboutUs',
-        'index.html#contact': 'nav.contact',
-        'login.html': 'nav.login',
-        'websites.html': 'nav.websites',
-        'portal.html': 'nav.portal'
-      };
-
-      navLinks.querySelectorAll('a').forEach(link => {
-        const key = navMap[link.getAttribute('href')];
-        if (key) {
-          link.dataset.i18n = key;
-        }
-      });
-
-      if (!headerTarget.querySelector('#language-select')) {
-        navLinks.insertAdjacentHTML('beforeend', languagePicker);
-      }
-
+    const bindHeaderLanguage = () => {
       const languageSelect = document.getElementById('language-select');
-      if (languageSelect) {
-        languageSelect.addEventListener('change', event => {
-          applyLanguage(event.target.value);
-        });
-      }
+      if (!languageSelect || languageSelect.dataset.languageBound) return;
+
+      languageSelect.addEventListener('change', event => {
+        applyLanguage(event.target.value);
+      });
+      languageSelect.dataset.languageBound = 'true';
     };
 
-    fetch('header.html')
-      .then(response => {
-        if (!response.ok) throw new Error('header.html not found');
-        return response.text();
-      })
-      .then(html => {
-        headerTarget.innerHTML = html;
-        enhanceHeader();
-        applyLanguage(activeLanguage);
-      })
-      .catch(() => {
-        headerTarget.innerHTML = sharedHeader;
-        enhanceHeader();
-        applyLanguage(activeLanguage);
-      });
+    const syncHeader = () => {
+      bindHeaderLanguage();
+      applyLanguage(activeLanguage);
+    };
+
+    document.addEventListener('site-header-loaded', syncHeader);
 
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => {

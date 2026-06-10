@@ -24,94 +24,6 @@
       color: #14384f;
     }
 
-    .beo-header {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      border-bottom: 1px solid #e5e7eb;
-      background: #fff;
-    }
-
-    .header-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-      min-height: 0;
-      margin: 0;
-      padding: 1.25rem 1rem;
-      gap: 1rem;
-    }
-
-    .brand-link,
-    .nav-links {
-      display: flex;
-      align-items: center;
-    }
-
-    .brand-link {
-      gap: 0.75rem;
-      color: #0f172a;
-      font-size: 1rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-decoration: none;
-      text-transform: uppercase;
-    }
-
-    .brand-link img {
-      width: auto;
-      height: 2rem;
-      object-fit: contain;
-    }
-
-    .nav-links {
-      gap: 1rem;
-    }
-
-    .nav-links a {
-      color: #4b5563;
-      font-size: 0.875rem;
-      font-weight: 500;
-      text-decoration: none;
-    }
-
-    .language-picker {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.45rem;
-      min-height: 2.45rem;
-      padding: 0.28rem 0.35rem 0.28rem 0.75rem;
-      border: 1px solid rgba(20, 56, 79, 0.18);
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.78);
-      color: #526477;
-      font-size: 0.875rem;
-      font-weight: 500;
-      text-transform: uppercase;
-    }
-
-    .language-picker select {
-      min-width: 3.25rem;
-      border: 0;
-      border-radius: 6px;
-      background: #10182d;
-      color: #fff;
-      font-size: 0.78rem;
-      font-weight: 800;
-    }
-
-    @media (min-width: 768px) {
-      .header-inner {
-        padding-right: 2rem;
-        padding-left: 2rem;
-      }
-
-      .nav-links {
-        gap: 2rem;
-      }
-    }
-
     .hero-section {
       position: relative;
       overflow: hidden;
@@ -255,20 +167,7 @@
       }
     }
 
-    @media (max-width: 767px) {
-      .brand-link span {
-        display: none;
-      }
-    }
-
     @media (max-width: 480px) {
-      .language-picker span {
-        display: none;
-      }
-
-      .nav-links {
-        gap: 0.8rem;
-      }
 
       .hero-center h1 {
         font-size: clamp(2.55rem, 13vw, 3.3rem);
@@ -290,13 +189,6 @@
       html,
       body {
         background: #fff !important;
-      }
-
-      .beo-header {
-        position: static !important;
-        top: auto !important;
-        z-index: auto !important;
-        break-after: avoid;
       }
 
       main > section,
@@ -406,30 +298,8 @@
 
 <body class="beoflow-page">
 
-  <header class="beo-header">
-    <nav class="header-inner" aria-label="Bastida Systems navigation">
-      <a href="index.html" class="brand-link">
-        <img src="img/logo_bastida_sys.png" alt="Bastida Systems Logo">
-        <span>Bastida Systems LLC</span>
-      </a>
-
-      <div class="nav-links">
-        <a href="index.html#products" data-i18n="nav.products">Work</a>
-        <a href="websites.html" data-i18n="nav.websites">Websites</a>
-        <a href="systems.html" data-i18n="nav.systems">Systems</a>
-        <a href="about.html" data-i18n="nav.about">About</a>
-        <a href="portal.html" data-i18n="nav.portal">Client Portal</a>
-        <a href="index.html#contact" data-i18n="nav.contact">Contact</a>
-        <label class="language-picker">
-          <span data-i18n="nav.language">Language</span>
-          <select id="language-select" aria-label="Language selector" data-i18n-aria-label="nav.languageSelector">
-            <option value="en">EN</option>
-            <option value="es">ES</option>
-          </select>
-        </label>
-      </div>
-    </nav>
-  </header>
+  <div id="site-header"></div>
+  <script src="site-header.js" defer></script>
 
   <main>
     <!-- HERO -->
@@ -876,11 +746,15 @@
       en: {
         strings: {
           'meta.title': 'Beoflow | Bastida Systems',
+          'nav.home': 'Home',
+          'nav.industries': 'Industries',
           'nav.products': 'Work',
           'nav.websites': 'Websites',
           'nav.systems': 'Systems',
           'nav.about': 'About',
+          'nav.aboutUs': 'About Us',
           'nav.portal': 'Client Portal',
+          'nav.login': 'Login',
           'nav.contact': 'Contact',
           'nav.privacy': 'Privacy',
           'nav.language': 'Language',
@@ -1045,11 +919,15 @@
       es: {
         strings: {
           'meta.title': 'Beoflow | Bastida Systems',
+          'nav.home': 'Inicio',
+          'nav.industries': 'Industrias',
           'nav.products': 'Proyectos',
           'nav.websites': 'Sitios Web',
           'nav.systems': 'Sistemas',
           'nav.about': 'Acerca de',
+          'nav.aboutUs': 'About Us',
           'nav.portal': 'Portal de Clientes',
+          'nav.login': 'Login',
           'nav.contact': 'Contacto',
           'nav.privacy': 'Privacidad',
           'nav.language': 'Idioma',
@@ -1220,7 +1098,6 @@
     const flowTabs = document.querySelectorAll('[data-flow-index]');
     const flowPrev = document.getElementById('flow-prev');
     const flowNext = document.getElementById('flow-next');
-    const languageSelect = document.getElementById('language-select');
     let activeFlowIndex = 0;
     let activeLanguage = localStorage.getItem('beoflow-language') || (navigator.language.startsWith('es') ? 'es' : 'en');
 
@@ -1285,7 +1162,10 @@
         element.setAttribute('aria-label', translate(element.dataset.i18nAriaLabel));
       });
 
-      languageSelect.value = activeLanguage;
+      const languageSelect = document.getElementById('language-select');
+      if (languageSelect) {
+        languageSelect.value = activeLanguage;
+      }
       updateFlowTabs();
       updateFlowSlide(activeFlowIndex);
     };
@@ -1297,8 +1177,20 @@
       });
     });
 
-    languageSelect.addEventListener('change', event => {
-      applyLanguage(event.target.value);
+    const bindLanguagePicker = () => {
+      const languageSelect = document.getElementById('language-select');
+      if (!languageSelect || languageSelect.dataset.languageBound) return;
+
+      languageSelect.addEventListener('change', event => {
+        applyLanguage(event.target.value);
+      });
+      languageSelect.dataset.languageBound = 'true';
+      languageSelect.value = activeLanguage;
+    };
+
+    document.addEventListener('site-header-loaded', () => {
+      bindLanguagePicker();
+      applyLanguage(activeLanguage);
     });
 
     flowTabs.forEach(tab => {

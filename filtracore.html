@@ -15,85 +15,12 @@
     body {
       font-family: 'Manrope', sans-serif;
       letter-spacing: 0;
-    }
-
-    @media print {
-      #site-header,
-      #site-header nav {
-        position: static !important;
-        top: auto !important;
-        z-index: auto !important;
-      }
-
-      #site-header nav {
-        break-after: avoid;
-      }
-    }
-  </style>
+    }  </style>
 </head>
 
 <body>
   <div id="site-header"></div>
-
-  <script>
-    const sharedHeader = `
-      <nav class="relative flex items-center justify-between gap-2 border-b border-gray-200 bg-white px-3 py-3 sticky top-0 z-50 md:px-7">
-        <details class="relative z-[80] md:hidden">
-          <summary class="inline-flex h-9 w-9 cursor-pointer list-none items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-900 [&::-webkit-details-marker]:hidden" aria-label="Open navigation">
-            <span class="flex flex-col gap-1.5" aria-hidden="true">
-              <span class="block h-0.5 w-5 rounded-full bg-current"></span>
-              <span class="block h-0.5 w-5 rounded-full bg-current"></span>
-              <span class="block h-0.5 w-5 rounded-full bg-current"></span>
-            </span>
-          </summary>
-          <div class="absolute left-0 top-full z-[70] mt-3 flex w-48 flex-col gap-3 rounded-lg border border-gray-200 bg-white p-4 text-sm font-medium text-gray-700 shadow-xl">
-            <a href="index.html" class="hover:text-black transition" data-i18n="nav.home">Home</a>
-            <a href="industries.html" class="hover:text-black transition" data-i18n="nav.industries">Industries</a>
-            <a href="about.html" class="hover:text-black transition" data-i18n="nav.aboutUs">About Us</a>
-            <a href="index.html#contact" class="hover:text-black transition" data-i18n="nav.contact">Contact</a>
-            <a href="login.html" class="hover:text-black transition" data-i18n="nav.login">Login</a>
-          </div>
-        </details>
-
-        <div class="flex items-center gap-3 md:flex-1">
-          <a href="index.html" class="flex items-center gap-3">
-            <img src="img/logo_bastida_sys.png" alt="Bastida Systems Logo" class="h-7 w-auto object-contain">
-            <span class="hidden text-sm font-semibold tracking-[0.08em] text-black uppercase md:inline">Bastida Systems LLC</span>
-          </a>
-        </div>
-
-        <div class="site-menu-links hidden items-center justify-end gap-6 text-xs font-medium text-gray-600 md:flex">
-          <a href="index.html" class="hover:text-black transition" data-i18n="nav.home">Home</a>
-          <a href="industries.html" class="hover:text-black transition" data-i18n="nav.industries">Industries</a>
-          <a href="about.html" class="hover:text-black transition" data-i18n="nav.aboutUs">About Us</a>
-          <a href="index.html#contact" class="hover:text-black transition" data-i18n="nav.contact">Contact</a>
-          <a href="login.html" class="hover:text-black transition" data-i18n="nav.login">Login</a>
-        </div>
-
-        <label class="language-picker inline-flex min-h-9 w-auto items-center justify-between gap-2 rounded-lg border border-gray-300 bg-white px-2 py-1 text-xs font-bold uppercase text-gray-500 md:w-[7.25rem]">
-          <span class="hidden md:inline" data-i18n="nav.language">Language</span>
-          <select id="language-select" class="w-14 rounded-md border-0 bg-gray-900 px-2 py-1 text-xs font-extrabold text-white" aria-label="Language selector" data-i18n-aria-label="nav.languageSelector">
-            <option value="en">EN</option>
-            <option value="es">ES</option>
-          </select>
-        </label>
-      </nav>
-    `;
-
-    const headerTarget = document.getElementById('site-header');
-
-    fetch('header.html')
-      .then(response => {
-        if (!response.ok) throw new Error('header.html not found');
-        return response.text();
-      })
-      .then(html => {
-        headerTarget.innerHTML = html;
-      })
-      .catch(() => {
-        headerTarget.innerHTML = sharedHeader;
-      });
-  </script>
+  <script src="site-header.js" defer></script>
 
   <main class="fc-page">
     <section class="fc-hero" aria-labelledby="hero-title">
@@ -1708,30 +1635,15 @@
       nav.querySelector('a[href="index.html#products"]')?.setAttribute('data-i18n', 'nav.products');
       nav.querySelector('a[href="websites.html"]')?.setAttribute('data-i18n', 'nav.websites');
       nav.querySelector('a[href="systems.html"]')?.setAttribute('data-i18n', 'nav.systems');
-      nav.querySelector('a[href="about.html"]')?.setAttribute('data-i18n', 'nav.about');
+      nav.querySelector('a[href="about.html"]')?.setAttribute('data-i18n', 'nav.aboutUs');
       nav.querySelector('a[href="portal.html"]')?.setAttribute('data-i18n', 'nav.portal');
       nav.querySelector('a[href="index.html#contact"]')?.setAttribute('data-i18n', 'nav.contact');
 
       const links = nav.querySelector('.site-menu-links');
       if (!links) return false;
 
-      let select = document.getElementById('filtracore-language-select') || document.getElementById('language-select');
-
-      if (!select) {
-        links.insertAdjacentHTML('beforeend', `
-          <label class="fc-language-picker">
-            <span class="hidden sm:inline" data-i18n="nav.language">Language</span>
-            <select id="filtracore-language-select" aria-label="Language selector" data-i18n-aria-label="nav.languageSelector">
-              <option value="en">EN</option>
-              <option value="es">ES</option>
-            </select>
-          </label>
-        `);
-        select = document.getElementById('filtracore-language-select');
-      } else {
-        select.id = 'filtracore-language-select';
-        select.closest('label')?.classList.add('fc-language-picker');
-      }
+      const select = document.getElementById('language-select');
+      if (!select) return false;
 
       select.value = activeLanguage;
       select.addEventListener('change', event => {
@@ -1760,7 +1672,7 @@
         element.setAttribute('aria-label', translate(element.dataset.i18nAriaLabel));
       });
 
-      const select = document.getElementById('filtracore-language-select');
+      const select = document.getElementById('language-select');
       if (select) select.value = activeLanguage;
 
       requestAnimationFrame(refreshIndustryAccordion);
