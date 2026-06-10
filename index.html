@@ -981,8 +981,12 @@
 
     .hero-bg-video {
       z-index: 1;
-      opacity: 1;
+      opacity: 0;
       transition: opacity 900ms ease;
+    }
+
+    .hero-spotlight.is-video-playing .hero-bg-video {
+      opacity: 1;
     }
 
     .hero-bg-image {
@@ -993,6 +997,7 @@
 
     .hero-spotlight.show-final-bg .hero-bg-video {
       opacity: 0;
+      visibility: hidden;
     }
 
     .hero-spotlight.show-final-bg .hero-bg-image {
@@ -2012,7 +2017,7 @@
 
   <!-- HERO -->
   <section class="hero-spotlight fade-in">
-    <video class="hero-bg-video" autoplay muted playsinline preload="auto" poster="./IMG/Background/BG_BS.png">
+    <video class="hero-bg-video" autoplay muted playsinline webkit-playsinline preload="auto" poster="./IMG/Background/BG_BS.png" aria-hidden="true">
       <source src="./IMG/Background/BG_BS.mp4" type="video/mp4">
     </video>
 
@@ -2072,12 +2077,35 @@
       const showFinalHeroBackground = () => {
         if (finalBackgroundShown) return;
         finalBackgroundShown = true;
+        heroSpotlight.classList.remove('is-video-playing');
         heroSpotlight.classList.add('show-final-bg');
 
         window.setTimeout(() => {
           heroBackgroundVideo.pause();
         }, 950);
       };
+
+      const tryPlayHeroVideo = () => {
+        heroBackgroundVideo.muted = true;
+        heroBackgroundVideo.playsInline = true;
+
+        const playAttempt = heroBackgroundVideo.play();
+
+        if (playAttempt && typeof playAttempt.catch === 'function') {
+          playAttempt.catch(() => {
+            showFinalHeroBackground();
+          });
+        }
+      };
+
+      heroBackgroundVideo.addEventListener('playing', () => {
+        if (!finalBackgroundShown) {
+          heroSpotlight.classList.add('is-video-playing');
+        }
+      });
+
+      heroBackgroundVideo.addEventListener('loadeddata', tryPlayHeroVideo, { once: true });
+      heroBackgroundVideo.addEventListener('canplay', tryPlayHeroVideo, { once: true });
 
       heroBackgroundVideo.addEventListener('timeupdate', () => {
         if (!Number.isFinite(heroBackgroundVideo.duration)) return;
@@ -2091,6 +2119,8 @@
 
       heroBackgroundVideo.addEventListener('ended', showFinalHeroBackground);
       heroBackgroundVideo.addEventListener('error', showFinalHeroBackground);
+
+      tryPlayHeroVideo();
     }
   </script>
 
