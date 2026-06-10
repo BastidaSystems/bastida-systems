@@ -957,17 +957,37 @@
       padding: 0 1.5rem;
       color: #fff;
       isolation: isolate;
-      background-image:
-        linear-gradient(
-          90deg,
-          rgba(2, 5, 10, 0.68) 0%,
-          rgba(2, 5, 10, 0.48) 42%,
-          rgba(2, 5, 10, 0.34) 100%
-        ),
-        url("./img/BG.png");
-      background-size: cover;
-      background-position: center center;
-      background-repeat: no-repeat;
+      background: #02050a;
+    }
+
+    .hero-bg-video,
+    .hero-bg-image {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+      pointer-events: none;
+    }
+
+    .hero-bg-video {
+      opacity: 1;
+      transition: opacity 900ms ease;
+    }
+
+    .hero-bg-image {
+      opacity: 0;
+      transition: opacity 900ms ease;
+    }
+
+    .hero-spotlight.show-final-bg .hero-bg-video {
+      opacity: 0;
+    }
+
+    .hero-spotlight.show-final-bg .hero-bg-image {
+      opacity: 1;
     }
 
     .hero-light-left,
@@ -1311,7 +1331,6 @@
       .hero-spotlight {
         min-height: calc(100vh - 104px);
         padding: 0.4rem 1rem 3rem;
-        background-position: center top;
       }
 
       .hero-light-left,
@@ -1962,6 +1981,11 @@
 
   <!-- HERO -->
   <section class="hero-spotlight fade-in">
+    <video class="hero-bg-video" autoplay muted playsinline preload="auto">
+      <source src="./img/BG_BS.mp4" type="video/mp4">
+    </video>
+
+    <img class="hero-bg-image" src="./img/BG_BS.png" alt="" aria-hidden="true">
     <div class="hero-light-left" aria-hidden="true"></div>
     <div class="hero-vignette" aria-hidden="true"></div>
 
@@ -2006,6 +2030,38 @@
     </div>
 
   </section>
+
+  <script>
+    const heroSpotlight = document.querySelector('.hero-spotlight');
+    const heroBackgroundVideo = document.querySelector('.hero-bg-video');
+
+    if (heroSpotlight && heroBackgroundVideo) {
+      let finalBackgroundShown = false;
+
+      const showFinalHeroBackground = () => {
+        if (finalBackgroundShown) return;
+        finalBackgroundShown = true;
+        heroSpotlight.classList.add('show-final-bg');
+
+        window.setTimeout(() => {
+          heroBackgroundVideo.pause();
+        }, 950);
+      };
+
+      heroBackgroundVideo.addEventListener('timeupdate', () => {
+        if (!Number.isFinite(heroBackgroundVideo.duration)) return;
+
+        const secondsLeft = heroBackgroundVideo.duration - heroBackgroundVideo.currentTime;
+
+        if (secondsLeft <= 1) {
+          showFinalHeroBackground();
+        }
+      });
+
+      heroBackgroundVideo.addEventListener('ended', showFinalHeroBackground);
+      heroBackgroundVideo.addEventListener('error', showFinalHeroBackground);
+    }
+  </script>
 
   <!-- PRODUCTS -->
   <section id="products" class="px-6 md:px-8 py-24 border-t border-gray-800 fade-in">
