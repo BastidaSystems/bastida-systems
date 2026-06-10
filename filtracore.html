@@ -23,56 +23,120 @@
   <script src="site-header.js" defer></script>
 
   <main class="fc-page">
-    <section class="fc-hero" aria-labelledby="hero-title">
-      <div class="fc-container fc-hero-grid">
-        <div class="fc-hero-copy">
+    <section class="fc-hero fc-watertech-hero" aria-labelledby="hero-title">
+      <div class="fc-bubble-field" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span><span></span>
+      </div>
+
+      <div class="fc-container">
+        <div class="fc-hero-topbar" aria-label="FiltraCore section navigation">
           <a href="index.html" class="fc-brand-lockup" aria-label="Bastida Systems home">
             <img src="img/LOGO_FILTRACOREXCODE.png" alt="" class="fc-brand-mark">
             <span>
               <strong>FiltraCore</strong>
-              <small data-i18n="hero.brandSystem">Filter Monitoring Intelligence</small>
+              <small data-i18n="hero.brandSystem">Smart Water Intelligence</small>
             </span>
           </a>
 
-          <h1 id="hero-title">
-            <span class="fc-title-desktop" data-i18n-html="hero.titleDesktop">Stop running filters blind.<br>Protect water.<br>Control costs.</span>
-            <span class="fc-title-mobile" data-i18n-html="hero.titleMobile">Stop running filters blind. Protect water. Control costs.</span>
-          </h1>
+          <nav class="fc-hero-nav" aria-label="FiltraCore quick links">
+            <a href="#industry-fit" data-i18n="nav.industries">Industries</a>
+            <a href="#platform-modules" data-i18n="system.label">Desktop command center</a>
+            <a href="#product-access" data-product-access data-i18n="nav.login">Login</a>
+          </nav>
+        </div>
 
-          <p class="fc-hero-lede" data-i18n="hero.lede">
-            Every overdue filter can compromise water quality, increase operating costs, damage equipment,
-            waste energy, and leave teams reacting after the issue is already expensive.
-          </p>
-          <p class="fc-hero-slogan" data-i18n="hero.slogan">FiltraCore turns filter condition, PSI, maintenance history, and alerts into decisions based on real data.</p>
+        <div class="fc-hero-grid">
+          <div class="fc-hero-copy">
+            <p class="fc-hero-badge" data-i18n="hero.slogan">Smart Water Intelligence</p>
 
-          <div class="fc-hero-actions" aria-label="FiltraCore calls to action">
-            <a href="#product-access" data-product-access class="fc-button fc-button-primary" data-i18n="cta.openLogin">Open Login</a>
-            <a href="#industry-fit" class="fc-button fc-button-secondary" data-i18n="hero.seeMobileUpdate">See industries</a>
+            <h1 id="hero-title">
+              <span class="fc-title-desktop" data-i18n-html="hero.titleDesktop">Smart Water Intelligence for Every Filter.</span>
+              <span class="fc-title-mobile" data-i18n-html="hero.titleMobile">Smart Water Intelligence for Every Filter.</span>
+            </h1>
+
+            <p class="fc-hero-lede" data-i18n="hero.lede">
+              FiltraCore helps homes and businesses monitor filter health, PSI pressure, maintenance history, and water quality before small problems become expensive failures.
+            </p>
+
+            <div class="fc-hero-actions" aria-label="FiltraCore calls to action">
+              <a href="#product-access" data-product-access class="fc-button fc-button-primary" data-i18n="cta.openLogin">Open Login</a>
+              <a href="#industry-fit" class="fc-button fc-button-secondary" data-i18n="hero.exploreIndustries">Explore Industries</a>
+              <a href="#product-access" class="fc-button fc-button-ghost" data-i18n="hero.viewPlans">View Plans</a>
+            </div>
+
+            <div class="fc-industry-chips" aria-label="Industries that use FiltraCore">
+              <span data-i18n="hero.chipRestaurants">Restaurants</span>
+              <span data-i18n="hero.chipHotels">Hotels</span>
+              <span data-i18n="hero.chipCasinos">Casinos</span>
+              <span data-i18n="hero.chipHospitals">Hospitals</span>
+              <span data-i18n="hero.chipOffices">Office Buildings</span>
+              <span data-i18n="hero.chipHomes">Homes</span>
+            </div>
           </div>
 
-          <div class="fc-hero-proof" aria-label="FiltraCore operating advantages">
-            <span data-i18n="hero.proof1">Water quality</span>
-            <span data-i18n="hero.proof2">Cost risk</span>
-            <span data-i18n="hero.proof3">Preventive alerts</span>
-            <span data-i18n="hero.proof4">Real data</span>
+          <div class="fc-hero-visual" aria-label="FiltraCore water intelligence dashboard preview">
+            <div class="fc-water-line" aria-hidden="true"></div>
+
+            <article class="fc-glass-dashboard">
+              <div class="fc-dashboard-header">
+                <div>
+                  <span data-i18n="hero.dashboardLabel">Live filter network</span>
+                  <strong>FiltraCore</strong>
+                </div>
+                <b>98%</b>
+              </div>
+
+              <div class="fc-dashboard-graph" aria-hidden="true">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+
+              <div class="fc-dashboard-grid">
+                <article>
+                  <span class="fc-dashboard-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M5 14a7 7 0 0 1 14 0"/><path d="M12 14l4-5"/><path d="M4 20h16"/></svg>
+                  </span>
+                  <small data-i18n="hero.cardPsi">PSI Monitoring</small>
+                  <strong>42-58 PSI</strong>
+                </article>
+                <article>
+                  <span class="fc-dashboard-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M8 3h8"/><path d="M9 3v4l-4 6v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6l-4-6V3"/><path d="M8 14h8"/></svg>
+                  </span>
+                  <small data-i18n="hero.cardHealth">Filter Health</small>
+                  <strong>Healthy</strong>
+                </article>
+                <article>
+                  <span class="fc-dashboard-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M12 3 2.5 20h19L12 3Z"/><path d="M12 9v5"/><path d="M12 17h.01"/></svg>
+                  </span>
+                  <small data-i18n="hero.cardAlerts">Maintenance Alerts</small>
+                  <strong>3 due soon</strong>
+                </article>
+                <article>
+                  <span class="fc-dashboard-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M12 3C9 7 6 10.5 6 14a6 6 0 0 0 12 0c0-3.5-3-7-6-11Z"/><path d="M9 15a3 3 0 0 0 3 3"/></svg>
+                  </span>
+                  <small data-i18n="hero.cardQuality">Water Quality</small>
+                  <strong>Protected</strong>
+                </article>
+              </div>
+            </article>
+
+            <div class="fc-floating-card fc-floating-card-left">
+              <span data-i18n="hero.cardPsi">PSI Monitoring</span>
+              <strong>Stable pressure</strong>
+            </div>
+            <div class="fc-floating-card fc-floating-card-right">
+              <span data-i18n="hero.cardAlerts">Maintenance Alerts</span>
+              <strong>Prevent failure</strong>
+            </div>
           </div>
         </div>
 
-        <div class="fc-hero-visual" aria-label="FiltraCore desktop and mobile product mockups">
-          <figure class="fc-computer-mockup">
-            <div class="fc-computer-frame">
-              <div class="fc-computer-screen">
-                <img src="img/filtracore-desktop/dashboard.png" alt="FiltraCore desktop dashboard showing filter readiness, risk exposure, setup progress, and system metrics" decoding="async" fetchpriority="high">
-              </div>
-              <div class="fc-computer-chin"></div>
-            </div>
-            <div class="fc-computer-stand"></div>
-            <div class="fc-computer-base"></div>
-          </figure>
-
-          <figure class="fc-phone-mockup fc-hero-phone-image" aria-label="FiltraCore mobile dashboard mockup">
-            <img src="img/filtracore2.png" alt="FiltraCore mobile dashboard with machines, filters, PSI, inventory, and priority machines" decoding="async" fetchpriority="high">
-          </figure>
+        <div class="fc-hero-bottom-strip" aria-label="FiltraCore platform coverage">
+          <span data-i18n="hero.forHome">For Home</span>
+          <strong data-i18n="hero.onePlatform">One Platform</strong>
+          <span data-i18n="hero.forBusiness">For Business</span>
         </div>
       </div>
     </section>
@@ -1070,11 +1134,27 @@
         'nav.login': 'Login',
         'nav.contact': 'Contact',
         'nav.privacy': 'Privacy',
-        'hero.brandSystem': 'Filter Monitoring Intelligence',
-        'hero.titleDesktop': 'Stop running filters blind.<br>Protect water.<br>Control costs.',
-        'hero.titleMobile': 'Stop running filters blind. Protect water. Control costs.',
-        'hero.lede': 'Every overdue filter can compromise water quality, increase operating costs, damage equipment, waste energy, and leave teams reacting after the issue is already expensive.',
-        'hero.slogan': 'FiltraCore turns filter condition, PSI, maintenance history, and alerts into decisions based on real data.',
+        'hero.brandSystem': 'Smart Water Intelligence',
+        'hero.titleDesktop': 'Smart Water Intelligence for Every Filter.',
+        'hero.titleMobile': 'Smart Water Intelligence for Every Filter.',
+        'hero.lede': 'FiltraCore helps homes and businesses monitor filter health, PSI pressure, maintenance history, and water quality before small problems become expensive failures.',
+        'hero.slogan': 'Smart Water Intelligence',
+        'hero.exploreIndustries': 'Explore Industries',
+        'hero.viewPlans': 'View Plans',
+        'hero.dashboardLabel': 'Live filter network',
+        'hero.cardPsi': 'PSI Monitoring',
+        'hero.cardHealth': 'Filter Health',
+        'hero.cardAlerts': 'Maintenance Alerts',
+        'hero.cardQuality': 'Water Quality',
+        'hero.forHome': 'For Home',
+        'hero.onePlatform': 'One Platform',
+        'hero.forBusiness': 'For Business',
+        'hero.chipRestaurants': 'Restaurants',
+        'hero.chipHotels': 'Hotels',
+        'hero.chipCasinos': 'Casinos',
+        'hero.chipHospitals': 'Hospitals',
+        'hero.chipOffices': 'Office Buildings',
+        'hero.chipHomes': 'Homes',
         'hero.seeMobileUpdate': 'See industries',
         'hero.proof1': 'Water quality',
         'hero.proof2': 'Cost risk',
@@ -1350,11 +1430,27 @@
         'nav.login': 'Login',
         'nav.contact': 'Contacto',
         'nav.privacy': 'Privacidad',
-        'hero.brandSystem': 'Inteligencia de monitoreo de filtros',
-        'hero.titleDesktop': 'Deja de operar filtros a ciegas.<br>Protege el agua.<br>Controla costos.',
-        'hero.titleMobile': 'Deja de operar filtros a ciegas. Protege el agua. Controla costos.',
-        'hero.lede': 'Cada filtro vencido puede afectar la calidad del agua, incrementar costos operativos, danar equipos, desperdiciar energia y dejar al equipo reaccionando cuando el problema ya es caro.',
-        'hero.slogan': 'FiltraCore convierte condicion del filtro, PSI, historial de mantenimiento y alertas en decisiones basadas en datos reales.',
+        'hero.brandSystem': 'Inteligencia para agua inteligente',
+        'hero.titleDesktop': 'Inteligencia de agua para cada filtro.',
+        'hero.titleMobile': 'Inteligencia de agua para cada filtro.',
+        'hero.lede': 'FiltraCore ayuda a hogares y negocios a monitorear salud del filtro, presion PSI, historial de mantenimiento y calidad del agua antes de que pequenos problemas se vuelvan fallas costosas.',
+        'hero.slogan': 'Smart Water Intelligence',
+        'hero.exploreIndustries': 'Explorar industrias',
+        'hero.viewPlans': 'Ver planes',
+        'hero.dashboardLabel': 'Red de filtros en vivo',
+        'hero.cardPsi': 'Monitoreo PSI',
+        'hero.cardHealth': 'Salud del filtro',
+        'hero.cardAlerts': 'Alertas de mantenimiento',
+        'hero.cardQuality': 'Calidad del agua',
+        'hero.forHome': 'Para hogar',
+        'hero.onePlatform': 'Una plataforma',
+        'hero.forBusiness': 'Para negocio',
+        'hero.chipRestaurants': 'Restaurantes',
+        'hero.chipHotels': 'Hoteles',
+        'hero.chipCasinos': 'Casinos',
+        'hero.chipHospitals': 'Hospitales',
+        'hero.chipOffices': 'Edificios de oficinas',
+        'hero.chipHomes': 'Hogares',
         'hero.seeMobileUpdate': 'Ver industrias',
         'hero.proof1': 'Calidad del agua',
         'hero.proof2': 'Riesgo de costo',
