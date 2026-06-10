@@ -1309,7 +1309,8 @@
       }
 
       .hero-spotlight {
-        padding: 1.5rem 1rem 5.5rem;
+        min-height: calc(100vh - 104px);
+        padding: 0.75rem 1rem 5.5rem;
       }
 
       .hero-light-left,
@@ -1318,13 +1319,17 @@
       }
 
       .hero-grid {
+        align-items: start;
+        min-height: auto;
         gap: 1.25rem;
+        padding-top: 1rem;
       }
 
       .hero-copy {
         max-width: 100%;
         margin: 0 auto;
         text-align: center;
+        transform: translateY(-2.5rem);
       }
 
       .hero-title {
@@ -1451,7 +1456,7 @@
 
       .hero-copy {
         max-width: 48rem;
-        margin: 0 auto clamp(2.25rem, 5vw, 4rem);
+        margin: 0 auto clamp(1rem, 3vw, 2rem);
         text-align: center;
       }
 
