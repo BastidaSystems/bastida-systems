@@ -957,7 +957,14 @@
       padding: 0 1.5rem;
       color: #fff;
       isolation: isolate;
-      background: #02050a;
+      background:
+        linear-gradient(
+          90deg,
+          rgba(2, 5, 10, 0.68) 0%,
+          rgba(2, 5, 10, 0.48) 42%,
+          rgba(2, 5, 10, 0.34) 100%
+        ),
+        #02050a url("./IMG/Background/BG_BS.png") center center / cover no-repeat;
     }
 
     .hero-bg-video,
@@ -978,7 +985,7 @@
     }
 
     .hero-bg-image {
-      opacity: 0;
+      opacity: 1;
       transition: opacity 900ms ease;
     }
 
@@ -1981,8 +1988,8 @@
 
   <!-- HERO -->
   <section class="hero-spotlight fade-in">
-    <video class="hero-bg-video" autoplay muted playsinline preload="auto">
-      <source src="./IMG/Background/BG_BS_1.mp4" type="video/mp4">
+    <video class="hero-bg-video" autoplay muted playsinline preload="auto" poster="./IMG/Background/BG_BS.png">
+      <source src="./IMG/Background/BG_BS.mp4" type="video/mp4">
     </video>
 
     <img class="hero-bg-image" src="./IMG/Background/BG_BS.png" alt="" aria-hidden="true">
