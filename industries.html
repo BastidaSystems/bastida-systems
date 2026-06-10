@@ -1182,7 +1182,7 @@
         padding-bottom: 0.95rem !important;
       }
 
-      #site-header nav > div:last-child {
+      #site-header .site-menu-links {
         width: 100%;
         justify-content: flex-start;
         gap: 1rem;
@@ -1190,7 +1190,7 @@
         padding-bottom: 0.1rem;
       }
 
-      #site-header nav > div:last-child > a {
+      #site-header .site-menu-links > a {
         flex: 0 0 auto;
       }
 
@@ -1594,7 +1594,7 @@
     const headerTarget = document.getElementById('site-header');
 
     const enhanceHeader = () => {
-      const navLinks = headerTarget.querySelector('nav > div:last-child');
+      const navLinks = headerTarget.querySelector('.site-menu-links');
       if (!navLinks) return;
 
       navLinks.classList.add('site-nav');
@@ -1617,7 +1617,7 @@
         }
       });
 
-      if (!navLinks.querySelector('#language-select')) {
+      if (!headerTarget.querySelector('#language-select')) {
         navLinks.insertAdjacentHTML('beforeend', languagePicker);
       }
 
