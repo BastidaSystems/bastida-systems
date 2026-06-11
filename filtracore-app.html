@@ -258,7 +258,7 @@
       <button type="button" class="sidebar-backdrop" id="sidebar-backdrop" aria-label="Close navigation" hidden></button>
 
       <div class="workspace-main">
-        <header class="workspace-header">
+        <header class="workspace-header" id="workspace-header">
           <div>
             <p class="eyebrow" id="workspace-kicker">App shell</p>
             <h2 id="workspace-title">Dashboard</h2>
@@ -274,24 +274,19 @@
         <section class="dashboard-view app-section is-active" id="section-dashboard">
           <div class="metric-grid">
             <article class="metric-card">
-              <span>System Health</span>
+              <span>Locations</span>
+              <strong>Not connected</strong>
+              <p>Add your first location.</p>
+            </article>
+            <article class="metric-card">
+              <span>Systems</span>
               <strong>Not connected</strong>
               <p>Add your first filtration system.</p>
             </article>
             <article class="metric-card">
-              <span>Filter Status</span>
+              <span>Filters</span>
               <strong>Not connected</strong>
               <p>Add your first filter.</p>
-            </article>
-            <article class="metric-card">
-              <span>Latest PSI</span>
-              <strong>--</strong>
-              <p>Record your first PSI reading.</p>
-            </article>
-            <article class="metric-card">
-              <span>Maintenance Due</span>
-              <strong>--</strong>
-              <p>Add your first maintenance log.</p>
             </article>
             <article class="metric-card">
               <span>Open Alerts</span>
@@ -299,36 +294,38 @@
               <p>No alerts yet.</p>
             </article>
             <article class="metric-card">
-              <span>Reports</span>
-              <strong>Pending</strong>
-              <p>Reports will appear after connected activity.</p>
+              <span>Filters Due Soon</span>
+              <strong>--</strong>
+              <p>Due within 30 days.</p>
+            </article>
+            <article class="metric-card">
+              <span>Latest PSI</span>
+              <strong>--</strong>
+              <p>Record your first PSI reading.</p>
             </article>
           </div>
 
-          <div class="dashboard-panels">
-            <article class="panel-card">
+          <div class="dashboard-panels dashboard-panels-simple">
+            <article class="dashboard-list">
               <div class="panel-heading">
-                <h3>Filtration systems</h3>
-                <span>Ready for schema</span>
+                <h3>Alerts</h3>
+                <span>0 open</span>
               </div>
               <div class="empty-state">
-                <h4>Add your first filtration system</h4>
-                <p>Add business locations or home properties, then create systems in the active FiltraCore workspace.</p>
+                <h4>No alerts yet.</h4>
+                <p>Warning and critical PSI readings will create open alerts.</p>
               </div>
             </article>
 
-            <article class="panel-card">
+            <article class="dashboard-list">
               <div class="panel-heading">
-                <h3>PSI logic</h3>
-                <span>Prepared helper</span>
+                <h3>Upcoming Maintenance</h3>
+                <span>Next 30 days</span>
               </div>
-              <div class="psi-scale" aria-label="PSI status logic">
-                <span class="critical">Critical low</span>
-                <span class="warning">Warning</span>
-                <span class="healthy">Healthy range</span>
-                <span class="warning">High warning</span>
+              <div class="empty-state">
+                <h4>No upcoming maintenance</h4>
+                <p>Filters due soon will appear here.</p>
               </div>
-              <p class="panel-copy">Healthy means PSI is inside the configured range, including values close to max. Low PSI becomes warning or critical. Values over max become warning for high pressure.</p>
             </article>
           </div>
         </section>

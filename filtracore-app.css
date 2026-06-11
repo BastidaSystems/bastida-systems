@@ -898,8 +898,60 @@ h3 {
 }
 
 #section-import {
-  max-width: 1360px;
+  max-width: 980px;
   margin-inline: auto;
+}
+
+.import-workflow-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.85rem;
+}
+
+.import-workflow-header h3 {
+  margin: 0 0 0.35rem;
+  color: var(--ink-strong);
+  font-size: clamp(1.65rem, 3vw, 2.25rem);
+  line-height: 1.05;
+}
+
+.import-workflow-header p {
+  max-width: 46rem;
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.import-workflow {
+  display: grid;
+  gap: 1rem;
+}
+
+.import-primary-card {
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1rem, 2vw, 1.35rem);
+}
+
+.import-card-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.import-card-heading h4 {
+  margin: 0 0 0.28rem;
+  color: var(--ink-strong);
+  font-size: 1.12rem;
+}
+
+.import-card-heading p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
 }
 
 .import-layout {
@@ -1140,6 +1192,89 @@ h3 {
 .import-summary-grid .metric-card p {
   font-size: 0.78rem;
   line-height: 1.4;
+}
+
+.import-simple-summary {
+  display: grid;
+  grid-template-columns: 0.75fr 1.3fr 0.8fr 0.9fr;
+  gap: 0.7rem;
+}
+
+.import-simple-summary > div,
+.import-confirm-summary > div,
+.import-complete-grid > div {
+  display: grid;
+  align-content: start;
+  gap: 0.32rem;
+  min-width: 0;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, #fff, var(--surface-soft));
+  padding: 0.85rem;
+}
+
+.import-simple-summary span,
+.import-confirm-summary span,
+.import-complete-grid span {
+  color: var(--muted-strong);
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.import-simple-summary strong,
+.import-confirm-summary strong,
+.import-complete-grid strong {
+  color: var(--ink-strong);
+  font-size: 0.94rem;
+  line-height: 1.25;
+}
+
+.import-simple-summary > div:first-child strong {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.import-primary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.import-primary-actions .primary-action {
+  width: auto;
+  min-width: 12rem;
+}
+
+.import-advanced-details,
+.import-review-details,
+.import-detail-stack {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.import-advanced-details details,
+.import-review-details details,
+.import-detail-stack details {
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  background: var(--surface);
+  padding: 0.75rem;
+}
+
+.import-advanced-details summary,
+.import-review-details summary,
+.import-detail-stack summary {
+  cursor: pointer;
+  color: var(--ink-strong);
+  font-size: 0.88rem;
+  font-weight: 900;
+}
+
+.import-detail-stack {
+  margin-top: 0.75rem;
 }
 
 .import-preview-sections {
@@ -1594,11 +1729,7 @@ h3 {
 .import-review-screen {
   display: grid;
   gap: 1rem;
-  border: 1px solid var(--line-soft);
-  border-radius: var(--radius);
-  background: var(--surface-soft);
-  margin-top: 1.25rem;
-  padding: 1rem;
+  margin-top: 0;
 }
 
 .import-review-header,
@@ -1647,6 +1778,7 @@ h3 {
 
 .import-review-summary {
   margin: 0;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .import-review-entities,
@@ -1664,6 +1796,10 @@ h3 {
 .import-conflict-section {
   display: grid;
   gap: 0.85rem;
+  border: 1px solid rgba(178, 107, 0, 0.14);
+  border-radius: var(--radius);
+  background: var(--warning-soft);
+  padding: 0.85rem;
 }
 
 .import-conflict-card {
@@ -1671,17 +1807,13 @@ h3 {
   gap: 0.9rem;
   border: 1px solid rgba(178, 107, 0, 0.22);
   border-radius: var(--radius);
-  background:
-    linear-gradient(180deg, rgba(255, 247, 231, 0.92), #fff),
-    var(--warning-soft);
+  background: var(--surface);
   padding: 1rem;
 }
 
 .import-conflict-card.is-resolved {
   border-color: rgba(8, 116, 67, 0.18);
-  background:
-    linear-gradient(180deg, rgba(236, 253, 243, 0.9), #fff),
-    var(--success-soft);
+  background: var(--success-soft);
 }
 
 .import-conflict-meta {
@@ -1781,6 +1913,49 @@ h3 {
   min-width: 12rem;
 }
 
+.import-confirm-card {
+  display: grid;
+  gap: 0.9rem;
+  width: min(34rem, 100%);
+  justify-self: center;
+  border: 1px solid rgba(37, 99, 235, 0.14);
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, #fff, var(--accent-soft));
+  padding: 1rem;
+  box-shadow: 0 16px 34px rgba(9, 23, 34, 0.06);
+}
+
+.import-confirm-card > div:first-child {
+  display: grid;
+  gap: 0.2rem;
+  text-align: center;
+}
+
+.import-confirm-card > div:first-child span {
+  color: var(--accent-strong);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.import-confirm-card h5 {
+  margin: 0;
+  color: var(--ink-strong);
+  font-size: 1.15rem;
+}
+
+.import-confirm-summary,
+.import-complete-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.import-confirm-card .primary-action {
+  width: 100%;
+}
+
 .import-execution-gate,
 .import-final-summary {
   display: grid;
@@ -1868,6 +2043,10 @@ h3 {
   background:
     linear-gradient(180deg, rgba(236, 253, 243, 0.92), #fff),
     var(--success-soft);
+}
+
+.import-complete-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .import-summary-detail {
@@ -2210,13 +2389,16 @@ h3 {
   .metric-grid,
   .dashboard-panels,
   .settings-grid,
-  .module-grid,
-  .import-layout,
-  .import-summary-grid,
-  .import-empty-guide,
-  .dashboard-lists {
-    grid-template-columns: 1fr;
-  }
+	  .module-grid,
+	  .import-layout,
+	  .import-summary-grid,
+	  .import-simple-summary,
+	  .import-confirm-summary,
+	  .import-complete-grid,
+	  .import-empty-guide,
+	  .dashboard-lists {
+	    grid-template-columns: 1fr;
+	  }
 
   .import-conflict-meta {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2323,6 +2505,11 @@ h3 {
     justify-self: stretch;
   }
 
+  .import-workflow-header,
+  .import-card-heading {
+    display: grid;
+  }
+
   .import-stepper {
     width: 100%;
     border-radius: var(--radius);
@@ -2392,6 +2579,12 @@ h3 {
   }
 
   .import-review-launch .primary-action {
+    width: 100%;
+  }
+
+  .import-primary-actions,
+  .import-primary-actions .primary-action,
+  .import-primary-actions .compact-action {
     width: 100%;
   }
 
