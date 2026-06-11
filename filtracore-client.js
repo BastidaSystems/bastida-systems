@@ -199,7 +199,13 @@
   function createEmptyImportReview() {
     return {
       status: 'idle',
-      resolutions: {}
+      confirmations: {
+        createRecords: false
+      },
+      resolutions: {},
+      isImporting: false,
+      summary: null,
+      error: ''
     };
   }
 
@@ -1544,6 +1550,14 @@
       return;
     }
 
+    const confirmImportButton = event.target.closest('[data-confirm-import]');
+    if (confirmImportButton) {
+      event.preventDefault();
+      if (state.importReview.isImporting || !canConfirmImport(state.importPreview)) return;
+      await executeReviewedImport(confirmImportButton);
+      return;
+    }
+
     const resolveButton = event.target.closest('[data-resolve-alert]');
     if (!resolveButton) return;
     event.preventDefault();
@@ -1559,6 +1573,20 @@
   }
 
   async function handleWorkspaceChange(event) {
+    const importConfirmationInput = event.target.closest('[data-import-confirmation]');
+    if (importConfirmationInput) {
+      state.importReview = {
+        ...state.importReview,
+        confirmations: {
+          ...state.importReview.confirmations,
+          createRecords: Boolean(importConfirmationInput.checked)
+        }
+      };
+      renderSections();
+      switchSection('import', false);
+      return;
+    }
+
     const customQuantityInput = event.target.closest('[data-import-conflict-custom]');
     if (customQuantityInput) {
       const quantity = integerOrNull(customQuantityInput.value);
@@ -2211,44 +2239,47 @@
   function renderImportReview(preview) {
     if (state.importReview.status !== 'review' || !preview.rows.length || preview.errors.length) return '';
     const hasUnresolvedConflicts = hasUnresolvedImportConflicts(preview);
+    const importPlan = buildReviewedImportPlan(preview);
     return `
       <div class="import-review-screen" aria-label="Review import">
         <div class="import-review-header">
           <div>
             <span>Review Import</span>
-            <h4>${hasUnresolvedConflicts ? 'Resolve conflicts before confirmation' : 'Ready for import'}</h4>
-            <p>No database writes are connected to this screen yet.</p>
+            <h4>${state.importReview.summary ? 'Import summary' : hasUnresolvedConflicts ? 'Resolve conflicts before confirmation' : 'Ready for import'}</h4>
+            <p>Execution is scoped to the active client and business workspace.</p>
           </div>
-          <button type="button" class="secondary-action compact-action" data-close-import-review>Back to preview</button>
+          <button type="button" class="secondary-action compact-action" data-close-import-review${state.importReview.isImporting ? ' disabled' : ''}>Back to preview</button>
         </div>
         <div class="import-summary-grid import-review-summary">
-          ${metricCard('Locations to create', String(preview.locations.length), 'Skipped if already present')}
-          ${metricCard('Systems to create', String(preview.systems.length), 'Location + Machine')}
-          ${metricCard('Filters to create', String(preview.filters.length), 'SKU + Filter')}
+          ${metricCard('Locations to create', String(importPlan.locations.length), 'Importable rows only')}
+          ${metricCard('Systems to create', String(importPlan.systems.length), 'No manual-only systems')}
+          ${metricCard('Filters to create', String(importPlan.filters.length), 'Resolved quantities applied')}
           ${metricCard('Duplicates', String(preview.duplicates.length), 'Will be skipped')}
-          ${metricCard('Warnings', String(preview.warnings.length), 'Need review')}
+          ${metricCard('Manual review', String(importPlan.manualReview.length), 'Skipped during import')}
         </div>
-        ${renderImportReviewEntities(preview)}
+        ${renderImportReviewEntities(importPlan)}
         ${renderImportConflictResolution(preview)}
         ${renderImportReviewNotices(preview)}
+        ${renderImportExecutionGate(preview)}
+        ${renderImportFinalSummary()}
         ${renderImportReadyState(preview)}
       </div>
     `;
   }
 
-  function renderImportReviewEntities(preview) {
+  function renderImportReviewEntities(importPlan) {
     return `
       <div class="import-review-entities">
-        ${renderImportEntityTable('Locations to create', preview.locations, [
+        ${renderImportEntityTable('Locations to create', importPlan.locations, [
           ['name', 'Location'],
           ['sourceRows', 'Rows']
         ])}
-        ${renderImportEntityTable('Systems to create', preview.systems, [
+        ${renderImportEntityTable('Systems to create', importPlan.systems, [
           ['locationName', 'Location'],
           ['name', 'System'],
           ['sourceRows', 'Rows']
         ])}
-        ${renderImportEntityTable('Filters to create', preview.filters, [
+        ${renderImportEntityTable('Filters to create', importPlan.filters, [
           ['locationName', 'Location'],
           ['systemName', 'System'],
           ['sku', 'SKU'],
@@ -2295,13 +2326,13 @@
         </div>
         <div class="import-conflict-actions">
           ${conflict.quantities.map(quantity => `
-            <button type="button" class="secondary-action compact-action${resolution?.type === 'quantity' && resolution.quantity === quantity ? ' is-selected' : ''}" data-resolve-import-conflict="quantity" data-conflict-id="${escapeHtml(conflict.id)}" data-quantity="${escapeHtml(quantity)}">Use quantity ${escapeHtml(quantity)}</button>
+            <button type="button" class="secondary-action compact-action${resolution?.type === 'quantity' && resolution.quantity === quantity ? ' is-selected' : ''}" data-resolve-import-conflict="quantity" data-conflict-id="${escapeHtml(conflict.id)}" data-quantity="${escapeHtml(quantity)}"${state.importReview.isImporting ? ' disabled' : ''}>Use quantity ${escapeHtml(quantity)}</button>
           `).join('')}
           <label class="import-custom-quantity">
             <span>Custom quantity</span>
-            <input type="number" min="1" step="1" value="${escapeHtml(customValue)}" data-import-conflict-custom data-conflict-id="${escapeHtml(conflict.id)}">
+            <input type="number" min="1" step="1" value="${escapeHtml(customValue)}" data-import-conflict-custom data-conflict-id="${escapeHtml(conflict.id)}"${state.importReview.isImporting ? ' disabled' : ''}>
           </label>
-          <button type="button" class="secondary-action compact-action${isManual ? ' is-selected' : ''}" data-resolve-import-conflict="manual" data-conflict-id="${escapeHtml(conflict.id)}">Mark for manual review</button>
+          <button type="button" class="secondary-action compact-action${isManual ? ' is-selected' : ''}" data-resolve-import-conflict="manual" data-conflict-id="${escapeHtml(conflict.id)}"${state.importReview.isImporting ? ' disabled' : ''}>Mark for manual review</button>
         </div>
         <p class="import-conflict-resolution">${escapeHtml(importConflictResolutionText(resolution))}</p>
       </article>
@@ -2319,17 +2350,84 @@
 
   function renderImportReadyState(preview) {
     const hasUnresolvedConflicts = hasUnresolvedImportConflicts(preview);
+    const hasSummary = Boolean(state.importReview.summary);
+    const canConfirm = canConfirmImport(preview);
     const warningStatus = hasUnresolvedConflicts
       ? `Warnings pending: ${preview.warnings.length}`
       : `Warnings resolved: ${preview.warnings.length}`;
     return `
-      <div class="import-ready-panel${hasUnresolvedConflicts ? '' : ' is-ready'}">
+      <div class="import-ready-panel${hasUnresolvedConflicts && !hasSummary ? '' : ' is-ready'}">
         <div>
-          <strong>${hasUnresolvedConflicts ? 'Resolve conflicts to continue' : 'Ready for import'}</strong>
+          <strong>${state.importReview.isImporting ? 'Importing records' : hasSummary ? 'Import complete' : hasUnresolvedConflicts ? 'Resolve conflicts to continue' : 'Ready for import'}</strong>
           <p>Locations: ${escapeHtml(preview.detected.locations)} · Systems: ${escapeHtml(preview.detected.systems)} · Filters: ${escapeHtml(preview.detected.filters)} · ${escapeHtml(warningStatus)}</p>
         </div>
-        <button type="button" class="primary-action" disabled>Confirm Import</button>
+        <button type="button" class="primary-action" data-confirm-import${canConfirm ? '' : ' disabled'}>${state.importReview.isImporting ? 'Importing...' : hasSummary ? 'Import complete' : 'Confirm Import'}</button>
       </div>
+    `;
+  }
+
+  function renderImportExecutionGate(preview) {
+    const messages = getImportPreflightMessages(preview);
+    return `
+      <div class="import-execution-gate">
+        <label class="import-confirmation-check">
+          <input type="checkbox" data-import-confirmation${state.importReview.confirmations.createRecords ? ' checked' : ''}${state.importReview.isImporting ? ' disabled' : ''}>
+          <span>I understand this will create records in Supabase.</span>
+        </label>
+        ${messages.length ? `
+          <div class="import-preflight-list">
+            ${messages.map(item => `
+              <div class="import-preflight-item import-preflight-${escapeHtml(item.type)}">
+                <strong>${escapeHtml(item.label)}</strong>
+                <span>${escapeHtml(item.message)}</span>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }
+
+  function renderImportFinalSummary() {
+    const summary = state.importReview.summary;
+    if (!summary) return '';
+    return `
+      <section class="import-final-summary" aria-label="Final import summary">
+        <div class="import-conflict-heading">
+          <h5>Final Import Summary</h5>
+          <p>${escapeHtml(summary.finishedAt ? `Completed ${summary.finishedAt}` : 'Import finished.')}</p>
+        </div>
+        <div class="import-summary-grid import-review-summary">
+          ${metricCard('Locations created', String(summary.locationsCreated.length), 'Inserted into Supabase')}
+          ${metricCard('Systems created', String(summary.systemsCreated.length), 'Inserted into Supabase')}
+          ${metricCard('Filters created', String(summary.filtersCreated.length), 'Inserted into Supabase')}
+          ${metricCard('Existing duplicates skipped', String(summary.existingDuplicatesSkipped.length), 'Already in workspace')}
+          ${metricCard('CSV duplicates skipped', String(summary.csvDuplicatesSkipped.length), 'Collapsed by preview')}
+          ${metricCard('Manual review skipped', String(summary.manualReviewSkipped.length), 'Not imported')}
+          ${metricCard('Errors', String(summary.errors.length), summary.errors.length ? 'Review required' : 'No errors')}
+        </div>
+        ${renderImportSummaryDetail('Created locations', summary.locationsCreated)}
+        ${renderImportSummaryDetail('Created systems', summary.systemsCreated)}
+        ${renderImportSummaryDetail('Created filters', summary.filtersCreated)}
+        ${renderImportSummaryDetail('Existing duplicates skipped', summary.existingDuplicatesSkipped)}
+        ${renderImportSummaryDetail('Manual review items skipped', summary.manualReviewSkipped)}
+        ${renderImportSummaryDetail('Errors', summary.errors)}
+        <div class="inline-actions">
+          <button type="button" class="secondary-action compact-action" data-clear-import-preview>Import another CSV</button>
+        </div>
+      </section>
+    `;
+  }
+
+  function renderImportSummaryDetail(title, items) {
+    if (!items.length) return '';
+    return `
+      <details class="import-summary-detail">
+        <summary>${escapeHtml(title)} (${escapeHtml(items.length)})</summary>
+        <ul>
+          ${items.map(item => `<li>${escapeHtml(importSummaryItemText(item))}</li>`).join('')}
+        </ul>
+      </details>
     `;
   }
 
@@ -2923,6 +3021,7 @@
   function setImportConflictResolution(conflictId, resolution) {
     if (!conflictId) return;
     const nextResolutions = { ...state.importReview.resolutions };
+    const summary = state.importReview.summary;
     if (resolution.type === 'custom' && (!resolution.quantity || resolution.quantity < 1)) {
       delete nextResolutions[conflictId];
     } else {
@@ -2930,7 +3029,9 @@
     }
     state.importReview = {
       ...state.importReview,
-      resolutions: nextResolutions
+      resolutions: nextResolutions,
+      summary: null,
+      error: summary ? '' : state.importReview.error
     };
   }
 
@@ -2943,6 +3044,397 @@
     if (resolution.type === 'manual') return 'Marked for manual review';
     if (resolution.type === 'custom') return `Custom quantity ${resolution.quantity} selected`;
     return `Quantity ${resolution.quantity} selected`;
+  }
+
+  function buildReviewedImportPlan(preview) {
+    const locationMap = new Map();
+    const systemMap = new Map();
+    const filters = [];
+    const manualReview = [];
+
+    preview.filters.forEach(filter => {
+      const conflictId = importFilterConflictId(filter);
+      const resolution = state.importReview.resolutions[conflictId];
+      if (resolution?.type === 'manual') {
+        manualReview.push({
+          type: 'filter',
+          locationName: filter.locationName,
+          systemName: filter.systemName,
+          sku: filter.sku,
+          filterName: filter.filterName,
+          sourceRows: filter.sourceRows,
+          reason: 'Manual review'
+        });
+        return;
+      }
+
+      const filterQuantity = resolution?.type === 'quantity' || resolution?.type === 'custom'
+        ? resolution.quantity
+        : filter.filterQuantity;
+      const item = {
+        ...filter,
+        filterQuantity
+      };
+      filters.push(item);
+
+      const locationKey = canonicalImportKey(item.locationName);
+      if (!locationMap.has(locationKey)) {
+        locationMap.set(locationKey, {
+          name: item.locationName,
+          sourceRows: []
+        });
+      }
+      locationMap.get(locationKey).sourceRows.push(...item.sourceRows);
+
+      const systemKey = `${locationKey}|${canonicalImportKey(item.systemName)}`;
+      if (!systemMap.has(systemKey)) {
+        systemMap.set(systemKey, {
+          name: item.systemName,
+          locationName: item.locationName,
+          sourceRows: []
+        });
+      }
+      systemMap.get(systemKey).sourceRows.push(...item.sourceRows);
+    });
+
+    return {
+      locations: Array.from(locationMap.values()).map(item => ({
+        ...item,
+        sourceRows: uniqueSortedNumbers(item.sourceRows)
+      })),
+      systems: Array.from(systemMap.values()).map(item => ({
+        ...item,
+        sourceRows: uniqueSortedNumbers(item.sourceRows)
+      })),
+      filters,
+      manualReview
+    };
+  }
+
+  function importFilterConflictId(filter) {
+    return [
+      canonicalImportKey(filter.locationName),
+      canonicalImportKey(filter.systemName),
+      canonicalImportKey(filter.sku),
+      canonicalImportKey(filter.filterName)
+    ].join('|');
+  }
+
+  function uniqueSortedNumbers(values) {
+    return Array.from(new Set(values)).sort((a, b) => a - b);
+  }
+
+  function getImportPreflightMessages(preview) {
+    const messages = [];
+    if (!state.activeClient?.id) {
+      messages.push({ type: 'error', label: 'Active client', message: 'Select an active client before importing.' });
+    }
+    if (!state.activeWorkspace?.id) {
+      messages.push({ type: 'error', label: 'Workspace', message: 'Select a FiltraCore workspace before importing.' });
+    } else if (state.activeWorkspace.mode !== 'business') {
+      messages.push({ type: 'error', label: 'Workspace mode', message: 'CSV business imports require a business workspace.' });
+    }
+    if (!getImportCompany()) {
+      messages.push({ type: 'error', label: 'Company', message: 'Create or select a company record for this workspace before importing.' });
+    } else if (!hasStratCompany()) {
+      messages.push({ type: 'warning', label: 'Company', message: 'A company exists, but STRAT was not found. The import will use the first workspace company.' });
+    }
+    if (hasUnresolvedImportConflicts(preview)) {
+      messages.push({ type: 'error', label: 'Conflicts', message: 'Resolve every quantity conflict before confirming import.' });
+    }
+    if (preview.errors.length) {
+      messages.push({ type: 'error', label: 'Preview errors', message: 'Fix CSV validation errors before importing.' });
+    }
+    return messages;
+  }
+
+  function getImportCompany() {
+    return state.records.companies.find(company => canonicalImportKey(company.name) === 'strat')
+      || state.records.companies[0]
+      || null;
+  }
+
+  function hasStratCompany() {
+    return state.records.companies.some(company => canonicalImportKey(company.name) === 'strat');
+  }
+
+  function canConfirmImport(preview) {
+    if (state.importReview.isImporting) return false;
+    if (state.importReview.summary) return false;
+    if (!state.importReview.confirmations.createRecords) return false;
+    return getImportPreflightMessages(preview).every(item => item.type !== 'error');
+  }
+
+  async function executeReviewedImport() {
+    const preview = state.importPreview;
+    if (!canConfirmImport(preview)) return;
+    requireOwnerAdmin('Only owner/admin users can import records.');
+
+    state.importReview = {
+      ...state.importReview,
+      isImporting: true,
+      summary: null,
+      error: ''
+    };
+    renderSections();
+    switchSection('import', false);
+
+    let summary;
+    try {
+      summary = await runReviewedImport(preview);
+      state.importReview = {
+        ...state.importReview,
+        status: 'review',
+        isImporting: false,
+        summary,
+        error: ''
+      };
+      await refreshWorkspace();
+      switchSection('import', false);
+    } catch (error) {
+      summary = createImportSummary(preview);
+      summary.errors.push({
+        type: 'import',
+        message: error.message || 'Import failed before records could be created.'
+      });
+      state.importReview = {
+        ...state.importReview,
+        status: 'review',
+        isImporting: false,
+        summary,
+        error: error.message || 'Import failed.'
+      };
+      renderSections();
+      switchSection('import', false);
+    }
+  }
+
+  async function runReviewedImport(preview) {
+    const client = initializeSupabase();
+    const workspace = requireActiveWorkspace();
+    const clientId = state.activeClient?.id;
+    if (!clientId) throw new Error('Active client is required before importing.');
+    if (workspace.mode !== 'business') throw new Error('Import requires a business workspace.');
+
+    const [companies, existingLocations, existingSystems, existingFilters] = await Promise.all([
+      selectWorkspaceRows(client, 'filtracore_companies', clientId, workspace.id, 'created_at'),
+      selectWorkspaceRows(client, 'filtracore_locations', clientId, workspace.id, 'created_at'),
+      selectWorkspaceRows(client, 'filtracore_systems', clientId, workspace.id, 'created_at'),
+      selectWorkspaceRows(client, 'filtracore_filters', clientId, workspace.id, 'created_at')
+    ]);
+    const company = companies.find(item => canonicalImportKey(item.name) === 'strat') || companies[0];
+    if (!company) throw new Error('A company record is required before importing business locations.');
+
+    const plan = buildReviewedImportPlan(preview);
+    const summary = createImportSummary(preview, plan);
+    const locationByName = new Map();
+    const systemByKey = new Map();
+    const filterKeys = new Set();
+
+    existingLocations.forEach(location => {
+      locationByName.set(canonicalImportKey(location.name), location);
+    });
+    existingSystems.forEach(system => {
+      if (!system.location_id) return;
+      systemByKey.set(`${system.location_id}|${canonicalImportKey(system.name)}`, system);
+    });
+    existingFilters.forEach(filter => {
+      if (!filter.system_id) return;
+      filterKeys.add(`${filter.system_id}|${canonicalImportKey(filter.sku)}|${canonicalImportKey(filter.filter_name)}`);
+    });
+
+    for (const location of plan.locations) {
+      const locationKey = canonicalImportKey(location.name);
+      if (locationByName.has(locationKey)) {
+        summary.existingDuplicatesSkipped.push({
+          type: 'location',
+          name: location.name,
+          sourceRows: location.sourceRows,
+          reason: 'Location already exists'
+        });
+        continue;
+      }
+
+      try {
+        const inserted = await insertRow('filtracore_locations', {
+          client_id: clientId,
+          workspace_id: workspace.id,
+          company_id: company.id,
+          name: location.name
+        });
+        locationByName.set(locationKey, inserted);
+        summary.locationsCreated.push({
+          type: 'location',
+          id: inserted.id,
+          name: inserted.name,
+          sourceRows: location.sourceRows
+        });
+      } catch (error) {
+        summary.errors.push({
+          type: 'location',
+          name: location.name,
+          sourceRows: location.sourceRows,
+          message: error.message || 'Could not create location.'
+        });
+      }
+    }
+
+    for (const system of plan.systems) {
+      const location = locationByName.get(canonicalImportKey(system.locationName));
+      if (!location?.id) {
+        summary.errors.push({
+          type: 'system',
+          name: system.name,
+          locationName: system.locationName,
+          sourceRows: system.sourceRows,
+          message: 'System skipped because its location was not available.'
+        });
+        continue;
+      }
+
+      const systemKey = `${location.id}|${canonicalImportKey(system.name)}`;
+      if (systemByKey.has(systemKey)) {
+        summary.existingDuplicatesSkipped.push({
+          type: 'system',
+          name: system.name,
+          locationName: system.locationName,
+          sourceRows: system.sourceRows,
+          reason: 'System already exists'
+        });
+        continue;
+      }
+
+      try {
+        const inserted = await insertRow('filtracore_systems', {
+          client_id: clientId,
+          workspace_id: workspace.id,
+          location_id: location.id,
+          property_id: null,
+          name: system.name,
+          status: 'unknown'
+        });
+        systemByKey.set(systemKey, inserted);
+        summary.systemsCreated.push({
+          type: 'system',
+          id: inserted.id,
+          name: inserted.name,
+          locationName: system.locationName,
+          sourceRows: system.sourceRows
+        });
+      } catch (error) {
+        summary.errors.push({
+          type: 'system',
+          name: system.name,
+          locationName: system.locationName,
+          sourceRows: system.sourceRows,
+          message: error.message || 'Could not create system.'
+        });
+      }
+    }
+
+    for (const filter of plan.filters) {
+      const location = locationByName.get(canonicalImportKey(filter.locationName));
+      const system = location ? systemByKey.get(`${location.id}|${canonicalImportKey(filter.systemName)}`) : null;
+      if (!system?.id) {
+        summary.errors.push({
+          type: 'filter',
+          filterName: filter.filterName,
+          sku: filter.sku,
+          systemName: filter.systemName,
+          locationName: filter.locationName,
+          sourceRows: filter.sourceRows,
+          message: 'Filter skipped because its system was not available.'
+        });
+        continue;
+      }
+
+      const filterKey = `${system.id}|${canonicalImportKey(filter.sku)}|${canonicalImportKey(filter.filterName)}`;
+      if (filterKeys.has(filterKey)) {
+        summary.existingDuplicatesSkipped.push({
+          type: 'filter',
+          filterName: filter.filterName,
+          sku: filter.sku,
+          systemName: filter.systemName,
+          locationName: filter.locationName,
+          sourceRows: filter.sourceRows,
+          reason: 'Filter already exists'
+        });
+        continue;
+      }
+
+      try {
+        const inserted = await insertRow('filtracore_filters', {
+          client_id: clientId,
+          workspace_id: workspace.id,
+          system_id: system.id,
+          filter_name: filter.filterName,
+          sku: filter.sku,
+          filter_quantity: filter.filterQuantity,
+          status: 'active'
+        });
+        filterKeys.add(filterKey);
+        summary.filtersCreated.push({
+          type: 'filter',
+          id: inserted.id,
+          filterName: inserted.filter_name,
+          sku: inserted.sku,
+          systemName: filter.systemName,
+          locationName: filter.locationName,
+          filterQuantity: inserted.filter_quantity,
+          sourceRows: filter.sourceRows
+        });
+      } catch (error) {
+        summary.errors.push({
+          type: 'filter',
+          filterName: filter.filterName,
+          sku: filter.sku,
+          systemName: filter.systemName,
+          locationName: filter.locationName,
+          sourceRows: filter.sourceRows,
+          message: error.message || 'Could not create filter.'
+        });
+      }
+    }
+
+    summary.finishedAt = new Date().toLocaleString();
+    return summary;
+  }
+
+  function createImportSummary(preview, plan = buildReviewedImportPlan(preview)) {
+    return {
+      locationsCreated: [],
+      systemsCreated: [],
+      filtersCreated: [],
+      existingDuplicatesSkipped: [],
+      csvDuplicatesSkipped: getCsvDuplicateNotices(preview),
+      manualReviewSkipped: plan.manualReview,
+      errors: [],
+      finishedAt: ''
+    };
+  }
+
+  function getCsvDuplicateNotices(preview) {
+    return preview.duplicates
+      .filter(notice => {
+        const text = importNoticeText(notice).toLowerCase();
+        return !text.includes('already exists');
+      })
+      .map(notice => ({
+        type: 'csv-duplicate',
+        message: importNoticeText(notice),
+        sourceRows: notice.rows || []
+      }));
+  }
+
+  function importSummaryItemText(item) {
+    if (item.message && item.type === 'csv-duplicate') return item.message;
+    const rowText = item.sourceRows?.length ? ` Rows: ${item.sourceRows.join(', ')}.` : '';
+    const reasonText = item.reason ? ` ${item.reason}.` : '';
+    const errorText = item.message && item.type !== 'csv-duplicate' ? ` ${item.message}` : '';
+    if (item.type === 'location') return `Location ${item.name || '--'}.${rowText}${reasonText}${errorText}`;
+    if (item.type === 'system') return `System ${item.name || '--'} at ${item.locationName || '--'}.${rowText}${reasonText}${errorText}`;
+    if (item.type === 'filter') return `Filter ${item.filterName || '--'} SKU ${item.sku || '--'} at ${item.locationName || '--'} / ${item.systemName || '--'}.${item.filterQuantity ? ` Qty ${item.filterQuantity}.` : ''}${rowText}${reasonText}${errorText}`;
+    return `${item.message || item.reason || 'Import item'}${rowText}`;
   }
 
   function normalizeImportHeader(value) {

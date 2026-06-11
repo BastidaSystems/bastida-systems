@@ -1393,6 +1393,101 @@ h3 {
   min-width: 12rem;
 }
 
+.import-execution-gate,
+.import-final-summary {
+  display: grid;
+  gap: 0.85rem;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  background: var(--surface);
+  padding: 1rem;
+}
+
+.import-confirmation-check {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  color: var(--ink-strong);
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.import-confirmation-check input {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-top: 0.08rem;
+  accent-color: var(--accent);
+}
+
+.import-preflight-list {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.import-preflight-item {
+  display: grid;
+  grid-template-columns: minmax(7rem, 0.28fr) minmax(0, 1fr);
+  gap: 0.75rem;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  padding: 0.7rem;
+}
+
+.import-preflight-item strong {
+  color: var(--ink-strong);
+  font-size: 0.76rem;
+}
+
+.import-preflight-item span {
+  color: var(--muted-strong);
+  line-height: 1.4;
+}
+
+.import-preflight-error {
+  border-color: rgba(180, 35, 24, 0.18);
+  background: var(--danger-soft);
+}
+
+.import-preflight-warning {
+  border-color: rgba(178, 107, 0, 0.18);
+  background: var(--warning-soft);
+}
+
+.import-final-summary {
+  border-color: rgba(8, 116, 67, 0.18);
+  background: var(--success-soft);
+}
+
+.import-summary-detail {
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  background: var(--surface);
+  padding: 0.75rem;
+}
+
+.import-summary-detail summary {
+  cursor: pointer;
+  color: var(--ink-strong);
+  font-weight: 900;
+}
+
+.import-summary-detail ul {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0.65rem 0 0;
+  padding-left: 1.1rem;
+  color: var(--muted-strong);
+  line-height: 1.45;
+}
+
+.import-ready-panel .primary-action:disabled,
+.import-conflict-actions button:disabled,
+.import-custom-quantity input:disabled,
+.import-confirmation-check input:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+
 @keyframes import-spin {
   to {
     transform: rotate(360deg);
@@ -1818,7 +1913,8 @@ h3 {
   }
 
   .import-loading-state,
-  .import-validation-item {
+  .import-validation-item,
+  .import-preflight-item {
     grid-template-columns: 1fr;
   }
 
