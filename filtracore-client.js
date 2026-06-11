@@ -19,6 +19,11 @@
     activeSection: 'dashboard',
     activeAssetsTab: 'locations',
     activeWorkTab: 'psi',
+    assetSearch: {
+      locations: '',
+      systems: '',
+      filters: ''
+    },
     authMode: 'signin',
     mobileDrawerOpen: false,
     editing: null,
@@ -1474,6 +1479,13 @@
       return;
     }
 
+    const focusFormButton = event.target.closest('[data-focus-active-form]');
+    if (focusFormButton) {
+      event.preventDefault();
+      focusActiveModuleForm();
+      return;
+    }
+
     const removeButton = event.target.closest('[data-remove-record]');
     if (removeButton) {
       event.preventDefault();
@@ -1633,6 +1645,26 @@
 
     renderSections();
     switchSection('import', false);
+  }
+
+  function handleWorkspaceInput(event) {
+    const searchInput = event.target.closest('[data-asset-search]');
+    if (!searchInput) return;
+
+    const tab = normalizeAssetsTab(searchInput.dataset.assetSearch);
+    state.assetSearch = {
+      ...state.assetSearch,
+      [tab]: searchInput.value
+    };
+    renderSections();
+    switchSection('assets', false);
+
+    const restoredInput = document.querySelector(`[data-asset-search="${tab}"]`);
+    if (restoredInput) {
+      restoredInput.focus();
+      const cursorPosition = restoredInput.value.length;
+      restoredInput.setSelectionRange(cursorPosition, cursorPosition);
+    }
   }
 
   async function refreshWorkspace() {
@@ -1797,12 +1829,28 @@
     const stats = getDashboardStats();
     return `
       <div class="metric-grid">
-        ${metricCard(stats.placeLabel, String(stats.placeCount), stats.placeCount === 0 ? stats.placeEmptyText : 'Workspace places')}
-        ${metricCard('Total Systems', String(stats.totalSystems), stats.totalSystems === 0 ? 'Add your first filtration system' : 'Filtration systems in scope')}
-        ${metricCard('Total Filters', String(stats.totalFilters), stats.totalFilters === 0 ? 'Add your first filter' : 'Installed filter records')}
+        ${metricCard(stats.placeCardLabel, String(stats.placeCount), stats.placeCount === 0 ? stats.placeEmptyText : 'Workspace places')}
+        ${metricCard('Systems', String(stats.totalSystems), stats.totalSystems === 0 ? 'Add your first filtration system' : 'Filtration systems in scope')}
+        ${metricCard('Filters', String(stats.totalFilters), stats.totalFilters === 0 ? 'Add your first filter' : 'Installed filter records')}
         ${metricCard('Open Alerts', String(stats.openAlerts), stats.openAlerts === 0 ? 'No alerts yet.' : 'Needs review')}
         ${metricCard('Filters Due Soon', String(stats.dueSoonFilters), 'Due within 30 days')}
         ${metricCard('Latest PSI', stats.latestPsiText, stats.latestPsiSubtext)}
+      </div>
+      <div class="dashboard-panels dashboard-panels-simple">
+        <article class="dashboard-list">
+          <div class="panel-heading">
+            <h3>Alerts</h3>
+            <span>${state.records.alerts.length} open</span>
+          </div>
+          ${renderAlertList(state.records.alerts.slice(0, 5), false)}
+        </article>
+        <article class="dashboard-list">
+          <div class="panel-heading">
+            <h3>Upcoming Maintenance</h3>
+            <span>Next 30 days</span>
+          </div>
+          ${renderUpcomingMaintenanceList()}
+        </article>
       </div>
     `;
   }
@@ -1867,16 +1915,55 @@
     return ['psi', 'maintenance', 'alerts'].includes(tab) ? tab : 'psi';
   }
 
+  function renderAssetToolbar(tab, searchLabel, actionLabel) {
+    const value = state.assetSearch[tab] || '';
+    return `
+      <div class="module-toolbar">
+        <label class="module-search">
+          <span>${escapeHtml(searchLabel)}</span>
+          <input type="search" value="${escapeHtml(value)}" placeholder="Search" data-asset-search="${escapeHtml(tab)}" autocomplete="off">
+        </label>
+        <button type="button" class="secondary-action compact-action" data-focus-active-form>${escapeHtml(actionLabel)}</button>
+      </div>
+    `;
+  }
+
+  function filterRecords(records, searchTerm, fields) {
+    const normalizedTerm = canonicalSearchValue(searchTerm);
+    if (!normalizedTerm) return records;
+    return records.filter(record => fields.some(field => canonicalSearchValue(field(record)).includes(normalizedTerm)));
+  }
+
+  function canonicalSearchValue(value) {
+    return String(value == null ? '' : value).trim().toLowerCase().replace(/\s+/g, ' ');
+  }
+
   function renderLocationsSection() {
     const workspace = state.activeWorkspace;
     const isBusiness = workspace?.mode === 'business';
-    const count = isBusiness ? state.records.locations.length : state.records.properties.length;
+    const tab = 'locations';
+    const searchTerm = state.assetSearch[tab] || '';
+    const locations = filterRecords(state.records.locations, searchTerm, [
+      location => location.name,
+      location => location.address,
+      location => location.building,
+      location => location.floor,
+      location => location.zone,
+      location => optionLabel(LOCATION_TYPE_OPTIONS, location.location_type, 'Location')
+    ]);
+    const properties = filterRecords(state.records.properties, searchTerm, [
+      property => property.name,
+      property => property.address,
+      property => property.zone,
+      property => optionLabel(PROPERTY_TYPE_OPTIONS, property.property_type, 'Property')
+    ]);
     return `
+      ${renderAssetToolbar(tab, isBusiness ? 'Search locations' : 'Search properties', isBusiness ? 'Add location' : 'Add property')}
       <div class="module-grid">
         ${renderPlaceForm(isBusiness)}
         <div class="record-panel">
           <h4>${isBusiness ? 'Locations' : 'Properties'}</h4>
-          ${isBusiness ? renderLocationList() : renderPropertyList()}
+          ${isBusiness ? renderLocationList(locations, Boolean(searchTerm)) : renderPropertyList(properties, Boolean(searchTerm))}
         </div>
       </div>
     `;
@@ -1954,7 +2041,20 @@
 
   function renderSystemsSection() {
     const record = editingRecord('system', state.records.systems);
+    const searchTerm = state.assetSearch.systems || '';
+    const systems = filterRecords(state.records.systems, searchTerm, [
+      system => system.name,
+      system => system.status,
+      system => optionLabel(SYSTEM_TYPE_OPTIONS, system.system_type, 'System'),
+      system => system.asset_reference,
+      system => system.brand,
+      system => system.model,
+      system => system.serial_number,
+      system => system.location_id ? locationName(system.location_id) : '',
+      system => system.property_id ? propertyName(system.property_id) : ''
+    ]);
     return `
+      ${renderAssetToolbar('systems', 'Search systems', 'Add system')}
       <div class="module-grid">
         <form class="module-form" data-action="create-system"${editFormAttributes('system', record)}>
           <h4>${record ? 'Edit system / equipment' : 'Create system / equipment'}</h4>
@@ -2004,7 +2104,7 @@
         </form>
         <div class="record-panel">
           <h4>Systems / Equipment</h4>
-          ${renderSystemList(state.records.systems)}
+          ${renderSystemList(systems, Boolean(searchTerm))}
         </div>
       </div>
     `;
@@ -2012,7 +2112,16 @@
 
   function renderFiltersSection() {
     const record = editingRecord('filter', state.records.filters);
+    const searchTerm = state.assetSearch.filters || '';
+    const filters = filterRecords(state.records.filters, searchTerm, [
+      filter => filter.filter_name,
+      filter => filter.status,
+      filter => filter.sku,
+      filter => filter.filter_type ? optionLabel(FILTER_TYPE_OPTIONS, filter.filter_type, 'Filter') : '',
+      filter => filter.system_id ? systemName(filter.system_id) : ''
+    ]);
     return `
+      ${renderAssetToolbar('filters', 'Search filters', 'Add filter')}
       <div class="module-grid">
         <form class="module-form" data-action="create-filter"${editFormAttributes('filter', record)}>
           <h4>${record ? 'Edit filter' : 'Create filter'}</h4>
@@ -2069,7 +2178,7 @@
         </form>
         <div class="record-panel">
           <h4>Filters</h4>
-          ${renderFilterList(state.records.filters)}
+          ${renderFilterList(filters, Boolean(searchTerm))}
         </div>
       </div>
     `;
@@ -2168,15 +2277,16 @@
 
     return `
       ${renderSectionHeader('import', statusText)}
+      ${renderImportStepIndicator(preview)}
       <div class="import-layout">
         <section class="module-form import-upload-panel" aria-labelledby="import-upload-title">
           <div>
-            <h4 id="import-upload-title">CSV import preview</h4>
-            <p class="muted-note">Upload a CSV inventory file to preview locations, systems, and filters. This module does not save or import records yet.</p>
+            <h4 id="import-upload-title">Upload inventory CSV</h4>
+            <p class="muted-note">Preview a filter inventory file before creating locations, systems, and filters.</p>
           </div>
           <label class="import-dropzone">
-            <span>Upload CSV</span>
-            <strong>${preview.fileName ? escapeHtml(preview.fileName) : 'Choose inventory file'}</strong>
+            <span>CSV file</span>
+            <strong>${preview.fileName ? escapeHtml(preview.fileName) : 'Choose CSV inventory file'}</strong>
             <small>Required columns: Venue, Machine, ReOrder#, Filter Type, Filter Amount</small>
             <input type="file" accept=".csv,text/csv" data-csv-import-file aria-label="Upload filter inventory CSV">
           </label>
@@ -2200,7 +2310,7 @@
         <section class="record-panel import-preview-panel" aria-live="polite">
           <div class="import-preview-heading">
             <div>
-              <h4>Import preview</h4>
+              <h4>Import Inventory</h4>
               <p>${escapeHtml(importPreviewDescription(preview))}</p>
             </div>
             <span class="status-badge status-${escapeHtml(previewStatusTone(preview))}">${escapeHtml(previewStatusLabel(preview))}</span>
@@ -2225,24 +2335,77 @@
     }
 
     return `
-      ${renderImportValidationMessages(preview)}
-      ${renderImportNoticeList('Errors', preview.errors, 'error')}
-      ${renderImportNoticeList('Warnings', preview.warnings, 'warning')}
-      ${renderImportNoticeList('Duplicates detected', preview.duplicates, 'duplicate')}
-      <div class="import-summary-grid">
-        ${metricCard('Locations detected', String(preview.detected.locations), 'Unique Venue values')}
-        ${metricCard('Systems detected', String(preview.detected.systems), 'Unique Venue + Machine pairs')}
-        ${metricCard('Filters detected', String(preview.detected.filters), 'Unique filter records')}
-        ${metricCard('Warnings', String(preview.warnings.length), preview.warnings.length ? 'Rows need review' : 'No row warnings')}
-        ${metricCard('Duplicates', String(preview.duplicates.length), preview.duplicates.length ? 'CSV or workspace matches' : 'No duplicates detected')}
+      ${renderImportSummaryCards(preview)}
+      ${renderImportOverview(preview)}
+      <div class="import-notice-grid">
+        ${renderImportNoticeList('Errors', preview.errors, 'error')}
+        ${renderImportNoticeList('Warnings', preview.warnings, 'warning')}
+        ${renderImportNoticeList('Duplicates detected', preview.duplicates, 'duplicate')}
       </div>
       ${preview.errors.length ? '' : `
         <div class="import-review-launch">
           <button type="button" class="primary-action" data-open-import-review>Review import</button>
-          <p>Review is still preview-only. No Supabase records will be created.</p>
+          <p>Preview remains read-only until the confirm step is completed.</p>
         </div>
       `}
-      ${renderGroupedImportPreview(preview)}
+      ${renderImportPreviewDetails(preview)}
+    `;
+  }
+
+  function renderImportSummaryCards(preview) {
+    return `
+      <div class="import-summary-grid">
+        ${metricCard('Locations', String(preview.detected.locations), 'Unique Venue values')}
+        ${metricCard('Systems', String(preview.detected.systems), 'Unique Venue + Machine pairs')}
+        ${metricCard('Filters', String(preview.detected.filters), 'Unique filter records')}
+        ${metricCard('Warnings', String(preview.warnings.length), preview.warnings.length ? 'Rows need review' : 'No row warnings')}
+        ${metricCard('Duplicates', String(preview.duplicates.length), preview.duplicates.length ? 'CSV or workspace matches' : 'No duplicates detected')}
+      </div>
+    `;
+  }
+
+  function renderImportOverview(preview) {
+    const overviewItems = [
+      ...preview.validations,
+      {
+        type: preview.warnings.length ? 'warning' : 'success',
+        label: 'Warnings and conflicts',
+        message: preview.warnings.length ? `${preview.warnings.length} warnings need review.` : 'No warnings found.'
+      },
+      {
+        type: preview.duplicates.length ? 'warning' : 'success',
+        label: 'Duplicates',
+        message: preview.duplicates.length ? `${preview.duplicates.length} duplicate notices detected.` : 'No duplicates detected.'
+      }
+    ];
+
+    if (!overviewItems.length) return '';
+
+    return `
+      <section class="import-overview" aria-label="Import preview overview">
+        <div class="import-overview-heading">
+          <span>Preview overview</span>
+          <strong>${escapeHtml(preview.fileName || 'CSV not selected')}</strong>
+        </div>
+        <div class="import-overview-list">
+          ${overviewItems.map(item => `
+            <div class="import-overview-item import-overview-${escapeHtml(item.type || 'info')}">
+              <span>${escapeHtml(item.label || 'Status')}</span>
+              <strong>${escapeHtml(item.message || '')}</strong>
+            </div>
+          `).join('')}
+        </div>
+      </section>
+    `;
+  }
+
+  function renderImportPreviewDetails(preview) {
+    if (!preview.groups.length) return renderGroupedImportPreview(preview);
+    return `
+      <details class="import-preview-details">
+        <summary>View grouped inventory preview (${escapeHtml(preview.groups.length)} locations)</summary>
+        ${renderGroupedImportPreview(preview)}
+      </details>
     `;
   }
 
@@ -2256,14 +2419,14 @@
           <div>
             <span>Review Import</span>
             <h4>${state.importReview.summary ? 'Import summary' : hasUnresolvedConflicts ? 'Resolve conflicts before confirmation' : 'Ready for import'}</h4>
-            <p>Execution is scoped to the active client and business workspace.</p>
+            <p>Review records, resolve quantity conflicts, then confirm the Supabase write.</p>
           </div>
           <button type="button" class="secondary-action compact-action" data-close-import-review${state.importReview.isImporting ? ' disabled' : ''}>Back to preview</button>
         </div>
         <div class="import-summary-grid import-review-summary">
-          ${metricCard('Locations to create', String(importPlan.locations.length), 'Importable rows only')}
-          ${metricCard('Systems to create', String(importPlan.systems.length), 'No manual-only systems')}
-          ${metricCard('Filters to create', String(importPlan.filters.length), 'Resolved quantities applied')}
+          ${metricCard('Locations', String(importPlan.locations.length), 'Ready to create')}
+          ${metricCard('Systems', String(importPlan.systems.length), 'Ready to create')}
+          ${metricCard('Filters', String(importPlan.filters.length), 'Resolved quantities applied')}
           ${metricCard('Duplicates', String(preview.duplicates.length), 'Will be skipped')}
           ${metricCard('Manual review', String(importPlan.manualReview.length), 'Skipped during import')}
         </div>
@@ -2275,6 +2438,39 @@
         ${renderImportReadyState(preview)}
       </div>
     `;
+  }
+
+  function renderImportStepIndicator(preview) {
+    const activeStep = currentImportStep(preview);
+    const steps = [
+      ['upload', 'Upload CSV'],
+      ['preview', 'Preview Import'],
+      ['review', 'Review Import'],
+      ['confirm', 'Confirm Import'],
+      ['summary', 'Import Summary']
+    ];
+    const activeIndex = steps.findIndex(([step]) => step === activeStep);
+
+    return `
+      <div class="import-stepper" aria-label="Import progress">
+        ${steps.map(([step, label], index) => `
+          <span class="import-step${index === activeIndex ? ' is-active' : ''}${index < activeIndex ? ' is-complete' : ''}">
+            <span>${escapeHtml(String(index + 1))}</span>
+            ${escapeHtml(label)}
+          </span>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  function currentImportStep(preview) {
+    if (state.importReview.summary) return 'summary';
+    if (state.importReview.status === 'review') {
+      if (state.importReview.confirmations.createRecords || state.importReview.isImporting) return 'confirm';
+      return 'review';
+    }
+    if (preview.rows.length || preview.errors.length || preview.status === 'reading' || preview.status === 'parsing') return 'preview';
+    return 'upload';
   }
 
   function renderImportReviewEntities(importPlan) {
@@ -2366,10 +2562,10 @@
       ? `Warnings pending: ${preview.warnings.length}`
       : `Warnings resolved: ${preview.warnings.length}`;
     return `
-      <div class="import-ready-panel${hasUnresolvedConflicts && !hasSummary ? '' : ' is-ready'}">
+      <div class="import-ready-panel${hasSummary || canConfirm ? ' is-ready' : hasUnresolvedConflicts ? ' is-blocked' : ''}">
         <div>
           <strong>${state.importReview.isImporting ? 'Importing records' : hasSummary ? 'Import complete' : hasUnresolvedConflicts ? 'Resolve conflicts to continue' : 'Ready for import'}</strong>
-          <p>Locations: ${escapeHtml(preview.detected.locations)} · Systems: ${escapeHtml(preview.detected.systems)} · Filters: ${escapeHtml(preview.detected.filters)} · ${escapeHtml(warningStatus)}</p>
+          <p>Locations: ${escapeHtml(preview.detected.locations)} | Systems: ${escapeHtml(preview.detected.systems)} | Filters: ${escapeHtml(preview.detected.filters)} | ${escapeHtml(warningStatus)}</p>
         </div>
         <button type="button" class="primary-action" data-confirm-import${canConfirm ? '' : ' disabled'}>${state.importReview.isImporting ? 'Importing...' : hasSummary ? 'Import complete' : 'Confirm Import'}</button>
       </div>
@@ -2380,6 +2576,10 @@
     const messages = getImportPreflightMessages(preview);
     return `
       <div class="import-execution-gate">
+        <div class="import-gate-heading">
+          <span>Supabase write</span>
+          <strong>Confirm before creating records</strong>
+        </div>
         <label class="import-confirmation-check">
           <input type="checkbox" data-import-confirmation${state.importReview.confirmations.createRecords ? ' checked' : ''}${state.importReview.isImporting ? ' disabled' : ''}>
           <span>I understand this will create records in Supabase.</span>
@@ -2404,7 +2604,7 @@
     return `
       <section class="import-final-summary" aria-label="Final import summary">
         <div class="import-conflict-heading">
-          <h5>Final Import Summary</h5>
+          <h5>Import Summary</h5>
           <p>${escapeHtml(summary.finishedAt ? `Completed ${summary.finishedAt}` : 'Import finished.')}</p>
         </div>
         <div class="import-summary-grid import-review-summary">
@@ -2541,12 +2741,25 @@
 
   function renderImportNoticeList(title, notices, type) {
     if (!notices.length) return '';
+    const visibleNotices = notices.slice(0, 3);
+    const hiddenNotices = notices.slice(3);
     return `
       <div class="import-notice-list import-notice-${escapeHtml(type)}">
-        <strong>${escapeHtml(title)}</strong>
+        <div class="import-notice-heading">
+          <strong>${escapeHtml(title)}</strong>
+          <span>${escapeHtml(notices.length)}</span>
+        </div>
         <ul>
-          ${notices.map(notice => `<li>${escapeHtml(importNoticeText(notice))}</li>`).join('')}
+          ${visibleNotices.map(notice => `<li>${escapeHtml(importNoticeText(notice))}</li>`).join('')}
         </ul>
+        ${hiddenNotices.length ? `
+          <details class="import-notice-detail">
+            <summary>Show ${escapeHtml(hiddenNotices.length)} more</summary>
+            <ul>
+              ${hiddenNotices.map(notice => `<li>${escapeHtml(importNoticeText(notice))}</li>`).join('')}
+            </ul>
+          </details>
+        ` : ''}
       </div>
     `;
   }
@@ -3531,6 +3744,7 @@
 
     return {
       placeLabel: isBusiness ? 'Total Locations' : 'Total Properties',
+      placeCardLabel: isBusiness ? 'Locations' : 'Properties',
       placeCount,
       placeEmptyText: isBusiness ? 'Add your first location' : 'Add your first property',
       groupHeading: isBusiness ? 'Systems by location' : 'Systems by property',
@@ -3648,11 +3862,12 @@
     return `<button type="button" class="secondary-action compact-action danger-action" data-remove-record="${escapeHtml(recordType)}" data-record-id="${escapeHtml(recordId)}">${escapeHtml(label)}</button>`;
   }
 
-  function renderLocationList() {
+  function renderLocationList(locations = state.records.locations, isFiltered = false) {
     if (!state.records.locations.length) return emptyState('Add your first location', 'Create a location before assigning filtration systems.');
+    if (!locations.length && isFiltered) return emptyState('No matching locations', 'Try another search term.');
     return `
       <div class="record-list">
-        ${state.records.locations.map(location => `
+        ${locations.map(location => `
           <article class="record-item">
             <div class="record-item-header">
               <strong>${escapeHtml(location.name)}</strong>
@@ -3671,11 +3886,12 @@
     `;
   }
 
-  function renderPropertyList() {
+  function renderPropertyList(properties = state.records.properties, isFiltered = false) {
     if (!state.records.properties.length) return emptyState('Add your first property', 'Create a property before assigning filtration systems.');
+    if (!properties.length && isFiltered) return emptyState('No matching properties', 'Try another search term.');
     return `
       <div class="record-list">
-        ${state.records.properties.map(property => `
+        ${properties.map(property => `
           <article class="record-item">
             <div class="record-item-header">
               <strong>${escapeHtml(property.name)}</strong>
@@ -3692,8 +3908,9 @@
     `;
   }
 
-  function renderSystemList(systems) {
-    if (!systems.length) return emptyState('Add your first filtration system', 'Create a system to begin tracking filters and PSI readings.');
+  function renderSystemList(systems, isFiltered = false) {
+    if (!state.records.systems.length) return emptyState('Add your first filtration system', 'Create a system to begin tracking filters and PSI readings.');
+    if (!systems.length && isFiltered) return emptyState('No matching systems', 'Try another search term.');
     return `
       <div class="record-list">
         ${systems.map(system => `
@@ -3720,8 +3937,9 @@
     `;
   }
 
-  function renderFilterList(filters) {
-    if (!filters.length) return emptyState('Add your first filter', 'Create a filter record for a system.');
+  function renderFilterList(filters, isFiltered = false) {
+    if (!state.records.filters.length) return emptyState('Add your first filter', 'Create a filter record for a system.');
+    if (!filters.length && isFiltered) return emptyState('No matching filters', 'Try another search term.');
     return `
       <div class="record-list">
         ${filters.map(filter => `
@@ -3818,6 +4036,45 @@
     `;
   }
 
+  function renderUpcomingMaintenanceList() {
+    const items = getUpcomingMaintenanceItems(5);
+    if (!items.length) return emptyState('No upcoming maintenance', 'Filters due soon will appear here.');
+    return `
+      <div class="record-list">
+        ${items.map(filter => {
+          const isOverdue = filter.due_date && filter.due_date < todayIso();
+          return `
+            <article class="record-item">
+              <div class="record-item-header">
+                <strong>${escapeHtml(filter.filter_name)}</strong>
+                ${statusBadge(isOverdue ? 'critical' : 'warning')}
+              </div>
+              <div class="record-meta">
+                <span>${escapeHtml(systemName(filter.system_id))}</span>
+                ${filter.sku ? `<span>SKU ${escapeHtml(filter.sku)}</span>` : ''}
+                <span>Due ${formatDate(filter.due_date)}</span>
+              </div>
+            </article>
+          `;
+        }).join('')}
+      </div>
+    `;
+  }
+
+  function getUpcomingMaintenanceItems(limit = 5) {
+    const soon = addDaysIso(30);
+    return state.records.filters
+      .filter(filter => {
+        const status = String(filter.status || '').toLowerCase();
+        return filter.due_date
+          && filter.due_date <= soon
+          && status !== 'replaced'
+          && status !== 'archived';
+      })
+      .sort((first, second) => String(first.due_date).localeCompare(String(second.due_date)))
+      .slice(0, limit);
+  }
+
   function renderReportList(reports) {
     return `
       <div class="record-list">
@@ -3910,6 +4167,15 @@
     }
     alert.textContent = message;
     alert.hidden = false;
+  }
+
+  function focusActiveModuleForm() {
+    const active = document.querySelector('.app-section.is-active');
+    const form = active?.querySelector('form.module-form');
+    if (!form) return;
+    form.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    const firstField = form.querySelector('input, select, textarea, button');
+    if (firstField) firstField.focus();
   }
 
   function startEditing(recordType, recordId) {
@@ -4050,6 +4316,7 @@
     els.signOutButton.addEventListener('click', signOut);
     els.workspaceView.addEventListener('submit', handleWorkspaceSubmit);
     els.workspaceView.addEventListener('click', handleWorkspaceClick);
+    els.workspaceView.addEventListener('input', handleWorkspaceInput);
     els.workspaceView.addEventListener('change', handleWorkspaceChange);
     els.refreshWorkspaceButton.addEventListener('click', refreshWorkspace);
 
