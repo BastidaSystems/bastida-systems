@@ -2349,7 +2349,7 @@
               <strong>${escapeHtml(preview.rows.length)}</strong>
             </div>
             <div>
-              <span>Will create</span>
+              <span>Ready to create</span>
               <strong>${escapeHtml(preview.detected.locations)} Locations</strong>
               <strong>${escapeHtml(preview.detected.systems)} Systems</strong>
               <strong>${escapeHtml(preview.detected.filters)} Filters</strong>
@@ -2363,11 +2363,11 @@
               <strong>${escapeHtml(preview.duplicates.length)} Duplicates</strong>
             </div>
           </div>
+          <p class="import-summary-note">No records will be saved until you confirm the import.</p>
         `}
         ${preview.errors.length ? '' : `
           <div class="import-primary-actions">
-            <button type="button" class="primary-action" data-open-import-review>Review Import</button>
-            ${preview.warnings.length ? `<button type="button" class="secondary-action compact-action" data-open-import-review>Resolve issues</button>` : ''}
+            <button type="button" class="primary-action" data-open-import-review>${preview.warnings.length ? `Review ${preview.warnings.length} issues` : 'Review Import'}</button>
           </div>
         `}
         ${renderImportAdvancedDetails(preview)}
