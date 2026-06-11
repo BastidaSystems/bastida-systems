@@ -244,6 +244,7 @@
       'onboarding-sign-out-button',
       'onboarding-submit',
       'workspace-view',
+      'workspace-header',
       'workspace-title',
       'workspace-subtitle',
       'workspace-kicker',
@@ -2272,52 +2273,30 @@
 
   function renderImportSection() {
     const preview = state.importPreview || createEmptyImportPreview();
-    const parsedText = preview.rows.length ? `${preview.rows.length} rows parsed` : 'Preview only';
-    const statusText = previewStatusText(preview) || parsedText;
 
     return `
-      ${renderSectionHeader('import', statusText)}
+      ${renderImportWorkflowHeader(preview)}
       ${renderImportStepIndicator(preview)}
-      <div class="import-layout">
-        <section class="module-form import-upload-panel" aria-labelledby="import-upload-title">
-          <div>
-            <h4 id="import-upload-title">Upload inventory CSV</h4>
-            <p class="muted-note">Preview a filter inventory file before creating locations, systems, and filters.</p>
-          </div>
-          <label class="import-dropzone">
-            <span>CSV file</span>
-            <strong>${preview.fileName ? escapeHtml(preview.fileName) : 'Choose CSV inventory file'}</strong>
-            <small>Required columns: Venue, Machine, ReOrder#, Filter Type, Filter Amount</small>
-            <input type="file" accept=".csv,text/csv" data-csv-import-file aria-label="Upload filter inventory CSV">
-          </label>
-          <div class="import-upload-notes">
-            <span>No Supabase writes</span>
-            <span>Preview only</span>
-            <span>CSV validation enabled</span>
-          </div>
-          <div class="import-mapping-grid" aria-label="CSV column mapping">
-            ${IMPORT_COLUMNS.map(column => `
-              <div class="import-mapping-item">
-                <span>${escapeHtml(column.source)}</span>
-                <strong>${escapeHtml(column.target)}</strong>
-              </div>
-            `).join('')}
-          </div>
-          <div class="inline-actions">
-            <button type="button" class="secondary-action compact-action" data-clear-import-preview${preview.fileName || preview.errors.length ? '' : ' disabled'}>Clear preview</button>
-          </div>
-        </section>
-        <section class="record-panel import-preview-panel" aria-live="polite">
-          <div class="import-preview-heading">
-            <div>
-              <h4>Import Inventory</h4>
-              <p>${escapeHtml(importPreviewDescription(preview))}</p>
-            </div>
-            <span class="status-badge status-${escapeHtml(previewStatusTone(preview))}">${escapeHtml(previewStatusLabel(preview))}</span>
-          </div>
-          ${renderImportPreview(preview)}
-          ${renderImportReview(preview)}
-        </section>
+      <div class="import-workflow" aria-live="polite">
+        ${state.importReview.status === 'review' ? renderImportReview(preview) : renderImportPreview(preview)}
+      </div>
+    `;
+  }
+
+  function renderImportWorkflowHeader(preview) {
+    const readyToImport = state.importReview.status === 'review'
+      && !state.importReview.summary
+      && !preview.errors.length
+      && !hasUnresolvedImportConflicts(preview);
+    const label = state.importReview.summary ? 'Complete' : readyToImport ? 'Ready to import' : 'Preview only';
+    const tone = readyToImport || state.importReview.summary ? 'active' : 'unknown';
+    return `
+      <div class="import-workflow-header">
+        <div>
+          <h3>Import Inventory</h3>
+          <p>Upload a CSV, review the summary, resolve issues, and import when ready.</p>
+        </div>
+        <span class="status-badge status-${escapeHtml(tone)}">${escapeHtml(label)}</span>
       </div>
     `;
   }
@@ -2328,115 +2307,153 @@
     }
 
     if (!preview.fileName && !preview.errors.length) {
-      return `
-        ${emptyState('Upload a CSV to start', 'The preview will show locations, systems, filters, duplicate checks, and warnings before any database write exists.')}
-        ${renderImportEmptyGuide()}
-      `;
+      return renderImportUploadCard(preview);
     }
 
-    return `
-      ${renderImportSummaryCards(preview)}
-      ${renderImportOverview(preview)}
-      <div class="import-notice-grid">
-        ${renderImportNoticeList('Errors', preview.errors, 'error')}
-        ${renderImportNoticeList('Warnings', preview.warnings, 'warning')}
-        ${renderImportNoticeList('Duplicates detected', preview.duplicates, 'duplicate')}
-      </div>
-      ${preview.errors.length ? '' : `
-        <div class="import-review-launch">
-          <button type="button" class="primary-action" data-open-import-review>Review import</button>
-          <p>Preview remains read-only until the confirm step is completed.</p>
-        </div>
-      `}
-      ${renderImportPreviewDetails(preview)}
-    `;
+    return renderImportPreviewSummary(preview);
   }
 
-  function renderImportSummaryCards(preview) {
+  function renderImportUploadCard(preview) {
     return `
-      <div class="import-summary-grid">
-        ${metricCard('Locations', String(preview.detected.locations), 'Unique Venue values')}
-        ${metricCard('Systems', String(preview.detected.systems), 'Unique Venue + Machine pairs')}
-        ${metricCard('Filters', String(preview.detected.filters), 'Unique filter records')}
-        ${metricCard('Warnings', String(preview.warnings.length), preview.warnings.length ? 'Rows need review' : 'No row warnings')}
-        ${metricCard('Duplicates', String(preview.duplicates.length), preview.duplicates.length ? 'CSV or workspace matches' : 'No duplicates detected')}
-      </div>
-    `;
-  }
-
-  function renderImportOverview(preview) {
-    const overviewItems = [
-      ...preview.validations,
-      {
-        type: preview.warnings.length ? 'warning' : 'success',
-        label: 'Warnings and conflicts',
-        message: preview.warnings.length ? `${preview.warnings.length} warnings need review.` : 'No warnings found.'
-      },
-      {
-        type: preview.duplicates.length ? 'warning' : 'success',
-        label: 'Duplicates',
-        message: preview.duplicates.length ? `${preview.duplicates.length} duplicate notices detected.` : 'No duplicates detected.'
-      }
-    ];
-
-    if (!overviewItems.length) return '';
-
-    return `
-      <section class="import-overview" aria-label="Import preview overview">
-        <div class="import-overview-heading">
-          <span>Preview overview</span>
-          <strong>${escapeHtml(preview.fileName || 'CSV not selected')}</strong>
+      <section class="record-panel import-primary-card import-upload-panel" aria-labelledby="import-upload-title">
+        <div class="import-card-heading">
+          <div>
+            <h4 id="import-upload-title">Installed Filters</h4>
+            <p>Upload a sheet with locations, machines, filter SKUs, filter types, and quantities.</p>
+          </div>
         </div>
-        <div class="import-overview-list">
-          ${overviewItems.map(item => `
-            <div class="import-overview-item import-overview-${escapeHtml(item.type || 'info')}">
-              <span>${escapeHtml(item.label || 'Status')}</span>
-              <strong>${escapeHtml(item.message || '')}</strong>
-            </div>
-          `).join('')}
-        </div>
+        <label class="import-dropzone">
+          <span>CSV file</span>
+          <strong>${preview.fileName ? escapeHtml(preview.fileName) : 'Choose Installed Filters CSV'}</strong>
+          <small>Required columns: Venue, Machine, ReOrder#, Filter Type, Filter Amount</small>
+          <input type="file" accept=".csv,text/csv" data-csv-import-file aria-label="Upload installed filters CSV">
+        </label>
       </section>
     `;
   }
 
-  function renderImportPreviewDetails(preview) {
-    if (!preview.groups.length) return renderGroupedImportPreview(preview);
+  function renderImportPreviewSummary(preview) {
     return `
-      <details class="import-preview-details">
-        <summary>View grouped inventory preview (${escapeHtml(preview.groups.length)} locations)</summary>
-        ${renderGroupedImportPreview(preview)}
-      </details>
+      <section class="record-panel import-primary-card">
+        <div class="import-card-heading">
+          <div>
+            <h4>CSV Summary</h4>
+            <p>${escapeHtml(preview.fileName || 'Selected file')}</p>
+          </div>
+          <button type="button" class="secondary-action compact-action" data-clear-import-preview>Clear</button>
+        </div>
+        ${preview.errors.length ? renderImportNoticeList('Errors', preview.errors, 'error') : `
+          <div class="import-simple-summary">
+            <div>
+              <span>Rows detected</span>
+              <strong>${escapeHtml(preview.rows.length)}</strong>
+            </div>
+            <div>
+              <span>Will create</span>
+              <strong>${escapeHtml(preview.detected.locations)} Locations</strong>
+              <strong>${escapeHtml(preview.detected.systems)} Systems</strong>
+              <strong>${escapeHtml(preview.detected.filters)} Filters</strong>
+            </div>
+            <div>
+              <span>Needs review</span>
+              <strong>${escapeHtml(preview.warnings.length)} Issues</strong>
+            </div>
+            <div>
+              <span>Skipped duplicates</span>
+              <strong>${escapeHtml(preview.duplicates.length)} Duplicates</strong>
+            </div>
+          </div>
+        `}
+        ${preview.errors.length ? '' : `
+          <div class="import-primary-actions">
+            <button type="button" class="primary-action" data-open-import-review>Review Import</button>
+            ${preview.warnings.length ? `<button type="button" class="secondary-action compact-action" data-open-import-review>Resolve issues</button>` : ''}
+          </div>
+        `}
+        ${renderImportAdvancedDetails(preview)}
+      </section>
+    `;
+  }
+
+  function renderImportAdvancedDetails(preview) {
+    return `
+      <div class="import-advanced-details">
+        <details>
+          <summary>Show details</summary>
+          <div class="import-detail-stack">
+            <details>
+              <summary>Column mapping</summary>
+              ${renderImportColumnMapping()}
+            </details>
+            <details>
+              <summary>Validation details</summary>
+              ${renderImportValidationMessages(preview) || emptyState('No validation messages', 'Upload a CSV to see validation details.')}
+            </details>
+            <details>
+              <summary>Duplicate details (${escapeHtml(preview.duplicates.length)})</summary>
+              ${renderImportNoticeList('Duplicates skipped', preview.duplicates, 'duplicate') || emptyState('No duplicates', 'No duplicate records were detected.')}
+            </details>
+            <details>
+              <summary>View grouped preview</summary>
+              ${renderGroupedImportPreview(preview)}
+            </details>
+          </div>
+        </details>
+      </div>
+    `;
+  }
+
+  function renderImportColumnMapping() {
+    const items = [
+      ['Venue', 'Location'],
+      ['Machine', 'System'],
+      ['ReOrder#', 'SKU'],
+      ['Filter Type', 'Filter Type'],
+      ['Filter Amount', 'Quantity']
+    ];
+    return `
+      <div class="import-mapping-grid" aria-label="CSV column mapping">
+        ${items.map(([source, target]) => `
+          <div class="import-mapping-item">
+            <span>${escapeHtml(source)}</span>
+            <strong>${escapeHtml(target)}</strong>
+          </div>
+        `).join('')}
+      </div>
     `;
   }
 
   function renderImportReview(preview) {
-    if (state.importReview.status !== 'review' || !preview.rows.length || preview.errors.length) return '';
-    const hasUnresolvedConflicts = hasUnresolvedImportConflicts(preview);
+    if (state.importReview.summary) {
+      return `
+        <section class="record-panel import-primary-card import-review-screen" aria-label="Import summary">
+          ${renderImportFinalSummary()}
+        </section>
+      `;
+    }
+
+    if (!preview.rows.length || preview.errors.length) return renderImportPreviewSummary(preview);
+
     const importPlan = buildReviewedImportPlan(preview);
     return `
-      <div class="import-review-screen" aria-label="Review import">
-        <div class="import-review-header">
+      <section class="record-panel import-primary-card import-review-screen" aria-label="Review import">
+        <div class="import-card-heading">
           <div>
-            <span>Review Import</span>
-            <h4>${state.importReview.summary ? 'Import summary' : hasUnresolvedConflicts ? 'Resolve conflicts before confirmation' : 'Ready for import'}</h4>
-            <p>Review records, resolve quantity conflicts, then confirm the Supabase write.</p>
+            <h4>Review Import</h4>
+            <p>${hasUnresolvedImportConflicts(preview) ? `${preview.warnings.length} issues need review before import.` : 'Ready for final confirmation.'}</p>
           </div>
-          <button type="button" class="secondary-action compact-action" data-close-import-review${state.importReview.isImporting ? ' disabled' : ''}>Back to preview</button>
+          <button type="button" class="secondary-action compact-action" data-close-import-review${state.importReview.isImporting ? ' disabled' : ''}>Back</button>
         </div>
         <div class="import-summary-grid import-review-summary">
-          ${metricCard('Locations', String(importPlan.locations.length), 'Ready to create')}
-          ${metricCard('Systems', String(importPlan.systems.length), 'Ready to create')}
-          ${metricCard('Filters', String(importPlan.filters.length), 'Resolved quantities applied')}
-          ${metricCard('Duplicates', String(preview.duplicates.length), 'Will be skipped')}
-          ${metricCard('Manual review', String(importPlan.manualReview.length), 'Skipped during import')}
+          ${metricCard('Locations', String(preview.detected.locations), 'Detected')}
+          ${metricCard('Systems', String(preview.detected.systems), 'Detected')}
+          ${metricCard('Filters', String(preview.detected.filters), 'Detected')}
+          ${metricCard('Issues', String(preview.warnings.length), preview.warnings.length ? 'Needs review' : 'None')}
         </div>
-        ${renderImportReviewEntities(importPlan)}
         ${renderImportConflictResolution(preview)}
-        ${renderImportReviewNotices(preview)}
-        ${renderImportExecutionGate(preview)}
-        ${renderImportFinalSummary()}
-        ${renderImportReadyState(preview)}
-      </div>
+        ${renderImportConfirmCard(preview, importPlan)}
+        ${renderImportReviewDetails(importPlan, preview)}
+      </section>
     `;
   }
 
@@ -2497,13 +2514,92 @@
     `;
   }
 
+  function renderImportReviewDetails(importPlan, preview) {
+    return `
+      <div class="import-review-details">
+        <details>
+          <summary>Locations to create (${escapeHtml(importPlan.locations.length)})</summary>
+          ${renderImportEntityTable('Locations to create', importPlan.locations, [
+            ['name', 'Location'],
+            ['sourceRows', 'Rows']
+          ])}
+        </details>
+        <details>
+          <summary>Systems to create (${escapeHtml(importPlan.systems.length)})</summary>
+          ${renderImportEntityTable('Systems to create', importPlan.systems, [
+            ['locationName', 'Location'],
+            ['name', 'System'],
+            ['sourceRows', 'Rows']
+          ])}
+        </details>
+        <details>
+          <summary>Filters to create (${escapeHtml(importPlan.filters.length)})</summary>
+          ${renderImportEntityTable('Filters to create', importPlan.filters, [
+            ['locationName', 'Location'],
+            ['systemName', 'System'],
+            ['sku', 'SKU'],
+            ['filterName', 'Filter'],
+            ['filterQuantity', 'Qty'],
+            ['sourceRows', 'Rows']
+          ])}
+        </details>
+        <details>
+          <summary>Duplicates skipped (${escapeHtml(preview.duplicates.length)})</summary>
+          ${renderImportNoticeList('Duplicates skipped', preview.duplicates, 'duplicate') || emptyState('No duplicates', 'No duplicate records were detected.')}
+        </details>
+      </div>
+    `;
+  }
+
+  function renderImportConfirmCard(preview, importPlan) {
+    const hasUnresolvedConflicts = hasUnresolvedImportConflicts(preview);
+    const canConfirm = canConfirmImport(preview);
+    const messages = getImportPreflightMessages(preview).filter(item => item.type === 'error');
+    return `
+      <section class="import-confirm-card" aria-label="Confirm import">
+        <div>
+          <span>${hasUnresolvedConflicts ? 'Resolve issues first' : 'Ready to import'}</span>
+          <h5>${hasUnresolvedConflicts ? 'Resolve issues to continue' : 'Ready to import'}</h5>
+        </div>
+        <div class="import-confirm-summary">
+          <div>
+            <span>Will create</span>
+            <strong>${escapeHtml(importPlan.locations.length)} Locations</strong>
+            <strong>${escapeHtml(importPlan.systems.length)} Systems</strong>
+            <strong>${escapeHtml(importPlan.filters.length)} Filters</strong>
+          </div>
+          <div>
+            <span>Will skip</span>
+            <strong>${escapeHtml(preview.duplicates.length)} Duplicates</strong>
+            <strong>${escapeHtml(importPlan.manualReview.length)} Manual review</strong>
+          </div>
+        </div>
+        <label class="import-confirmation-check">
+          <input type="checkbox" data-import-confirmation${state.importReview.confirmations.createRecords ? ' checked' : ''}${state.importReview.isImporting ? ' disabled' : ''}>
+          <span>I understand this will create records in Supabase.</span>
+        </label>
+        ${messages.length ? `
+          <div class="import-preflight-list">
+            ${messages.map(item => `
+              <div class="import-preflight-item import-preflight-${escapeHtml(item.type)}">
+                <strong>${escapeHtml(item.label)}</strong>
+                <span>${escapeHtml(item.message)}</span>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+        <button type="button" class="primary-action" data-confirm-import${canConfirm ? '' : ' disabled'}>${state.importReview.isImporting ? 'Importing...' : 'Confirm Import'}</button>
+      </section>
+    `;
+  }
+
   function renderImportConflictResolution(preview) {
     if (!preview.quantityConflicts.length) return '';
     return `
       <section class="import-conflict-section" aria-label="Quantity conflicts">
         <div class="import-conflict-heading">
-          <h5>Quantity conflicts</h5>
-          <p>Choose a quantity or mark the item for manual review before confirmation can be enabled.</p>
+          <h5>${escapeHtml(preview.quantityConflicts.length)} issues need review</h5>
+          <p>Choose a quantity or mark the item for manual review.</p>
         </div>
         <div class="import-conflict-list">
           ${preview.quantityConflicts.map(conflict => renderImportConflictCard(conflict)).join('')}
@@ -2604,25 +2700,37 @@
     return `
       <section class="import-final-summary" aria-label="Final import summary">
         <div class="import-conflict-heading">
-          <h5>Import Summary</h5>
+          <h5>Import complete</h5>
           <p>${escapeHtml(summary.finishedAt ? `Completed ${summary.finishedAt}` : 'Import finished.')}</p>
         </div>
-        <div class="import-summary-grid import-review-summary">
-          ${metricCard('Locations created', String(summary.locationsCreated.length), 'Inserted into Supabase')}
-          ${metricCard('Systems created', String(summary.systemsCreated.length), 'Inserted into Supabase')}
-          ${metricCard('Filters created', String(summary.filtersCreated.length), 'Inserted into Supabase')}
-          ${metricCard('Existing duplicates skipped', String(summary.existingDuplicatesSkipped.length), 'Already in workspace')}
-          ${metricCard('CSV duplicates skipped', String(summary.csvDuplicatesSkipped.length), 'Collapsed by preview')}
-          ${metricCard('Manual review skipped', String(summary.manualReviewSkipped.length), 'Not imported')}
-          ${metricCard('Errors', String(summary.errors.length), summary.errors.length ? 'Review required' : 'No errors')}
+        <div class="import-complete-grid">
+          <div>
+            <span>Created</span>
+            <strong>${escapeHtml(summary.locationsCreated.length)} Locations</strong>
+            <strong>${escapeHtml(summary.systemsCreated.length)} Systems</strong>
+            <strong>${escapeHtml(summary.filtersCreated.length)} Filters</strong>
+          </div>
+          <div>
+            <span>Skipped</span>
+            <strong>${escapeHtml(summary.existingDuplicatesSkipped.length + summary.csvDuplicatesSkipped.length)} Duplicates</strong>
+            <strong>${escapeHtml(summary.manualReviewSkipped.length)} Manual review</strong>
+          </div>
+          <div>
+            <span>Errors</span>
+            <strong>${escapeHtml(summary.errors.length)}</strong>
+          </div>
         </div>
-        ${renderImportSummaryDetail('Created locations', summary.locationsCreated)}
-        ${renderImportSummaryDetail('Created systems', summary.systemsCreated)}
-        ${renderImportSummaryDetail('Created filters', summary.filtersCreated)}
-        ${renderImportSummaryDetail('Existing duplicates skipped', summary.existingDuplicatesSkipped)}
-        ${renderImportSummaryDetail('Manual review items skipped', summary.manualReviewSkipped)}
-        ${renderImportSummaryDetail('Errors', summary.errors)}
-        <div class="inline-actions">
+        <details class="import-summary-detail">
+          <summary>View import details</summary>
+          ${renderImportSummaryDetail('Created locations', summary.locationsCreated)}
+          ${renderImportSummaryDetail('Created systems', summary.systemsCreated)}
+          ${renderImportSummaryDetail('Created filters', summary.filtersCreated)}
+          ${renderImportSummaryDetail('Existing duplicates skipped', summary.existingDuplicatesSkipped)}
+          ${renderImportSummaryDetail('Manual review items skipped', summary.manualReviewSkipped)}
+          ${renderImportSummaryDetail('Errors', summary.errors)}
+        </details>
+        <div class="import-primary-actions">
+          <button type="button" class="secondary-action compact-action" data-module-tab="assets" data-tab="filters">View Data</button>
           <button type="button" class="secondary-action compact-action" data-clear-import-preview>Import another CSV</button>
         </div>
       </section>
@@ -4153,6 +4261,9 @@
     els.workspaceTitle.textContent = module.title;
     els.workspaceSubtitle.textContent = module.subtitle;
     els.workspaceKicker.textContent = state.activeSection === 'dashboard' ? 'Live workspace' : 'Module';
+    if (els.workspaceHeader) {
+      els.workspaceHeader.hidden = state.activeSection === 'import';
+    }
     if (shouldCloseMenu) closeMobileMenu();
   }
 
