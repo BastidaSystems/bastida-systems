@@ -21,7 +21,8 @@
     mobileDrawerOpen: false,
     editing: null,
     records: createEmptyRecords(),
-    importPreview: createEmptyImportPreview()
+    importPreview: createEmptyImportPreview(),
+    importReview: createEmptyImportReview()
   };
 
   const MODULES = {
@@ -190,7 +191,15 @@
       validations: [],
       warnings: [],
       duplicates: [],
+      quantityConflicts: [],
       errors: []
+    };
+  }
+
+  function createEmptyImportReview() {
+    return {
+      status: 'idle',
+      resolutions: {}
     };
   }
 
@@ -1493,6 +1502,43 @@
     if (clearImportButton) {
       event.preventDefault();
       state.importPreview = createEmptyImportPreview();
+      state.importReview = createEmptyImportReview();
+      renderSections();
+      switchSection('import', false);
+      return;
+    }
+
+    const openImportReviewButton = event.target.closest('[data-open-import-review]');
+    if (openImportReviewButton) {
+      event.preventDefault();
+      state.importReview = {
+        ...createEmptyImportReview(),
+        status: 'review'
+      };
+      renderSections();
+      switchSection('import', false);
+      return;
+    }
+
+    const closeImportReviewButton = event.target.closest('[data-close-import-review]');
+    if (closeImportReviewButton) {
+      event.preventDefault();
+      state.importReview = {
+        ...state.importReview,
+        status: 'idle'
+      };
+      renderSections();
+      switchSection('import', false);
+      return;
+    }
+
+    const conflictResolutionButton = event.target.closest('[data-resolve-import-conflict]');
+    if (conflictResolutionButton) {
+      event.preventDefault();
+      setImportConflictResolution(conflictResolutionButton.dataset.conflictId, {
+        type: conflictResolutionButton.dataset.resolveImportConflict,
+        quantity: integerOrNull(conflictResolutionButton.dataset.quantity)
+      });
       renderSections();
       switchSection('import', false);
       return;
@@ -1513,6 +1559,18 @@
   }
 
   async function handleWorkspaceChange(event) {
+    const customQuantityInput = event.target.closest('[data-import-conflict-custom]');
+    if (customQuantityInput) {
+      const quantity = integerOrNull(customQuantityInput.value);
+      setImportConflictResolution(customQuantityInput.dataset.conflictId, {
+        type: 'custom',
+        quantity
+      });
+      renderSections();
+      switchSection('import', false);
+      return;
+    }
+
     const fileInput = event.target.closest('[data-csv-import-file]');
     if (!fileInput) return;
 
@@ -1524,6 +1582,7 @@
       status: 'reading',
       fileName: file.name
     };
+    state.importReview = createEmptyImportReview();
     renderSections();
     switchSection('import', false);
 
@@ -2109,6 +2168,7 @@
             <span class="status-badge status-${escapeHtml(previewStatusTone(preview))}">${escapeHtml(previewStatusLabel(preview))}</span>
           </div>
           ${renderImportPreview(preview)}
+          ${renderImportReview(preview)}
         </section>
       </div>
     `;
@@ -2138,7 +2198,138 @@
         ${metricCard('Warnings', String(preview.warnings.length), preview.warnings.length ? 'Rows need review' : 'No row warnings')}
         ${metricCard('Duplicates', String(preview.duplicates.length), preview.duplicates.length ? 'CSV or workspace matches' : 'No duplicates detected')}
       </div>
+      ${preview.errors.length ? '' : `
+        <div class="import-review-launch">
+          <button type="button" class="primary-action" data-open-import-review>Review import</button>
+          <p>Review is still preview-only. No Supabase records will be created.</p>
+        </div>
+      `}
       ${renderGroupedImportPreview(preview)}
+    `;
+  }
+
+  function renderImportReview(preview) {
+    if (state.importReview.status !== 'review' || !preview.rows.length || preview.errors.length) return '';
+    const hasUnresolvedConflicts = hasUnresolvedImportConflicts(preview);
+    return `
+      <div class="import-review-screen" aria-label="Review import">
+        <div class="import-review-header">
+          <div>
+            <span>Review Import</span>
+            <h4>${hasUnresolvedConflicts ? 'Resolve conflicts before confirmation' : 'Ready for import'}</h4>
+            <p>No database writes are connected to this screen yet.</p>
+          </div>
+          <button type="button" class="secondary-action compact-action" data-close-import-review>Back to preview</button>
+        </div>
+        <div class="import-summary-grid import-review-summary">
+          ${metricCard('Locations to create', String(preview.locations.length), 'Skipped if already present')}
+          ${metricCard('Systems to create', String(preview.systems.length), 'Location + Machine')}
+          ${metricCard('Filters to create', String(preview.filters.length), 'SKU + Filter')}
+          ${metricCard('Duplicates', String(preview.duplicates.length), 'Will be skipped')}
+          ${metricCard('Warnings', String(preview.warnings.length), 'Need review')}
+        </div>
+        ${renderImportReviewEntities(preview)}
+        ${renderImportConflictResolution(preview)}
+        ${renderImportReviewNotices(preview)}
+        ${renderImportReadyState(preview)}
+      </div>
+    `;
+  }
+
+  function renderImportReviewEntities(preview) {
+    return `
+      <div class="import-review-entities">
+        ${renderImportEntityTable('Locations to create', preview.locations, [
+          ['name', 'Location'],
+          ['sourceRows', 'Rows']
+        ])}
+        ${renderImportEntityTable('Systems to create', preview.systems, [
+          ['locationName', 'Location'],
+          ['name', 'System'],
+          ['sourceRows', 'Rows']
+        ])}
+        ${renderImportEntityTable('Filters to create', preview.filters, [
+          ['locationName', 'Location'],
+          ['systemName', 'System'],
+          ['sku', 'SKU'],
+          ['filterName', 'Filter'],
+          ['filterQuantity', 'Qty'],
+          ['sourceRows', 'Rows']
+        ])}
+      </div>
+    `;
+  }
+
+  function renderImportConflictResolution(preview) {
+    if (!preview.quantityConflicts.length) return '';
+    return `
+      <section class="import-conflict-section" aria-label="Quantity conflicts">
+        <div class="import-conflict-heading">
+          <h5>Quantity conflicts</h5>
+          <p>Choose a quantity or mark the item for manual review before confirmation can be enabled.</p>
+        </div>
+        <div class="import-conflict-list">
+          ${preview.quantityConflicts.map(conflict => renderImportConflictCard(conflict)).join('')}
+        </div>
+      </section>
+    `;
+  }
+
+  function renderImportConflictCard(conflict) {
+    const resolution = state.importReview.resolutions[conflict.id];
+    const isManual = resolution?.type === 'manual';
+    const customValue = resolution?.type === 'custom' && resolution.quantity ? resolution.quantity : '';
+    return `
+      <article class="import-conflict-card${resolution ? ' is-resolved' : ''}">
+        <div class="import-conflict-meta">
+          <div><span>Location</span><strong>${escapeHtml(conflict.locationName)}</strong></div>
+          <div><span>System</span><strong>${escapeHtml(conflict.systemName)}</strong></div>
+          <div><span>SKU</span><strong>${escapeHtml(conflict.sku)}</strong></div>
+          <div><span>Filter</span><strong>${escapeHtml(conflict.filterName)}</strong></div>
+        </div>
+        <div class="import-conflict-quantities">
+          <strong>Quantities found</strong>
+          <ul>
+            ${conflict.entries.map(entry => `<li>Row ${escapeHtml(entry.row)}: ${escapeHtml(entry.quantity)}</li>`).join('')}
+          </ul>
+        </div>
+        <div class="import-conflict-actions">
+          ${conflict.quantities.map(quantity => `
+            <button type="button" class="secondary-action compact-action${resolution?.type === 'quantity' && resolution.quantity === quantity ? ' is-selected' : ''}" data-resolve-import-conflict="quantity" data-conflict-id="${escapeHtml(conflict.id)}" data-quantity="${escapeHtml(quantity)}">Use quantity ${escapeHtml(quantity)}</button>
+          `).join('')}
+          <label class="import-custom-quantity">
+            <span>Custom quantity</span>
+            <input type="number" min="1" step="1" value="${escapeHtml(customValue)}" data-import-conflict-custom data-conflict-id="${escapeHtml(conflict.id)}">
+          </label>
+          <button type="button" class="secondary-action compact-action${isManual ? ' is-selected' : ''}" data-resolve-import-conflict="manual" data-conflict-id="${escapeHtml(conflict.id)}">Mark for manual review</button>
+        </div>
+        <p class="import-conflict-resolution">${escapeHtml(importConflictResolutionText(resolution))}</p>
+      </article>
+    `;
+  }
+
+  function renderImportReviewNotices(preview) {
+    return `
+      <div class="import-review-notices">
+        ${renderImportNoticeList('Duplicate notices', preview.duplicates, 'duplicate')}
+        ${renderImportNoticeList('Warning notices', preview.warnings, 'warning')}
+      </div>
+    `;
+  }
+
+  function renderImportReadyState(preview) {
+    const hasUnresolvedConflicts = hasUnresolvedImportConflicts(preview);
+    const warningStatus = hasUnresolvedConflicts
+      ? `Warnings pending: ${preview.warnings.length}`
+      : `Warnings resolved: ${preview.warnings.length}`;
+    return `
+      <div class="import-ready-panel${hasUnresolvedConflicts ? '' : ' is-ready'}">
+        <div>
+          <strong>${hasUnresolvedConflicts ? 'Resolve conflicts to continue' : 'Ready for import'}</strong>
+          <p>Locations: ${escapeHtml(preview.detected.locations)} · Systems: ${escapeHtml(preview.detected.systems)} · Filters: ${escapeHtml(preview.detected.filters)} · ${escapeHtml(warningStatus)}</p>
+        </div>
+        <button type="button" class="primary-action" disabled>Confirm Import</button>
+      </div>
     `;
   }
 
@@ -2389,6 +2580,7 @@
     collectImportLocations(preview, validRows);
     collectImportSystems(preview, validRows);
     collectImportFilters(preview, validRows);
+    preview.quantityConflicts = collectImportQuantityConflicts(validRows);
     return preview;
   }
 
@@ -2682,6 +2874,75 @@
       filterMap.set(filterKey, item);
       preview.filters.push(item);
     });
+  }
+
+  function collectImportQuantityConflicts(rows) {
+    const filterMap = new Map();
+
+    rows.forEach(row => {
+      const key = [
+        canonicalImportKey(row.venue),
+        canonicalImportKey(row.machine),
+        canonicalImportKey(row.sku),
+        canonicalImportKey(row.filterName)
+      ].join('|');
+
+      if (!filterMap.has(key)) {
+        filterMap.set(key, {
+          id: key,
+          locationName: row.venue,
+          systemName: row.machine,
+          sku: row.sku,
+          filterName: row.filterName,
+          entries: [],
+          quantitySet: new Set()
+        });
+      }
+
+      const item = filterMap.get(key);
+      item.entries.push({
+        row: row.lineNumber,
+        quantity: row.filterQuantity
+      });
+      item.quantitySet.add(row.filterQuantity);
+    });
+
+    return Array.from(filterMap.values())
+      .filter(item => item.quantitySet.size > 1)
+      .map(item => ({
+        id: item.id,
+        locationName: item.locationName,
+        systemName: item.systemName,
+        sku: item.sku,
+        filterName: item.filterName,
+        entries: item.entries,
+        quantities: Array.from(item.quantitySet).sort((a, b) => b - a)
+      }));
+  }
+
+  function setImportConflictResolution(conflictId, resolution) {
+    if (!conflictId) return;
+    const nextResolutions = { ...state.importReview.resolutions };
+    if (resolution.type === 'custom' && (!resolution.quantity || resolution.quantity < 1)) {
+      delete nextResolutions[conflictId];
+    } else {
+      nextResolutions[conflictId] = resolution;
+    }
+    state.importReview = {
+      ...state.importReview,
+      resolutions: nextResolutions
+    };
+  }
+
+  function hasUnresolvedImportConflicts(preview) {
+    return preview.quantityConflicts.some(conflict => !state.importReview.resolutions[conflict.id]);
+  }
+
+  function importConflictResolutionText(resolution) {
+    if (!resolution) return 'Unresolved';
+    if (resolution.type === 'manual') return 'Marked for manual review';
+    if (resolution.type === 'custom') return `Custom quantity ${resolution.quantity} selected`;
+    return `Quantity ${resolution.quantity} selected`;
   }
 
   function normalizeImportHeader(value) {
