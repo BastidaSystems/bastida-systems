@@ -101,9 +101,132 @@
       transform: translateX(45%);
     }
 
+    .product-carousel-shell {
+      position: relative;
+      isolation: isolate;
+      min-width: 0;
+    }
+
+    .product-carousel {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      display: flex;
+      gap: 1rem;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      scroll-padding: 0.25rem;
+      padding: 0.25rem 3.25rem 0.8rem;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.35) transparent;
+    }
+
+    .product-carousel::-webkit-scrollbar {
+      height: 0.5rem;
+    }
+
+    .product-carousel::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 999px;
+    }
+
+    .product-carousel::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.34);
+      border-radius: 999px;
+    }
+
+    .product-carousel .product-panel {
+      flex: 0 0 min(78vw, 22rem);
+      scroll-snap-align: start;
+    }
+
+    .product-carousel-actions {
+      position: absolute;
+      z-index: 3;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 2.55rem;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      pointer-events: auto;
+    }
+
+    .product-carousel-button {
+      display: inline-grid;
+      width: 2.55rem;
+      height: 2.55rem;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 999px;
+      background: rgba(8, 10, 14, 0.72);
+      color: #ffffff;
+      pointer-events: auto;
+      backdrop-filter: blur(14px);
+      transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
+    }
+
+    .product-carousel-button:first-child {
+      transform: translateX(0.75rem);
+    }
+
+    .product-carousel-button:last-child {
+      transform: translateX(-0.75rem);
+    }
+
+    .product-carousel-button:hover {
+      border-color: rgba(0, 255, 156, 0.58);
+      background: rgba(0, 255, 156, 0.1);
+    }
+
+    .product-carousel-button svg {
+      width: 1.1rem;
+      height: 1.1rem;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    @media (min-width: 1024px) {
+      .product-carousel .product-panel {
+        flex-basis: min(28vw, 22rem);
+      }
+    }
+
+    @media (min-width: 1440px) {
+      .product-carousel .product-panel {
+        flex-basis: 22rem;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .product-carousel-actions {
+        inset: auto 0 -0.15rem;
+        height: 2.55rem;
+        transform: none;
+        justify-content: flex-end;
+        gap: 0.55rem;
+      }
+
+      .product-carousel-button:first-child,
+      .product-carousel-button:last-child {
+        transform: none;
+      }
+
+      .product-carousel {
+        padding-inline: 0;
+      }
+    }
+
     .product-preview {
       position: relative;
-      min-height: 18rem;
+      min-height: 10.5rem;
       border-top: 1px solid rgba(75, 85, 99, 0.55);
       background: #05070c;
     }
@@ -111,7 +234,7 @@
     .product-preview img {
       width: 100%;
       height: 100%;
-      min-height: 18rem;
+      min-height: 10.5rem;
       object-fit: cover;
       object-position: left top;
       filter: saturate(1.05) contrast(1.04);
@@ -134,22 +257,23 @@
 
     .product-points {
       display: grid;
-      gap: 0.65rem;
-      margin: 1.4rem 0 1.6rem;
+      gap: 0.42rem;
+      margin: 0.9rem 0 1rem;
     }
 
     .product-points li {
       display: flex;
       align-items: center;
-      gap: 0.65rem;
+      gap: 0.5rem;
       color: #d1d5db;
-      font-size: 0.9rem;
+      font-size: 0.78rem;
+      line-height: 1.35;
     }
 
     .product-points li::before {
       content: "";
-      width: 0.5rem;
-      height: 0.5rem;
+      width: 0.36rem;
+      height: 0.36rem;
       border-radius: 999px;
       background: #00ff9c;
       box-shadow: 0 0 16px rgba(0, 255, 156, 0.85);
@@ -160,11 +284,11 @@
       display: inline-flex;
       align-items: center;
       min-height: 2rem;
-      padding: 0.35rem 0.7rem;
+      padding: 0.28rem 0.55rem;
       border: 1px solid rgba(0, 255, 156, 0.24);
       border-radius: 999px;
       color: #9ca3af;
-      font-size: 0.72rem;
+      font-size: 0.62rem;
       font-weight: 800;
       letter-spacing: 0.08em;
       text-transform: uppercase;
@@ -882,8 +1006,8 @@
     }
 
     .product-mark {
-      width: 2.75rem;
-      height: 2.75rem;
+      width: 2.25rem;
+      height: 2.25rem;
       border-radius: 8px;
       object-fit: cover;
       background: #101827;
@@ -918,7 +1042,57 @@
     .product-preview--contain img {
       object-fit: contain;
       object-position: center;
-      padding: 1.25rem;
+      padding: 0.8rem;
+    }
+
+    #products {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+    }
+
+    #products > .max-w-7xl {
+      width: 100%;
+      min-width: 0;
+    }
+
+    #products .product-panel > .relative {
+      padding: 1.15rem !important;
+    }
+
+    #products .product-panel .mb-7 {
+      margin-bottom: 0.8rem !important;
+    }
+
+    #products .product-panel .gap-4 {
+      gap: 0.7rem !important;
+    }
+
+    #products .product-panel h3 {
+      font-size: clamp(1.35rem, 2vw, 1.7rem) !important;
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+    }
+
+    #products .product-panel p {
+      color: #d1d5db;
+      font-size: 0.82rem;
+      line-height: 1.55 !important;
+    }
+
+    #products .product-panel a {
+      padding: 0.42rem 0.85rem !important;
+      font-size: 0.8rem;
+      line-height: 1.1;
+    }
+
+    #products .product-panel img.h-10 {
+      width: 2.25rem;
+      height: 2.25rem;
+    }
+
+    #products .product-panel .flex.flex-wrap.gap-3 {
+      gap: 0.55rem !important;
     }
 
     .preview-caption {
@@ -1971,17 +2145,32 @@
   </script>
 
   <!-- PRODUCTS -->
-  <section id="products" class="px-6 md:px-8 py-24 border-t border-gray-800 fade-in">
+  <section id="products" class="px-6 md:px-8 py-12 border-t border-gray-800 fade-in">
     <div class="max-w-7xl mx-auto">
-      <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-12">
-        <h2 class="text-3xl md:text-4xl font-semibold" data-i18n="products.heading">Products, Apps & Web Projects</h2>
-        <p class="text-gray-400 max-w-2xl leading-7" data-i18n="products.intro">
-          Software products and client websites built to support real operations, service businesses, and growing brands.
-        </p>
+      <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between mb-7">
+        <div>
+          <h2 class="text-3xl md:text-4xl font-semibold" data-i18n="products.heading">Products, Apps & Web Projects</h2>
+          <p class="text-gray-400 max-w-2xl leading-7 mt-3" data-i18n="products.intro">
+            Software products and client websites built to support real operations, service businesses, and growing brands.
+          </p>
+        </div>
       </div>
 
-      <div class="grid gap-6 lg:grid-cols-2 xl:grid-cols-4">
-        <article class="product-panel">
+      <div class="product-carousel-shell">
+        <div class="product-carousel-actions" aria-label="Products carousel controls">
+          <button type="button" class="product-carousel-button" data-products-prev aria-label="Previous products">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="m15 18-6-6 6-6"></path>
+            </svg>
+          </button>
+          <button type="button" class="product-carousel-button" data-products-next aria-label="Next products">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="m9 18 6-6-6-6"></path>
+            </svg>
+          </button>
+        </div>
+        <div class="product-carousel" data-products-carousel>
+          <article class="product-panel">
           <div class="relative z-10 p-6 md:p-8">
             <div class="flex flex-wrap items-start justify-between gap-4 mb-7">
               <div class="flex items-center gap-4">
@@ -2022,7 +2211,7 @@
           </div>
         </article>
 
-        <article class="product-panel">
+          <article class="product-panel">
           <div class="relative z-10 p-6 md:p-8">
             <div class="flex flex-wrap items-start justify-between gap-4 mb-7">
               <div class="flex items-center gap-4">
@@ -2069,7 +2258,7 @@
           </div>
         </article>
 
-        <article class="product-panel product-panel--lineops">
+          <article class="product-panel product-panel--lineops">
           <div class="relative z-10 p-6 md:p-8">
             <div class="flex flex-wrap items-start justify-between gap-4 mb-7">
               <div class="flex items-center gap-4">
@@ -2110,7 +2299,7 @@
           </div>
         </article>
 
-        <article class="product-panel product-panel--estrattiva">
+          <article class="product-panel product-panel--estrattiva">
           <div class="relative z-10 p-6 md:p-8">
             <div class="flex flex-wrap items-start justify-between gap-4 mb-7">
               <div class="flex items-center gap-4">
@@ -2148,7 +2337,7 @@
           </div>
         </article>
 
-        <article class="product-panel product-panel--tallador">
+          <article class="product-panel product-panel--tallador">
           <div class="relative z-10 p-6 md:p-8">
             <div class="flex flex-wrap items-start justify-between gap-4 mb-7">
               <div class="flex items-center gap-4">
@@ -2186,7 +2375,7 @@
           </div>
         </article>
 
-        <article class="product-panel product-panel--cocofilms">
+          <article class="product-panel product-panel--cocofilms">
           <div class="relative z-10 p-6 md:p-8">
             <div class="flex flex-wrap items-start justify-between gap-4 mb-7">
               <div class="flex items-center gap-4">
@@ -2223,6 +2412,7 @@
             </div>
           </div>
         </article>
+        </div>
       </div>
     </div>
   </section>
@@ -2421,6 +2611,24 @@
         el.classList.add('visible');
       }
     });
+
+    const productsCarousel = document.querySelector('[data-products-carousel]');
+    const productsPrev = document.querySelector('[data-products-prev]');
+    const productsNext = document.querySelector('[data-products-next]');
+
+    const scrollProductsCarousel = direction => {
+      if (!productsCarousel) return;
+      const firstCard = productsCarousel.querySelector('.product-panel');
+      const cardWidth = firstCard ? firstCard.getBoundingClientRect().width : productsCarousel.clientWidth * 0.8;
+      const gap = 24;
+      productsCarousel.scrollBy({
+        left: direction * (cardWidth + gap),
+        behavior: 'smooth'
+      });
+    };
+
+    productsPrev?.addEventListener('click', () => scrollProductsCarousel(-1));
+    productsNext?.addEventListener('click', () => scrollProductsCarousel(1));
 
     const industryAccentMap = {
       hospitality: '#38bdf8',
