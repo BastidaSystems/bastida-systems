@@ -799,6 +799,43 @@ h3 {
   gap: 1rem;
 }
 
+.module-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  background: var(--surface-soft);
+  padding: 0.35rem;
+  margin-bottom: 1rem;
+}
+
+.module-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.3rem;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted-strong);
+  padding: 0 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.module-tab:hover {
+  color: var(--ink-strong);
+  background: var(--surface);
+}
+
+.module-tab.is-active {
+  border-color: rgba(18, 128, 111, 0.18);
+  background: var(--surface);
+  color: var(--accent-strong);
+  box-shadow: 0 8px 20px rgba(9, 23, 34, 0.06);
+}
+
 .import-layout {
   display: grid;
   grid-template-columns: minmax(18rem, 0.75fr) minmax(0, 1.35fr);
@@ -1938,6 +1975,16 @@ h3 {
 
   .form-grid {
     grid-template-columns: 1fr;
+  }
+
+  .module-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+
+  .module-tab {
+    flex: 0 0 auto;
   }
 
   .gate-actions {

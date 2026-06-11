@@ -17,6 +17,8 @@
     workspaces: [],
     activeWorkspace: null,
     activeSection: 'dashboard',
+    activeAssetsTab: 'locations',
+    activeWorkTab: 'psi',
     authMode: 'signin',
     mobileDrawerOpen: false,
     editing: null,
@@ -28,50 +30,30 @@
   const MODULES = {
     dashboard: {
       title: 'Dashboard',
-      subtitle: 'Live visibility for homes, businesses, and multi-location filtration operations.'
+      subtitle: 'A focused operational snapshot for the active FiltraCore workspace.'
     },
-    locations: {
+    assets: {
       index: '01',
-      title: 'Locations / Properties',
-      subtitle: 'Physical places for homes, rentals, stores, kitchens, hotel areas, casino areas, plazas, and commercial operations.'
+      title: 'Assets',
+      subtitle: 'Manage locations, systems, and filters from one workspace.'
     },
-    systems: {
+    work: {
       index: '02',
-      title: 'Systems / Equipment',
-      subtitle: 'Create and monitor whole-home, RO, ice, beverage, coffee, dishwashing, and main-line filtration systems.'
-    },
-    filters: {
-      index: '03',
-      title: 'Filters',
-      subtitle: 'Track installed filters, due dates, lifecycle, and status.'
-    },
-    psi: {
-      index: '04',
-      title: 'PSI Readings',
-      subtitle: 'Capture pressure readings, calculate status, update systems, and create alerts.'
-    },
-    maintenance: {
-      index: '05',
-      title: 'Maintenance',
-      subtitle: 'Log service work, filter changes, technician notes, and pressure corrections.'
-    },
-    alerts: {
-      index: '06',
-      title: 'Alerts',
-      subtitle: 'Review open warning and critical items, then resolve them when handled.'
+      title: 'Work',
+      subtitle: 'Record PSI readings, maintenance activity, and alert resolution.'
     },
     reports: {
-      index: '07',
+      index: '04',
       title: 'Reports',
       subtitle: 'Reports will use the same workspace data once report generation is added.'
     },
     import: {
-      index: '08',
+      index: '03',
       title: 'Import',
       subtitle: 'Preview CSV inventory files before creating locations, systems, and filters.'
     },
     settings: {
-      index: '09',
+      index: '05',
       title: 'Settings',
       subtitle: 'Client, workspace, auth, and product connection details.'
     }
@@ -1476,6 +1458,22 @@
       return;
     }
 
+    const moduleTabButton = event.target.closest('[data-module-tab][data-tab]');
+    if (moduleTabButton) {
+      event.preventDefault();
+      if (moduleTabButton.dataset.moduleTab === 'assets') {
+        state.activeAssetsTab = normalizeAssetsTab(moduleTabButton.dataset.tab);
+        state.activeSection = 'assets';
+      }
+      if (moduleTabButton.dataset.moduleTab === 'work') {
+        state.activeWorkTab = normalizeWorkTab(moduleTabButton.dataset.tab);
+        state.activeSection = 'work';
+      }
+      renderSections();
+      switchSection(state.activeSection, false);
+      return;
+    }
+
     const removeButton = event.target.closest('[data-remove-record]');
     if (removeButton) {
       event.preventDefault();
@@ -1773,14 +1771,10 @@
     els.sections.forEach(section => {
       const key = section.id.replace('section-', '');
       if (key === 'dashboard') section.innerHTML = renderDashboardSection();
-      if (key === 'locations') section.innerHTML = renderLocationsSection();
-      if (key === 'systems') section.innerHTML = renderSystemsSection();
-      if (key === 'filters') section.innerHTML = renderFiltersSection();
-      if (key === 'psi') section.innerHTML = renderPsiSection();
-      if (key === 'maintenance') section.innerHTML = renderMaintenanceSection();
-      if (key === 'alerts') section.innerHTML = renderAlertsSection();
-      if (key === 'reports') section.innerHTML = renderReportsSection();
+      if (key === 'assets') section.innerHTML = renderAssetsSection();
+      if (key === 'work') section.innerHTML = renderWorkSection();
       if (key === 'import') section.innerHTML = renderImportSection();
+      if (key === 'reports') section.innerHTML = renderReportsSection();
       if (key === 'settings') section.innerHTML = renderSettingsSection();
     });
   }
@@ -1804,51 +1798,73 @@
     return `
       <div class="metric-grid">
         ${metricCard(stats.placeLabel, String(stats.placeCount), stats.placeCount === 0 ? stats.placeEmptyText : 'Workspace places')}
-        ${metricCard('Total Systems / Equipment', String(stats.totalSystems), stats.totalSystems === 0 ? 'Add your first filtration system' : 'Filtration systems and equipment in scope')}
-        ${metricCard('Healthy Systems', String(stats.healthySystems), 'Inside configured PSI range')}
-        ${metricCard('Warning Systems', String(stats.warningSystems), 'Needs review')}
-        ${metricCard('Critical Systems', String(stats.criticalSystems), 'Needs immediate attention')}
+        ${metricCard('Total Systems', String(stats.totalSystems), stats.totalSystems === 0 ? 'Add your first filtration system' : 'Filtration systems in scope')}
         ${metricCard('Total Filters', String(stats.totalFilters), stats.totalFilters === 0 ? 'Add your first filter' : 'Installed filter records')}
-        ${metricCard('Filters Due Soon', String(stats.dueSoonFilters), 'Due within 30 days')}
-        ${metricCard('Overdue Filters', String(stats.overdueFilters), 'Past due date')}
-        ${metricCard('Latest PSI', stats.latestPsiText, stats.latestPsiSubtext)}
         ${metricCard('Open Alerts', String(stats.openAlerts), stats.openAlerts === 0 ? 'No alerts yet.' : 'Needs review')}
-        ${metricCard('Maintenance Logs', String(stats.maintenanceLogs), stats.maintenanceLogs === 0 ? 'Add your first maintenance log' : 'Total logs in this workspace')}
-        ${metricCard('Reports', String(stats.reports), stats.reports === 0 ? 'No reports yet.' : 'Reports available')}
-      </div>
-      <div class="dashboard-lists">
-        <article class="dashboard-list">
-          <h4>Recent PSI readings</h4>
-          ${renderPsiList(state.records.psiReadings.slice(0, 5))}
-        </article>
-        <article class="dashboard-list">
-          <h4>Open alerts</h4>
-          ${renderAlertList(state.records.alerts.slice(0, 5), false)}
-        </article>
-      </div>
-      <div class="dashboard-panels">
-        <article class="panel-card">
-          <div class="panel-heading">
-            <h3>${stats.groupHeading}</h3>
-            <span>${stats.totalSystems} systems</span>
-          </div>
-          ${renderGroupedSystems()}
-        </article>
-        <article class="panel-card">
-          <div class="panel-heading">
-            <h3>PSI logic</h3>
-            <span>Live helper</span>
-          </div>
-          <div class="psi-scale" aria-label="PSI status logic">
-            <span class="critical">Critical low</span>
-            <span class="warning">Warning</span>
-            <span class="healthy">Healthy range</span>
-            <span class="warning">High warning</span>
-          </div>
-          <p class="panel-copy">Healthy means PSI is inside the configured range, including values close to max. Low PSI becomes warning or critical. Values over max become warning for high pressure.</p>
-        </article>
+        ${metricCard('Filters Due Soon', String(stats.dueSoonFilters), 'Due within 30 days')}
+        ${metricCard('Latest PSI', stats.latestPsiText, stats.latestPsiSubtext)}
       </div>
     `;
+  }
+
+  function renderAssetsSection() {
+    const workspace = state.activeWorkspace;
+    const isBusiness = workspace?.mode === 'business';
+    const placeCount = isBusiness ? state.records.locations.length : state.records.properties.length;
+    const activeTab = normalizeAssetsTab(state.activeAssetsTab);
+
+    return `
+      ${renderSectionHeader('assets', `${placeCount} places | ${state.records.systems.length} systems | ${state.records.filters.length} filters`)}
+      ${renderModuleTabs('assets', activeTab, [
+        ['locations', isBusiness ? 'Locations' : 'Properties'],
+        ['systems', 'Systems'],
+        ['filters', 'Filters']
+      ])}
+      ${activeTab === 'locations' ? renderLocationsSection() : ''}
+      ${activeTab === 'systems' ? renderSystemsSection() : ''}
+      ${activeTab === 'filters' ? renderFiltersSection() : ''}
+    `;
+  }
+
+  function renderWorkSection() {
+    const activeTab = normalizeWorkTab(state.activeWorkTab);
+    return `
+      ${renderSectionHeader('work', `${state.records.psiReadings.length} readings | ${state.records.maintenanceLogs.length} logs | ${state.records.alerts.length} alerts`)}
+      ${renderModuleTabs('work', activeTab, [
+        ['psi', 'PSI Readings'],
+        ['maintenance', 'Maintenance'],
+        ['alerts', 'Alerts']
+      ])}
+      ${activeTab === 'psi' ? renderPsiSection() : ''}
+      ${activeTab === 'maintenance' ? renderMaintenanceSection() : ''}
+      ${activeTab === 'alerts' ? renderAlertsSection() : ''}
+    `;
+  }
+
+  function renderModuleTabs(moduleName, activeTab, tabs) {
+    const label = `${MODULES[moduleName]?.title || 'Module'} tabs`;
+    return `
+      <div class="module-tabs" role="tablist" aria-label="${escapeHtml(label)}">
+        ${tabs.map(([tab, labelText]) => `
+          <button
+            type="button"
+            class="module-tab${tab === activeTab ? ' is-active' : ''}"
+            data-module-tab="${escapeHtml(moduleName)}"
+            data-tab="${escapeHtml(tab)}"
+            role="tab"
+            aria-selected="${tab === activeTab ? 'true' : 'false'}"
+          >${escapeHtml(labelText)}</button>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  function normalizeAssetsTab(tab) {
+    return ['locations', 'systems', 'filters'].includes(tab) ? tab : 'locations';
+  }
+
+  function normalizeWorkTab(tab) {
+    return ['psi', 'maintenance', 'alerts'].includes(tab) ? tab : 'psi';
   }
 
   function renderLocationsSection() {
@@ -1856,7 +1872,6 @@
     const isBusiness = workspace?.mode === 'business';
     const count = isBusiness ? state.records.locations.length : state.records.properties.length;
     return `
-      ${renderSectionHeader('locations', isBusiness ? `${count} locations` : `${count} properties`)}
       <div class="module-grid">
         ${renderPlaceForm(isBusiness)}
         <div class="record-panel">
@@ -1940,7 +1955,6 @@
   function renderSystemsSection() {
     const record = editingRecord('system', state.records.systems);
     return `
-      ${renderSectionHeader('systems', `${state.records.systems.length} systems`)}
       <div class="module-grid">
         <form class="module-form" data-action="create-system"${editFormAttributes('system', record)}>
           <h4>${record ? 'Edit system / equipment' : 'Create system / equipment'}</h4>
@@ -1999,7 +2013,6 @@
   function renderFiltersSection() {
     const record = editingRecord('filter', state.records.filters);
     return `
-      ${renderSectionHeader('filters', `${state.records.filters.length} filters`)}
       <div class="module-grid">
         <form class="module-form" data-action="create-filter"${editFormAttributes('filter', record)}>
           <h4>${record ? 'Edit filter' : 'Create filter'}</h4>
@@ -2064,7 +2077,6 @@
 
   function renderPsiSection() {
     return `
-      ${renderSectionHeader('psi', `${state.records.psiReadings.length} readings`)}
       <div class="module-grid">
         <form class="module-form" data-action="create-psi-reading">
           <h4>Create PSI reading</h4>
@@ -2091,7 +2103,6 @@
 
   function renderMaintenanceSection() {
     return `
-      ${renderSectionHeader('maintenance', `${state.records.maintenanceLogs.length} logs`)}
       <div class="module-grid">
         <form class="module-form" data-action="create-maintenance-log">
           <h4>Create maintenance log</h4>
@@ -2133,7 +2144,6 @@
 
   function renderAlertsSection() {
     return `
-      ${renderSectionHeader('alerts', `${state.records.alerts.length} open`)}
       <div class="record-panel">
         <h4>Open alerts</h4>
         ${renderAlertList(state.records.alerts, true)}
@@ -3856,9 +3866,22 @@
     return `<span class="status-badge status-${escapeHtml(normalized)}">${escapeHtml(statusText(normalized))}</span>`;
   }
 
+  function normalizeSection(section) {
+    if (['locations', 'systems', 'filters'].includes(section)) {
+      state.activeAssetsTab = normalizeAssetsTab(section);
+      return 'assets';
+    }
+    if (['psi', 'maintenance', 'alerts'].includes(section)) {
+      state.activeWorkTab = normalizeWorkTab(section);
+      return 'work';
+    }
+    return MODULES[section] ? section : 'dashboard';
+  }
+
   function switchSection(section, shouldCloseMenu = true) {
-    const module = MODULES[section] || MODULES.dashboard;
-    state.activeSection = MODULES[section] ? section : 'dashboard';
+    const normalizedSection = normalizeSection(section);
+    const module = MODULES[normalizedSection] || MODULES.dashboard;
+    state.activeSection = normalizedSection;
 
     els.navItems.forEach(item => {
       item.classList.toggle('is-active', item.dataset.section === state.activeSection);
@@ -3912,10 +3935,22 @@
   }
 
   function sectionForRecordType(recordType) {
-    if (recordType === 'location' || recordType === 'property') return 'locations';
-    if (recordType === 'system') return 'systems';
-    if (recordType === 'filter') return 'filters';
-    if (recordType === 'psi') return 'psi';
+    if (recordType === 'location' || recordType === 'property') {
+      state.activeAssetsTab = 'locations';
+      return 'assets';
+    }
+    if (recordType === 'system') {
+      state.activeAssetsTab = 'systems';
+      return 'assets';
+    }
+    if (recordType === 'filter') {
+      state.activeAssetsTab = 'filters';
+      return 'assets';
+    }
+    if (recordType === 'psi') {
+      state.activeWorkTab = 'psi';
+      return 'work';
+    }
     return null;
   }
 
