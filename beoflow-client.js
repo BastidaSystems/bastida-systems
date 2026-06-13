@@ -52,6 +52,30 @@ const MODULE_SECTIONS = {
       { name: 'notes', label: 'Notes', type: 'textarea', wide: true }
     ]
   },
+  clients: {
+    title: 'Clients',
+    subtitle: 'Manage catering clients, leads, and event contacts.',
+    emptyTitle: 'No clients yet.',
+    emptyCopy: 'Client management will be available soon.',
+    action: 'Coming Soon',
+    singular: 'client',
+    plural: 'clients',
+    table: null,
+    index: '02',
+    icon: 'CL'
+  },
+  food: {
+    title: 'Food',
+    subtitle: 'A clean control center for menus, recipes, subrecipes, and food inventory.',
+    emptyTitle: 'Food modules',
+    emptyCopy: 'Choose a food workspace area to continue.',
+    action: 'Open Food',
+    singular: 'food module',
+    plural: 'food modules',
+    table: null,
+    index: '03',
+    icon: 'FD'
+  },
   menu: {
     title: 'Menu',
     subtitle: 'Build menus for restaurants, events, and recurring service operations.',
@@ -61,7 +85,7 @@ const MODULE_SECTIONS = {
     singular: 'menu item',
     plural: 'menu items',
     table: 'beoflow_menu_items',
-    index: '02',
+    index: '04',
     titleField: 'name',
     badgeField: 'status',
     metaFields: ['category', 'price'],
@@ -83,7 +107,7 @@ const MODULE_SECTIONS = {
     singular: 'recipe',
     plural: 'recipes',
     table: 'beoflow_recipes',
-    index: '03',
+    index: '05',
     titleField: 'name',
     badgeField: 'status',
     metaFields: ['category', 'yield_quantity', 'prep_time', 'cook_time'],
@@ -100,16 +124,28 @@ const MODULE_SECTIONS = {
       { name: 'status', label: 'Status', type: 'text', defaultValue: 'active' }
     ]
   },
+  subrecipes: {
+    title: 'Subrecipes',
+    subtitle: 'Manage base preparations, sauces, stocks, marinades, dressings, and recipe components.',
+    emptyTitle: 'Subrecipes are not connected yet.',
+    emptyCopy: 'This area is ready for base preparations when the recipe model expands.',
+    action: 'Coming Soon',
+    singular: 'subrecipe',
+    plural: 'subrecipes',
+    table: null,
+    index: '06',
+    icon: 'SR'
+  },
   inventory: {
-    title: 'Inventory',
-    subtitle: 'Track ingredients, supplies, stock levels, and usage.',
+    title: 'Food Inventory',
+    subtitle: 'Track ingredients, products, units, costs, stock, food vendors, and food categories.',
     emptyTitle: 'No inventory items yet.',
     emptyCopy: 'Add your first item to start tracking stock.',
     action: 'Add Inventory Item',
     singular: 'inventory item',
     plural: 'inventory items',
     table: 'beoflow_inventory_items',
-    index: '04',
+    index: '07',
     titleField: 'name',
     badgeField: 'status',
     metaFields: ['category', 'quantity', 'unit', 'par_level', 'vendor'],
@@ -135,7 +171,7 @@ const MODULE_SECTIONS = {
     singular: 'production log',
     plural: 'production logs',
     table: 'beoflow_production_logs',
-    index: '05',
+    index: '08',
     titleField: 'title',
     badgeField: 'status',
     metaFields: ['production_date', 'shift', 'assigned_to'],
@@ -158,7 +194,7 @@ const MODULE_SECTIONS = {
     singular: 'staff member',
     plural: 'staff members',
     table: 'beoflow_staff',
-    index: '06',
+    index: '09',
     titleField: 'full_name',
     badgeField: 'status',
     metaFields: ['role', 'email', 'phone'],
@@ -181,7 +217,7 @@ const MODULE_SECTIONS = {
     singular: 'report',
     plural: 'reports',
     table: null,
-    index: '07'
+    index: '10'
   }
 };
 
@@ -571,6 +607,7 @@ async function loadDashboardCounts() {
     counts[section] = await countTableRecords(MODULE_SECTIONS[section].table);
   }));
 
+  counts.food = (counts.menu || 0) + (counts.recipes || 0) + (counts.inventory || 0);
   const reportSourceTotal = DATA_SECTIONS.reduce((total, section) => total + (counts[section] || 0), 0);
   counts.reports = reportSourceTotal;
   state.moduleCounts = counts;
@@ -736,13 +773,14 @@ function renderStandaloneWorkspaceView(viewId) {
 function setActiveSidebarSection(section) {
   state.activeSection = section;
 
-  document.querySelectorAll('.sidebar-link[data-section], .module-card[data-section]').forEach(control => {
+  document.querySelectorAll('.sidebar-link[data-section], .sidebar-group-summary[data-section], .module-card[data-section]').forEach(control => {
     const isActive = control.dataset.section === section;
     control.classList.toggle('is-active', isActive);
 
-    if (control.classList.contains('sidebar-link')) {
+    if (control.classList.contains('sidebar-link') || control.classList.contains('sidebar-group-summary')) {
       if (isActive) {
         control.setAttribute('aria-current', 'page');
+        control.closest('details')?.setAttribute('open', '');
       } else {
         control.removeAttribute('aria-current');
       }
@@ -1023,15 +1061,25 @@ function renderModuleSection(section) {
   els['module-subtitle'].textContent = moduleConfig.subtitle;
   els['module-count-badge'].textContent = section === 'reports' ? '7 metrics' : 'Loading';
   els['module-header-action-button'].textContent = moduleConfig.action;
-  els['module-header-action-button'].hidden = section === 'reports';
+  els['module-header-action-button'].hidden = section === 'reports' || !moduleConfig.table;
   els['module-empty-icon'].textContent = moduleConfig.index;
   els['module-empty-title'].textContent = moduleConfig.emptyTitle;
   els['module-empty-copy'].textContent = moduleConfig.emptyCopy;
   els['module-action-button'].textContent = moduleConfig.action;
-  els['module-action-button'].hidden = section === 'reports';
+  els['module-action-button'].hidden = section === 'reports' || !moduleConfig.table;
   els['module-empty-state'].hidden = true;
   els['module-record-list'].hidden = false;
   els['module-record-list'].innerHTML = '<div class="module-loading">Loading workspace records.</div>';
+
+  if (section === 'food') {
+    renderFoodSection();
+    return;
+  }
+
+  if (!moduleConfig.table && section !== 'reports') {
+    renderPlaceholderSection(moduleConfig);
+    return;
+  }
 
   loadModuleData(section)
     .then(result => {
@@ -1049,6 +1097,77 @@ function renderModuleSection(section) {
       els['module-record-list'].innerHTML = '';
       els['module-empty-state'].hidden = false;
       showAlert(els['workspace-message'], error.message || `Unable to load ${moduleConfig.title}.`);
+    });
+}
+
+function renderPlaceholderSection(moduleConfig) {
+  els['module-count-badge'].textContent = 'Soon';
+  els['module-empty-icon'].textContent = moduleConfig.icon || moduleConfig.index;
+  els['module-empty-state'].hidden = false;
+  els['module-record-list'].hidden = true;
+  els['module-record-list'].innerHTML = '';
+}
+
+function renderFoodSection(shouldRefreshCounts = true) {
+  const foodModules = [
+    {
+      section: 'menu',
+      icon: 'MN',
+      title: 'Menu',
+      description: 'Manage menus that can later connect with catering packages, events, and orders.',
+      count: state.moduleCounts.menu || 0
+    },
+    {
+      section: 'recipes',
+      icon: 'RC',
+      title: 'Recipes',
+      description: 'Manage main recipes, portions, procedures, and consistency for catering operations.',
+      count: state.moduleCounts.recipes || 0
+    },
+    {
+      section: 'subrecipes',
+      icon: 'SR',
+      title: 'Subrecipes',
+      description: 'Prepare base sauces, stocks, marinades, dressings, and reusable recipe components.',
+      count: 0
+    },
+    {
+      section: 'inventory',
+      icon: 'FI',
+      title: 'Food Inventory',
+      description: 'Track ingredients, products, units, costs, stock, food vendors, and categories.',
+      count: state.moduleCounts.inventory || 0
+    }
+  ];
+
+  els['module-count-badge'].textContent = '4 areas';
+  els['module-empty-state'].hidden = true;
+  els['module-record-list'].hidden = false;
+  els['module-record-list'].innerHTML = `
+    <section class="food-soft-panel" aria-label="Food modules">
+      ${foodModules.map(item => `
+        <button type="button" class="food-soft-card" data-food-section="${escapeHtml(item.section)}">
+          <span class="food-soft-icon">${escapeHtml(item.icon)}</span>
+          <span class="food-soft-content">
+            <strong>${escapeHtml(item.title)}</strong>
+            <small>${escapeHtml(item.description)}</small>
+          </span>
+          <span class="food-soft-count">${escapeHtml(item.count)} records</span>
+        </button>
+      `).join('')}
+    </section>
+  `;
+
+  if (!shouldRefreshCounts) return;
+
+  loadDashboardCounts()
+    .then(counts => {
+      if (state.activeSection !== 'food') return;
+      updateDashboardCards(counts);
+      renderFoodSection(false);
+    })
+    .catch(error => {
+      showAlert(els['workspace-message'], error.message || 'Unable to load food module counts.');
     });
 }
 
@@ -2103,7 +2222,7 @@ function bindEvents() {
     }
   });
 
-  document.querySelectorAll('.sidebar-link[data-section]').forEach(button => {
+  document.querySelectorAll('.sidebar-link[data-section], .sidebar-group-summary[data-section]').forEach(button => {
     button.addEventListener('click', () => {
       const section = button.dataset.section;
       closeMobileDrawer();
@@ -2132,6 +2251,12 @@ function bindEvents() {
   });
 
   els['module-record-list'].addEventListener('click', event => {
+    const foodButton = event.target.closest('[data-food-section]');
+    if (foodButton) {
+      renderModuleSection(foodButton.dataset.foodSection);
+      return;
+    }
+
     const actionButton = event.target.closest('[data-module-action]');
     if (!actionButton) return;
 
