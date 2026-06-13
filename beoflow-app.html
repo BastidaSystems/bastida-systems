@@ -262,11 +262,14 @@
         <nav aria-label="Beoflow modules">
           <button type="button" class="sidebar-link is-active" data-section="dashboard" aria-current="page">Dashboard</button>
           <button type="button" class="sidebar-link" data-section="events">Events</button>
-          <button type="button" class="sidebar-link" data-section="menu">Menu</button>
-          <button type="button" class="sidebar-link" data-section="recipes">Recipes</button>
-          <button type="button" class="sidebar-link" data-section="subrecipes">Subrecipes</button>
-          <button type="button" class="sidebar-link" data-section="inventory">Inventory</button>
-          <button type="button" class="sidebar-link" data-section="production">Production</button>
+          <button type="button" class="sidebar-link" data-section="clients">Clients</button>
+          <details class="sidebar-group" open>
+            <summary class="sidebar-group-summary" data-section="food">Food</summary>
+            <button type="button" class="sidebar-link sidebar-sub-link" data-section="menu">Menu</button>
+            <button type="button" class="sidebar-link sidebar-sub-link" data-section="recipes">Recipes</button>
+            <button type="button" class="sidebar-link sidebar-sub-link" data-section="subrecipes">Subrecipes</button>
+            <button type="button" class="sidebar-link sidebar-sub-link" data-section="inventory">Food Inventory</button>
+          </details>
           <button type="button" class="sidebar-link" data-section="staff">Staff</button>
           <button type="button" class="sidebar-link" data-section="reports">Reports</button>
         </nav>
@@ -335,30 +338,15 @@
               <strong data-count-section="events">0</strong>
               <p>No events yet</p>
             </button>
-            <button type="button" class="module-card" data-section="menu">
-              <span>Menu</span>
-              <strong data-count-section="menu">0</strong>
-              <p>No menu items yet</p>
+            <button type="button" class="module-card" data-section="clients">
+              <span>Clients</span>
+              <strong>0</strong>
+              <p>Client management will be available soon</p>
             </button>
-            <button type="button" class="module-card" data-section="recipes">
-              <span>Recipes</span>
-              <strong data-count-section="recipes">0</strong>
-              <p>No recipes yet</p>
-            </button>
-            <button type="button" class="module-card" data-section="subrecipes">
-              <span>Subrecipes</span>
-              <strong data-count-section="subrecipes">0</strong>
-              <p>No subrecipes yet</p>
-            </button>
-            <button type="button" class="module-card" data-section="inventory">
-              <span>Inventory</span>
-              <strong data-count-section="inventory">0</strong>
-              <p>No inventory items yet</p>
-            </button>
-            <button type="button" class="module-card" data-section="production">
-              <span>Production</span>
-              <strong data-count-section="production">0</strong>
-              <p>No production logs yet</p>
+            <button type="button" class="module-card" data-section="food">
+              <span>Food</span>
+              <strong data-count-section="food">0</strong>
+              <p>Menu, recipes, subrecipes, and food inventory</p>
             </button>
             <button type="button" class="module-card" data-section="staff">
               <span>Staff</span>

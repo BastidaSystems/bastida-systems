@@ -649,6 +649,7 @@ h1 {
   position: sticky;
   top: 0;
   height: 100vh;
+  overflow-y: auto;
   padding: 1.3rem;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0)),
@@ -682,6 +683,47 @@ h1 {
   gap: 0.4rem;
 }
 
+.sidebar-group {
+  display: grid;
+  gap: 0.32rem;
+}
+
+.sidebar-group summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 2.45rem;
+  color: rgba(255, 255, 255, 0.9);
+  padding: 0 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  list-style: none;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.sidebar-group summary.is-active {
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.sidebar-group summary::-webkit-details-marker {
+  display: none;
+}
+
+.sidebar-group summary::after {
+  content: "+";
+  color: rgba(255, 255, 255, 0.56);
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.sidebar-group[open] summary::after {
+  content: "-";
+}
+
 .sidebar-link {
   gap: 0.72rem;
   justify-content: flex-start;
@@ -698,6 +740,12 @@ h1 {
   width: 1.05rem;
   height: 1.05rem;
   color: var(--module-accent, var(--gold));
+}
+
+.sidebar-sub-link {
+  min-height: 2.45rem;
+  padding-left: 1.15rem;
+  font-size: 0.86rem;
 }
 
 .sidebar-link:hover {
@@ -2015,6 +2063,98 @@ h1 {
   justify-content: flex-end;
 }
 
+.food-soft-panel {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1rem, 2.4vw, 1.4rem);
+  padding: clamp(1rem, 2.6vw, 1.6rem);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(255, 255, 255, 0.95), transparent 28%),
+    linear-gradient(135deg, #f4efe6 0%, #edf5ef 45%, #f8fbf7 100%);
+  box-shadow:
+    18px 18px 42px rgba(126, 116, 96, 0.18),
+    -16px -16px 38px rgba(255, 255, 255, 0.82);
+}
+
+.food-soft-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1rem;
+  align-items: center;
+  min-height: 11rem;
+  border: 1px solid rgba(255, 255, 255, 0.74);
+  border-radius: 8px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.92), rgba(238, 245, 239, 0.92));
+  color: var(--ink);
+  padding: 1.25rem;
+  text-align: left;
+  box-shadow:
+    14px 14px 32px rgba(110, 103, 85, 0.16),
+    -12px -12px 30px rgba(255, 255, 255, 0.86);
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.food-soft-card:hover {
+  border-color: rgba(31, 138, 112, 0.24);
+  box-shadow:
+    18px 18px 38px rgba(110, 103, 85, 0.2),
+    -14px -14px 34px rgba(255, 255, 255, 0.9);
+  transform: translateY(-3px);
+}
+
+.food-soft-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.7rem;
+  height: 3.7rem;
+  border-radius: 999px;
+  background:
+    linear-gradient(145deg, #fffaf2, #e5f1e8);
+  color: var(--accent-strong);
+  font-size: 0.9rem;
+  font-weight: 900;
+  box-shadow:
+    inset 5px 5px 12px rgba(126, 116, 96, 0.1),
+    inset -6px -6px 14px rgba(255, 255, 255, 0.84),
+    8px 8px 18px rgba(92, 85, 71, 0.13);
+}
+
+.food-soft-content {
+  display: grid;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.food-soft-content strong {
+  color: var(--ink-strong);
+  font-size: 1.2rem;
+  line-height: 1.15;
+}
+
+.food-soft-content small {
+  color: var(--muted);
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.food-soft-count {
+  grid-column: 2;
+  justify-self: start;
+  border: 1px solid rgba(31, 138, 112, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.68);
+  color: var(--accent-strong);
+  padding: 0.38rem 0.62rem;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
 .reports-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -2792,6 +2932,10 @@ h1 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .food-soft-panel {
+    grid-template-columns: 1fr;
+  }
+
   .inventory-ingredient-row {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -3001,6 +3145,7 @@ h1 {
   .client-form,
   .module-card-grid,
   .module-empty-state,
+  .food-soft-panel,
   .module-form-fields,
   .recipe-ingredient-picker,
   .recipe-manual-ingredient-picker,
