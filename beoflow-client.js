@@ -296,6 +296,7 @@ const UI_TRANSLATIONS_ES = {
   'Password updated successfully.': 'Contraseña actualizada correctamente.',
   'Password updated successfully. Sign in with your new password.': 'Contraseña actualizada correctamente. Inicia sesión con tu nueva contraseña.',
   'Check your email to confirm your account. After confirmation, return to Beoflow to continue.': 'Revisa tu correo para confirmar tu cuenta. Después de confirmar, vuelve a Beoflow para continuar.',
+  'Email link is invalid or has expired': 'El link de correo no es válido o ya expiró.',
   'Authentication failed.': 'No se pudo autenticar.',
   'Unable to send password reset email.': 'No se pudo enviar el correo de recuperación.',
   'Unable to update password.': 'No se pudo actualizar la contraseña.',
