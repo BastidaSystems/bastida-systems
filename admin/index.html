@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Panel administrativo visual de Cater Vegas." />
     <title>Cater Vegas | Dashboard Admin</title>
+    <script>
+      if (window.location.hash) {
+        window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
+        window.addEventListener("load", () => window.scrollTo(0, 0), { once: true });
+      }
+    </script>
     <link rel="stylesheet" href="admin.css" />
   </head>
   <body>
@@ -16,11 +22,11 @@
         </a>
 
         <nav class="sidebar-nav">
-          <a class="sidebar-link is-active" href="#overview"><span>🏠</span>Dashboard</a>
-          <a class="sidebar-link" href="#events"><span>📅</span>Eventos</a>
-          <a class="sidebar-link" href="#requestsSection"><span>🧾</span>Solicitudes</a>
-          <a class="sidebar-link" href="#team-tools"><span>🏢</span>Equipo</a>
-          <a class="sidebar-link" href="#beoflow"><span>🌊</span>BEOFlow</a>
+          <button class="sidebar-link is-active" type="button"><span>🏠</span>Dashboard</button>
+          <button class="sidebar-link" type="button"><span>📅</span>Eventos</button>
+          <button class="sidebar-link" type="button"><span>🧾</span>Solicitudes</button>
+          <button class="sidebar-link" type="button"><span>🏢</span>Proveedores</button>
+          <button class="sidebar-link" type="button"><span>🌊</span>BEOFlow</button>
         </nav>
 
         <div class="sidebar-mini">
@@ -68,16 +74,19 @@
 
           <article class="ai-card simple-ai" aria-label="AI Admin Assistant">
             <div class="ai-card-copy">
-              <p class="eyebrow">AI Admin Assistant</p>
-              <h2>🤖 Todo bajo control</h2>
+              <p class="eyebrow">Cater AI Concierge</p>
+              <h2>Cater AI listo</h2>
             </div>
             <div class="ai-avatar" aria-hidden="true">
               <div class="ai-halo"></div>
+              <div class="ai-hat"></div>
               <div class="ai-head">
                 <span class="ai-eye"></span>
                 <span class="ai-eye"></span>
               </div>
               <div class="ai-body"></div>
+              <div class="ai-bowtie"></div>
+              <div class="ai-cloche"></div>
               <div class="ai-activity"></div>
             </div>
             <div class="ai-actions">
@@ -140,120 +149,96 @@
         <details class="admin-tools-accordion" id="settings">
           <summary>Herramientas avanzadas</summary>
 
-          <section class="admin-tools-grid">
-            <form class="panel event-form" id="eventForm">
+          <section class="admin-tools-grid provider-tools-grid">
+            <section class="panel provider-admin" id="team-tools">
               <div class="panel-heading">
-                <div><span>➕</span><h2>Crear evento</h2></div>
-              </div>
-
-              <label>
-                <span>Nombre</span>
-                <input id="eventTitle" type="text" placeholder="Cena VIP en Las Vegas" required />
-              </label>
-              <label>
-                <span>Tipo</span>
-                <select id="eventType">
-                  <option>Boda</option>
-                  <option>Corporativo</option>
-                  <option>VIP</option>
-                </select>
-              </label>
-              <label>
-                <span>Presupuesto</span>
-                <select id="eventBudget">
-                  <option value="$2K - $5K">Esencial · $2K - $5K</option>
-                  <option value="$5K - $10K" selected>Premium · $5K - $10K</option>
-                  <option value="$10K - $25K">Completo · $10K - $25K</option>
-                  <option value="$25K+">Luxury · $25K+</option>
-                </select>
-              </label>
-              <label>
-                <span>Fecha</span>
-                <input id="eventDate" type="date" />
-              </label>
-              <label>
-                <span>Invitados</span>
-                <input id="guestCount" type="number" min="1" placeholder="80" />
-              </label>
-              <button class="primary-button" type="submit">Crear evento</button>
-              <p class="admin-status" id="eventFormStatus" aria-live="polite"></p>
-            </form>
-
-            <section class="panel collaborators-admin" id="team-tools">
-              <div class="panel-heading">
-                <div><span>🏢</span><h2>Equipo</h2></div>
+                <div><span>🏢</span><h2>Agregar proveedores</h2></div>
                 <button id="refreshCollaboratorsButton" type="button">Actualizar</button>
               </div>
 
-              <div class="collaborator-layout">
-                <form class="collaborator-form" id="collaboratorForm">
+              <div class="provider-intake-layout">
+                <form class="collaborator-form provider-form" id="collaboratorForm">
                   <input id="collaboratorId" type="hidden" />
-                  <label><span>Nombre</span><input id="collaboratorName" type="text" placeholder="Juan Perez" required /></label>
-                  <label><span>Email</span><input id="collaboratorEmail" type="email" placeholder="juan@example.com" /></label>
+                  <label><span>Proveedor / empresa</span><input id="collaboratorName" type="text" placeholder="Cater Vegas Rentals" required /></label>
+                  <label><span>Email</span><input id="collaboratorEmail" type="email" placeholder="contacto@proveedor.com" /></label>
                   <label><span>Telefono</span><input id="collaboratorPhone" type="tel" placeholder="+1 702..." /></label>
                   <label>
-                    <span>Rol</span>
+                    <span>Categoria</span>
                     <select id="collaboratorRole">
-                      <option value="owner">Owner</option>
-                      <option value="admin">Admin</option>
-                      <option value="organizer" selected>Organizer</option>
-                      <option value="chef">Chef</option>
-                      <option value="driver">Driver</option>
-                      <option value="server">Server</option>
-                      <option value="staff">Staff</option>
-                      <option value="viewer">Viewer</option>
+                      <option value="chef" selected>Catering / Cocina</option>
+                      <option value="server">Servicio</option>
+                      <option value="driver">Logistica / Delivery</option>
+                      <option value="organizer">Coordinacion</option>
+                      <option value="staff">Staff extra</option>
                     </select>
                   </label>
                   <label>
                     <span>Status</span>
                     <select id="collaboratorStatus">
-                      <option value="active" selected>Active</option>
-                      <option value="invited">Invited</option>
-                      <option value="inactive">Inactive</option>
+                      <option value="active" selected>Activo</option>
+                      <option value="invited">Pendiente</option>
+                      <option value="inactive">Inactivo</option>
                     </select>
                   </label>
-                  <label class="wide-field"><span>Notas</span><textarea id="collaboratorNotes" rows="3" placeholder="Disponibilidad o funcion"></textarea></label>
+                  <label class="wide-field"><span>Servicios y notas</span><textarea id="collaboratorNotes" rows="4" placeholder="Menu, zona, disponibilidad, precios base, licencia o seguro"></textarea></label>
                   <div class="form-actions">
-                    <button class="primary-button" type="submit">Guardar</button>
+                    <button class="primary-button" type="submit">Guardar proveedor</button>
                     <button class="secondary-button" id="resetCollaboratorButton" type="button">Limpiar</button>
                   </div>
                   <p class="admin-status" id="collaboratorFormStatus" aria-live="polite"></p>
                 </form>
 
-                <div class="collaborator-list" id="collaboratorsList" aria-live="polite"></div>
+                <aside class="provider-info-card" aria-label="Informacion necesaria para proveedores">
+                  <p class="eyebrow">Datos necesarios</p>
+                  <div class="provider-checklist">
+                    <span>Empresa o contacto</span>
+                    <span>Categoria</span>
+                    <span>Email y telefono</span>
+                    <span>Servicio principal</span>
+                    <span>Zona de cobertura</span>
+                    <span>Disponibilidad</span>
+                    <span>Precios base</span>
+                    <span>Licencia / seguro</span>
+                  </div>
+                </aside>
+              </div>
+
+              <div class="provider-directory">
+                <div>
+                  <p class="eyebrow">Lista</p>
+                  <h3>Proveedores guardados</h3>
+                </div>
+                <div class="collaborator-list provider-list" id="collaboratorsList" aria-live="polite"></div>
               </div>
 
               <div class="assignment-panel">
                 <div>
                   <p class="eyebrow">Asignacion</p>
-                  <h3>Colaborador a evento</h3>
+                  <h3>Proveedor a evento</h3>
                 </div>
 
                 <form class="assignment-form" id="assignmentForm">
                   <label><span>Evento</span><select id="assignmentEvent"></select></label>
-                  <label><span>Colaborador</span><select id="assignmentCollaborator"></select></label>
+                  <label><span>Proveedor</span><select id="assignmentCollaborator"></select></label>
                   <label>
-                    <span>Rol</span>
+                    <span>Funcion</span>
                     <select id="assignmentRole">
-                      <option value="organizer" selected>Organizer</option>
-                      <option value="chef">Chef</option>
-                      <option value="driver">Driver</option>
-                      <option value="server">Server</option>
-                      <option value="staff">Staff</option>
-                      <option value="viewer">Viewer</option>
-                      <option value="admin">Admin</option>
-                      <option value="owner">Owner</option>
+                      <option value="chef" selected>Catering</option>
+                      <option value="server">Servicio</option>
+                      <option value="driver">Delivery</option>
+                      <option value="organizer">Coordinacion</option>
+                      <option value="staff">Staff extra</option>
                     </select>
                   </label>
                   <label>
                     <span>Status</span>
                     <select id="assignmentStatus">
-                      <option value="active" selected>Active</option>
-                      <option value="invited">Invited</option>
-                      <option value="inactive">Inactive</option>
+                      <option value="active" selected>Activo</option>
+                      <option value="invited">Pendiente</option>
+                      <option value="inactive">Inactivo</option>
                     </select>
                   </label>
-                  <label class="wide-field"><span>Notas</span><input id="assignmentNotes" type="text" placeholder="Horario, punto de encuentro" /></label>
+                  <label class="wide-field"><span>Notas</span><input id="assignmentNotes" type="text" placeholder="Horario, punto de entrega, contacto onsite" /></label>
                   <button class="primary-button" type="submit">Asignar</button>
                   <p class="admin-status" id="assignmentStatusText" aria-live="polite"></p>
                 </form>

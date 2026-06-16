@@ -38,13 +38,6 @@ const customersList = document.querySelector("#customersList");
 const dashboardEmail = document.querySelector("#dashboardEmail");
 const dashboardRole = document.querySelector("#dashboardRole");
 
-const eventForm = document.querySelector("#eventForm");
-const eventTitle = document.querySelector("#eventTitle");
-const eventType = document.querySelector("#eventType");
-const eventBudget = document.querySelector("#eventBudget");
-const eventDate = document.querySelector("#eventDate");
-const guestCount = document.querySelector("#guestCount");
-const eventFormStatus = document.querySelector("#eventFormStatus");
 const eventsList = document.querySelector("#eventsList");
 const refreshEventsButton = document.querySelector("#refreshEventsButton");
 const selectedEventLabel = document.querySelector("#selectedEventLabel");
@@ -105,10 +98,6 @@ let allRequests = [];
 
 function setSessionStatus(message) {
   sessionStatus.textContent = message;
-}
-
-function setEventStatus(message) {
-  eventFormStatus.textContent = message;
 }
 
 function setCollaboratorStatus(message) {
@@ -201,6 +190,21 @@ function statusBadge(status) {
   const pending = ["draft", "pending", "invited", "proposal", "review"].includes(value);
   const className = danger ? " is-danger" : pending ? " is-pending" : "";
   return `<span class="status-badge${className}">${escapeHtml(value)}</span>`;
+}
+
+function providerRoleLabel(role) {
+  const labels = {
+    chef: "Catering / Cocina",
+    server: "Servicio",
+    driver: "Logistica / Delivery",
+    organizer: "Coordinacion",
+    staff: "Staff extra",
+    viewer: "Viewer",
+    admin: "Admin",
+    owner: "Owner",
+  };
+  const value = String(role || "staff").toLowerCase();
+  return labels[value] || role || "Proveedor";
 }
 
 function userInitials(value) {
@@ -399,12 +403,12 @@ function renderActivityTimeline() {
     ...allCollaborators.slice(0, 2).map((collaborator) => ({
       icon: collaborator.status === "active" ? "✅" : "⚠️",
       title: collaborator.full_name || "Proveedor",
-      meta: `${collaborator.role || "staff"} · ${collaborator.status || "active"}`,
+      meta: `${providerRoleLabel(collaborator.role)} · ${collaborator.status || "active"}`,
     })),
     ...allAssignments.slice(0, 2).map((assignment) => ({
       icon: "💰",
       title: `Asignacion #${assignment.id || assignment.event_id}`,
-      meta: `${assignment.assignment_role || "staff"} · ${assignment.status || "active"}`,
+      meta: `${providerRoleLabel(assignment.assignment_role)} · ${assignment.status || "active"}`,
     })),
   ].slice(0, 6);
 
@@ -445,11 +449,11 @@ function renderCollaboratorOptions() {
     .filter((collaborator) => collaborator.status !== "inactive")
     .map(
       (collaborator) =>
-        `<option value="${collaborator.id}">${escapeHtml(collaborator.full_name)} · ${escapeHtml(collaborator.role)}</option>`
+        `<option value="${collaborator.id}">${escapeHtml(collaborator.full_name)} · ${escapeHtml(providerRoleLabel(collaborator.role))}</option>`
     )
     .join("");
 
-  assignmentCollaborator.innerHTML = collaboratorOptions || '<option value="">Sin colaboradores activos</option>';
+  assignmentCollaborator.innerHTML = collaboratorOptions || '<option value="">Sin proveedores activos</option>';
 
   if (selectedCollaborator?.id) {
     assignmentCollaborator.value = String(selectedCollaborator.id);
@@ -520,7 +524,7 @@ function renderCollaborators(rows = []) {
           <button type="button" data-collaborator-select="${collaborator.id}">
             <strong>${escapeHtml(collaborator.full_name)}</strong>
             <span class="collaborator-meta">
-              #${collaborator.id} · ${escapeHtml(collaborator.role)} · ${statusBadge(collaborator.status)}
+              #${collaborator.id} · ${escapeHtml(providerRoleLabel(collaborator.role))} · ${statusBadge(collaborator.status)}
             </span>
             <span class="collaborator-meta">
               ${escapeHtml(collaborator.email || "Sin email")} · ${escapeHtml(collaborator.phone || "Sin telefono")}
@@ -583,9 +587,9 @@ function renderAssignments(rows = []) {
 
       return `
         <article class="assignment-row">
-          <strong>${escapeHtml(collaborator?.full_name || `Colaborador #${assignment.collaborator_id}`)}</strong>
+          <strong>${escapeHtml(collaborator?.full_name || `Proveedor #${assignment.collaborator_id}`)}</strong>
           <span class="assignment-meta">
-            ${escapeHtml(assignment.assignment_role)} · ${statusBadge(assignment.status)} · ${escapeHtml(event?.title || `Evento #${assignment.event_id}`)}
+            ${escapeHtml(providerRoleLabel(assignment.assignment_role))} · ${statusBadge(assignment.status)} · ${escapeHtml(event?.title || `Evento #${assignment.event_id}`)}
           </span>
           <span class="assignment-meta">${escapeHtml(assignment.notes || "Sin notas")}</span>
         </article>
@@ -713,11 +717,12 @@ function renderUserRequests(requests = []) {
 }
 
 function fillCollaboratorForm(collaborator) {
+  const availableRoles = ["chef", "server", "driver", "organizer", "staff"];
   collaboratorId.value = collaborator.id;
   collaboratorName.value = collaborator.full_name || "";
   collaboratorEmail.value = collaborator.email || "";
   collaboratorPhone.value = collaborator.phone || "";
-  collaboratorRole.value = collaborator.role || "staff";
+  collaboratorRole.value = availableRoles.includes(collaborator.role) ? collaborator.role : "staff";
   collaboratorStatus.value = collaborator.status || "active";
   collaboratorNotes.value = collaborator.notes || "";
 }
@@ -725,7 +730,7 @@ function fillCollaboratorForm(collaborator) {
 function resetCollaboratorForm() {
   collaboratorForm.reset();
   collaboratorId.value = "";
-  collaboratorRole.value = "organizer";
+  collaboratorRole.value = "chef";
   collaboratorStatus.value = "active";
   selectedCollaborator = null;
   renderCollaborators(allCollaborators);
@@ -993,7 +998,6 @@ async function bootAdmin() {
   dashboardEmail.textContent = currentUser.email || "exmarquesado@gmail.com";
   dashboardRole.textContent = (currentRole || "owner").replace(/^./, (char) => char.toUpperCase());
   setSessionStatus(`${currentUser.email} · ${currentWorkspace?.name || WORKSPACE_ID} · rol ${currentRole}`);
-  eventForm.hidden = !canManageEvents();
   collaboratorForm.hidden = !canManageCollaborators();
   requestsSection.hidden = !canManageRequests();
   assignmentForm.hidden = !canManageEvents();
@@ -1012,41 +1016,6 @@ async function bootAdmin() {
   );
 }
 
-eventForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  if (!supabase || !canManageEvents()) return;
-
-  setEventStatus("Creando evento...");
-  const budgetLabel = eventBudget.value;
-  const plan = {
-    budgetLabel,
-    eventType: eventType.value,
-    menuStyle: null,
-    services: [],
-  };
-
-  const { error } = await supabase.from("cater_events").insert({
-    workspace_id: WORKSPACE_ID,
-    title: eventTitle.value.trim(),
-    event_type: eventType.value,
-    budget_label: budgetLabel,
-    status: "draft",
-    event_date: eventDate.value || null,
-    guest_count: guestCount.value ? Number(guestCount.value) : null,
-    created_by: currentUser.id,
-    plan,
-  });
-
-  if (error) {
-    setEventStatus(error.message);
-    return;
-  }
-
-  eventForm.reset();
-  setEventStatus("Evento creado.");
-  await Promise.all([loadEvents(), loadWorkspace()]);
-});
-
 collaboratorForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   if (!supabase || !canManageCollaborators()) return;
@@ -1062,11 +1031,11 @@ collaboratorForm.addEventListener("submit", async (event) => {
   };
 
   if (!payload.full_name) {
-    setCollaboratorStatus("Agrega el nombre del colaborador.");
+    setCollaboratorStatus("Agrega el nombre del proveedor.");
     return;
   }
 
-  setCollaboratorStatus(collaboratorId.value ? "Actualizando colaborador..." : "Creando colaborador...");
+  setCollaboratorStatus(collaboratorId.value ? "Actualizando proveedor..." : "Creando proveedor...");
 
   const query = collaboratorId.value
     ? supabase
@@ -1083,7 +1052,7 @@ collaboratorForm.addEventListener("submit", async (event) => {
     return;
   }
 
-  setCollaboratorStatus(collaboratorId.value ? "Colaborador actualizado." : "Colaborador creado.");
+  setCollaboratorStatus(collaboratorId.value ? "Proveedor actualizado." : "Proveedor creado.");
   resetCollaboratorForm();
   await Promise.all([refreshCollaboratorModule(), loadWorkspace()]);
 });
@@ -1096,7 +1065,7 @@ assignmentForm.addEventListener("submit", async (event) => {
   const collaboratorIdValue = Number(assignmentCollaborator.value);
 
   if (!eventId || !collaboratorIdValue) {
-    setAssignmentStatus("Selecciona evento y colaborador.");
+    setAssignmentStatus("Selecciona evento y proveedor.");
     return;
   }
 
@@ -1168,7 +1137,7 @@ async function updateCollaboratorStatus(id, status) {
     return;
   }
 
-  setCollaboratorStatus(status === "active" ? "Colaborador activado." : "Colaborador desactivado.");
+  setCollaboratorStatus(status === "active" ? "Proveedor activado." : "Proveedor desactivado.");
   await refreshCollaboratorModule();
 }
 
