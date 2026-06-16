@@ -17,6 +17,8 @@ const LANGUAGE_LABELS = {
   es: 'Español'
 };
 const STALE_AUTH_SESSION_MESSAGE = 'Your previous session expired. Sign in again.';
+const ENABLE_PUBLIC_SIGNUP = false;
+const ENABLE_CLIENT_SELF_ONBOARDING = false;
 
 const UI_TRANSLATIONS_ES = {
   'Beoflow App | Bastida Systems': 'Beoflow App | Bastida Systems',
@@ -25,6 +27,7 @@ const UI_TRANSLATIONS_ES = {
   'Kitchen operations workspace': 'Espacio de operaciones de cocina',
   'Sign in or create an account to manage your restaurant, events, recipes, inventory, staff, and reports.': 'Inicia sesión o crea una cuenta para administrar tu restaurante, eventos, recetas, inventario, personal y reportes.',
   'Sign in': 'Iniciar sesión',
+  'Sign in with your Bastida Systems account to manage the Beoflow client registry and operating modules.': 'Inicia sesión con tu cuenta de Bastida Systems para administrar el registro de clientes y módulos operativos de Beoflow.',
   'Create account': 'Crear cuenta',
   'Full name': 'Nombre completo',
   'Your name': 'Tu nombre',
@@ -68,6 +71,9 @@ const UI_TRANSLATIONS_ES = {
   'Choose workspace': 'Elegir espacio',
   'Choose your workspace': 'Elige tu espacio',
   'Select the restaurant or operation you want to manage.': 'Selecciona el restaurante u operación que quieres administrar.',
+  'No active Beoflow clients yet.': 'Todavía no hay clientes activos en Beoflow.',
+  'Register clients in the Bastida brain to make them available here.': 'Registra clientes en el cerebro de Bastida para verlos aquí.',
+  'Client creation is handled from the Bastida brain.': 'La creación de clientes se maneja desde el cerebro de Bastida.',
   'Add another restaurant': 'Agregar otro restaurante',
   'Open menu': 'Abrir menú',
   'Close menu': 'Cerrar menú',
@@ -2786,10 +2792,15 @@ function configureAuthPasswordFields() {
 
 function renderAuthView() {
   state.isRecoveryMode = false;
+  if (!ENABLE_PUBLIC_SIGNUP && state.authMode === 'signup') {
+    state.authMode = 'signin';
+  }
   resetPasswordVisibility();
   setAuthCopy(
     'Kitchen operations workspace',
-    'Sign in or create an account to manage your restaurant, events, recipes, inventory, staff, and reports.'
+    ENABLE_PUBLIC_SIGNUP
+      ? 'Sign in or create an account to manage your restaurant, events, recipes, inventory, staff, and reports.'
+      : 'Sign in with your Bastida Systems account to manage the Beoflow client registry and operating modules.'
   );
   els['session-loading-view'].hidden = true;
   els['auth-view'].hidden = false;
@@ -2797,7 +2808,7 @@ function renderAuthView() {
   hideStandaloneWorkspaceViews();
   closeMobileDrawer();
   closeWorkspaceModals();
-  els['auth-tabs'].hidden = false;
+  els['auth-tabs'].hidden = !ENABLE_PUBLIC_SIGNUP;
   els['auth-form'].hidden = false;
   els['forgot-password-button'].hidden = false;
   els['password-reset-request-form'].hidden = true;
@@ -2880,6 +2891,9 @@ function renderWorkspaceFrame({ showWorkspaceHeader = true } = {}) {
     : 'Create or select a restaurant to start using Beoflow.';
   els['switch-client-button'].hidden = state.userClients.length < 2;
   els['mobile-switch-client-button'].hidden = false;
+  els['add-restaurant-button'].hidden = !ENABLE_CLIENT_SELF_ONBOARDING;
+  els['mobile-add-restaurant-button'].hidden = !ENABLE_CLIENT_SELF_ONBOARDING;
+  els['workspace-switcher-add-button'].hidden = !ENABLE_CLIENT_SELF_ONBOARDING;
   renderWorkspaceBadge();
   syncMobileDrawerState();
 }
@@ -2930,13 +2944,25 @@ function renderWorkspaceCreated() {
 }
 
 function renderClientSelector() {
+  renderStandaloneWorkspaceView('client-selector-view');
+  els['client-list'].innerHTML = '';
+  els['selector-add-client-button'].hidden = !ENABLE_CLIENT_SELF_ONBOARDING;
+
   if (state.userClients.length === 0) {
-    showWorkspaceOnboarding();
+    els['client-selector-title'].textContent = translateText('No active Beoflow clients yet.');
+    const emptyState = document.createElement('div');
+    emptyState.className = 'client-option client-option-empty';
+    emptyState.innerHTML = `
+      <span>
+        <strong>${escapeHtml(translateText('No active Beoflow clients yet.'))}</strong>
+        <span>${escapeHtml(translateText('Register clients in the Bastida brain to make them available here.'))}</span>
+      </span>
+    `;
+    els['client-list'].appendChild(emptyState);
     return;
   }
 
-  renderStandaloneWorkspaceView('client-selector-view');
-  els['client-list'].innerHTML = '';
+  els['client-selector-title'].textContent = translateText('Choose your workspace');
 
   state.userClients.forEach(client => {
     const button = document.createElement('button');
@@ -5936,6 +5962,47 @@ async function loadCurrentUserProfile() {
   return state.profile;
 }
 
+async function loadActiveClientsByIds(supabase, clientIds, roleByClientId = new Map()) {
+  const uniqueClientIds = [...new Set((clientIds || []).filter(Boolean))];
+  if (uniqueClientIds.length === 0) return [];
+
+  let clientsResult = await supabase
+    .from('clients')
+    .select('id, name, client_type, status, created_at, updated_at, beoflow_waste_percentage, beoflow_food_factor')
+    .in('id', uniqueClientIds)
+    .eq('status', 'active')
+    .order('created_at', { ascending: true });
+
+  if (clientsResult.error && String(clientsResult.error.message || '').toLowerCase().includes('column')) {
+    clientsResult = await supabase
+      .from('clients')
+      .select('id, name, client_type, status, created_at, updated_at')
+      .in('id', uniqueClientIds)
+      .eq('status', 'active')
+      .order('created_at', { ascending: true });
+  }
+
+  if (clientsResult.error) throw clientsResult.error;
+
+  return (clientsResult.data || []).map(client => ({
+    ...client,
+    member_role: roleByClientId.get(client.id) || 'internal'
+  }));
+}
+
+async function loadInternalBeoflowClients(supabase) {
+  const { data: products, error: productsError } = await supabase
+    .from('client_products')
+    .select('client_id, product_key, status')
+    .eq('product_key', config.productKey || 'beoflow')
+    .eq('status', 'active');
+
+  if (productsError) throw productsError;
+
+  const clientIds = (products || []).map(row => row.client_id).filter(Boolean);
+  return loadActiveClientsByIds(supabase, clientIds);
+}
+
 async function loadUserClients() {
   if (!state.user) return [];
   const supabase = initializeSupabase();
@@ -5951,7 +6018,7 @@ async function loadUserClients() {
 
   const clientIds = [...new Set((memberships || []).map(row => row.client_id).filter(Boolean))];
   if (clientIds.length === 0) {
-    state.userClients = [];
+    state.userClients = await loadInternalBeoflowClients(supabase);
     return state.userClients;
   }
 
@@ -5968,39 +6035,20 @@ async function loadUserClients() {
   const allowedClientIds = clientIds.filter(id => beoflowClientIds.has(id));
 
   if (allowedClientIds.length === 0) {
-    state.userClients = [];
+    state.userClients = await loadInternalBeoflowClients(supabase);
     return state.userClients;
   }
 
-  let clientsResult = await supabase
-    .from('clients')
-    .select('id, name, client_type, status, created_at, updated_at, beoflow_waste_percentage, beoflow_food_factor')
-    .in('id', allowedClientIds)
-    .eq('status', 'active')
-    .order('created_at', { ascending: true });
-
-  if (clientsResult.error && String(clientsResult.error.message || '').toLowerCase().includes('column')) {
-    clientsResult = await supabase
-      .from('clients')
-      .select('id, name, client_type, status, created_at, updated_at')
-      .in('id', allowedClientIds)
-      .eq('status', 'active')
-      .order('created_at', { ascending: true });
-  }
-
-  if (clientsResult.error) throw clientsResult.error;
-
-  const membershipByClientId = new Map((memberships || []).map(row => [row.client_id, row]));
-
-  state.userClients = (clientsResult.data || []).map(client => ({
-    ...client,
-    member_role: membershipByClientId.get(client.id)?.role || 'member'
-  }));
+  const roleByClientId = new Map((memberships || []).map(row => [row.client_id, row.role || 'member']));
+  state.userClients = await loadActiveClientsByIds(supabase, allowedClientIds, roleByClientId);
 
   return state.userClients;
 }
 
 async function createBeoflowClient(clientInput) {
+  if (!ENABLE_CLIENT_SELF_ONBOARDING) {
+    throw new Error('Client creation is handled from the Bastida brain.');
+  }
   if (!state.user) throw new Error('Sign in before creating a restaurant.');
   const supabase = initializeSupabase();
   if (!supabase) throw new Error('Client-prod is not configured.');
@@ -6103,7 +6151,7 @@ function requireActiveClient() {
 
   if (state.userClients.length === 0) {
     localStorage.removeItem(getActiveClientStorageKey());
-    showWorkspaceOnboarding();
+    renderClientSelector();
     return null;
   }
 
@@ -6129,6 +6177,11 @@ function switchWorkspace(clientId) {
 }
 
 function addAnotherRestaurant() {
+  if (!ENABLE_CLIENT_SELF_ONBOARDING) {
+    showToast('Client creation is handled from the Bastida brain.');
+    return;
+  }
+
   closeWorkspaceModals();
   clearAlerts();
   renderOnboarding('add');
@@ -6299,7 +6352,7 @@ async function refreshAuthenticatedState(user) {
 
     if (state.userClients.length === 0) {
       setActiveClient(null);
-      showWorkspaceOnboarding();
+      renderClientSelector();
       return;
     }
 
@@ -6361,6 +6414,8 @@ function bindEvents() {
   });
 
   els['show-sign-up'].addEventListener('click', () => {
+    if (!ENABLE_PUBLIC_SIGNUP) return;
+
     state.authMode = 'signup';
     state.isRecoveryMode = false;
     clearAlerts();
@@ -6380,6 +6435,11 @@ function bindEvents() {
 
     try {
       if (state.authMode === 'signup') {
+        if (!ENABLE_PUBLIC_SIGNUP) {
+          state.authMode = 'signin';
+          throw new Error('Use your Bastida Systems account to sign in.');
+        }
+
         if (password.length < 8) {
           throw new Error('Password must be at least 8 characters.');
         }

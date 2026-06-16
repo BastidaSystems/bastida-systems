@@ -882,6 +882,21 @@ h1 {
   font-weight: 800;
 }
 
+.client-option-empty {
+  cursor: default;
+  justify-content: flex-start;
+}
+
+.client-option-empty > span:last-child {
+  flex: 1 1 auto;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  padding: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
 .client-option:disabled {
   cursor: default;
   opacity: 0.7;
