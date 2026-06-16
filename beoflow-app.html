@@ -6,10 +6,10 @@
   <title>Beoflow App | Bastida Systems</title>
   <link rel="icon" type="image/png" href="img/logobeoflow.png">
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="beoflow-app.css?v=beoflow-client-contacts-20260616">
+  <link rel="stylesheet" href="beoflow-app.css?v=beoflow-cater-sync-20260616">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="beoflow-client-config.js?v=beoflow-client-contacts-20260616"></script>
-  <script src="beoflow-client.js?v=beoflow-client-contacts-20260616" defer></script>
+  <script src="beoflow-client-config.js?v=beoflow-cater-sync-20260616"></script>
+  <script src="beoflow-client.js?v=beoflow-cater-sync-20260616" defer></script>
 </head>
 <body class="beoflow-app-shell">
   <main class="beoflow-app" data-testid="beoflow-app">
@@ -263,6 +263,7 @@
           <button type="button" class="sidebar-link is-active" data-section="dashboard" aria-current="page">Dashboard</button>
           <button type="button" class="sidebar-link" data-section="events">Events</button>
           <button type="button" class="sidebar-link" data-section="clients">Clients</button>
+          <button type="button" class="sidebar-link" data-section="activity">Activity</button>
           <details class="sidebar-group" open>
             <summary class="sidebar-group-summary" data-section="food">Food</summary>
             <button type="button" class="sidebar-link sidebar-sub-link" data-section="menu">Menu</button>
@@ -340,8 +341,13 @@
             </button>
             <button type="button" class="module-card" data-section="clients">
               <span>Clients</span>
-              <strong>0</strong>
+              <strong data-count-section="clients">0</strong>
               <p>Client management will be available soon</p>
+            </button>
+            <button type="button" class="module-card" data-section="activity">
+              <span>Activity</span>
+              <strong data-count-section="activity">0</strong>
+              <p>Cater sync and system changes</p>
             </button>
             <button type="button" class="module-card" data-section="food">
               <span>Food</span>

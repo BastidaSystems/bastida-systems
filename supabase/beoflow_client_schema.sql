@@ -95,6 +95,13 @@ create table if not exists public.beoflow_events (
   updated_at timestamptz not null default now()
 );
 
+alter table if exists public.beoflow_events
+  add column if not exists source text,
+  add column if not exists source_id text,
+  add column if not exists source_url text,
+  add column if not exists source_metadata jsonb not null default '{}'::jsonb,
+  add column if not exists last_synced_at timestamptz;
+
 create table if not exists public.beoflow_client_contacts (
   id uuid primary key default gen_random_uuid(),
   client_id uuid not null references public.clients(id) on delete cascade,
@@ -105,6 +112,22 @@ create table if not exists public.beoflow_client_contacts (
   phone text,
   status text not null default 'active',
   notes text,
+  created_by uuid references auth.users(id) on delete set null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.beoflow_activity_log (
+  id uuid primary key default gen_random_uuid(),
+  client_id uuid not null references public.clients(id) on delete cascade,
+  source text not null default 'manual',
+  source_table text,
+  source_id text,
+  activity_type text not null,
+  title text not null,
+  summary text,
+  metadata jsonb not null default '{}'::jsonb,
+  status text not null default 'active',
   created_by uuid references auth.users(id) on delete set null,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -423,10 +446,16 @@ create table if not exists public.beoflow_staff (
 );
 
 create index if not exists idx_beoflow_events_client_id on public.beoflow_events(client_id);
+create unique index if not exists idx_beoflow_events_client_source_unique
+  on public.beoflow_events(client_id, source, source_id);
 create index if not exists idx_beoflow_client_contacts_client_id on public.beoflow_client_contacts(client_id);
 create unique index if not exists idx_beoflow_client_contacts_client_email_unique
   on public.beoflow_client_contacts(client_id, lower(email))
   where email is not null and btrim(email) <> '';
+create index if not exists idx_beoflow_activity_log_client_created_at
+  on public.beoflow_activity_log(client_id, created_at desc);
+create unique index if not exists idx_beoflow_activity_log_source_unique
+  on public.beoflow_activity_log(client_id, source, source_table, source_id, activity_type);
 create index if not exists idx_beoflow_menu_items_client_id on public.beoflow_menu_items(client_id);
 create index if not exists idx_beoflow_menu_items_recipe_id on public.beoflow_menu_items(client_id, recipe_id);
 create index if not exists idx_beoflow_inventory_items_client_id on public.beoflow_inventory_items(client_id);
@@ -456,6 +485,11 @@ for each row execute function public.set_updated_at();
 drop trigger if exists set_beoflow_client_contacts_updated_at on public.beoflow_client_contacts;
 create trigger set_beoflow_client_contacts_updated_at
 before update on public.beoflow_client_contacts
+for each row execute function public.set_updated_at();
+
+drop trigger if exists set_beoflow_activity_log_updated_at on public.beoflow_activity_log;
+create trigger set_beoflow_activity_log_updated_at
+before update on public.beoflow_activity_log
 for each row execute function public.set_updated_at();
 
 drop trigger if exists set_beoflow_menu_items_updated_at on public.beoflow_menu_items;
@@ -490,6 +524,7 @@ for each row execute function public.set_updated_at();
 
 alter table public.beoflow_events enable row level security;
 alter table public.beoflow_client_contacts enable row level security;
+alter table public.beoflow_activity_log enable row level security;
 alter table public.beoflow_menu_items enable row level security;
 alter table public.beoflow_inventory_items enable row level security;
 alter table public.beoflow_recipes enable row level security;
@@ -504,6 +539,7 @@ declare
   module_tables text[] := array[
     'beoflow_events',
     'beoflow_client_contacts',
+    'beoflow_activity_log',
     'beoflow_menu_items',
     'beoflow_inventory_items',
     'beoflow_recipes',
@@ -556,6 +592,7 @@ end $$;
 grant select, insert, update, delete on
   public.beoflow_events,
   public.beoflow_client_contacts,
+  public.beoflow_activity_log,
   public.beoflow_menu_items,
   public.beoflow_inventory_items,
   public.beoflow_recipes,

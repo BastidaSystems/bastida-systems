@@ -83,6 +83,8 @@ const UI_TRANSLATIONS_ES = {
   'Dashboard': 'Dashboard',
   'Events': 'Eventos',
   'Client Contacts': 'Contactos del cliente',
+  'Activity Log': 'Bitácora',
+  'Activity': 'Actividad',
   'Menu': 'Menú',
   'Recipes': 'Recetas',
   'Subrecipes': 'Subrecetas',
@@ -102,6 +104,7 @@ const UI_TRANSLATIONS_ES = {
   'Operations Calendar': 'Calendario de operaciones',
   'Beoflow module empty states': 'Estados vacíos de módulos Beoflow',
   'No events yet': 'Sin eventos todavía',
+  'No activity yet': 'Sin actividad todavía',
   'No menu items yet': 'Sin elementos de menú todavía',
   'No recipes yet': 'Sin recetas todavía',
   'No subrecipes yet': 'Sin subrecetas todavía',
@@ -117,10 +120,18 @@ const UI_TRANSLATIONS_ES = {
   '0 records': '0 registros',
   'New Event': 'Nuevo evento',
   'New Contact': 'Nuevo contacto',
+  'Synced activity': 'Actividad sincronizada',
   'No events yet.': 'No hay eventos todavía.',
   'Create your first event to start planning service operations.': 'Crea tu primer evento para empezar a planear la operación.',
   'No client contacts yet.': 'Todavía no hay contactos del cliente.',
   'Add the primary contact for this client to keep the Beoflow brain complete.': 'Agrega el contacto principal de este cliente para mantener completo el cerebro Beoflow.',
+  'No activity yet.': 'Todavía no hay actividad.',
+  'Synced Cater Vegas updates will appear here.': 'Aquí aparecerán las actualizaciones sincronizadas de Cater Vegas.',
+  'Read Cater Vegas updates, synced event changes, and system notes in one place.': 'Lee actualizaciones de Cater Vegas, cambios de eventos sincronizados y notas del sistema en un solo lugar.',
+  'Cater sync and system changes': 'Sincronización de Cater y cambios del sistema',
+  'activity item': 'actividad',
+  'activity items': 'actividades',
+  'Activity Type': 'Tipo de actividad',
   'This module is ready for the next build.': 'Este módulo está listo para la siguiente etapa.',
   'Add record': 'Agregar registro',
   'Create a new workspace record.': 'Crea un nuevo registro del espacio.',
@@ -739,6 +750,30 @@ const MODULE_SECTIONS = {
       { name: 'notes', label: 'Notes', type: 'textarea', wide: true }
     ]
   },
+  activity: {
+    title: 'Activity Log',
+    subtitle: 'Read Cater Vegas updates, synced event changes, and system notes in one place.',
+    emptyTitle: 'No activity yet.',
+    emptyCopy: 'Synced Cater Vegas updates will appear here.',
+    action: 'Synced activity',
+    singular: 'activity item',
+    plural: 'activity items',
+    table: 'beoflow_activity_log',
+    index: '03',
+    icon: 'checklist',
+    titleField: 'title',
+    badgeField: 'activity_type',
+    metaFields: ['source', 'source_table', 'updated_at'],
+    detailFields: ['summary'],
+    sortField: 'updated_at',
+    readOnly: true,
+    fields: [
+      { name: 'title', label: 'Title', type: 'text', required: true },
+      { name: 'activity_type', label: 'Activity Type', type: 'text' },
+      { name: 'source', label: 'Source', type: 'text' },
+      { name: 'summary', label: 'Summary', type: 'textarea', wide: true }
+    ]
+  },
   food: {
     title: 'Food',
     subtitle: 'A clean control center for menus, recipes, subrecipes, and food inventory.',
@@ -936,6 +971,12 @@ const MODULE_VISUALS = {
     accent: '#14b8a6',
     soft: 'rgba(20, 184, 166, 0.12)',
     copy: 'Contacts and leads'
+  },
+  activity: {
+    icon: 'checklist',
+    accent: '#f59e0b',
+    soft: 'rgba(245, 158, 11, 0.12)',
+    copy: 'Cater sync and system changes'
   },
   food: {
     icon: 'utensils',
@@ -1593,13 +1634,14 @@ function formatRecordValue(fieldName, value) {
     return String(value);
   }
 
-  if (fieldName.endsWith('_date') || fieldName === 'event_date') {
-    const date = new Date(`${value}T00:00:00`);
+  if (fieldName.endsWith('_date') || fieldName === 'event_date' || fieldName.endsWith('_at')) {
+    const date = fieldName.endsWith('_at') ? new Date(value) : new Date(`${value}T00:00:00`);
     if (!Number.isNaN(date.getTime())) {
       return date.toLocaleDateString('en-US', {
         month: 'short',
         day: 'numeric',
-        year: 'numeric'
+        year: 'numeric',
+        ...(fieldName.endsWith('_at') ? { hour: 'numeric', minute: '2-digit' } : {})
       });
     }
   }
@@ -2198,7 +2240,7 @@ async function countTableRecords(table) {
   );
 
   if (error) {
-    if (table === 'beoflow_client_contacts' && isMissingRelationError(error)) return 0;
+    if (isMissingRelationError(error)) return 0;
     throw error;
   }
   return count || 0;
@@ -2272,10 +2314,10 @@ async function loadModuleData(section) {
       .from(moduleConfig.table)
       .select('*')
       .eq('client_id', clientId)
-  ).order('created_at', { ascending: false });
+  ).order(moduleConfig.sortField || 'created_at', { ascending: false });
 
   if (error) {
-    if (section === 'clients' && isMissingRelationError(error)) {
+    if (isMissingRelationError(error)) {
       state.moduleRecords[section] = [];
       state.moduleCounts[section] = 0;
       return state.moduleRecords[section];
@@ -3094,13 +3136,13 @@ function renderModuleSection(section) {
   els['module-count-badge'].textContent = section === 'reports' ? 'Loading metrics' : 'Loading';
   els['module-header-action-button'].innerHTML = renderIconLabel(getModuleActionIcon(section), moduleConfig.action);
   els['module-header-action-button'].classList.add('icon-action');
-  els['module-header-action-button'].hidden = section === 'reports' || !moduleConfig.table;
+  els['module-header-action-button'].hidden = section === 'reports' || !moduleConfig.table || moduleConfig.readOnly;
   els['module-empty-icon'].innerHTML = renderIcon(getModuleVisual(section).icon);
   els['module-empty-title'].textContent = moduleConfig.emptyTitle;
   els['module-empty-copy'].textContent = moduleConfig.emptyCopy;
   els['module-action-button'].innerHTML = renderIconLabel(getModuleActionIcon(section), moduleConfig.action);
   els['module-action-button'].classList.add('icon-action');
-  els['module-action-button'].hidden = section === 'reports' || !moduleConfig.table;
+  els['module-action-button'].hidden = section === 'reports' || !moduleConfig.table || moduleConfig.readOnly;
   els['module-empty-state'].hidden = true;
   els['module-record-list'].hidden = false;
   els['module-record-list'].innerHTML = '<div class="module-loading">Loading workspace records.</div>';
@@ -3803,6 +3845,12 @@ function renderRecordCard(section, record) {
     ? `<span class="status-badge category-badge ${categoryVisual.className}">${renderIconLabel(categoryVisual.icon, record.category)}</span>`
     : '';
   const stateBadgesHtml = renderRecordStateBadges(section, record);
+  const defaultActionsHtml = moduleConfig.readOnly
+    ? ''
+    : `
+        <button type="button" class="secondary-action icon-action" data-module-action="edit" data-section="${escapeHtml(section)}" data-record-id="${escapeHtml(record.id)}">${renderIconLabel('pencil', 'Edit')}</button>
+        <button type="button" class="secondary-action danger-action icon-action" data-module-action="archive" data-section="${escapeHtml(section)}" data-record-id="${escapeHtml(record.id)}">${renderIconLabel('archive', 'Archive')}</button>
+      `;
 
   return `
     <article class="record-card module-record-card" style="--module-accent: ${escapeHtml(visual.accent)}; --module-accent-soft: ${escapeHtml(visual.soft)};">
@@ -3821,8 +3869,7 @@ function renderRecordCard(section, record) {
       </div>
       <div class="record-actions">
         ${renderSpecialRecordActions(section, record)}
-        <button type="button" class="secondary-action icon-action" data-module-action="edit" data-section="${escapeHtml(section)}" data-record-id="${escapeHtml(record.id)}">${renderIconLabel('pencil', 'Edit')}</button>
-        <button type="button" class="secondary-action danger-action icon-action" data-module-action="archive" data-section="${escapeHtml(section)}" data-record-id="${escapeHtml(record.id)}">${renderIconLabel('archive', 'Archive')}</button>
+        ${defaultActionsHtml}
       </div>
     </article>
   `;
