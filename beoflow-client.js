@@ -16,6 +16,7 @@ const LANGUAGE_LABELS = {
   en: 'English',
   es: 'Español'
 };
+const STALE_AUTH_SESSION_MESSAGE = 'Your previous session expired. Sign in again.';
 
 const UI_TRANSLATIONS_ES = {
   'Beoflow App | Bastida Systems': 'Beoflow App | Bastida Systems',
@@ -301,6 +302,7 @@ const UI_TRANSLATIONS_ES = {
   'Unable to create restaurant.': 'No se pudo crear el restaurante.',
   'Unable to update workspace settings.': 'No se pudo actualizar la configuración del espacio.',
   'Unable to load session.': 'No se pudo cargar la sesión.',
+  'Your previous session expired. Sign in again.': 'Tu sesión anterior expiró. Inicia sesión otra vez.',
   'Unable to load your Beoflow workspace.': 'No se pudo cargar tu espacio Beoflow.',
   'Unable to load dashboard counts.': 'No se pudieron cargar los conteos del dashboard.',
   'Unable to load dashboard calendar.': 'No se pudo cargar el calendario del dashboard.',
@@ -5598,6 +5600,70 @@ function escapeHtml(value) {
   })[char]);
 }
 
+function getSupabaseProjectRef() {
+  try {
+    return new URL(config.url).hostname.split('.')[0] || '';
+  } catch (error) {
+    return '';
+  }
+}
+
+function isInvalidJwtError(error) {
+  const message = String(error?.message || error || '').toLowerCase();
+  return message.includes('invalid jwt')
+    || message.includes('unable to parse or verify signature')
+    || message.includes('token is unverifiable')
+    || message.includes('unrecognized jwt kid')
+    || (message.includes('jwt') && message.includes('signature'));
+}
+
+function clearStoredSupabaseAuth() {
+  const projectRef = getSupabaseProjectRef();
+  const currentAuthKey = projectRef ? `sb-${projectRef}-auth-token` : '';
+  const legacyKeys = new Set(['supabase.auth.token', currentAuthKey].filter(Boolean));
+  const stores = [window.localStorage, window.sessionStorage].filter(Boolean);
+
+  stores.forEach(store => {
+    const keysToRemove = [];
+
+    for (let index = 0; index < store.length; index += 1) {
+      const key = store.key(index);
+      if (!key) continue;
+
+      const keyLower = key.toLowerCase();
+      const belongsToCurrentProject = Boolean(projectRef && key.includes(projectRef));
+      const isBeoflowAuthKey = keyLower.includes('beoflow') && keyLower.includes('auth');
+
+      if (legacyKeys.has(key) || belongsToCurrentProject || isBeoflowAuthKey) {
+        keysToRemove.push(key);
+      }
+    }
+
+    keysToRemove.forEach(key => store.removeItem(key));
+  });
+}
+
+async function clearInvalidAuthSession(supabase = state.supabase) {
+  try {
+    await supabase?.auth?.signOut?.({ scope: 'local' });
+  } catch (error) {
+    // The session token is already invalid, so local storage cleanup is the important part.
+  }
+
+  clearStoredSupabaseAuth();
+  resetSessionState();
+  state.authMode = 'signin';
+  state.isRecoveryMode = false;
+  state.passwordUpdatePending = false;
+}
+
+async function recoverFromInvalidAuthSession(supabase = state.supabase, messageElement = els['auth-message']) {
+  await clearInvalidAuthSession(supabase);
+  cleanAuthUrl();
+  renderAuthView();
+  showAlert(messageElement, STALE_AUTH_SESSION_MESSAGE, 'success');
+}
+
 function initializeSupabase() {
   if (state.supabase) return state.supabase;
 
@@ -5649,6 +5715,11 @@ async function handleAuthUrlCallback(supabase, authUrlState = getAuthUrlState())
   if (authUrlState.code && typeof supabase.auth.exchangeCodeForSession === 'function') {
     const { data, error } = await supabase.auth.exchangeCodeForSession(authUrlState.code);
     if (error) {
+      if (isInvalidJwtError(error)) {
+        await recoverFromInvalidAuthSession(supabase);
+        return true;
+      }
+
       cleanAuthUrl();
       state.isRecoveryMode = false;
       renderAuthView();
@@ -5670,6 +5741,11 @@ async function handleAuthUrlCallback(supabase, authUrlState = getAuthUrlState())
     });
 
     if (error) {
+      if (isInvalidJwtError(error)) {
+        await recoverFromInvalidAuthSession(supabase);
+        return true;
+      }
+
       cleanAuthUrl();
       state.isRecoveryMode = false;
       renderAuthView();
@@ -5753,7 +5829,14 @@ async function signIn(email, password) {
   if (!supabase) throw new Error('Client-prod is not configured.');
 
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) throw error;
+  if (error) {
+    if (isInvalidJwtError(error)) {
+      await clearInvalidAuthSession(supabase);
+      throw new Error(STALE_AUTH_SESSION_MESSAGE);
+    }
+
+    throw error;
+  }
   await refreshAuthenticatedState(data.user);
   return data;
 }
@@ -5817,7 +5900,11 @@ async function getCurrentUser() {
   if (!supabase) return null;
 
   const { data, error } = await supabase.auth.getUser();
-  if (error) return null;
+  if (error) {
+    if (isInvalidJwtError(error)) await clearInvalidAuthSession(supabase);
+    return null;
+  }
+
   state.user = data.user || null;
   return state.user;
 }
@@ -6221,6 +6308,11 @@ async function refreshAuthenticatedState(user) {
     setActiveClient(selectedClient);
     renderDashboard();
   } catch (error) {
+    if (isInvalidJwtError(error)) {
+      await recoverFromInvalidAuthSession(state.supabase);
+      return;
+    }
+
     els['session-loading-view'].hidden = true;
     els['auth-view'].hidden = true;
     els['workspace-view'].hidden = false;
@@ -6916,6 +7008,11 @@ async function boot() {
 
   const { data, error } = await supabase.auth.getSession();
   if (error) {
+    if (isInvalidJwtError(error)) {
+      await recoverFromInvalidAuthSession(supabase);
+      return;
+    }
+
     renderAuthView();
     showAlert(els['auth-message'], error.message || 'Unable to load session.');
     return;
