@@ -95,6 +95,21 @@ create table if not exists public.beoflow_events (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists public.beoflow_client_contacts (
+  id uuid primary key default gen_random_uuid(),
+  client_id uuid not null references public.clients(id) on delete cascade,
+  full_name text not null,
+  contact_type text not null default 'primary',
+  role text,
+  email text,
+  phone text,
+  status text not null default 'active',
+  notes text,
+  created_by uuid references auth.users(id) on delete set null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
 create table if not exists public.beoflow_menu_items (
   id uuid primary key default gen_random_uuid(),
   client_id uuid not null references public.clients(id) on delete cascade,
@@ -408,6 +423,10 @@ create table if not exists public.beoflow_staff (
 );
 
 create index if not exists idx_beoflow_events_client_id on public.beoflow_events(client_id);
+create index if not exists idx_beoflow_client_contacts_client_id on public.beoflow_client_contacts(client_id);
+create unique index if not exists idx_beoflow_client_contacts_client_email_unique
+  on public.beoflow_client_contacts(client_id, lower(email))
+  where email is not null and btrim(email) <> '';
 create index if not exists idx_beoflow_menu_items_client_id on public.beoflow_menu_items(client_id);
 create index if not exists idx_beoflow_menu_items_recipe_id on public.beoflow_menu_items(client_id, recipe_id);
 create index if not exists idx_beoflow_inventory_items_client_id on public.beoflow_inventory_items(client_id);
@@ -432,6 +451,11 @@ create index if not exists idx_beoflow_staff_client_id on public.beoflow_staff(c
 drop trigger if exists set_beoflow_events_updated_at on public.beoflow_events;
 create trigger set_beoflow_events_updated_at
 before update on public.beoflow_events
+for each row execute function public.set_updated_at();
+
+drop trigger if exists set_beoflow_client_contacts_updated_at on public.beoflow_client_contacts;
+create trigger set_beoflow_client_contacts_updated_at
+before update on public.beoflow_client_contacts
 for each row execute function public.set_updated_at();
 
 drop trigger if exists set_beoflow_menu_items_updated_at on public.beoflow_menu_items;
@@ -465,6 +489,7 @@ before update on public.beoflow_staff
 for each row execute function public.set_updated_at();
 
 alter table public.beoflow_events enable row level security;
+alter table public.beoflow_client_contacts enable row level security;
 alter table public.beoflow_menu_items enable row level security;
 alter table public.beoflow_inventory_items enable row level security;
 alter table public.beoflow_recipes enable row level security;
@@ -478,6 +503,7 @@ declare
   policy_record record;
   module_tables text[] := array[
     'beoflow_events',
+    'beoflow_client_contacts',
     'beoflow_menu_items',
     'beoflow_inventory_items',
     'beoflow_recipes',
@@ -529,6 +555,7 @@ end $$;
 
 grant select, insert, update, delete on
   public.beoflow_events,
+  public.beoflow_client_contacts,
   public.beoflow_menu_items,
   public.beoflow_inventory_items,
   public.beoflow_recipes,

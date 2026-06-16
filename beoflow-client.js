@@ -82,6 +82,7 @@ const UI_TRANSLATIONS_ES = {
   'Workspace actions': 'Acciones del espacio',
   'Dashboard': 'Dashboard',
   'Events': 'Eventos',
+  'Client Contacts': 'Contactos del cliente',
   'Menu': 'Menú',
   'Recipes': 'Recetas',
   'Subrecipes': 'Subrecetas',
@@ -115,8 +116,11 @@ const UI_TRANSLATIONS_ES = {
   'Beoflow Module': 'Módulo Beoflow',
   '0 records': '0 registros',
   'New Event': 'Nuevo evento',
+  'New Contact': 'Nuevo contacto',
   'No events yet.': 'No hay eventos todavía.',
   'Create your first event to start planning service operations.': 'Crea tu primer evento para empezar a planear la operación.',
+  'No client contacts yet.': 'Todavía no hay contactos del cliente.',
+  'Add the primary contact for this client to keep the Beoflow brain complete.': 'Agrega el contacto principal de este cliente para mantener completo el cerebro Beoflow.',
   'This module is ready for the next build.': 'Este módulo está listo para la siguiente etapa.',
   'Add record': 'Agregar registro',
   'Create a new workspace record.': 'Crea un nuevo registro del espacio.',
@@ -131,6 +135,7 @@ const UI_TRANSLATIONS_ES = {
   'Default waste percentage': 'Porcentaje de merma predeterminado',
   'Food factor': 'Factor de alimento',
   'Plan catering events, service days, banquets, and production schedules.': 'Planea eventos de catering, días de servicio, banquetes y calendarios de producción.',
+  'Track client-side owners, admins, leads, and operating contacts without giving them Beoflow access.': 'Registra dueños, admins, leads y contactos operativos del cliente sin darles acceso a Beoflow.',
   'Link menu items to recipes and track selling price, cost, margin, and profit.': 'Vincula elementos de menú con recetas y controla precio de venta, costo, margen y utilidad.',
   'Standardize recipes, ingredients, procedures, and consistency.': 'Estandariza recetas, ingredientes, procedimientos y consistencia.',
   'Create reusable preparations such as sauces, bases, doughs, and garnishes.': 'Crea preparaciones reutilizables como salsas, bases, masas y guarniciones.',
@@ -160,6 +165,13 @@ const UI_TRANSLATIONS_ES = {
   'No reports yet.': 'No hay reportes todavía.',
   'Reports will appear after events, inventory, and production activity.': 'Los reportes aparecerán después de actividad en eventos, inventario y producción.',
   'Event Name': 'Nombre del evento',
+  'Contact Type': 'Tipo de contacto',
+  'Primary Contact': 'Contacto principal',
+  'Client Admin': 'Admin del cliente',
+  'Billing Contact': 'Contacto de facturación',
+  'Operations Contact': 'Contacto de operaciones',
+  'Lead': 'Lead',
+  'Role / Title': 'Rol / puesto',
   'Event Type': 'Tipo de evento',
   'Event Date': 'Fecha del evento',
   'Start Time': 'Hora de inicio',
@@ -691,16 +703,41 @@ const MODULE_SECTIONS = {
     ]
   },
   clients: {
-    title: 'Clients',
-    subtitle: 'Manage catering clients, leads, and event contacts.',
-    emptyTitle: 'No clients yet.',
-    emptyCopy: 'Client management will be available soon.',
-    action: 'Coming Soon',
-    singular: 'client',
-    plural: 'clients',
-    table: null,
+    title: 'Client Contacts',
+    subtitle: 'Track client-side owners, admins, leads, and operating contacts without giving them Beoflow access.',
+    emptyTitle: 'No client contacts yet.',
+    emptyCopy: 'Add the primary contact for this client to keep the Beoflow brain complete.',
+    action: 'New Contact',
+    singular: 'client contact',
+    plural: 'client contacts',
+    table: 'beoflow_client_contacts',
     index: '02',
-    icon: 'users'
+    icon: 'users',
+    titleField: 'full_name',
+    badgeField: 'status',
+    metaFields: ['contact_type', 'role', 'email', 'phone'],
+    detailFields: ['notes'],
+    fields: [
+      { name: 'full_name', label: 'Full Name', type: 'text', required: true },
+      {
+        name: 'contact_type',
+        label: 'Contact Type',
+        type: 'select',
+        defaultValue: 'primary',
+        options: [
+          { value: 'primary', label: 'Primary Contact' },
+          { value: 'admin', label: 'Client Admin' },
+          { value: 'billing', label: 'Billing Contact' },
+          { value: 'operations', label: 'Operations Contact' },
+          { value: 'lead', label: 'Lead' }
+        ]
+      },
+      { name: 'role', label: 'Role / Title', type: 'text' },
+      { name: 'email', label: 'Email', type: 'email' },
+      { name: 'phone', label: 'Phone', type: 'tel' },
+      { name: 'status', label: 'Status', type: 'text', defaultValue: 'active' },
+      { name: 'notes', label: 'Notes', type: 'textarea', wide: true }
+    ]
   },
   food: {
     title: 'Food',
@@ -1609,6 +1646,15 @@ function withActiveRecordFilter(query) {
   return query.neq('status', 'archived');
 }
 
+function isMissingRelationError(error) {
+  const code = String(error?.code || '');
+  const message = String(error?.message || error?.details || error?.hint || '').toLowerCase();
+  return code === '42P01'
+    || code === 'PGRST205'
+    || message.includes('could not find the table')
+    || (message.includes('relation') && message.includes('does not exist'));
+}
+
 function normalizePayloadValue(field, value) {
   if (value === '') return null;
   if (field.type === 'number') {
@@ -2151,7 +2197,10 @@ async function countTableRecords(table) {
       .eq('client_id', clientId)
   );
 
-  if (error) throw error;
+  if (error) {
+    if (table === 'beoflow_client_contacts' && isMissingRelationError(error)) return 0;
+    throw error;
+  }
   return count || 0;
 }
 
@@ -2225,7 +2274,14 @@ async function loadModuleData(section) {
       .eq('client_id', clientId)
   ).order('created_at', { ascending: false });
 
-  if (error) throw error;
+  if (error) {
+    if (section === 'clients' && isMissingRelationError(error)) {
+      state.moduleRecords[section] = [];
+      state.moduleCounts[section] = 0;
+      return state.moduleRecords[section];
+    }
+    throw error;
+  }
 
   state.moduleRecords[section] = data || [];
   state.moduleCounts[section] = state.moduleRecords[section].length;
