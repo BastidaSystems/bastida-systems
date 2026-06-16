@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Panel administrativo visual de Cater Vegas." />
+    <title>Cater Vegas | Dashboard Admin</title>
+    <link rel="stylesheet" href="admin.css" />
+  </head>
+  <body>
+    <div class="admin-layout admin-layout-simple">
+      <aside class="admin-sidebar" aria-label="Menu de administrador">
+        <a class="admin-logo" href="../index.html" aria-label="Cater Vegas home">
+          <span>CV</span>
+          <strong>CATER VEGAS</strong>
+        </a>
+
+        <nav class="sidebar-nav">
+          <a class="sidebar-link is-active" href="#overview"><span>🏠</span>Dashboard</a>
+          <a class="sidebar-link" href="#events"><span>📅</span>Eventos</a>
+          <a class="sidebar-link" href="#requestsSection"><span>🧾</span>Solicitudes</a>
+          <a class="sidebar-link" href="#team-tools"><span>🏢</span>Equipo</a>
+          <a class="sidebar-link" href="#beoflow"><span>🌊</span>BEOFlow</a>
+        </nav>
+
+        <div class="sidebar-mini">
+          <span class="status-dot"></span>
+          <div>
+            <strong>Active</strong>
+            <small>catering_events</small>
+          </div>
+        </div>
+      </aside>
+
+      <main class="admin-main simple-main">
+        <header class="admin-header">
+          <div class="header-title">
+            <p class="eyebrow">Admin</p>
+            <h1>Dashboard Admin</h1>
+            <p>Control visual de eventos, proveedores y operacion.</p>
+          </div>
+
+          <div class="header-actions">
+            <div class="user-pill" aria-label="Usuario activo">
+              <span class="avatar">EX</span>
+              <div>
+                <strong id="dashboardEmail">exmarquesado@gmail.com</strong>
+                <small id="dashboardRole">Owner</small>
+              </div>
+            </div>
+            <button id="signoutButton" class="logout-button" type="button">Salir</button>
+          </div>
+        </header>
+
+        <section class="simple-hero" id="overview">
+          <article class="command-card simple-command">
+            <div>
+              <p class="eyebrow">Cater Vegas</p>
+              <h2>Operacion clara.</h2>
+            </div>
+            <p id="sessionStatus" class="session-status">Verificando sesion...</p>
+            <div class="quick-actions" aria-label="Acciones rapidas">
+              <button type="button" data-scroll-target="#events">Eventos</button>
+              <button type="button" data-scroll-target="#requestsSection">Solicitudes</button>
+              <button type="button" data-scroll-target="#beoflow">BEOFlow</button>
+            </div>
+          </article>
+
+          <article class="ai-card simple-ai" aria-label="AI Admin Assistant">
+            <div class="ai-card-copy">
+              <p class="eyebrow">AI Admin Assistant</p>
+              <h2>🤖 Todo bajo control</h2>
+            </div>
+            <div class="ai-avatar" aria-hidden="true">
+              <div class="ai-halo"></div>
+              <div class="ai-head">
+                <span class="ai-eye"></span>
+                <span class="ai-eye"></span>
+              </div>
+              <div class="ai-body"></div>
+              <div class="ai-activity"></div>
+            </div>
+            <div class="ai-actions">
+              <button type="button">Analizar</button>
+              <button type="button">Alertas</button>
+            </div>
+          </article>
+        </section>
+
+        <section class="metric-grid metric-grid-simple" aria-label="Resumen principal">
+          <article class="metric-card">
+            <span class="metric-icon">📅</span>
+            <div><strong id="statActiveEvents">0</strong><small>Eventos</small></div>
+          </article>
+          <article class="metric-card">
+            <span class="metric-icon">🕒</span>
+            <div><strong id="statPending">0</strong><small>Pendientes</small></div>
+          </article>
+          <article class="metric-card" id="providers">
+            <span class="metric-icon">🏢</span>
+            <div><strong id="statProviders">0</strong><small>Proveedores</small></div>
+          </article>
+          <article class="metric-card" id="finance">
+            <span class="metric-icon">💰</span>
+            <div><strong id="statRevenue">$0</strong><small>Revenue</small></div>
+          </article>
+        </section>
+
+        <section class="simple-dashboard-grid">
+          <article class="panel simple-panel" id="events">
+            <div class="panel-heading">
+              <div><span>📅</span><h2>Proximos eventos</h2></div>
+              <button id="refreshEventsButton" type="button">Actualizar</button>
+            </div>
+            <div class="event-list-mini" id="upcomingEventsList" aria-live="polite"></div>
+          </article>
+
+          <section class="panel simple-panel requests-admin" id="requestsSection">
+            <div class="panel-heading">
+              <div><span>🧾</span><h2>Solicitudes</h2></div>
+              <button id="refreshRequestsButton" type="button">Actualizar</button>
+            </div>
+            <div class="request-preview-list" id="pendingRequestsPreview" aria-live="polite"></div>
+            <p class="admin-status" id="requestsStatus" aria-live="polite"></p>
+          </section>
+
+          <section class="panel simple-panel beoflow-workspace-card" id="beoflow">
+            <div class="workspace-topline">
+              <div>
+                <p class="eyebrow">Workspace</p>
+                <h2>🌊 BEOFlow</h2>
+              </div>
+              <span class="state-badge">Active</span>
+            </div>
+            <div class="workspace-summary" id="workspaceSummary" aria-live="polite"></div>
+            <button id="refreshWorkspaceButton" class="primary-button" type="button">Administrar</button>
+          </section>
+        </section>
+
+        <details class="admin-tools-accordion" id="settings">
+          <summary>Herramientas avanzadas</summary>
+
+          <section class="admin-tools-grid">
+            <form class="panel event-form" id="eventForm">
+              <div class="panel-heading">
+                <div><span>➕</span><h2>Crear evento</h2></div>
+              </div>
+
+              <label>
+                <span>Nombre</span>
+                <input id="eventTitle" type="text" placeholder="Cena VIP en Las Vegas" required />
+              </label>
+              <label>
+                <span>Tipo</span>
+                <select id="eventType">
+                  <option>Boda</option>
+                  <option>Corporativo</option>
+                  <option>VIP</option>
+                </select>
+              </label>
+              <label>
+                <span>Presupuesto</span>
+                <select id="eventBudget">
+                  <option value="$2K - $5K">Esencial · $2K - $5K</option>
+                  <option value="$5K - $10K" selected>Premium · $5K - $10K</option>
+                  <option value="$10K - $25K">Completo · $10K - $25K</option>
+                  <option value="$25K+">Luxury · $25K+</option>
+                </select>
+              </label>
+              <label>
+                <span>Fecha</span>
+                <input id="eventDate" type="date" />
+              </label>
+              <label>
+                <span>Invitados</span>
+                <input id="guestCount" type="number" min="1" placeholder="80" />
+              </label>
+              <button class="primary-button" type="submit">Crear evento</button>
+              <p class="admin-status" id="eventFormStatus" aria-live="polite"></p>
+            </form>
+
+            <section class="panel collaborators-admin" id="team-tools">
+              <div class="panel-heading">
+                <div><span>🏢</span><h2>Equipo</h2></div>
+                <button id="refreshCollaboratorsButton" type="button">Actualizar</button>
+              </div>
+
+              <div class="collaborator-layout">
+                <form class="collaborator-form" id="collaboratorForm">
+                  <input id="collaboratorId" type="hidden" />
+                  <label><span>Nombre</span><input id="collaboratorName" type="text" placeholder="Juan Perez" required /></label>
+                  <label><span>Email</span><input id="collaboratorEmail" type="email" placeholder="juan@example.com" /></label>
+                  <label><span>Telefono</span><input id="collaboratorPhone" type="tel" placeholder="+1 702..." /></label>
+                  <label>
+                    <span>Rol</span>
+                    <select id="collaboratorRole">
+                      <option value="owner">Owner</option>
+                      <option value="admin">Admin</option>
+                      <option value="organizer" selected>Organizer</option>
+                      <option value="chef">Chef</option>
+                      <option value="driver">Driver</option>
+                      <option value="server">Server</option>
+                      <option value="staff">Staff</option>
+                      <option value="viewer">Viewer</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Status</span>
+                    <select id="collaboratorStatus">
+                      <option value="active" selected>Active</option>
+                      <option value="invited">Invited</option>
+                      <option value="inactive">Inactive</option>
+                    </select>
+                  </label>
+                  <label class="wide-field"><span>Notas</span><textarea id="collaboratorNotes" rows="3" placeholder="Disponibilidad o funcion"></textarea></label>
+                  <div class="form-actions">
+                    <button class="primary-button" type="submit">Guardar</button>
+                    <button class="secondary-button" id="resetCollaboratorButton" type="button">Limpiar</button>
+                  </div>
+                  <p class="admin-status" id="collaboratorFormStatus" aria-live="polite"></p>
+                </form>
+
+                <div class="collaborator-list" id="collaboratorsList" aria-live="polite"></div>
+              </div>
+
+              <div class="assignment-panel">
+                <div>
+                  <p class="eyebrow">Asignacion</p>
+                  <h3>Colaborador a evento</h3>
+                </div>
+
+                <form class="assignment-form" id="assignmentForm">
+                  <label><span>Evento</span><select id="assignmentEvent"></select></label>
+                  <label><span>Colaborador</span><select id="assignmentCollaborator"></select></label>
+                  <label>
+                    <span>Rol</span>
+                    <select id="assignmentRole">
+                      <option value="organizer" selected>Organizer</option>
+                      <option value="chef">Chef</option>
+                      <option value="driver">Driver</option>
+                      <option value="server">Server</option>
+                      <option value="staff">Staff</option>
+                      <option value="viewer">Viewer</option>
+                      <option value="admin">Admin</option>
+                      <option value="owner">Owner</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Status</span>
+                    <select id="assignmentStatus">
+                      <option value="active" selected>Active</option>
+                      <option value="invited">Invited</option>
+                      <option value="inactive">Inactive</option>
+                    </select>
+                  </label>
+                  <label class="wide-field"><span>Notas</span><input id="assignmentNotes" type="text" placeholder="Horario, punto de encuentro" /></label>
+                  <button class="primary-button" type="submit">Asignar</button>
+                  <p class="admin-status" id="assignmentStatusText" aria-live="polite"></p>
+                </form>
+
+                <div class="assignment-list" id="assignmentsList" aria-live="polite"></div>
+              </div>
+            </section>
+
+            <section class="panel beoflow-admin">
+              <div class="panel-heading">
+                <div><span>🌊</span><h2>BEOFlow Command</h2></div>
+              </div>
+              <p id="selectedEventLabel">Selecciona un evento para enviar instrucciones.</p>
+              <form id="adminBeoflowForm">
+                <textarea id="adminBeoflowPrompt" rows="5" placeholder="Agrega transporte, hospedaje y staff para un evento VIP."></textarea>
+                <button class="primary-button" type="submit">Enviar a BEOFlow</button>
+              </form>
+              <pre id="beoflowResult"></pre>
+            </section>
+
+            <section class="utility-sinks" hidden aria-hidden="true">
+              <span id="statUsers">0</span>
+              <span id="statCompleted">0</span>
+              <div id="analyticsLine"></div>
+              <div id="analyticsBars"></div>
+              <div id="categoryDonut"></div>
+              <div id="categoryLegend"></div>
+              <div id="requestProgress"><strong>0%</strong><span>resueltas</span></div>
+              <div id="activityTimeline"></div>
+              <div id="eventsList"></div>
+              <div id="userRequestsList"></div>
+              <div id="customersList"></div>
+            </section>
+          </section>
+        </details>
+      </main>
+    </div>
+
+    <script type="module" src="admin.js"></script>
+  </body>
+</html>
