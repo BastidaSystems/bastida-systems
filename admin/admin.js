@@ -15,6 +15,15 @@ const PENDING_PROFILE_ROLES = [
   "collaborator_pending",
   "client_pending",
 ];
+const WORKSPACE_MANAGER_ROLES = new Set(["owner", "admin", "super_admin", "platform_admin"]);
+const EVENT_MANAGER_ROLES = new Set(["owner", "admin", "super_admin", "platform_admin", "organizer"]);
+const PROVIDER_NOTE_LABELS = {
+  services: "Servicios y notas",
+  coverage: "Zona de cobertura",
+  availability: "Disponibilidad",
+  pricing: "Precios base",
+  license: "Licencia / seguro",
+};
 
 function keepDashboardPinned() {
   if (window.location.hash) {
@@ -38,6 +47,13 @@ const customersList = document.querySelector("#customersList");
 const dashboardEmail = document.querySelector("#dashboardEmail");
 const dashboardRole = document.querySelector("#dashboardRole");
 
+const eventForm = document.querySelector("#eventForm");
+const eventTitle = document.querySelector("#eventTitle");
+const eventType = document.querySelector("#eventType");
+const eventBudget = document.querySelector("#eventBudget");
+const eventDate = document.querySelector("#eventDate");
+const guestCount = document.querySelector("#guestCount");
+const eventFormStatus = document.querySelector("#eventFormStatus");
 const eventsList = document.querySelector("#eventsList");
 const refreshEventsButton = document.querySelector("#refreshEventsButton");
 const selectedEventLabel = document.querySelector("#selectedEventLabel");
@@ -52,6 +68,10 @@ const collaboratorEmail = document.querySelector("#collaboratorEmail");
 const collaboratorPhone = document.querySelector("#collaboratorPhone");
 const collaboratorRole = document.querySelector("#collaboratorRole");
 const collaboratorStatus = document.querySelector("#collaboratorStatus");
+const providerCoverage = document.querySelector("#providerCoverage");
+const providerAvailability = document.querySelector("#providerAvailability");
+const providerBasePricing = document.querySelector("#providerBasePricing");
+const providerLicenseInsurance = document.querySelector("#providerLicenseInsurance");
 const collaboratorNotes = document.querySelector("#collaboratorNotes");
 const collaboratorFormStatus = document.querySelector("#collaboratorFormStatus");
 const resetCollaboratorButton = document.querySelector("#resetCollaboratorButton");
@@ -89,6 +109,7 @@ let currentRole = null;
 let currentWorkspace = null;
 let selectedEvent = null;
 let selectedCollaborator = null;
+let authReady = false;
 let eventsChannel = null;
 let allEvents = [];
 let allCollaborators = [];
@@ -100,16 +121,28 @@ function setSessionStatus(message) {
   sessionStatus.textContent = message;
 }
 
+function setEventStatus(message) {
+  eventFormStatus.textContent = message;
+}
+
 function setCollaboratorStatus(message) {
   collaboratorFormStatus.textContent = message;
 }
 
-function providerSaveErrorMessage(error) {
-  const message = error?.message || "No se pudo guardar el proveedor.";
+function eventSaveErrorMessage(error) {
+  const message = error?.message || "";
   if (message.toLowerCase().includes("row-level security")) {
-    return `Supabase bloqueo el guardado. Verifica que tu usuario sea Owner/Admin en ${WORKSPACE_ID}.`;
+    return "No se pudo guardar el evento. Revisa la conexion o las politicas de Supabase.";
   }
-  return message;
+  return message || "No se pudo guardar el evento. Revisa la conexion o las politicas de Supabase.";
+}
+
+function providerSaveErrorMessage(error) {
+  const message = error?.message || "";
+  if (message.toLowerCase().includes("row-level security")) {
+    return "No se pudo guardar el proveedor. Revisa la conexion o las politicas de Supabase.";
+  }
+  return message || "No se pudo guardar el proveedor. Revisa la conexion o las politicas de Supabase.";
 }
 
 function setAssignmentStatus(message) {
@@ -129,22 +162,44 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
+function normalizeRole(role) {
+  return String(role || "").trim().toLowerCase();
+}
+
+function currentUserRoles() {
+  return [
+    currentRole,
+    currentMembership?.role,
+    currentProfile?.role,
+    currentProfile?.platform_role,
+    currentProfile?.platformRole,
+  ]
+    .map(normalizeRole)
+    .filter(Boolean);
+}
+
+function hasAnyRole(allowedRoles) {
+  return currentUserRoles().some((role) => allowedRoles.has(role));
+}
+
 function canManageEvents() {
-  return ["owner", "admin", "organizer"].includes(currentRole);
+  return hasAnyRole(EVENT_MANAGER_ROLES);
 }
 
 function canManageCollaborators() {
-  return ["owner", "admin"].includes(currentRole);
+  return hasAnyRole(WORKSPACE_MANAGER_ROLES);
 }
 
 function canManageRequests() {
-  return ["owner", "admin"].includes(currentRole);
+  return hasAnyRole(WORKSPACE_MANAGER_ROLES);
 }
 
 function profileRoleForMembershipRole(role) {
   const roleMap = {
     owner: "admin",
     admin: "admin",
+    super_admin: "admin",
+    platform_admin: "admin",
     organizer: "organizer",
     collaborator: "collaborator",
     viewer: "client",
@@ -161,6 +216,42 @@ function eventPlanFromRow(row) {
     services: row.services || [],
     ...(row.plan || {}),
   };
+}
+
+function buildEventPayload() {
+  const budgetLabel = eventBudget.value;
+  const title = eventTitle.value.trim();
+  const eventTypeValue = eventType.value;
+
+  return {
+    workspace_id: WORKSPACE_ID,
+    title,
+    event_type: eventTypeValue,
+    budget_label: budgetLabel,
+    status: "draft",
+    event_date: eventDate.value || null,
+    guest_count: guestCount.value ? Number(guestCount.value) : null,
+    plan: {
+      budgetLabel,
+      eventType: eventTypeValue,
+      menuStyle: null,
+      services: [],
+    },
+  };
+}
+
+async function insertEventPayload(basePayload) {
+  const payloads = [
+    currentUser?.id ? { ...basePayload, created_by: currentUser.id } : null,
+    basePayload,
+  ].filter(Boolean);
+
+  for (const payload of payloads) {
+    const result = await supabase.from("cater_events").insert(payload);
+    if (!isMissingSchemaColumnError(result.error)) return result;
+  }
+
+  return supabase.from("cater_events").insert(basePayload);
 }
 
 function formatCurrency(value) {
@@ -724,15 +815,117 @@ function renderUserRequests(requests = []) {
   renderAnalytics();
 }
 
+function providerDetailFields() {
+  return [
+    [PROVIDER_NOTE_LABELS.coverage, providerCoverage],
+    [PROVIDER_NOTE_LABELS.availability, providerAvailability],
+    [PROVIDER_NOTE_LABELS.pricing, providerBasePricing],
+    [PROVIDER_NOTE_LABELS.license, providerLicenseInsurance],
+  ];
+}
+
+function buildProviderNotes() {
+  const lines = [];
+  const services = collaboratorNotes.value.trim();
+  if (services) lines.push(`${PROVIDER_NOTE_LABELS.services}: ${services}`);
+
+  providerDetailFields().forEach(([label, field]) => {
+    const value = field?.value.trim();
+    if (value) lines.push(`${label}: ${value}`);
+  });
+
+  return lines.join("\n") || null;
+}
+
+function providerDetailPayload() {
+  return {
+    coverage_area: providerCoverage?.value.trim() || null,
+    availability: providerAvailability?.value.trim() || null,
+    base_pricing: providerBasePricing?.value.trim() || null,
+    license_insurance: providerLicenseInsurance?.value.trim() || null,
+  };
+}
+
+function isMissingSchemaColumnError(error) {
+  return error?.code === "PGRST204" || String(error?.message || "").toLowerCase().includes("schema cache");
+}
+
+async function insertProviderPayload(basePayload) {
+  const detailPayload = providerDetailPayload();
+  const payloads = [
+    currentUser?.id ? { ...basePayload, ...detailPayload, created_by: currentUser.id } : null,
+    { ...basePayload, ...detailPayload },
+    basePayload,
+  ].filter(Boolean);
+
+  for (const payload of payloads) {
+    const result = await supabase.from("cater_collaborators").insert(payload);
+    if (!isMissingSchemaColumnError(result.error)) return result;
+  }
+
+  return supabase.from("cater_collaborators").insert(basePayload);
+}
+
+async function updateProviderPayload(id, basePayload) {
+  const detailPayload = providerDetailPayload();
+  const firstResult = await supabase
+    .from("cater_collaborators")
+    .update({ ...basePayload, ...detailPayload })
+    .eq("workspace_id", WORKSPACE_ID)
+    .eq("id", Number(id));
+
+  if (!isMissingSchemaColumnError(firstResult.error)) return firstResult;
+
+  return supabase
+    .from("cater_collaborators")
+    .update(basePayload)
+    .eq("workspace_id", WORKSPACE_ID)
+    .eq("id", Number(id));
+}
+
+function splitProviderNotes(notes = "") {
+  const parsed = {
+    services: "",
+    details: new Map(),
+  };
+
+  String(notes || "")
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .forEach((line) => {
+      const [label, ...valueParts] = line.split(":");
+      const value = valueParts.join(":").trim();
+      const normalizedLabel = label.trim();
+
+      if (normalizedLabel === PROVIDER_NOTE_LABELS.services) {
+        parsed.services = value;
+      } else if (Object.values(PROVIDER_NOTE_LABELS).includes(normalizedLabel)) {
+        parsed.details.set(normalizedLabel, value);
+      } else {
+        parsed.services = parsed.services ? `${parsed.services}\n${line}` : line;
+      }
+    });
+
+  return parsed;
+}
+
 function fillCollaboratorForm(collaborator) {
   const availableRoles = ["chef", "server", "driver", "organizer", "staff"];
+  const notes = splitProviderNotes(collaborator.notes);
   collaboratorId.value = collaborator.id;
   collaboratorName.value = collaborator.full_name || "";
   collaboratorEmail.value = collaborator.email || "";
   collaboratorPhone.value = collaborator.phone || "";
   collaboratorRole.value = availableRoles.includes(collaborator.role) ? collaborator.role : "staff";
   collaboratorStatus.value = collaborator.status || "active";
-  collaboratorNotes.value = collaborator.notes || "";
+  collaboratorNotes.value = notes.services;
+  if (providerCoverage) providerCoverage.value = collaborator.coverage_area || notes.details.get(PROVIDER_NOTE_LABELS.coverage) || "";
+  if (providerAvailability) providerAvailability.value = collaborator.availability || notes.details.get(PROVIDER_NOTE_LABELS.availability) || "";
+  if (providerBasePricing) providerBasePricing.value = collaborator.base_pricing || notes.details.get(PROVIDER_NOTE_LABELS.pricing) || "";
+  if (providerLicenseInsurance) {
+    providerLicenseInsurance.value = collaborator.license_insurance || notes.details.get(PROVIDER_NOTE_LABELS.license) || "";
+  }
 }
 
 function resetCollaboratorForm() {
@@ -740,6 +933,9 @@ function resetCollaboratorForm() {
   collaboratorId.value = "";
   collaboratorRole.value = "chef";
   collaboratorStatus.value = "active";
+  providerDetailFields().forEach(([, field]) => {
+    if (field) field.value = "";
+  });
   selectedCollaborator = null;
   renderCollaborators(allCollaborators);
 }
@@ -846,8 +1042,8 @@ async function loadCustomers() {
 
 async function loadUserRequests() {
   if (!supabase || !canManageRequests()) {
-    userRequestsList.innerHTML = "<div class=\"empty-state\">Solo owner/admin puede revisar solicitudes.</div>";
-    pendingRequestsPreview.innerHTML = "<div class=\"empty-state\">Solo owner/admin.</div>";
+    userRequestsList.innerHTML = "<div class=\"empty-state\">Solo administradores pueden revisar solicitudes.</div>";
+    pendingRequestsPreview.innerHTML = "<div class=\"empty-state\">Solo administradores.</div>";
     return;
   }
 
@@ -1003,9 +1199,12 @@ async function bootAdmin() {
     return;
   }
 
+  authReady = true;
+  const displayRole = currentRole || currentUserRoles()[0] || "owner";
   dashboardEmail.textContent = currentUser.email || "exmarquesado@gmail.com";
-  dashboardRole.textContent = (currentRole || "owner").replace(/^./, (char) => char.toUpperCase());
-  setSessionStatus(`${currentUser.email} · ${currentWorkspace?.name || WORKSPACE_ID} · rol ${currentRole}`);
+  dashboardRole.textContent = displayRole.replace(/^./, (char) => char.toUpperCase());
+  setSessionStatus(`${currentUser.email} · ${currentWorkspace?.name || WORKSPACE_ID} · rol ${displayRole}`);
+  eventForm.hidden = !canManageEvents();
   collaboratorForm.hidden = !canManageCollaborators();
   requestsSection.hidden = !canManageRequests();
   assignmentForm.hidden = !canManageEvents();
@@ -1024,6 +1223,45 @@ async function bootAdmin() {
   );
 }
 
+eventForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (!supabase) {
+    setEventStatus("Supabase no esta conectado.");
+    return;
+  }
+
+  if (!authReady) {
+    setEventStatus("Verificando permisos...");
+    return;
+  }
+
+  if (!canManageEvents()) {
+    setEventStatus("No tienes permisos para administrar eventos.");
+    return;
+  }
+
+  const payload = buildEventPayload();
+
+  if (!payload.title) {
+    setEventStatus("Agrega el nombre del evento.");
+    return;
+  }
+
+  setEventStatus("Guardando evento...");
+  const { error } = await insertEventPayload(payload);
+
+  if (error) {
+    setEventStatus(eventSaveErrorMessage(error));
+    return;
+  }
+
+  eventForm.reset();
+  eventBudget.value = "$5K - $10K";
+  setEventStatus("Evento guardado.");
+  await Promise.all([loadEvents(), loadWorkspace()]);
+  await loadAssignments();
+});
+
 collaboratorForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   if (!supabase) {
@@ -1031,8 +1269,19 @@ collaboratorForm.addEventListener("submit", async (event) => {
     return;
   }
 
+  if (!authReady) {
+    setCollaboratorStatus("Verificando permisos...");
+    return;
+  }
+
   if (!canManageCollaborators()) {
-    setCollaboratorStatus("Solo Owner/Admin puede guardar proveedores.");
+    setCollaboratorStatus("No tienes permisos para administrar proveedores.");
+    console.warn("Provider permission denied", {
+      currentRole,
+      currentProfileRole: currentProfile?.role,
+      currentMembershipRole: currentMembership?.role,
+      currentMembershipStatus: currentMembership?.status,
+    });
     return;
   }
 
@@ -1043,7 +1292,7 @@ collaboratorForm.addEventListener("submit", async (event) => {
     phone: collaboratorPhone.value.trim() || null,
     role: collaboratorRole.value,
     status: collaboratorStatus.value,
-    notes: collaboratorNotes.value.trim() || null,
+    notes: buildProviderNotes(),
   };
 
   if (!payload.full_name) {
@@ -1051,24 +1300,25 @@ collaboratorForm.addEventListener("submit", async (event) => {
     return;
   }
 
-  setCollaboratorStatus(collaboratorId.value ? "Actualizando proveedor..." : "Creando proveedor...");
+  const isEditing = Boolean(collaboratorId.value);
+  setCollaboratorStatus(isEditing ? "Actualizando proveedor..." : "Creando proveedor...");
 
-  const query = collaboratorId.value
-    ? supabase
-        .from("cater_collaborators")
-        .update(payload)
-        .eq("workspace_id", WORKSPACE_ID)
-        .eq("id", Number(collaboratorId.value))
-    : supabase.from("cater_collaborators").insert(payload);
+  let error = null;
 
-  const { error } = await query;
+  if (isEditing) {
+    const result = await updateProviderPayload(collaboratorId.value, payload);
+    error = result.error;
+  } else {
+    const result = await insertProviderPayload(payload);
+    error = result.error;
+  }
 
   if (error) {
     setCollaboratorStatus(providerSaveErrorMessage(error));
     return;
   }
 
-  setCollaboratorStatus(collaboratorId.value ? "Proveedor actualizado." : "Proveedor creado.");
+  setCollaboratorStatus("Proveedor guardado.");
   resetCollaboratorForm();
   await Promise.all([refreshCollaboratorModule(), loadWorkspace()]);
 });
@@ -1140,7 +1390,12 @@ adminBeoflowForm.addEventListener("submit", async (event) => {
 });
 
 async function updateCollaboratorStatus(id, status) {
-  if (!supabase || !canManageCollaborators()) return;
+  if (!supabase) return;
+
+  if (!canManageCollaborators()) {
+    setCollaboratorStatus("No tienes permisos para administrar proveedores.");
+    return;
+  }
 
   const { error } = await supabase
     .from("cater_collaborators")

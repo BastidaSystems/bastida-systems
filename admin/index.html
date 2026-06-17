@@ -150,6 +150,40 @@
           <summary>Herramientas avanzadas</summary>
 
           <section class="admin-tools-grid provider-tools-grid">
+            <section class="panel event-admin" id="event-tools">
+              <div class="panel-heading">
+                <div><span>📅</span><h2>Agregar eventos</h2></div>
+              </div>
+
+              <form class="event-form event-create-form" id="eventForm">
+                <label><span>Nombre</span><input id="eventTitle" type="text" placeholder="Cena VIP en Las Vegas" required /></label>
+                <label>
+                  <span>Tipo</span>
+                  <select id="eventType">
+                    <option value="Boda">Boda</option>
+                    <option value="Corporativo">Corporativo</option>
+                    <option value="VIP">VIP</option>
+                    <option value="Social">Social</option>
+                  </select>
+                </label>
+                <label>
+                  <span>Presupuesto</span>
+                  <select id="eventBudget">
+                    <option value="$2K - $5K">Esencial · $2K - $5K</option>
+                    <option value="$5K - $10K" selected>Premium · $5K - $10K</option>
+                    <option value="$10K - $25K">Completo · $10K - $25K</option>
+                    <option value="$25K+">Luxury · $25K+</option>
+                  </select>
+                </label>
+                <label><span>Fecha</span><input id="eventDate" type="date" /></label>
+                <label><span>Invitados</span><input id="guestCount" type="number" min="1" placeholder="80" /></label>
+                <div class="form-actions">
+                  <button class="primary-button" type="submit">Guardar evento</button>
+                  <p class="admin-status" id="eventFormStatus" aria-live="polite"></p>
+                </div>
+              </form>
+            </section>
+
             <section class="panel provider-admin" id="team-tools">
               <div class="panel-heading">
                 <div><span>🏢</span><h2>Agregar proveedores</h2></div>
@@ -180,6 +214,10 @@
                       <option value="inactive">Inactivo</option>
                     </select>
                   </label>
+                  <label><span>Zona de cobertura</span><input id="providerCoverage" type="text" placeholder="Las Vegas, Henderson..." /></label>
+                  <label><span>Disponibilidad</span><input id="providerAvailability" type="text" placeholder="Weekends, evenings..." /></label>
+                  <label><span>Precios base</span><input id="providerBasePricing" type="text" placeholder="$500 setup, $45 pp..." /></label>
+                  <label><span>Licencia / seguro</span><input id="providerLicenseInsurance" type="text" placeholder="Health permit, liability..." /></label>
                   <label class="wide-field"><span>Servicios y notas</span><textarea id="collaboratorNotes" rows="4" placeholder="Menu, zona, disponibilidad, precios base, licencia o seguro"></textarea></label>
                   <div class="form-actions">
                     <button class="primary-button" type="submit">Guardar proveedor</button>
@@ -277,6 +315,6 @@
       </main>
     </div>
 
-    <script type="module" src="admin.js"></script>
+    <script type="module" src="admin.js?v=admin-tools-events-20260616"></script>
   </body>
 </html>
