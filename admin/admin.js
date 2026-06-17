@@ -104,6 +104,14 @@ function setCollaboratorStatus(message) {
   collaboratorFormStatus.textContent = message;
 }
 
+function providerSaveErrorMessage(error) {
+  const message = error?.message || "No se pudo guardar el proveedor.";
+  if (message.toLowerCase().includes("row-level security")) {
+    return `Supabase bloqueo el guardado. Verifica que tu usuario sea Owner/Admin en ${WORKSPACE_ID}.`;
+  }
+  return message;
+}
+
 function setAssignmentStatus(message) {
   assignmentStatusText.textContent = message;
 }
@@ -1018,7 +1026,15 @@ async function bootAdmin() {
 
 collaboratorForm.addEventListener("submit", async (event) => {
   event.preventDefault();
-  if (!supabase || !canManageCollaborators()) return;
+  if (!supabase) {
+    setCollaboratorStatus("Supabase no esta conectado.");
+    return;
+  }
+
+  if (!canManageCollaborators()) {
+    setCollaboratorStatus("Solo Owner/Admin puede guardar proveedores.");
+    return;
+  }
 
   const payload = {
     workspace_id: WORKSPACE_ID,
@@ -1048,7 +1064,7 @@ collaboratorForm.addEventListener("submit", async (event) => {
   const { error } = await query;
 
   if (error) {
-    setCollaboratorStatus(error.message);
+    setCollaboratorStatus(providerSaveErrorMessage(error));
     return;
   }
 

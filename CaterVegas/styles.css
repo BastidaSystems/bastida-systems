@@ -43,7 +43,15 @@ html {
 
 body {
   margin: 0;
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(180deg, rgba(8, 7, 6, 0.72), rgba(8, 7, 6, 0.9)),
+    radial-gradient(circle at 16% 12%, rgba(215, 181, 109, 0.15), transparent 30rem),
+    url("assets/cater-vegas-site-bg.png");
+  background-attachment: fixed, fixed, fixed;
+  background-position: center, center, center;
+  background-repeat: no-repeat;
+  background-size: cover, auto, cover;
   color: var(--text);
   font-family: var(--sans);
   line-height: 1.5;

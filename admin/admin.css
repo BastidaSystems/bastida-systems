@@ -29,10 +29,16 @@ html {
 body {
   min-height: 100vh;
   margin: 0;
-  background:
+  background-color: var(--black);
+  background-image:
+    linear-gradient(180deg, rgba(5, 5, 5, 0.7), rgba(5, 5, 5, 0.9)),
     radial-gradient(circle at 14% 8%, rgba(214, 178, 124, 0.16), transparent 28rem),
     radial-gradient(circle at 82% 6%, rgba(143, 199, 163, 0.08), transparent 24rem),
-    linear-gradient(145deg, #020202 0%, var(--black) 48%, #11100f 100%);
+    url("assets/cater-vegas-admin-bg.png");
+  background-attachment: fixed, fixed, fixed, fixed;
+  background-position: center, center, center, center;
+  background-repeat: no-repeat;
+  background-size: cover, auto, auto, cover;
   color: var(--warm);
   font-family: Avenir, "Helvetica Neue", Arial, sans-serif;
 }
