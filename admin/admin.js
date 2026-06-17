@@ -110,6 +110,7 @@ let currentWorkspace = null;
 let selectedEvent = null;
 let selectedCollaborator = null;
 let authReady = false;
+let adminBootPromise = null;
 let eventsChannel = null;
 let allEvents = [];
 let allCollaborators = [];
@@ -1169,6 +1170,59 @@ async function disableUserRequest(userId) {
   await loadUserRequests();
 }
 
+function syncAdminPermissionsUi() {
+  const displayRole = currentRole || currentUserRoles()[0] || "owner";
+  dashboardEmail.textContent = currentUser?.email || "exmarquesado@gmail.com";
+  dashboardRole.textContent = displayRole.replace(/^./, (char) => char.toUpperCase());
+  setSessionStatus(`${currentUser?.email || "exmarquesado@gmail.com"} · ${currentWorkspace?.name || WORKSPACE_ID} · rol ${displayRole}`);
+  eventForm.hidden = !canManageEvents();
+  collaboratorForm.hidden = !canManageCollaborators();
+  requestsSection.hidden = !canManageRequests();
+  assignmentForm.hidden = !canManageEvents();
+}
+
+async function ensureAdminReady(setStatus) {
+  if (authReady && currentUser) return true;
+
+  setStatus("Verificando permisos...");
+
+  if (adminBootPromise) {
+    await Promise.race([
+      adminBootPromise,
+      new Promise((resolve) => window.setTimeout(resolve, 1800)),
+    ]);
+  }
+
+  if (authReady && currentUser) return true;
+
+  try {
+    supabase = supabase || requireSupabase();
+    const { user, profile, membership, workspace } = await getWorkspaceContext();
+    currentUser = user;
+    currentProfile = profile;
+    currentMembership = membership;
+    currentWorkspace = workspace;
+    currentRole = getEffectiveWorkspaceRole(profile, membership);
+
+    if (!currentUser) {
+      window.location.href = "../login.html";
+      return false;
+    }
+
+    if (currentMembership?.status === "disabled" || isPendingWorkspaceAccess(currentProfile, currentMembership)) {
+      window.location.href = "../pending.html";
+      return false;
+    }
+
+    authReady = true;
+    syncAdminPermissionsUi();
+    return true;
+  } catch (error) {
+    setStatus(error?.message || "No se pudieron verificar permisos.");
+    return false;
+  }
+}
+
 async function bootAdmin() {
   if (!isSupabaseConfigured) {
     setSessionStatus("Configura Supabase en lib/supabaseClient.js para usar el admin.");
@@ -1200,14 +1254,7 @@ async function bootAdmin() {
   }
 
   authReady = true;
-  const displayRole = currentRole || currentUserRoles()[0] || "owner";
-  dashboardEmail.textContent = currentUser.email || "exmarquesado@gmail.com";
-  dashboardRole.textContent = displayRole.replace(/^./, (char) => char.toUpperCase());
-  setSessionStatus(`${currentUser.email} · ${currentWorkspace?.name || WORKSPACE_ID} · rol ${displayRole}`);
-  eventForm.hidden = !canManageEvents();
-  collaboratorForm.hidden = !canManageCollaborators();
-  requestsSection.hidden = !canManageRequests();
-  assignmentForm.hidden = !canManageEvents();
+  syncAdminPermissionsUi();
 
   await Promise.all([loadWorkspace(), loadEvents(), loadCollaborators(), loadCustomers(), loadUserRequests()]);
   await loadAssignments();
@@ -1231,8 +1278,8 @@ eventForm.addEventListener("submit", async (event) => {
   }
 
   if (!authReady) {
-    setEventStatus("Verificando permisos...");
-    return;
+    const ready = await ensureAdminReady(setEventStatus);
+    if (!ready) return;
   }
 
   if (!canManageEvents()) {
@@ -1270,8 +1317,8 @@ collaboratorForm.addEventListener("submit", async (event) => {
   }
 
   if (!authReady) {
-    setCollaboratorStatus("Verificando permisos...");
-    return;
+    const ready = await ensureAdminReady(setCollaboratorStatus);
+    if (!ready) return;
   }
 
   if (!canManageCollaborators()) {
@@ -1458,6 +1505,7 @@ window.addEventListener("beforeunload", () => {
 });
 
 renderAnalytics();
-bootAdmin().catch((error) => {
+adminBootPromise = bootAdmin().catch((error) => {
   setSessionStatus(error.message);
+  return false;
 });
