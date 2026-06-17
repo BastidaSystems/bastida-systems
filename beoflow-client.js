@@ -83,6 +83,8 @@ const UI_TRANSLATIONS_ES = {
   'Dashboard': 'Dashboard',
   'Events': 'Eventos',
   'Client Contacts': 'Contactos del cliente',
+  'Providers': 'Proveedores',
+  'Provider': 'Proveedor',
   'Activity Log': 'Bitácora',
   'Activity': 'Actividad',
   'Menu': 'Menú',
@@ -104,6 +106,7 @@ const UI_TRANSLATIONS_ES = {
   'Operations Calendar': 'Calendario de operaciones',
   'Beoflow module empty states': 'Estados vacíos de módulos Beoflow',
   'No events yet': 'Sin eventos todavía',
+  'No providers yet': 'Sin proveedores todavía',
   'No activity yet': 'Sin actividad todavía',
   'No menu items yet': 'Sin elementos de menú todavía',
   'No recipes yet': 'Sin recetas todavía',
@@ -117,6 +120,17 @@ const UI_TRANSLATIONS_ES = {
   'No staff members yet': 'Sin personal todavía',
   'No reports yet': 'Sin reportes todavía',
   'Beoflow Module': 'Módulo Beoflow',
+  'Synced providers': 'Proveedores sincronizados',
+  "Track Cater Vegas vendors, venues, suppliers, and operating partners synced from Rod's system.": 'Registra proveedores, venues, suministros y aliados operativos de Cater Vegas sincronizados desde el sistema de Rod.',
+  'Cater Vegas providers will appear here after Rod adds them.': 'Los proveedores de Cater Vegas aparecerán aquí cuando Rod los agregue.',
+  'Vendors, venues, and operating partners': 'Proveedores, venues y aliados operativos',
+  'New Provider': 'Nuevo proveedor',
+  'Provider Name': 'Nombre del proveedor',
+  'Provider Type': 'Tipo de proveedor',
+  'Contact Name': 'Nombre de contacto',
+  'Website': 'Sitio web',
+  'City': 'Ciudad',
+  'State': 'Estado',
   '0 records': '0 registros',
   'New Event': 'Nuevo evento',
   'New Contact': 'Nuevo contacto',
@@ -443,7 +457,8 @@ function translateSingular(value) {
     subrecipe: 'subreceta',
     'inventory item': 'ingrediente',
     'production log': 'registro de producción',
-    'staff member': 'miembro del personal'
+    'staff member': 'miembro del personal',
+    provider: 'proveedor'
   };
 
   return labels[String(value || '').toLowerCase()] || value;
@@ -473,6 +488,8 @@ function translateCountLabel(count, singular, plural) {
     ingredients: ['ingrediente', 'ingredientes'],
     metric: ['métrica', 'métricas'],
     metrics: ['métrica', 'métricas'],
+    provider: ['proveedor', 'proveedores'],
+    providers: ['proveedor', 'proveedores'],
     product: ['producto', 'productos'],
     products: ['producto', 'productos'],
     record: ['registro', 'registros'],
@@ -491,7 +508,7 @@ function translateCoreText(text) {
   const exactTranslation = UI_TRANSLATIONS_ES[text];
   if (exactTranslation) return exactTranslation;
 
-  let match = text.match(/^(\d+)\s+(event|events|menu item|menu items|recipe|recipes|subrecipe|subrecipes|inventory item|inventory items|production log|production logs|staff member|staff members|ingredient|ingredients|metric|metrics|product|products|record|records)$/i);
+  let match = text.match(/^(\d+)\s+(event|events|menu item|menu items|recipe|recipes|subrecipe|subrecipes|inventory item|inventory items|production log|production logs|staff member|staff members|ingredient|ingredients|metric|metrics|provider|providers|product|products|record|records)$/i);
   if (match) {
     return translateCountLabel(match[1], match[2], match[2]);
   }
@@ -750,6 +767,36 @@ const MODULE_SECTIONS = {
       { name: 'notes', label: 'Notes', type: 'textarea', wide: true }
     ]
   },
+  providers: {
+    title: 'Providers',
+    subtitle: "Track Cater Vegas vendors, venues, suppliers, and operating partners synced from Rod's system.",
+    emptyTitle: 'No providers yet.',
+    emptyCopy: 'Cater Vegas providers will appear here after Rod adds them.',
+    action: 'Synced providers',
+    singular: 'provider',
+    plural: 'providers',
+    table: 'beoflow_providers',
+    index: '03',
+    icon: 'package',
+    titleField: 'name',
+    badgeField: 'status',
+    metaFields: ['provider_type', 'contact_name', 'email', 'phone', 'city', 'state'],
+    detailFields: ['website', 'notes'],
+    sortField: 'updated_at',
+    readOnly: true,
+    fields: [
+      { name: 'name', label: 'Provider Name', type: 'text', required: true },
+      { name: 'provider_type', label: 'Provider Type', type: 'text' },
+      { name: 'contact_name', label: 'Contact Name', type: 'text' },
+      { name: 'email', label: 'Email', type: 'email' },
+      { name: 'phone', label: 'Phone', type: 'tel' },
+      { name: 'website', label: 'Website', type: 'url' },
+      { name: 'city', label: 'City', type: 'text' },
+      { name: 'state', label: 'State', type: 'text' },
+      { name: 'status', label: 'Status', type: 'text' },
+      { name: 'notes', label: 'Notes', type: 'textarea', wide: true }
+    ]
+  },
   activity: {
     title: 'Activity Log',
     subtitle: 'Read Cater Vegas updates, synced event changes, and system notes in one place.',
@@ -971,6 +1018,12 @@ const MODULE_VISUALS = {
     accent: '#14b8a6',
     soft: 'rgba(20, 184, 166, 0.12)',
     copy: 'Contacts and leads'
+  },
+  providers: {
+    icon: 'package',
+    accent: '#0f766e',
+    soft: 'rgba(15, 118, 110, 0.12)',
+    copy: 'Vendors, venues, and operating partners'
   },
   activity: {
     icon: 'checklist',
