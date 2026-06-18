@@ -1,6 +1,6 @@
 -- Register Cater Vegas in Beoflow's internal client brain.
 -- Run this in the BEOFlow Supabase SQL Editor after beoflow_client_schema.sql.
--- This records Rod as a client contact only. It does not create Beoflow login access for Rod.
+-- This records Rod as a client contact and grants owner login access when his auth user exists.
 
 begin;
 
@@ -8,6 +8,7 @@ do $$
 declare
   v_client_id uuid;
   v_bastida_user_id uuid;
+  v_rod_user_id uuid;
   v_product_key text;
 begin
   select c.id
@@ -67,13 +68,36 @@ begin
     raise notice 'BastidaSystems Beoflow auth user was not found. Create/sign in with that account, then run this SQL again to attach owner access.';
   end if;
 
+  select u.id
+    into v_rod_user_id
+  from auth.users u
+  where lower(u.email) = lower('exmarquesado@gmail.com')
+  order by u.created_at desc
+  limit 1;
+
+  if v_rod_user_id is not null then
+    update public.client_users
+       set role = 'owner',
+           status = 'active',
+           updated_at = now()
+     where client_id = v_client_id
+       and user_id = v_rod_user_id;
+
+    if not found then
+      insert into public.client_users (client_id, user_id, role, status)
+      values (v_client_id, v_rod_user_id, 'owner', 'active');
+    end if;
+  else
+    raise notice 'Rod Beoflow auth user exmarquesado@gmail.com was not found. Sign in with that account, then run this SQL again to attach owner access.';
+  end if;
+
   update public.beoflow_client_contacts
      set full_name = 'Rodrigo Marquesado',
          contact_type = 'primary',
          role = 'Cater Vegas Admin / Primary Contact',
          phone = null,
          status = 'active',
-         notes = 'Cater Vegas owner/admin. Beoflow client contact only; no Beoflow login access.',
+         notes = 'Cater Vegas owner/admin. Beoflow owner access is granted when the auth user exists.',
          updated_at = now()
    where client_id = v_client_id
      and lower(email) = lower('exmarquesado@gmail.com');
@@ -96,8 +120,8 @@ begin
       'Cater Vegas Admin / Primary Contact',
       'exmarquesado@gmail.com',
       'active',
-      'Cater Vegas owner/admin. Beoflow client contact only; no Beoflow login access.',
-      v_bastida_user_id
+      'Cater Vegas owner/admin. Beoflow owner access is granted when the auth user exists.',
+      coalesce(v_rod_user_id, v_bastida_user_id)
     );
   end if;
 end $$;
