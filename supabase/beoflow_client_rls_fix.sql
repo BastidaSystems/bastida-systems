@@ -35,7 +35,7 @@ as $$
     where cu.client_id = p_client_id
       and cu.user_id = (select auth.uid())
       and coalesce(cu.status::text, 'active') = 'active'
-      and cu.role::text in ('owner', 'admin', 'manager')
+      and cu.role::text in ('owner', 'admin', 'super_admin', 'platform_admin', 'manager')
   )
   or exists (
     select 1

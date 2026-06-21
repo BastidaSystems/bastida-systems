@@ -19,6 +19,9 @@ const LANGUAGE_LABELS = {
 const STALE_AUTH_SESSION_MESSAGE = 'Your previous session expired. Sign in again.';
 const ENABLE_PUBLIC_SIGNUP = false;
 const ENABLE_CLIENT_SELF_ONBOARDING = false;
+const CLIENT_MANAGER_ROLES = new Set(['owner', 'admin', 'super_admin', 'platform_admin', 'manager']);
+const CATER_VEGAS_PROVIDER_SOURCES = ['cater-vegas', 'cater_vegas', 'cater_vegas_admin', 'cater-vegas-admin'];
+const BEOFLOW_APP_SOURCE = 'beoflow_app';
 
 const UI_TRANSLATIONS_ES = {
   'Beoflow App | Bastida Systems': 'Beoflow App | Bastida Systems',
@@ -122,15 +125,29 @@ const UI_TRANSLATIONS_ES = {
   'Beoflow Module': 'Módulo Beoflow',
   'Synced providers': 'Proveedores sincronizados',
   "Track Cater Vegas vendors, venues, suppliers, and operating partners synced from Rod's system.": 'Registra proveedores, venues, suministros y aliados operativos de Cater Vegas sincronizados desde el sistema de Rod.',
+  "Track Cater Vegas vendors, venues, suppliers, and operating partners.": 'Registra proveedores, venues, suministros y aliados operativos de Cater Vegas.',
   'Cater Vegas providers will appear here after Rod adds them.': 'Los proveedores de Cater Vegas aparecerán aquí cuando Rod los agregue.',
+  'Add or sync the first Cater Vegas provider.': 'Agrega o sincroniza el primer proveedor de Cater Vegas.',
   'Vendors, venues, and operating partners': 'Proveedores, venues y aliados operativos',
   'New Provider': 'Nuevo proveedor',
   'Provider Name': 'Nombre del proveedor',
   'Provider Type': 'Tipo de proveedor',
+  'Service Category': 'Categoria de servicio',
+  'Coverage Zone': 'Zona de cobertura',
+  'Availability': 'Disponibilidad',
+  'Base Prices': 'Precios base',
+  'License / Insurance': 'Licencia / seguro',
   'Contact Name': 'Nombre de contacto',
   'Website': 'Sitio web',
   'City': 'Ciudad',
   'State': 'Estado',
+  'Preferred': 'Preferido',
+  'Inactive': 'Inactivo',
+  'Draft': 'Borrador',
+  'Planning': 'Planeacion',
+  'Confirmed': 'Confirmado',
+  'Completed': 'Completado',
+  'Cancelled': 'Cancelado',
   '0 records': '0 registros',
   'New Event': 'Nuevo evento',
   'New Contact': 'Nuevo contacto',
@@ -718,6 +735,8 @@ const MODULE_SECTIONS = {
     badgeField: 'status',
     metaFields: ['event_type', 'event_date', 'start_time', 'guest_count', 'location'],
     detailFields: ['end_time', 'notes'],
+    sortField: 'updated_at',
+    managerOnly: true,
     fields: [
       { name: 'name', label: 'Event Name', type: 'text', required: true },
       { name: 'event_type', label: 'Event Type', type: 'text' },
@@ -726,7 +745,22 @@ const MODULE_SECTIONS = {
       { name: 'end_time', label: 'End Time', type: 'time' },
       { name: 'guest_count', label: 'Guest Count', type: 'number', min: '0', step: '1' },
       { name: 'location', label: 'Location', type: 'text' },
-      { name: 'status', label: 'Status', type: 'text', defaultValue: 'active' },
+      {
+        name: 'status',
+        label: 'Status',
+        type: 'select',
+        defaultValue: 'active',
+        options: [
+          { value: 'active', label: 'Active' },
+          { value: 'draft', label: 'Draft' },
+          { value: 'planning', label: 'Planning' },
+          { value: 'pending', label: 'Pending' },
+          { value: 'confirmed', label: 'Confirmed' },
+          { value: 'completed', label: 'Completed' },
+          { value: 'cancelled', label: 'Cancelled' },
+          { value: 'archived', label: 'Archived' }
+        ]
+      },
       { name: 'notes', label: 'Notes', type: 'textarea', wide: true }
     ]
   },
@@ -769,10 +803,10 @@ const MODULE_SECTIONS = {
   },
   providers: {
     title: 'Providers',
-    subtitle: "Track Cater Vegas vendors, venues, suppliers, and operating partners synced from Rod's system.",
+    subtitle: "Track Cater Vegas vendors, venues, suppliers, and operating partners.",
     emptyTitle: 'No providers yet.',
-    emptyCopy: 'Cater Vegas providers will appear here after Rod adds them.',
-    action: 'Synced providers',
+    emptyCopy: 'Add or sync the first Cater Vegas provider.',
+    action: 'New Provider',
     singular: 'provider',
     plural: 'providers',
     table: 'beoflow_providers',
@@ -780,20 +814,53 @@ const MODULE_SECTIONS = {
     icon: 'package',
     titleField: 'name',
     badgeField: 'status',
-    metaFields: ['provider_type', 'contact_name', 'email', 'phone', 'city', 'state'],
-    detailFields: ['website', 'notes'],
+    metaFields: ['provider_type', 'service_category', 'contact_name', 'email', 'phone', 'city', 'state'],
+    detailFields: ['website', 'coverage_zone', 'availability', 'base_prices', 'license_insurance', 'source', 'updated_at', 'notes'],
     sortField: 'updated_at',
-    readOnly: true,
+    managerOnly: true,
     fields: [
       { name: 'name', label: 'Provider Name', type: 'text', required: true },
-      { name: 'provider_type', label: 'Provider Type', type: 'text' },
+      {
+        name: 'provider_type',
+        label: 'Provider Type',
+        type: 'select',
+        defaultValue: 'vendor',
+        options: [
+          { value: 'vendor', label: 'Vendor' },
+          { value: 'catering', label: 'Catering / Cocina' },
+          { value: 'rental', label: 'Rental' },
+          { value: 'venue', label: 'Venue' },
+          { value: 'transportation', label: 'Transportation' },
+          { value: 'staffing', label: 'Staffing' },
+          { value: 'floral', label: 'Floral' },
+          { value: 'decor', label: 'Decor' },
+          { value: 'entertainment', label: 'Entertainment' },
+          { value: 'other', label: 'Other' }
+        ]
+      },
+      { name: 'service_category', label: 'Service Category', type: 'text' },
       { name: 'contact_name', label: 'Contact Name', type: 'text' },
       { name: 'email', label: 'Email', type: 'email' },
       { name: 'phone', label: 'Phone', type: 'tel' },
       { name: 'website', label: 'Website', type: 'url' },
       { name: 'city', label: 'City', type: 'text' },
       { name: 'state', label: 'State', type: 'text' },
-      { name: 'status', label: 'Status', type: 'text' },
+      { name: 'coverage_zone', label: 'Coverage Zone', type: 'text' },
+      { name: 'availability', label: 'Availability', type: 'text' },
+      { name: 'base_prices', label: 'Base Prices', type: 'text' },
+      { name: 'license_insurance', label: 'License / Insurance', type: 'text' },
+      {
+        name: 'status',
+        label: 'Status',
+        type: 'select',
+        defaultValue: 'active',
+        options: [
+          { value: 'active', label: 'Active' },
+          { value: 'preferred', label: 'Preferred' },
+          { value: 'inactive', label: 'Inactive' },
+          { value: 'archived', label: 'Archived' }
+        ]
+      },
       { name: 'notes', label: 'Notes', type: 'textarea', wide: true }
     ]
   },
@@ -1716,6 +1783,25 @@ function getActiveClientId() {
   return requireActiveClient()?.id || null;
 }
 
+function normalizeRole(value) {
+  return String(value || '').trim().toLowerCase();
+}
+
+function getActiveClientRole() {
+  return normalizeRole(state.activeClient?.member_role || state.activeClient?.role);
+}
+
+function canManageActiveClient() {
+  return CLIENT_MANAGER_ROLES.has(getActiveClientRole());
+}
+
+function isModuleReadOnly(section) {
+  const moduleConfig = getModuleConfig(section);
+  if (!moduleConfig.table) return true;
+  if (moduleConfig.readOnly) return true;
+  return Boolean(moduleConfig.managerOnly && !canManageActiveClient());
+}
+
 function requireSupabaseClient() {
   const supabase = initializeSupabase();
   if (!supabase) throw new Error('Client-prod is not configured.');
@@ -1725,6 +1811,40 @@ function requireSupabaseClient() {
 function requireSignedInUserId() {
   if (!state.user?.id) throw new Error('Sign in before managing Beoflow records.');
   return state.user.id;
+}
+
+async function requireCurrentSupabaseSession() {
+  const supabase = requireSupabaseClient();
+  const { data, error } = await supabase.auth.getSession();
+  const session = data?.session || null;
+  if (error) {
+    console.error('Supabase session error:', error);
+    throw new Error('Tu sesion expiro. Inicia sesion nuevamente.');
+  }
+  if (!session?.user?.id) {
+    throw new Error('Tu sesion expiro. Inicia sesion nuevamente.');
+  }
+  return session;
+}
+
+function isRecordMutationTable(table) {
+  return table === MODULE_SECTIONS.events.table || table === MODULE_SECTIONS.providers.table;
+}
+
+function getRecordMutationErrorMessage(error) {
+  const code = String(error?.code || '');
+  const message = String(error?.message || '').toLowerCase();
+  const details = String(error?.details || '').toLowerCase();
+  if (code === '42501' || code === '403' || message.includes('row-level security') || message.includes('permission denied')) {
+    return 'Tu usuario no tiene permisos para guardar en este workspace.';
+  }
+  if (code === 'PGRST204' || message.includes('column') || details.includes('column')) {
+    return 'La estructura de la tabla no coincide con el formulario.';
+  }
+  if (message.includes('client_id') || message.includes('workspace')) {
+    return 'No se encontro el workspace Cater Vegas.';
+  }
+  return 'No se pudo guardar. Revisa la conexion o las politicas de Supabase.';
 }
 
 function getModuleConfig(section) {
@@ -2281,12 +2401,13 @@ function getSubrecipesUsingInventoryItem(inventoryItemId) {
   ));
 }
 
-async function countTableRecords(table) {
+async function countTableRecords(table, section = '') {
   const clientId = getActiveClientId();
   if (!clientId) return 0;
 
+  const supabase = requireSupabaseClient();
   const { count, error } = await withActiveRecordFilter(
-    requireSupabaseClient()
+    supabase
       .from(table)
       .select('id', { count: 'exact', head: true })
       .eq('client_id', clientId)
@@ -2296,14 +2417,29 @@ async function countTableRecords(table) {
     if (isMissingRelationError(error)) return 0;
     throw error;
   }
-  return count || 0;
+  if ((count || 0) > 0 || section !== 'providers') return count || 0;
+
+  const fallbackResult = await withActiveRecordFilter(
+    supabase
+      .from(table)
+      .select('id', { count: 'exact', head: true })
+      .in('source', CATER_VEGAS_PROVIDER_SOURCES)
+  );
+
+  if (fallbackResult.error) {
+    if (isMissingRelationError(fallbackResult.error)) return 0;
+    console.error('Providers count fallback error:', fallbackResult.error);
+    return 0;
+  }
+
+  return fallbackResult.count || 0;
 }
 
 async function loadDashboardCounts() {
   const counts = {};
 
   await Promise.all(DATA_SECTIONS.map(async section => {
-    counts[section] = await countTableRecords(MODULE_SECTIONS[section].table);
+    counts[section] = await countTableRecords(MODULE_SECTIONS[section].table, section);
   }));
 
   counts.food = (counts.menu || 0) + (counts.recipes || 0) + (counts.subrecipes || 0) + (counts.inventory || 0);
@@ -2362,14 +2498,27 @@ async function loadModuleData(section) {
   const clientId = getActiveClientId();
   if (!clientId) return [];
 
+  const supabase = requireSupabaseClient();
+  const shouldLogProviders = section === 'providers';
+  if (shouldLogProviders) {
+    console.log('Loading BEOFlow providers');
+    console.log('Provider table:', moduleConfig.table);
+    console.log('Active client:', state.activeClient);
+    console.log('Provider query filters:', {
+      client_id: clientId,
+      status: 'not archived'
+    });
+  }
+
   const { data, error } = await withActiveRecordFilter(
-    requireSupabaseClient()
+    supabase
       .from(moduleConfig.table)
       .select('*')
       .eq('client_id', clientId)
   ).order(moduleConfig.sortField || 'created_at', { ascending: false });
 
   if (error) {
+    if (shouldLogProviders) console.error('Providers load error:', error);
     if (isMissingRelationError(error)) {
       state.moduleRecords[section] = [];
       state.moduleCounts[section] = 0;
@@ -2378,7 +2527,31 @@ async function loadModuleData(section) {
     throw error;
   }
 
-  state.moduleRecords[section] = data || [];
+  let records = data || [];
+
+  if (section === 'providers' && records.length === 0) {
+    const fallbackFilters = {
+      source: CATER_VEGAS_PROVIDER_SOURCES,
+      status: 'not archived'
+    };
+    console.log('Provider query filters:', fallbackFilters);
+    const fallbackResult = await withActiveRecordFilter(
+      supabase
+        .from(moduleConfig.table)
+        .select('*')
+        .in('source', CATER_VEGAS_PROVIDER_SOURCES)
+    ).order(moduleConfig.sortField || 'created_at', { ascending: false });
+
+    if (fallbackResult.error) {
+      console.error('Providers load error:', fallbackResult.error);
+    } else if (fallbackResult.data?.length) {
+      records = fallbackResult.data;
+    }
+  }
+
+  if (shouldLogProviders) console.log('Providers loaded:', records);
+
+  state.moduleRecords[section] = records;
   state.moduleCounts[section] = state.moduleRecords[section].length;
 
   if (section === 'inventory') {
@@ -2560,18 +2733,41 @@ async function createRecord(table, payload) {
   const clientId = getActiveClientId();
   if (!clientId) throw new Error('Open a restaurant workspace before creating records.');
 
-  const userId = requireSignedInUserId();
-  const { data, error } = await requireSupabaseClient()
+  const supabase = requireSupabaseClient();
+  const session = await requireCurrentSupabaseSession();
+  const insertPayload = {
+    ...payload,
+    client_id: clientId,
+    created_by: session.user.id
+  };
+
+  if (isRecordMutationTable(table)) {
+    console.log(`Saving ${table === MODULE_SECTIONS.events.table ? 'event' : 'provider'}...`);
+    console.log('Supabase session:', session);
+    console.log('Current user:', session.user);
+    console.log('Current role:', getActiveClientRole());
+    console.log('Current workspace/client:', state.activeClient);
+    console.log(`${table === MODULE_SECTIONS.events.table ? 'Event' : 'Provider'} payload:`, insertPayload);
+    console.log('Insert table:', table);
+  }
+
+  const { data, error } = await supabase
     .from(table)
-    .insert({
-      ...payload,
-      client_id: clientId,
-      created_by: userId
-    })
+    .insert(insertPayload)
     .select('*')
     .single();
 
-  if (error) throw error;
+  if (isRecordMutationTable(table)) {
+    console.log('Insert data:', data);
+    if (error) console.error('Insert error:', error);
+    else console.log('Insert error:', null);
+  }
+
+  if (error) {
+    const saveError = new Error(getRecordMutationErrorMessage(error));
+    saveError.cause = error;
+    throw saveError;
+  }
   return data;
 }
 
@@ -2579,20 +2775,80 @@ async function updateRecord(table, id, payload) {
   const clientId = getActiveClientId();
   if (!clientId) throw new Error('Open a restaurant workspace before updating records.');
 
-  const { data, error } = await requireSupabaseClient()
+  const supabase = requireSupabaseClient();
+  const session = await requireCurrentSupabaseSession();
+  const updatePayload = {
+    ...payload,
+    updated_at: new Date().toISOString()
+  };
+
+  if (isRecordMutationTable(table)) {
+    console.log(`Saving ${table === MODULE_SECTIONS.events.table ? 'event' : 'provider'}...`);
+    console.log('Supabase session:', session);
+    console.log('Current user:', session.user);
+    console.log('Current role:', getActiveClientRole());
+    console.log('Current workspace/client:', state.activeClient);
+    console.log(`${table === MODULE_SECTIONS.events.table ? 'Event' : 'Provider'} payload:`, updatePayload);
+    console.log('Insert table:', table);
+  }
+
+  const { data, error } = await supabase
     .from(table)
-    .update(payload)
+    .update(updatePayload)
     .eq('id', id)
     .eq('client_id', clientId)
     .select('*')
     .single();
 
-  if (error) throw error;
+  if (isRecordMutationTable(table)) {
+    console.log('Insert data:', data);
+    if (error) console.error('Insert error:', error);
+    else console.log('Insert error:', null);
+  }
+
+  if (error) {
+    const saveError = new Error(getRecordMutationErrorMessage(error));
+    saveError.cause = error;
+    throw saveError;
+  }
   return data;
 }
 
 async function deleteOrArchiveRecord(table, id) {
   return updateRecord(table, id, { status: 'archived' });
+}
+
+async function logModuleActivity(section, action, record) {
+  if (!record?.id || (section !== 'events' && section !== 'providers')) return;
+  const clientId = getActiveClientId();
+  if (!clientId) return;
+
+  const moduleConfig = getModuleConfig(section);
+  const userId = state.user?.id || null;
+  const payload = {
+    client_id: clientId,
+    source: BEOFLOW_APP_SOURCE,
+    source_table: moduleConfig.table,
+    source_id: String(record.id),
+    activity_type: `${moduleConfig.singular}_${action}`,
+    title: `${moduleConfig.title}: ${getRecordTitle(section, record)}`,
+    summary: `${action === 'created' ? 'Created' : action === 'archived' ? 'Archived' : 'Updated'} from BEOFlow.`,
+    metadata: {
+      section,
+      record_id: record.id,
+      record_source: record.source || null
+    },
+    status: 'active',
+    created_by: userId
+  };
+
+  const { error } = await requireSupabaseClient()
+    .from(MODULE_SECTIONS.activity.table)
+    .upsert(payload, {
+      onConflict: 'client_id,source,source_table,source_id,activity_type'
+    });
+
+  if (error) console.warn('Activity log error:', error);
 }
 
 function updateDashboardCards(counts = state.moduleCounts) {
@@ -3182,6 +3438,7 @@ function renderModuleSection(section) {
   renderWorkspaceFrame({ showWorkspaceHeader: false });
   hideWorkspaceSections();
   setActiveSidebarSection(section);
+  const moduleReadOnly = isModuleReadOnly(section);
   els['module-view'].hidden = false;
   setElementModuleVisual(els['module-view'], section);
   els['module-title'].innerHTML = renderIconLabel(getModuleVisual(section).icon, moduleConfig.title);
@@ -3189,13 +3446,13 @@ function renderModuleSection(section) {
   els['module-count-badge'].textContent = section === 'reports' ? 'Loading metrics' : 'Loading';
   els['module-header-action-button'].innerHTML = renderIconLabel(getModuleActionIcon(section), moduleConfig.action);
   els['module-header-action-button'].classList.add('icon-action');
-  els['module-header-action-button'].hidden = section === 'reports' || !moduleConfig.table || moduleConfig.readOnly;
+  els['module-header-action-button'].hidden = section === 'reports' || !moduleConfig.table || moduleReadOnly;
   els['module-empty-icon'].innerHTML = renderIcon(getModuleVisual(section).icon);
   els['module-empty-title'].textContent = moduleConfig.emptyTitle;
   els['module-empty-copy'].textContent = moduleConfig.emptyCopy;
   els['module-action-button'].innerHTML = renderIconLabel(getModuleActionIcon(section), moduleConfig.action);
   els['module-action-button'].classList.add('icon-action');
-  els['module-action-button'].hidden = section === 'reports' || !moduleConfig.table || moduleConfig.readOnly;
+  els['module-action-button'].hidden = section === 'reports' || !moduleConfig.table || moduleReadOnly;
   els['module-empty-state'].hidden = true;
   els['module-record-list'].hidden = false;
   els['module-record-list'].innerHTML = '<div class="module-loading">Loading workspace records.</div>';
@@ -3898,7 +4155,7 @@ function renderRecordCard(section, record) {
     ? `<span class="status-badge category-badge ${categoryVisual.className}">${renderIconLabel(categoryVisual.icon, record.category)}</span>`
     : '';
   const stateBadgesHtml = renderRecordStateBadges(section, record);
-  const defaultActionsHtml = moduleConfig.readOnly
+  const defaultActionsHtml = isModuleReadOnly(section)
     ? ''
     : `
         <button type="button" class="secondary-action icon-action" data-module-action="edit" data-section="${escapeHtml(section)}" data-record-id="${escapeHtml(record.id)}">${renderIconLabel('pencil', 'Edit')}</button>
@@ -5136,6 +5393,10 @@ async function saveQuickInventoryIngredient() {
 function openModuleModal(section, record = null, options = {}) {
   const moduleConfig = getModuleConfig(section);
   if (!moduleConfig.table) return;
+  if (isModuleReadOnly(section)) {
+    showAlert(els['workspace-message'], 'No tienes permisos para administrar este modulo.');
+    return;
+  }
 
   state.modalSection = section;
   state.editingRecord = record;
@@ -5318,6 +5579,10 @@ function buildModulePayload(section) {
     }
 
     Object.assign(payload, buildMenuCostFields(recipe, payload.sale_price));
+  }
+
+  if (section === 'events' || section === 'providers') {
+    payload.source = payload.source || BEOFLOW_APP_SOURCE;
   }
 
   return payload;
@@ -5536,6 +5801,10 @@ async function saveModuleRecord(event) {
   showAlert(els['module-form-message'], '');
 
   try {
+    if (isModuleReadOnly(section)) {
+      throw new Error('No tienes permisos para administrar este modulo.');
+    }
+
     if (isCostingRecipeSection(section)) {
       await loadModuleData('inventory');
       if (section === 'recipes') await loadSubrecipesForRecipeUsage();
@@ -5555,9 +5824,11 @@ async function saveModuleRecord(event) {
     let savedRecord = null;
     if (state.editingRecord?.id) {
       savedRecord = await updateRecord(moduleConfig.table, state.editingRecord.id, payload);
+      await logModuleActivity(section, 'updated', savedRecord);
       showToast(`${moduleConfig.title} record updated.`);
     } else {
       savedRecord = await createRecord(moduleConfig.table, payload);
+      await logModuleActivity(section, 'created', savedRecord);
       showToast(`${moduleConfig.title} record created.`);
     }
 
@@ -5597,6 +5868,10 @@ async function saveModuleRecord(event) {
 
 async function archiveModuleRecord(section, recordId) {
   const moduleConfig = getModuleConfig(section);
+  if (isModuleReadOnly(section)) {
+    showAlert(els['workspace-message'], 'No tienes permisos para administrar este modulo.');
+    return;
+  }
   const record = getRecordById(section, recordId);
   const recordName = getRecordTitle(section, record);
   const shouldArchive = window.confirm(translateText(`Archive ${recordName}?`));
@@ -5606,7 +5881,8 @@ async function archiveModuleRecord(section, recordId) {
   clearAlerts();
 
   try {
-    await deleteOrArchiveRecord(moduleConfig.table, recordId);
+    const archivedRecord = await deleteOrArchiveRecord(moduleConfig.table, recordId);
+    await logModuleActivity(section, 'archived', archivedRecord);
     await loadDashboardCounts();
     updateDashboardCards();
     renderModuleSection(section);

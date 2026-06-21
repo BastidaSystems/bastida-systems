@@ -129,6 +129,13 @@ create table if not exists public.beoflow_providers (
   city text,
   state text,
   status text not null default 'active',
+  service_category text,
+  coverage_zone text,
+  availability text,
+  base_prices text,
+  license_insurance text,
+  public_visible boolean not null default false,
+  workspace_slug text,
   notes text,
   source text not null default 'manual',
   source_id text,
@@ -149,6 +156,13 @@ alter table if exists public.beoflow_providers
   add column if not exists city text,
   add column if not exists state text,
   add column if not exists status text not null default 'active',
+  add column if not exists service_category text,
+  add column if not exists coverage_zone text,
+  add column if not exists availability text,
+  add column if not exists base_prices text,
+  add column if not exists license_insurance text,
+  add column if not exists public_visible boolean not null default false,
+  add column if not exists workspace_slug text,
   add column if not exists notes text,
   add column if not exists source text not null default 'manual',
   add column if not exists source_id text,
@@ -495,6 +509,7 @@ create index if not exists idx_beoflow_providers_client_id on public.beoflow_pro
 create unique index if not exists idx_beoflow_providers_client_source_unique
   on public.beoflow_providers(client_id, source, source_id);
 create index if not exists idx_beoflow_providers_client_type on public.beoflow_providers(client_id, provider_type);
+create index if not exists idx_beoflow_providers_client_source on public.beoflow_providers(client_id, source);
 create index if not exists idx_beoflow_providers_email on public.beoflow_providers(email);
 create index if not exists idx_beoflow_activity_log_client_created_at
   on public.beoflow_activity_log(client_id, created_at desc);
@@ -621,19 +636,19 @@ begin
     );
 
     execute format(
-      'create policy %I on public.%I for insert to authenticated with check (private.has_beoflow_client_role(client_id, array[''owner'', ''admin'', ''manager'']))',
+      'create policy %I on public.%I for insert to authenticated with check (private.has_beoflow_client_role(client_id, array[''owner'', ''admin'', ''super_admin'', ''platform_admin'', ''manager'']))',
       table_name || '_insert_manager',
       table_name
     );
 
     execute format(
-      'create policy %I on public.%I for update to authenticated using (private.has_beoflow_client_role(client_id, array[''owner'', ''admin'', ''manager''])) with check (private.has_beoflow_client_role(client_id, array[''owner'', ''admin'', ''manager'']))',
+      'create policy %I on public.%I for update to authenticated using (private.has_beoflow_client_role(client_id, array[''owner'', ''admin'', ''super_admin'', ''platform_admin'', ''manager''])) with check (private.has_beoflow_client_role(client_id, array[''owner'', ''admin'', ''super_admin'', ''platform_admin'', ''manager'']))',
       table_name || '_update_manager',
       table_name
     );
 
     execute format(
-      'create policy %I on public.%I for delete to authenticated using (private.has_beoflow_client_role(client_id, array[''owner'', ''admin'', ''manager'']))',
+      'create policy %I on public.%I for delete to authenticated using (private.has_beoflow_client_role(client_id, array[''owner'', ''admin'', ''super_admin'', ''platform_admin'', ''manager'']))',
       table_name || '_delete_manager',
       table_name
     );
