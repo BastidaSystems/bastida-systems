@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dunia Studio 7</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav" aria-label="Navegacion principal">
+        <a class="brand" href="#inicio" aria-label="Dunia Studio 7 inicio">
+          <span class="brand-mark">
+            <img src="Imagenes/logo-dunia-studio-7.png" alt="" />
+          </span>
+          <span>Dunia Studio 7</span>
+        </a>
+        <div class="nav-actions">
+          <div class="language-toggle" aria-label="Seleccionar idioma">
+            <button class="language-button is-active" type="button" data-lang="es">ES</button>
+            <button class="language-button" type="button" data-lang="en">EN</button>
+          </div>
+          <div class="nav-links">
+            <a href="#galeria" data-i18n="navGallery">Galeria</a>
+            <a href="#servicios" data-i18n="navServices">Servicios</a>
+            <a href="#contacto" data-i18n="navContact">Contacto</a>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main id="inicio">
+      <section class="hero">
+        <div class="hero-media" id="heroMedia" aria-hidden="true"></div>
+        <div class="hero-content">
+          <div class="hero-layout">
+            <div class="hero-copy">
+              <img class="hero-logo" src="Imagenes/logo-dunia-studio-7.png" alt="Dunia Studio 7 logo" />
+              <p class="eyebrow" data-i18n="heroKicker">Estudio creativo</p>
+              <h1>Dunia Studio 7</h1>
+              <p data-i18n="heroText">
+                Imagen, estilo y contenido visual para proyectos que necesitan verse
+                claros, memorables y listos para compartir.
+              </p>
+              <div class="hero-actions">
+                <a class="button primary" href="#galeria" data-i18n="heroGallery">Ver galeria</a>
+                <a class="button secondary" href="#contacto" data-i18n="heroContact">Contactar</a>
+              </div>
+            </div>
+            <div class="carousel hero-carousel" aria-label="Galeria destacada">
+              <button class="carousel-button" type="button" id="prevSlide" aria-label="Imagen anterior">‹</button>
+              <figure class="carousel-frame">
+                <img id="carouselImage" src="" alt="" />
+                <figcaption id="carouselCaption"></figcaption>
+              </figure>
+              <button class="carousel-button" type="button" id="nextSlide" aria-label="Imagen siguiente">›</button>
+              <div class="carousel-dots" id="carouselDots" aria-label="Seleccionar imagen"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section intro" aria-label="Resumen">
+        <div>
+          <p class="section-kicker" data-i18n="introKicker">Trabajo visual</p>
+          <h2 data-i18n="introTitle">Una presencia limpia para mostrar el portafolio.</h2>
+        </div>
+        <p data-i18n="introText">
+          Esta pagina usa las imagenes de la carpeta <strong>Imagenes</strong>
+          y las organiza en una experiencia simple, responsiva y facil de editar.
+        </p>
+      </section>
+
+      <section class="section gallery-section" id="galeria">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker" data-i18n="galleryKicker">Galeria</p>
+            <h2 data-i18n="galleryTitle">Imagenes destacadas</h2>
+          </div>
+          <div class="gallery-controls" aria-label="Controles de galeria">
+            <button class="control is-active" type="button" data-filter="todo" data-i18n="filterAll">Todo</button>
+            <button class="control" type="button" data-filter="studio" data-i18n="filterStudio">Studio</button>
+            <button class="control" type="button" data-filter="detalle" data-i18n="filterDetail">Detalle</button>
+          </div>
+        </div>
+        <div class="gallery-grid" id="galleryGrid"></div>
+      </section>
+
+      <section class="section services" id="servicios">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker" data-i18n="servicesKicker">Servicios</p>
+            <h2 data-i18n="servicesTitle">Produccion con direccion clara</h2>
+          </div>
+        </div>
+        <div class="service-grid">
+          <article>
+            <h3 data-i18n="serviceOneTitle">Fotografia</h3>
+            <p data-i18n="serviceOneText">Sesiones enfocadas en imagen personal, producto y contenido social.</p>
+          </article>
+          <article>
+            <h3 data-i18n="serviceTwoTitle">Direccion visual</h3>
+            <p data-i18n="serviceTwoText">Conceptos, paletas, encuadres y referencias para mantener coherencia.</p>
+          </article>
+          <article>
+            <h3 data-i18n="serviceThreeTitle">Contenido digital</h3>
+            <p data-i18n="serviceThreeText">Material listo para publicar en web, redes y presentaciones.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="contact" id="contacto">
+        <div>
+          <p class="section-kicker" data-i18n="contactKicker">Contacto</p>
+          <h2 data-i18n="contactTitle">Listos para el siguiente proyecto.</h2>
+        </div>
+        <a class="button primary" href="mailto:hola@duniastudio7.com">hola@duniastudio7.com</a>
+      </section>
+    </main>
+
+    <div class="lightbox" id="lightbox" aria-hidden="true">
+      <button class="lightbox-close" type="button" aria-label="Cerrar vista" data-i18n="closeButton">Cerrar</button>
+      <img id="lightboxImage" alt="" />
+      <p id="lightboxCaption"></p>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
