@@ -163,10 +163,7 @@ a {
 }
 
 .hero-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(360px, 0.82fr);
-  gap: clamp(28px, 5vw, 64px);
-  align-items: center;
+  max-width: 720px;
 }
 
 .eyebrow,
@@ -221,8 +218,7 @@ h1 {
   margin-top: 28px;
 }
 
-.button,
-.control {
+.button {
   border: 1px solid transparent;
   border-radius: 8px;
   cursor: pointer;
@@ -239,9 +235,7 @@ h1 {
   padding: 0 18px;
 }
 
-.button:hover,
-.control:hover,
-.gallery-item:hover {
+.button:hover {
   transform: translateY(-2px);
 }
 
@@ -295,155 +289,6 @@ h2 {
   margin-bottom: 32px;
 }
 
-.gallery-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.control {
-  min-height: 38px;
-  padding: 0 14px;
-  background: transparent;
-  color: var(--green);
-  border-color: var(--line);
-}
-
-.control.is-active {
-  background: var(--green);
-  color: var(--white);
-  border-color: var(--green);
-}
-
-.carousel {
-  position: relative;
-  display: grid;
-  grid-template-columns: 48px minmax(0, 1fr) 48px;
-  gap: 14px;
-  align-items: center;
-  margin-bottom: 28px;
-}
-
-.hero-carousel {
-  margin-bottom: 0;
-}
-
-.carousel-frame {
-  position: relative;
-  height: clamp(420px, 58vw, 690px);
-  margin: 0;
-  overflow: hidden;
-  border-radius: 8px;
-  background: #d9ddd4;
-  box-shadow: var(--shadow);
-}
-
-.hero-carousel .carousel-frame {
-  height: clamp(390px, 42vw, 560px);
-}
-
-.carousel-frame img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.carousel-frame figcaption {
-  position: absolute;
-  left: 16px;
-  right: 16px;
-  bottom: 16px;
-  padding: 12px 14px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.9);
-  color: var(--ink);
-  font-weight: 800;
-}
-
-.carousel-button {
-  width: 48px;
-  height: 48px;
-  display: grid;
-  place-items: center;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--white);
-  color: var(--green);
-  cursor: pointer;
-  font: inherit;
-  font-size: 2rem;
-  line-height: 1;
-  box-shadow: 0 10px 24px rgba(25, 32, 29, 0.12);
-}
-
-.carousel-button:hover {
-  background: var(--green);
-  color: var(--white);
-}
-
-.carousel-dots {
-  grid-column: 2;
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-}
-
-.carousel-dot {
-  width: 10px;
-  height: 10px;
-  padding: 0;
-  border: 0;
-  border-radius: 999px;
-  background: #b9c2ba;
-  cursor: pointer;
-}
-
-.carousel-dot.is-active {
-  width: 28px;
-  background: var(--green);
-}
-
-.gallery-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.gallery-item {
-  min-height: 320px;
-  position: relative;
-  overflow: hidden;
-  border: 0;
-  border-radius: 8px;
-  cursor: pointer;
-  background: #d9ddd4;
-  box-shadow: var(--shadow);
-}
-
-.gallery-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 260ms ease;
-}
-
-.gallery-item:hover img {
-  transform: scale(1.045);
-}
-
-.gallery-item span {
-  position: absolute;
-  left: 14px;
-  right: 14px;
-  bottom: 14px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.9);
-  color: var(--ink);
-  font-weight: 800;
-  text-align: left;
-}
-
 .service-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -484,47 +329,6 @@ h2 {
   font-size: clamp(2rem, 6vw, 4.4rem);
 }
 
-.lightbox {
-  position: fixed;
-  inset: 0;
-  z-index: 50;
-  display: none;
-  place-items: center;
-  padding: 28px;
-  background: rgba(18, 24, 22, 0.88);
-}
-
-.lightbox.is-open {
-  display: grid;
-}
-
-.lightbox img {
-  max-height: 78vh;
-  border-radius: 8px;
-  box-shadow: var(--shadow);
-}
-
-.lightbox p {
-  margin: 14px 0 0;
-  color: var(--white);
-  font-weight: 800;
-}
-
-.lightbox-close {
-  position: fixed;
-  top: 18px;
-  right: 18px;
-  min-height: 42px;
-  padding: 0 14px;
-  border: 1px solid rgba(255, 255, 255, 0.24);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.12);
-  color: var(--white);
-  cursor: pointer;
-  font: inherit;
-  font-weight: 800;
-}
-
 @media (max-width: 800px) {
   .nav {
     align-items: flex-start;
@@ -553,31 +357,9 @@ h2 {
     min-height: auto;
   }
 
-  .hero-layout {
-    grid-template-columns: 1fr;
-    gap: 36px;
-  }
-
   .intro,
-  .service-grid,
-  .gallery-grid {
+  .service-grid {
     grid-template-columns: 1fr;
-  }
-
-  .carousel {
-    grid-template-columns: 42px minmax(0, 1fr) 42px;
-    gap: 8px;
-  }
-
-  .carousel-frame,
-  .hero-carousel .carousel-frame {
-    height: 520px;
-  }
-
-  .carousel-button {
-    width: 42px;
-    height: 42px;
-    font-size: 1.6rem;
   }
 
   .section-heading,
@@ -588,10 +370,6 @@ h2 {
 
   .section {
     padding: 64px 0;
-  }
-
-  .gallery-item {
-    min-height: 360px;
   }
 
   .contact {

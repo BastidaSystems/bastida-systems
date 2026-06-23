@@ -21,7 +21,6 @@
             <button class="language-button" type="button" data-lang="en">EN</button>
           </div>
           <div class="nav-links">
-            <a href="#galeria" data-i18n="navGallery">Galeria</a>
             <a href="#servicios" data-i18n="navServices">Servicios</a>
             <a href="#contacto" data-i18n="navContact">Contacto</a>
           </div>
@@ -43,18 +42,9 @@
                 claros, memorables y listos para compartir.
               </p>
               <div class="hero-actions">
-                <a class="button primary" href="#galeria" data-i18n="heroGallery">Ver galeria</a>
+                <a class="button primary" href="#servicios" data-i18n="heroGallery">Ver servicios</a>
                 <a class="button secondary" href="#contacto" data-i18n="heroContact">Contactar</a>
               </div>
-            </div>
-            <div class="carousel hero-carousel" aria-label="Galeria destacada">
-              <button class="carousel-button" type="button" id="prevSlide" aria-label="Imagen anterior">‹</button>
-              <figure class="carousel-frame">
-                <img id="carouselImage" src="" alt="" />
-                <figcaption id="carouselCaption"></figcaption>
-              </figure>
-              <button class="carousel-button" type="button" id="nextSlide" aria-label="Imagen siguiente">›</button>
-              <div class="carousel-dots" id="carouselDots" aria-label="Seleccionar imagen"></div>
             </div>
           </div>
         </div>
@@ -69,21 +59,6 @@
           Esta pagina usa las imagenes de la carpeta <strong>Imagenes</strong>
           y las organiza en una experiencia simple, responsiva y facil de editar.
         </p>
-      </section>
-
-      <section class="section gallery-section" id="galeria">
-        <div class="section-heading">
-          <div>
-            <p class="section-kicker" data-i18n="galleryKicker">Galeria</p>
-            <h2 data-i18n="galleryTitle">Imagenes destacadas</h2>
-          </div>
-          <div class="gallery-controls" aria-label="Controles de galeria">
-            <button class="control is-active" type="button" data-filter="todo" data-i18n="filterAll">Todo</button>
-            <button class="control" type="button" data-filter="studio" data-i18n="filterStudio">Studio</button>
-            <button class="control" type="button" data-filter="detalle" data-i18n="filterDetail">Detalle</button>
-          </div>
-        </div>
-        <div class="gallery-grid" id="galleryGrid"></div>
       </section>
 
       <section class="section services" id="servicios">
@@ -117,12 +92,6 @@
         <a class="button primary" href="mailto:hola@duniastudio7.com">hola@duniastudio7.com</a>
       </section>
     </main>
-
-    <div class="lightbox" id="lightbox" aria-hidden="true">
-      <button class="lightbox-close" type="button" aria-label="Cerrar vista" data-i18n="closeButton">Cerrar</button>
-      <img id="lightboxImage" alt="" />
-      <p id="lightboxCaption"></p>
-    </div>
 
     <script src="script.js"></script>
   </body>
