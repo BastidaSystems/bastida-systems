@@ -343,8 +343,8 @@ h2 {
   margin: 0 auto 32px;
   padding: clamp(28px, 5vw, 52px);
   display: grid;
-  grid-template-columns: minmax(0, 0.95fr) minmax(320px, 0.85fr) minmax(190px, 0.32fr);
-  gap: clamp(22px, 4vw, 42px);
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.5fr) minmax(170px, 0.26fr);
+  gap: clamp(20px, 4vw, 40px);
   align-items: center;
   background: linear-gradient(135deg, #fffaf5 0%, #ffffff 54%, #f2eee7 100%);
   color: var(--ink);
@@ -358,8 +358,8 @@ h2 {
 }
 
 .contact h2 {
-  max-width: 560px;
-  font-size: clamp(2rem, 5vw, 4.1rem);
+  max-width: 500px;
+  font-size: clamp(2.2rem, 4.8vw, 3.9rem);
 }
 
 .contact-copy p:not(.section-kicker) {
@@ -369,33 +369,36 @@ h2 {
   font-size: 1.05rem;
 }
 
-.contact-panel {
-  display: grid;
+.social-dock {
+  display: flex;
+  flex-wrap: wrap;
   gap: 12px;
+  align-items: center;
 }
 
-.contact-method {
+.social-button {
+  width: 86px;
+  min-height: 92px;
   display: grid;
-  grid-template-columns: 54px minmax(0, 1fr);
-  gap: 14px;
-  align-items: center;
-  padding: 13px 14px;
+  place-items: center;
+  gap: 8px;
+  padding: 12px 8px;
   border: 1px solid rgba(31, 37, 35, 0.1);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.74);
-  box-shadow: 0 12px 28px rgba(25, 32, 29, 0.08);
-  transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 12px 26px rgba(25, 32, 29, 0.08);
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
 }
 
-.contact-method:hover {
-  transform: translateY(-2px);
+.social-button:hover {
+  transform: translateY(-3px);
   border-color: rgba(184, 79, 55, 0.45);
-  box-shadow: 0 16px 34px rgba(25, 32, 29, 0.12);
+  box-shadow: 0 18px 36px rgba(25, 32, 29, 0.12);
 }
 
-.contact-icon {
-  width: 54px;
-  height: 54px;
+.social-icon {
+  width: 48px;
+  height: 48px;
   display: grid;
   place-items: center;
   border-radius: 999px;
@@ -403,13 +406,13 @@ h2 {
   color: var(--white);
 }
 
-.instagram-icon {
+.instagram-button .social-icon {
   background: linear-gradient(135deg, #f58529, #dd2a7b 48%, #8134af);
 }
 
-.contact-icon svg {
-  width: 24px;
-  height: 24px;
+.social-icon svg {
+  width: 23px;
+  height: 23px;
   fill: none;
   stroke: currentColor;
   stroke-linecap: round;
@@ -417,38 +420,46 @@ h2 {
   stroke-width: 1.9;
 }
 
-.contact-icon svg circle,
-.contact-icon svg rect {
+.social-icon svg circle,
+.social-icon svg rect {
   fill: none;
 }
 
-.contact-method small,
-.qr-wrap p {
-  color: var(--muted);
+.social-button strong {
+  color: var(--ink);
   font-size: 0.78rem;
   font-weight: 800;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
-.contact-method strong {
-  display: block;
-  margin-top: 4px;
-  color: var(--ink);
-  font-size: 1.04rem;
-  overflow-wrap: anywhere;
+.contact-mini {
+  flex-basis: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.contact-mini span {
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: rgba(52, 88, 77, 0.1);
+  color: var(--green);
+  font-size: 0.82rem;
+  font-weight: 800;
 }
 
 .qr-wrap {
   display: grid;
   justify-items: center;
-  gap: 12px;
+  gap: 10px;
   text-align: center;
 }
 
 .qr-card {
   display: grid;
-  padding: 12px;
+  padding: 10px;
   border: 1px solid rgba(31, 37, 35, 0.12);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.9);
@@ -462,15 +473,19 @@ h2 {
 }
 
 .qr-card img {
-  width: 166px;
-  height: 166px;
+  width: 146px;
+  height: 146px;
   border-radius: 8px;
 }
 
 .qr-wrap p {
-  max-width: 170px;
+  max-width: 150px;
   margin: 0;
   color: var(--green);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 @media (max-width: 800px) {
@@ -533,9 +548,13 @@ h2 {
     padding: 34px 24px;
   }
 
-  .contact-panel,
+  .social-dock,
   .qr-wrap {
     width: 100%;
+  }
+
+  .social-button {
+    flex: 1 1 92px;
   }
 
   .qr-card img {

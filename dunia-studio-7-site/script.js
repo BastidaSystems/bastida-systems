@@ -20,10 +20,10 @@ const translations = {
     serviceThreeTitle: "Contenido digital",
     serviceThreeText: "Material listo para publicar en web, redes y presentaciones.",
     contactKicker: "Contacto",
-    contactTitle: "Listos para el siguiente proyecto.",
-    contactText: "Escríbenos para reservar una sesión o seguir el trabajo de Dunia Studio 7.",
+    contactTitle: "Conecta con Dunia.",
+    contactText: "Reserva, pregunta o síguenos en redes.",
     phoneLabel: "Teléfono",
-    qrText: "Escanea para ver Instagram"
+    qrText: "Instagram QR"
   },
   en: {
     navServices: "Services",
@@ -44,10 +44,10 @@ const translations = {
     serviceThreeTitle: "Digital content",
     serviceThreeText: "Material ready to publish on websites, social media, and presentations.",
     contactKicker: "Contact",
-    contactTitle: "Ready for the next project.",
-    contactText: "Reach out to book a session or follow Dunia Studio 7's work.",
+    contactTitle: "Connect with Dunia.",
+    contactText: "Book, ask, or follow us online.",
     phoneLabel: "Phone",
-    qrText: "Scan to view Instagram"
+    qrText: "Instagram QR"
   }
 };
 
