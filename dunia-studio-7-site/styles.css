@@ -343,7 +343,7 @@ h2 {
   margin: 0 auto 32px;
   padding: clamp(28px, 5vw, 52px);
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.5fr) minmax(170px, 0.26fr);
+  grid-template-columns: minmax(0, 0.85fr) minmax(420px, 0.8fr);
   gap: clamp(20px, 4vw, 40px);
   align-items: center;
   background: linear-gradient(135deg, #fffaf5 0%, #ffffff 54%, #f2eee7 100%);
@@ -369,20 +369,18 @@ h2 {
   font-size: 1.05rem;
 }
 
-.social-dock {
-  display: flex;
-  flex-wrap: wrap;
+.contact-hub {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 0.92fr);
   gap: 12px;
-  align-items: center;
 }
 
-.social-button {
-  width: 86px;
-  min-height: 92px;
+.contact-card {
   display: grid;
-  place-items: center;
-  gap: 8px;
-  padding: 12px 8px;
+  gap: 12px;
+  align-content: center;
+  min-height: 136px;
+  padding: 18px;
   border: 1px solid rgba(31, 37, 35, 0.1);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.82);
@@ -390,10 +388,19 @@ h2 {
   transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
 }
 
-.social-button:hover {
+.contact-card:hover {
   transform: translateY(-3px);
   border-color: rgba(184, 79, 55, 0.45);
   box-shadow: 0 18px 36px rgba(25, 32, 29, 0.12);
+}
+
+.instagram-card {
+  grid-row: span 2;
+  justify-items: center;
+  text-align: center;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(246, 245, 239, 0.9)),
+    radial-gradient(circle at 50% 8%, rgba(221, 42, 123, 0.18), transparent 42%);
 }
 
 .social-icon {
@@ -406,7 +413,7 @@ h2 {
   color: var(--white);
 }
 
-.instagram-button .social-icon {
+.instagram-card .social-icon {
   background: linear-gradient(135deg, #f58529, #dd2a7b 48%, #8134af);
 }
 
@@ -425,67 +432,34 @@ h2 {
   fill: none;
 }
 
-.social-button strong {
-  color: var(--ink);
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.contact-mini {
-  flex-basis: 100%;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 2px;
-}
-
-.contact-mini span {
-  padding: 7px 10px;
-  border-radius: 999px;
-  background: rgba(52, 88, 77, 0.1);
-  color: var(--green);
-  font-size: 0.82rem;
-  font-weight: 800;
-}
-
-.qr-wrap {
+.contact-card-text {
   display: grid;
-  justify-items: center;
-  gap: 10px;
-  text-align: center;
+  gap: 5px;
 }
 
-.qr-card {
-  display: grid;
-  padding: 10px;
-  border: 1px solid rgba(31, 37, 35, 0.12);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 14px 30px rgba(25, 32, 29, 0.1);
-  transition: transform 160ms ease, box-shadow 160ms ease;
-}
-
-.qr-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 18px 38px rgba(25, 32, 29, 0.14);
-}
-
-.qr-card img {
-  width: 146px;
-  height: 146px;
-  border-radius: 8px;
-}
-
-.qr-wrap p {
-  max-width: 150px;
-  margin: 0;
-  color: var(--green);
-  font-size: 0.78rem;
+.contact-card small {
+  color: var(--muted);
+  font-size: 0.74rem;
   font-weight: 900;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+}
+
+.contact-card strong {
+  color: var(--ink);
+  font-size: 1.02rem;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.instagram-qr {
+  width: 150px;
+  height: 150px;
+  padding: 8px;
+  border: 1px solid rgba(31, 37, 35, 0.12);
+  border-radius: 8px;
+  background: var(--paper);
+  box-shadow: 0 10px 22px rgba(25, 32, 29, 0.08);
 }
 
 @media (max-width: 800px) {
@@ -548,16 +522,16 @@ h2 {
     padding: 34px 24px;
   }
 
-  .social-dock,
-  .qr-wrap {
+  .contact-hub {
     width: 100%;
+    grid-template-columns: 1fr;
   }
 
-  .social-button {
-    flex: 1 1 92px;
+  .instagram-card {
+    grid-row: auto;
   }
 
-  .qr-card img {
+  .instagram-qr {
     width: min(210px, 70vw);
     height: min(210px, 70vw);
   }
