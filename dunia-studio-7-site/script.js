@@ -20,10 +20,11 @@ const translations = {
     serviceThreeTitle: "Contenido digital",
     serviceThreeText: "Material listo para publicar en web, redes y presentaciones.",
     contactKicker: "Contacto",
-    contactTitle: "Conecta con Dunia.",
-    contactText: "Reserva, pregunta o síguenos en redes.",
-    phoneLabel: "Teléfono",
-    qrText: "Instagram QR"
+    contactTitle: "Capturemos tu <span>momento dorado.</span>",
+    contactText: "Reserva una sesion, haz una pregunta o sigue a Dunia Studio 7 en Instagram.",
+    phoneLabel: "Telefono",
+    bookButton: "Reservar sesion",
+    followButton: "Seguir en Instagram"
   },
   en: {
     navServices: "Services",
@@ -43,11 +44,12 @@ const translations = {
     serviceTwoText: "Concepts, palettes, framing, and references to keep every piece consistent.",
     serviceThreeTitle: "Digital content",
     serviceThreeText: "Material ready to publish on websites, social media, and presentations.",
-    contactKicker: "Contact",
-    contactTitle: "Connect with Dunia.",
-    contactText: "Book, ask, or follow us online.",
+    contactKicker: "Get in touch",
+    contactTitle: "Let's capture your <span>golden moment.</span>",
+    contactText: "Book a session, ask a question, or follow Dunia Studio 7 on Instagram.",
     phoneLabel: "Phone",
-    qrText: "Instagram QR"
+    bookButton: "Book a session",
+    followButton: "Follow on Instagram"
   }
 };
 
@@ -70,6 +72,11 @@ function applyLanguage(language) {
   document.querySelectorAll("[data-i18n]").forEach((element) => {
     const key = element.dataset.i18n;
     element.textContent = translations[language][key];
+  });
+
+  document.querySelectorAll("[data-i18n-html]").forEach((element) => {
+    const key = element.dataset.i18nHtml;
+    element.innerHTML = translations[language][key];
   });
 
   languageButtons.forEach((button) => {
