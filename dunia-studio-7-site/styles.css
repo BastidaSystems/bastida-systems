@@ -341,22 +341,89 @@ h2 {
 .contact {
   width: min(1180px, calc(100% - 32px));
   margin: 0 auto 32px;
-  padding: 52px;
-  display: flex;
-  justify-content: space-between;
+  padding: clamp(28px, 5vw, 52px);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.72fr) 220px;
+  gap: clamp(24px, 4vw, 44px);
   align-items: center;
-  gap: 26px;
-  background: var(--green);
-  color: var(--white);
+  background: #fffaf5;
+  color: var(--ink);
+  border: 1px solid var(--line);
   border-radius: 8px;
+  box-shadow: var(--shadow);
 }
 
 .contact .section-kicker {
-  color: #f1b29f;
+  color: var(--accent);
 }
 
 .contact h2 {
-  font-size: clamp(2rem, 6vw, 4.4rem);
+  max-width: 560px;
+  font-size: clamp(2rem, 5vw, 4.1rem);
+}
+
+.contact-copy p:not(.section-kicker) {
+  max-width: 520px;
+  margin: 20px 0 0;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+.contact-actions {
+  display: grid;
+  gap: 10px;
+}
+
+.contact-link {
+  display: grid;
+  gap: 4px;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--white);
+  transition: transform 160ms ease, border-color 160ms ease;
+}
+
+.contact-link:hover {
+  transform: translateY(-2px);
+  border-color: rgba(184, 79, 55, 0.45);
+}
+
+.contact-link span,
+.qr-card span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.contact-link strong {
+  color: var(--ink);
+  font-size: 1.04rem;
+  overflow-wrap: anywhere;
+}
+
+.qr-card {
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+  text-align: center;
+  transition: transform 160ms ease;
+}
+
+.qr-card:hover {
+  transform: translateY(-2px);
+}
+
+.qr-card img {
+  width: 180px;
+  height: 180px;
+  border-radius: 8px;
 }
 
 @media (max-width: 800px) {
@@ -400,8 +467,12 @@ h2 {
     min-height: 430px;
   }
 
-  .section-heading,
   .contact {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .section-heading {
     align-items: flex-start;
     flex-direction: column;
   }
@@ -411,6 +482,11 @@ h2 {
   }
 
   .contact {
+    grid-template-columns: 1fr;
     padding: 34px 24px;
+  }
+
+  .qr-card {
+    width: 100%;
   }
 }
