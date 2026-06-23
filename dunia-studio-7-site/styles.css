@@ -307,6 +307,10 @@ h2 {
 
 .feature-copy h2 {
   max-width: 680px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-weight: 700;
+  line-height: 1.08;
 }
 
 .feature-copy p:not(.section-kicker) {
