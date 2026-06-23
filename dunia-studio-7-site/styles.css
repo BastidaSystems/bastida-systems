@@ -350,10 +350,11 @@ h2 {
   gap: clamp(28px, 7vw, 88px);
   align-items: center;
   background:
-    linear-gradient(90deg, rgba(255, 249, 241, 0.95) 0%, rgba(255, 247, 235, 0.78) 48%, rgba(255, 189, 101, 0.42) 100%),
-    radial-gradient(circle at 92% 48%, rgba(255, 207, 124, 0.82), rgba(255, 207, 124, 0.16) 16%, transparent 30%),
-    radial-gradient(circle at 86% 8%, rgba(74, 43, 28, 0.18), transparent 28%),
-    linear-gradient(135deg, #fff3e4 0%, #ffe1bd 58%, #df9f61 100%);
+    linear-gradient(90deg, rgba(255, 249, 241, 0.94) 0%, rgba(255, 247, 235, 0.8) 44%, rgba(255, 229, 205, 0.56) 100%),
+    linear-gradient(0deg, rgba(255, 248, 240, 0.36), rgba(255, 248, 240, 0.36)),
+    url("Imagenes/WhatsApp%20Image%202026-06-23%20at%2010.18.27%20AM(3).jpeg");
+  background-position: center 42%;
+  background-size: cover;
   color: var(--ink);
   border: 1px solid rgba(132, 88, 49, 0.13);
   border-radius: 8px;
