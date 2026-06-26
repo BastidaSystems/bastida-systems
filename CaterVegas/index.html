@@ -3,211 +3,115 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Cater Vegas ofrece una experiencia premium para planear eventos privados, corporativos, bodas y catering de lujo en Las Vegas.">
-  <meta name="keywords" content="Las Vegas catering, corporate catering Las Vegas, wedding catering Las Vegas, convention catering, hotel catering Las Vegas, private event catering">
-  <meta name="theme-color" content="#050505">
-  <title>Cater Vegas | BEOFlow Event Galaxy</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23050505'/%3E%3Ctext x='32' y='40' text-anchor='middle' font-family='Georgia,serif' font-size='24' fill='%23f4cf83'%3ECV%3C/text%3E%3C/svg%3E">
+  <meta name="description" content="Cater Vegas conecta catering, F&amp;B, entertainment y hospedaje para eventos premium en Las Vegas.">
+  <meta name="keywords" content="Cater Vegas, Las Vegas catering, F&B Las Vegas, event entertainment Las Vegas, hospitality Las Vegas">
+  <meta name="theme-color" content="#ffffff">
+  <title>Cater Vegas | Industries</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23ffffff'/%3E%3Ctext x='32' y='41' text-anchor='middle' font-family='Georgia,serif' font-size='23' fill='%231b3324'%3ECV%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="cv-header" id="top">
-    <a class="cv-brand" href="#top" aria-label="Cater Vegas home">
-      <span class="cv-brand-crown" aria-hidden="true">
-        <svg viewBox="0 0 54 28">
-          <path d="M6 23h42M11 22l4-15 10 10 8-14 8 14 10-10 4 15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="15" cy="6" r="2" fill="currentColor"/>
-          <circle cx="33" cy="3" r="2" fill="currentColor"/>
-          <circle cx="51" cy="6" r="2" fill="currentColor"/>
-        </svg>
+  <header class="site-header" id="top">
+    <a class="brand" href="#top" aria-label="Cater Vegas home">
+      <span class="brand-mark">CV</span>
+      <span class="brand-copy">
+        <strong>Cater Vegas</strong>
+        <small>Events & Hospitality</small>
       </span>
-      <span class="cv-brand-wordmark">CATER VEGAS</span>
-      <span class="cv-brand-subtitle">Events & Catering</span>
     </a>
 
-    <div class="cv-assistant-label" aria-label="BEOFlow assistant">
-      <span aria-hidden="true">✦</span>
-      <strong>BEOFlow</strong>
-      <p>Tu asistente inteligente para crear eventos inolvidables</p>
-    </div>
-
-    <div class="cv-header-actions">
-      <a class="cv-button cv-button-secondary" href="../login.html">Iniciar sesión</a>
-      <a class="cv-button cv-button-primary" href="#event-galaxy">Crear cuenta</a>
-    </div>
+    <nav class="site-nav" aria-label="Principal">
+      <a href="#top">Home</a>
+      <a href="#industries" aria-current="page">Industries</a>
+      <a href="#about">About Us</a>
+      <a href="#contact">Contact</a>
+      <a href="../login.html">Login</a>
+      <a class="language-pill" href="#contact">Language <strong>EN</strong></a>
+    </nav>
   </header>
 
   <main>
-    <section class="cv-galaxy" id="event-galaxy" aria-labelledby="cv-stage-question">
-      <div class="cv-galaxy-shell">
-        <aside class="cv-intro-panel" aria-label="Guía BEOFlow">
-          <p class="cv-kicker">¡Hola! Soy BEOFlow</p>
-          <h1 id="cv-stage-question">¿Qué estás organizando?</h1>
-          <p id="cv-stage-helper">Elige el tipo de evento y reorganizaré las opciones para construir tu propuesta ideal.</p>
-
-          <div class="cv-guide-grid">
-            <article class="cv-guide-card">
-              <span>Asistente inteligente</span>
-              <strong>Te guiaré paso a paso para crear el evento ideal.</strong>
-            </article>
-            <article class="cv-guide-card">
-              <span>Respuestas posibles</span>
-              <strong id="cv-remaining-count">200+</strong>
-            </article>
-          </div>
-
-          <div class="cv-stage-actions">
-            <button class="cv-text-button" type="button" id="cv-back-button">Volver</button>
-            <button class="cv-text-button" type="button" id="cv-reset-button">Reiniciar</button>
-          </div>
-        </aside>
-
-        <section class="cv-orb-stage" aria-label="Constructor visual de evento">
-          <div class="cv-orb-field" id="cv-orb-field">
-            <!-- TODO: Replace these CSS gradient placeholders with real Cater Vegas event images when approved assets are available. -->
-            <div class="cv-orb" id="cv-orb" data-orb-theme="default">
-              <div class="cv-orb-image" aria-hidden="true"></div>
-              <div class="cv-orb-ring" aria-hidden="true"></div>
-              <div class="cv-orb-copy">
-                <span id="cv-orb-label">Cater Vegas</span>
-                <strong id="cv-orb-title">Evento inolvidable</strong>
-                <em id="cv-orb-estimate">Estimado actual: pendiente</em>
-              </div>
-            </div>
-
-            <div class="cv-node-layer" id="cv-node-layer" aria-live="polite"></div>
-          </div>
-
-          <div class="cv-center-actions">
-            <button class="cv-button cv-button-secondary" type="button" id="cv-services-continue" hidden>Continuar</button>
-            <button class="cv-button cv-button-primary" type="button" id="cv-summary-action" hidden>Ver propuesta</button>
-          </div>
-        </section>
-
-        <aside class="cv-summary" aria-label="Resumen en tiempo real">
-          <div class="cv-summary-header">
-            <span>Resumen en tiempo real</span>
-            <strong id="quoteTotal">Estimado actual</strong>
-          </div>
-
-          <dl class="cv-summary-list">
-            <div>
-              <dt>Tipo de evento</dt>
-              <dd id="cv-summary-event">Pendiente</dd>
-            </div>
-            <div>
-              <dt>Invitados</dt>
-              <dd id="cv-summary-guests">Pendiente</dd>
-            </div>
-            <div>
-              <dt>Estilo</dt>
-              <dd id="cv-summary-style">Pendiente</dd>
-            </div>
-            <div>
-              <dt>Fecha</dt>
-              <dd id="cv-summary-date">Pendiente</dd>
-            </div>
-            <div>
-              <dt>Lugar</dt>
-              <dd id="cv-summary-location">Pendiente</dd>
-            </div>
-            <div>
-              <dt>Presupuesto</dt>
-              <dd id="cv-summary-budget">Pendiente</dd>
-            </div>
-            <div>
-              <dt>Servicios</dt>
-              <dd id="cv-summary-services">Pendiente</dd>
-            </div>
-          </dl>
-
-          <div class="cv-estimate-card">
-            <span>Estimado actual</span>
-            <strong id="cv-estimated-total">$0</strong>
-            <p>Este cálculo es preliminar y se ajustará con fecha, lugar, menú y producción.</p>
-          </div>
-
-          <button class="cv-summary-detail" type="button" id="cv-summary-detail">
-            <span>Ver resumen detallado</span>
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M9 5l7 7-7 7"></path>
-            </svg>
-          </button>
-        </aside>
-      </div>
-
-      <div class="cv-bottom-bar">
-        <nav class="cv-timeline" aria-label="Progreso del evento">
-          <button type="button" data-stage-target="event" class="is-active">Evento</button>
-          <button type="button" data-stage-target="guests">Invitados</button>
-          <button type="button" data-stage-target="style">Estilo</button>
-          <button type="button" data-stage-target="services">Servicios</button>
-          <button type="button" data-stage-target="summary">Resumen</button>
-          <button type="button" data-stage-target="proposal">Propuesta / Pago</button>
-        </nav>
-
-        <div class="cv-inspiration" aria-label="Inspiración de eventos">
-          <div class="cv-inspiration-copy">
-            <strong>¿Necesitas inspiración?</strong>
-            <span>Explora ideas reales de eventos en Las Vegas.</span>
-          </div>
-          <button type="button" data-inspiration="wedding">Bodas elegantes</button>
-          <button type="button" data-inspiration="birthday">Cumpleaños de lujo</button>
-          <button type="button" data-inspiration="corporate">Eventos corporativos</button>
-          <button type="button" data-inspiration="private-party">Fiestas privadas</button>
-          <button type="button" data-inspiration="baby-shower">Baby showers</button>
-          <button type="button" data-inspiration="graduation">Graduaciones</button>
+    <section class="industry-hero" id="industries" aria-label="Cater Vegas industries">
+      <article class="industry-panel industry-catering">
+        <div class="panel-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M5 13h14M7 13a5 5 0 0 1 10 0M12 5v3M9 5h6M4 17h16"></path>
+          </svg>
         </div>
-      </div>
+        <div class="panel-copy">
+          <span class="panel-number">01</span>
+          <h1>Catering</h1>
+          <i></i>
+          <p>Premium menus, plating, staffing and full-service event execution.</p>
+          <a href="#contact">Learn more</a>
+        </div>
+      </article>
 
-      <form class="cv-legacy-state" id="quoteForm" aria-hidden="true">
-        <input type="hidden" id="budgetTier" value="">
-        <select id="eventType" tabindex="-1">
-          <option value="">Pendiente</option>
-          <option value="wedding">Boda</option>
-          <option value="birthday">Cumpleaños</option>
-          <option value="corporate">Corporativo</option>
-          <option value="baby-shower">Baby Shower</option>
-          <option value="anniversary">Aniversario</option>
-          <option value="graduation">Graduación</option>
-          <option value="farewell">Despedida</option>
-          <option value="private-party">Fiesta privada</option>
-          <option value="other">Otro evento</option>
-        </select>
-        <input type="number" id="guestCount" value="0" tabindex="-1">
-        <select id="menuStyle" tabindex="-1">
-          <option value="">Pendiente</option>
-          <option value="essential">Esencial</option>
-          <option value="premium">Premium</option>
-          <option value="luxury">Luxury</option>
-          <option value="custom">Personalizado</option>
-        </select>
-        <select id="serviceLevel" tabindex="-1">
-          <option value="">Pendiente</option>
-          <option value="delivery">Catering</option>
-          <option value="full">Servicio completo</option>
-          <option value="vip">Luxury VIP</option>
-        </select>
-        <select id="addonPackage" tabindex="-1">
-          <option value="">Pendiente</option>
-          <option value="standard">Servicios base</option>
-          <option value="bar">Barra Premium</option>
-          <option value="production">Producción completa</option>
-        </select>
-        <input type="date" id="eventDate" tabindex="-1">
-        <input type="time" id="eventTime" value="18:00" tabindex="-1">
-        <span id="depositDue"></span>
-        <span id="profitMargin"></span>
-        <span id="beoflowForecast"></span>
-        <span id="planBudget"></span>
-        <span id="planEvent"></span>
-        <span id="planMenu"></span>
-        <span id="planServices"></span>
-        <span id="menuRecommendation"></span>
-        <button type="submit" data-planner-submit tabindex="-1">Crear solicitud</button>
-      </form>
+      <article class="industry-panel industry-fb">
+        <div class="panel-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M7 3h10l-1 8a4 4 0 0 1-8 0L7 3zM12 15v6M9 21h6"></path>
+          </svg>
+        </div>
+        <div class="panel-copy">
+          <span class="panel-number">02</span>
+          <h2>F&amp;B</h2>
+          <i></i>
+          <p>Food and beverage programs for venues, hotels, pop-ups and recurring events.</p>
+          <a href="#contact">Learn more</a>
+        </div>
+      </article>
+
+      <article class="industry-panel industry-entertainment">
+        <div class="panel-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M9 18V5l11-2v13M9 9l11-2M6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm11-2a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
+          </svg>
+        </div>
+        <div class="panel-copy">
+          <span class="panel-number">03</span>
+          <h2>Entertainment</h2>
+          <i></i>
+          <p>DJ, live talent, production timing and guest-energy planning for Las Vegas events.</p>
+          <a href="#contact">Learn more</a>
+        </div>
+      </article>
+
+      <article class="industry-panel industry-hotel">
+        <div class="panel-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M4 21V8l8-5 8 5v13M8 21v-7h8v7M9 10h.01M12 10h.01M15 10h.01"></path>
+          </svg>
+        </div>
+        <div class="panel-copy">
+          <span class="panel-number">04</span>
+          <h2>Hospedaje</h2>
+          <i></i>
+          <p>Hotel blocks, VIP arrivals, transportation notes and concierge coordination.</p>
+          <a href="#contact">Learn more</a>
+        </div>
+      </article>
+    </section>
+
+    <section class="about-section" id="about">
+      <p class="eyebrow">Cater Vegas</p>
+      <h2>Hospitality, food, entertainment and stay planning in one clean system.</h2>
+      <p>
+        We organize the moving parts behind destination events: menus, service, venue needs, talent, hotel details and guest experience. The page stays white and polished, while the operation behind it stays precise.
+      </p>
+    </section>
+
+    <section class="contact-section" id="contact">
+      <p class="eyebrow">Start Planning</p>
+      <h2>Tell us what you are building in Las Vegas.</h2>
+      <a class="contact-button" href="mailto:info@bastidasystems.com">info@bastidasystems.com</a>
     </section>
   </main>
+
+  <footer class="site-footer">
+    <span>Cater Vegas</span>
+    <p>Events, F&amp;B, Entertainment &amp; Hospitality.</p>
+  </footer>
 
   <script src="app.js"></script>
 </body>
