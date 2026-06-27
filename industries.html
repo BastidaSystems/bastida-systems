@@ -1193,6 +1193,498 @@
 
     }
 
+    .cv-flow {
+      --cv-ink: #101513;
+      --cv-muted: #53605a;
+      --cv-line: #e5e9e4;
+      --cv-soft: #f7f8f5;
+      --cv-white: #ffffff;
+      --cv-charcoal: #1f2421;
+      --cv-gold: #8c7a5b;
+      --cv-aqua: #2bbcc4;
+      --cv-violet: #9157e8;
+      min-height: calc(100vh - 88px);
+      background: var(--cv-white);
+      color: var(--cv-ink);
+      font-family: 'Manrope', sans-serif;
+    }
+
+    .cv-hidden {
+      display: none !important;
+    }
+
+    .cv-calendar {
+      display: grid;
+      min-height: calc(100vh - 88px);
+      align-items: center;
+      justify-items: center;
+      padding: clamp(1.5rem, 4vw, 4.5rem);
+      background:
+        radial-gradient(circle at 20% 20%, rgba(140, 122, 91, 0.08), transparent 30%),
+        linear-gradient(180deg, #ffffff 0%, #f8f9f6 100%);
+    }
+
+    .cv-booking-shell {
+      display: grid;
+      width: min(100%, 1080px);
+      gap: 1rem;
+      padding: clamp(1rem, 2vw, 1.35rem);
+      border: 1px solid rgba(31, 36, 33, 0.12);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 28px 90px rgba(17, 22, 20, 0.11);
+    }
+
+    .cv-eyebrow {
+      margin: 0 0 1.1rem;
+      color: var(--cv-charcoal);
+      font-size: 0.78rem;
+      font-weight: 950;
+      letter-spacing: 0.32em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .cv-calendar-card {
+      padding: clamp(0.85rem, 1.8vw, 1.25rem);
+      border: 1px solid var(--cv-line);
+      border-radius: 20px;
+      background: var(--cv-white);
+    }
+
+    .cv-calendar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+
+    .cv-calendar-header strong {
+      color: #050807;
+      font-size: clamp(1.15rem, 2vw, 1.65rem);
+      font-weight: 950;
+    }
+
+    .cv-calendar-header button,
+    .cv-calendar-grid button {
+      border: 0;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .cv-calendar-header button {
+      display: grid;
+      width: 2.45rem;
+      height: 2.45rem;
+      place-items: center;
+      border-radius: 999px;
+      background: var(--cv-soft);
+      color: var(--cv-ink);
+      font-size: 1.45rem;
+    }
+
+    .cv-calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 0.45rem;
+    }
+
+    .cv-calendar-grid span {
+      color: var(--cv-muted);
+      font-size: 0.68rem;
+      font-weight: 950;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .cv-calendar-grid button {
+      display: grid;
+      min-height: clamp(2.45rem, 5vw, 3.45rem);
+      place-items: center;
+      border-radius: 12px;
+      background: #f3f5f2;
+      color: #050807;
+      font-weight: 950;
+    }
+
+    .cv-calendar-grid button.cv-muted {
+      color: #a5ada8;
+    }
+
+    .cv-calendar-grid button.cv-selected {
+      background: linear-gradient(135deg, #111614, #303833);
+      color: #fff;
+      box-shadow: 0 14px 34px rgba(17, 22, 20, 0.22);
+    }
+
+    .cv-industries {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      min-height: calc(100vh - 88px);
+      overflow: hidden;
+      background:
+        linear-gradient(90deg, rgba(245, 248, 245, 0.92), rgba(255, 255, 255, 0.88)),
+        #f7f8f5;
+    }
+
+    .cv-panel {
+      --cv-accent: var(--cv-aqua);
+      position: relative;
+      display: grid;
+      align-items: end;
+      min-height: 620px;
+      padding: clamp(2rem, 4vw, 4.2rem) clamp(1.3rem, 2.7vw, 3rem);
+      isolation: isolate;
+    }
+
+    .cv-panel::before,
+    .cv-panel::after {
+      position: absolute;
+      inset: 0;
+      content: "";
+    }
+
+    .cv-panel::before {
+      z-index: -2;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.92)),
+        var(--cv-image);
+      background-position: center;
+      background-size: cover;
+      filter: saturate(0.84);
+    }
+
+    .cv-panel::after {
+      z-index: -1;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.92) 78%),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.32));
+    }
+
+    .cv-panel:not(:first-child) {
+      margin-left: -2.4vw;
+      padding-left: clamp(2.65rem, 5vw, 4.75rem);
+      clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+    }
+
+    .cv-panel:first-child {
+      --cv-accent: var(--cv-aqua);
+      --cv-image: url('CaterVegas/assets/cater-vegas-hero.png');
+    }
+
+    .cv-panel:nth-child(2) {
+      --cv-accent: var(--cv-gold);
+      --cv-image: url('CaterVegas/assets/cater-vegas-hero.png');
+    }
+
+    .cv-panel:nth-child(3) {
+      --cv-accent: var(--cv-violet);
+      --cv-image: url('img/cocofilms-preview.jpg');
+    }
+
+    .cv-panel:nth-child(4) {
+      --cv-accent: #b59a6a;
+      --cv-image: url('img/la-apertura-preview.png');
+    }
+
+    .cv-icon {
+      position: absolute;
+      left: clamp(1.75rem, 4vw, 5.4rem);
+      top: 47%;
+      display: grid;
+      width: 4rem;
+      height: 4rem;
+      place-items: center;
+      border: 1px solid rgba(16, 21, 19, 0.2);
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.56);
+      box-shadow: 0 14px 38px rgba(26, 37, 31, 0.12);
+      backdrop-filter: blur(12px);
+    }
+
+    .cv-panel:not(:first-child) .cv-icon {
+      left: clamp(3.4rem, 6vw, 5.8rem);
+    }
+
+    .cv-icon svg {
+      width: 1.8rem;
+      height: 1.8rem;
+      fill: none;
+      stroke: var(--cv-ink);
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 1.7;
+    }
+
+    .cv-copy {
+      position: relative;
+      z-index: 1;
+      max-width: 27rem;
+    }
+
+    .cv-number {
+      display: block;
+      margin-bottom: 1.1rem;
+      color: var(--cv-accent);
+      font-size: clamp(1.05rem, 1.55vw, 1.35rem);
+      font-weight: 950;
+      letter-spacing: 0.14em;
+    }
+
+    .cv-copy h2 {
+      margin: 0;
+      color: var(--cv-ink);
+      font-size: clamp(1.95rem, 2.8vw, 3.35rem);
+      font-weight: 950;
+      letter-spacing: -0.02em;
+      line-height: 0.95;
+    }
+
+    .cv-copy i {
+      display: block;
+      width: 3.6rem;
+      height: 0.32rem;
+      margin: 1.4rem 0;
+      background: var(--cv-accent);
+    }
+
+    .cv-copy p {
+      max-width: 21rem;
+      margin: 0 0 1.5rem;
+      color: #34403b;
+      font-size: clamp(0.92rem, 1.12vw, 1.12rem);
+      font-weight: 700;
+      line-height: 1.42;
+    }
+
+    .cv-copy a {
+      color: var(--cv-accent);
+      font-weight: 950;
+    }
+
+    .cv-copy a::after {
+      content: "  >";
+    }
+
+    .cv-showroom {
+      display: grid;
+      min-height: calc(100vh - 88px);
+      align-content: center;
+      padding: clamp(2rem, 5vw, 4.75rem) clamp(1.4rem, 5vw, 5.4rem);
+      overflow: hidden;
+      background: #fff;
+      color: var(--cv-ink);
+    }
+
+    .cv-showroom-intro {
+      display: grid;
+      justify-items: center;
+      margin-bottom: clamp(2.4rem, 5vw, 3.9rem);
+      text-align: center;
+    }
+
+    .cv-showroom-intro span {
+      display: inline-flex;
+      min-height: 2.9rem;
+      align-items: center;
+      justify-content: center;
+      padding: 0 2.1rem;
+      background: linear-gradient(135deg, #111614, #303833);
+      color: #fff;
+      font-size: clamp(1rem, 1.6vw, 1.35rem);
+      font-weight: 900;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+    }
+
+    .cv-showroom-intro p {
+      margin: 0.8rem 0 0;
+      color: #555c58;
+      font-size: clamp(0.95rem, 1.3vw, 1.12rem);
+      font-style: italic;
+      font-weight: 800;
+    }
+
+    .cv-category-strip {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(1.1rem, 2.5vw, 2.15rem);
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: clamp(1.25rem, 3vw, 2.9rem) 0;
+    }
+
+    .cv-category-strip::before {
+      position: absolute;
+      left: 4%;
+      right: 4%;
+      top: 50%;
+      height: 1px;
+      content: "";
+      background: linear-gradient(90deg, transparent, rgba(140, 122, 91, 0.35), transparent);
+      transform: rotate(-6deg);
+    }
+
+    .cv-category {
+      position: relative;
+      display: grid;
+      justify-items: center;
+      gap: 1.1rem;
+      text-align: center;
+      text-transform: uppercase;
+      transform: translateY(var(--cv-lift, 0)) rotate(var(--cv-tilt, 0deg));
+    }
+
+    .cv-category:nth-child(1) { --cv-lift: 2.6rem; --cv-tilt: -2deg; }
+    .cv-category:nth-child(2) { --cv-lift: -0.5rem; --cv-tilt: 1.5deg; }
+    .cv-category:nth-child(3) { --cv-lift: 2.1rem; --cv-tilt: -1deg; }
+    .cv-category:nth-child(4) { --cv-lift: -1.25rem; --cv-tilt: 2deg; }
+    .cv-category:nth-child(5) { --cv-lift: 1.4rem; --cv-tilt: -1.5deg; }
+    .cv-category:nth-child(6) { --cv-lift: -2.6rem; --cv-tilt: 1deg; }
+
+    .cv-category-icon {
+      display: grid;
+      width: clamp(5.75rem, 8.5vw, 8.25rem);
+      aspect-ratio: 1;
+      place-items: center;
+      border: 4px solid #0d100f;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 18px 54px rgba(17, 22, 20, 0.06);
+      transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .cv-category-icon svg {
+      width: 54%;
+      height: 54%;
+      fill: none;
+      stroke: #0d100f;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 3.3;
+    }
+
+    .cv-category strong {
+      color: #050807;
+      font-size: clamp(0.92rem, 1.35vw, 1.3rem);
+      font-weight: 950;
+      letter-spacing: 0.04em;
+      line-height: 1.1;
+    }
+
+    .cv-category:hover .cv-category-icon {
+      transform: translateY(-5px);
+      border-color: var(--cv-gold);
+      box-shadow: 0 18px 44px rgba(17, 22, 20, 0.12);
+    }
+
+    .cv-view-all .cv-category-icon {
+      width: clamp(3.6rem, 4.8vw, 4.75rem);
+      margin-top: clamp(0.9rem, 2vw, 1.75rem);
+    }
+
+    .cv-start {
+      display: grid;
+      min-height: calc(100vh - 88px);
+      align-content: center;
+      justify-items: center;
+      padding: clamp(4rem, 8vw, 7rem) clamp(1.4rem, 5vw, 5.4rem);
+      background: var(--cv-soft);
+      color: var(--cv-ink);
+      text-align: center;
+    }
+
+    .cv-start h2 {
+      max-width: 760px;
+      margin: 0 0 1rem;
+      font-size: clamp(2.2rem, 4.6vw, 5rem);
+      font-weight: 950;
+      line-height: 1;
+    }
+
+    .cv-start p {
+      max-width: 720px;
+      margin: 0;
+      color: var(--cv-muted);
+      font-size: clamp(1rem, 1.35vw, 1.2rem);
+      line-height: 1.7;
+    }
+
+    @media (max-width: 1180px) {
+      .cv-industries {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .cv-panel,
+      .cv-panel:not(:first-child) {
+        min-height: 440px;
+        margin-left: 0;
+        padding: 2.4rem;
+        clip-path: none;
+      }
+
+      .cv-panel .cv-icon,
+      .cv-panel:not(:first-child) .cv-icon {
+        left: 2.4rem;
+        top: 2.4rem;
+      }
+
+      .cv-category-strip {
+        flex-wrap: wrap;
+        gap: 1.8rem;
+        padding: 3.4rem 0 2.9rem;
+      }
+
+      .cv-category-strip::before {
+        left: 10%;
+        right: 10%;
+        transform: rotate(-8deg);
+      }
+
+      .cv-category {
+        width: clamp(140px, 27%, 210px);
+      }
+
+      .cv-category:nth-child(1) { --cv-lift: 1.75rem; }
+      .cv-category:nth-child(2) { --cv-lift: -1.6rem; }
+      .cv-category:nth-child(3) { --cv-lift: 1.1rem; }
+      .cv-category:nth-child(4) { --cv-lift: -0.65rem; }
+      .cv-category:nth-child(5) { --cv-lift: 1.6rem; }
+      .cv-category:nth-child(6) { --cv-lift: -1.75rem; }
+    }
+
+    @media (max-width: 720px) {
+      .cv-industries {
+        grid-template-columns: 1fr;
+      }
+
+      .cv-panel,
+      .cv-panel:not(:first-child) {
+        min-height: 360px;
+        padding: 2rem 1.5rem;
+      }
+
+      .cv-copy {
+        padding-top: 5rem;
+      }
+
+      .cv-category-strip {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(120px, 1fr));
+      }
+
+      .cv-category-strip::before {
+        display: none;
+      }
+
+      .cv-category {
+        width: auto;
+        transform: none;
+      }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       .gradient-text {
         animation: none;
@@ -1522,7 +2014,153 @@
   </script>
 
   <!-- INDUSTRIES -->
-  <section id="industries" class="industries-section fade-in" aria-label="Industries served by Bastida Systems">
+  <section id="industries" class="cv-flow" aria-label="Cater Vegas guided industries flow">
+    <div class="cv-calendar" id="cv-calendar">
+      <div class="cv-booking-shell">
+        <p class="cv-eyebrow">Start with the date</p>
+        <div class="cv-calendar-card" aria-label="June 2026 event calendar">
+          <div class="cv-calendar-header">
+            <button type="button" aria-label="Previous month">&lt;</button>
+            <strong>June 2026</strong>
+            <button type="button" aria-label="Next month">&gt;</button>
+          </div>
+          <div class="cv-calendar-grid" aria-label="Calendar days">
+            <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+            <button type="button" class="cv-muted">31</button>
+            <button type="button">1</button>
+            <button type="button">2</button>
+            <button type="button">3</button>
+            <button type="button">4</button>
+            <button type="button">5</button>
+            <button type="button">6</button>
+            <button type="button">7</button>
+            <button type="button">8</button>
+            <button type="button">9</button>
+            <button type="button">10</button>
+            <button type="button">11</button>
+            <button type="button">12</button>
+            <button type="button">13</button>
+            <button type="button">14</button>
+            <button type="button">15</button>
+            <button type="button">16</button>
+            <button type="button">17</button>
+            <button type="button" class="cv-selected">18</button>
+            <button type="button">19</button>
+            <button type="button">20</button>
+            <button type="button">21</button>
+            <button type="button">22</button>
+            <button type="button">23</button>
+            <button type="button">24</button>
+            <button type="button">25</button>
+            <button type="button">26</button>
+            <button type="button">27</button>
+            <button type="button">28</button>
+            <button type="button">29</button>
+            <button type="button">30</button>
+            <button type="button" class="cv-muted">1</button>
+            <button type="button" class="cv-muted">2</button>
+            <button type="button" class="cv-muted">3</button>
+            <button type="button" class="cv-muted">4</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cv-industries cv-hidden" id="cv-industries">
+      <article class="cv-panel">
+        <span class="cv-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M5 13h14M7 13a5 5 0 0 1 10 0M12 5v3M9 5h6M4 17h16"></path></svg>
+        </span>
+        <div class="cv-copy">
+          <span class="cv-number">01</span>
+          <h2>Catering</h2>
+          <i></i>
+          <p>Premium menus, plating, staffing and full-service event execution.</p>
+          <a href="#cv-catering">Start with Catering</a>
+        </div>
+      </article>
+
+      <article class="cv-panel">
+        <span class="cv-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M7 3h10l-1 8a4 4 0 0 1-8 0L7 3zM12 15v6M9 21h6"></path></svg>
+        </span>
+        <div class="cv-copy">
+          <span class="cv-number">02</span>
+          <h2>F&amp;B</h2>
+          <i></i>
+          <p>Food and beverage programs for venues, hotels, pop-ups and recurring events.</p>
+          <a href="#cv-start">Start with F&amp;B</a>
+        </div>
+      </article>
+
+      <article class="cv-panel">
+        <span class="cv-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M9 18V5l11-2v13M9 9l11-2M6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm11-2a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path></svg>
+        </span>
+        <div class="cv-copy">
+          <span class="cv-number">03</span>
+          <h2>Entertainment</h2>
+          <i></i>
+          <p>DJ, live talent, production timing and guest-energy planning for Las Vegas events.</p>
+          <a href="#cv-start">Start with Entertainment</a>
+        </div>
+      </article>
+
+      <article class="cv-panel">
+        <span class="cv-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M4 21V8l8-5 8 5v13M8 21v-7h8v7M9 10h.01M12 10h.01M15 10h.01"></path></svg>
+        </span>
+        <div class="cv-copy">
+          <span class="cv-number">04</span>
+          <h2>Hospedaje</h2>
+          <i></i>
+          <p>Hotel blocks, VIP arrivals, transportation notes and concierge coordination.</p>
+          <a href="#cv-start">Start with Hospedaje</a>
+        </div>
+      </article>
+    </div>
+
+    <div class="cv-showroom cv-hidden" id="cv-catering">
+      <div class="cv-showroom-intro">
+        <span>Catering showroom</span>
+        <p>Choose the catering area you want to build first.</p>
+      </div>
+      <div class="cv-category-strip" aria-label="Catering categories">
+        <a class="cv-category" href="#cv-start">
+          <span class="cv-category-icon" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M17 25c0-6 30-6 30 0s-30 6-30 0zM20 28c2 4 22 4 24 0M32 31v20M24 51h16"></path></svg></span>
+          <strong>Tables</strong>
+        </a>
+        <a class="cv-category" href="#cv-start">
+          <span class="cv-category-icon" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M21 17h22v18H21zM18 35h28M23 35l-3 18M41 35l3 18M24 24h16"></path></svg></span>
+          <strong>Chairs</strong>
+        </a>
+        <a class="cv-category" href="#cv-start">
+          <span class="cv-category-icon" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M22 16l20 8-10 24-20-8 10-24zM36 20l12 8-10 24-12-8M24 26l13 6M20 36l13 6"></path></svg></span>
+          <strong>Linen</strong>
+        </a>
+        <a class="cv-category" href="#cv-start">
+          <span class="cv-category-icon" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M21 49h22M32 16v33M22 28h20M22 28l-5 13M42 28l5 13M26 16h12M25 22h14"></path><path d="M18 41h8M38 41h8"></path></svg></span>
+          <strong>Decor</strong>
+        </a>
+        <a class="cv-category" href="#cv-start">
+          <span class="cv-category-icon" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M14 49V26l18-11 18 11v23M14 26h36M20 49V31M44 49V31M25 31h14"></path></svg></span>
+          <strong>Tents</strong>
+        </a>
+        <a class="cv-category cv-view-all" href="#cv-start">
+          <span class="cv-category-icon" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M24 16l16 16-16 16"></path></svg></span>
+          <strong>View all<br>products</strong>
+        </a>
+      </div>
+    </div>
+
+    <div class="cv-start cv-hidden" id="cv-start">
+      <p class="cv-eyebrow">Next step</p>
+      <h2>Build the event details from here.</h2>
+      <p>Now that the date and starting category are selected, the next screen can collect guest count, service window, location, budget and production notes.</p>
+    </div>
+  </section>
+
+  <section id="industries-legacy" class="industries-section fade-in cv-hidden" aria-label="Industries served by Bastida Systems">
     <div class="industries-interactive-layout">
       <div class="industries-panel-row" role="tablist" aria-label="Industries served by Bastida Systems">
         <article
@@ -1736,6 +2374,36 @@
   </footer>
 
   <script>
+    const cvSteps = ['cv-calendar', 'cv-industries', 'cv-catering', 'cv-start'];
+
+    function showCvStep(stepId) {
+      const activeStep = cvSteps.includes(stepId) ? stepId : 'cv-calendar';
+      cvSteps.forEach(id => {
+        document.getElementById(id)?.classList.toggle('cv-hidden', id !== activeStep);
+      });
+
+      if (window.location.hash !== '#industries') {
+        window.history.replaceState(null, '', '#industries');
+      }
+
+      document.getElementById('industries')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    document.querySelectorAll('.cv-calendar-grid button:not(.cv-muted)').forEach(button => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('.cv-calendar-grid button').forEach(day => day.classList.remove('cv-selected'));
+        button.classList.add('cv-selected');
+        showCvStep('cv-industries');
+      });
+    });
+
+    document.querySelectorAll('.cv-flow a[href^="#cv-"]').forEach(link => {
+      link.addEventListener('click', event => {
+        event.preventDefault();
+        showCvStep(link.getAttribute('href').slice(1));
+      });
+    });
+
     const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
