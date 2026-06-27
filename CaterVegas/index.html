@@ -21,8 +21,6 @@
     </a>
 
     <nav class="site-nav" aria-label="Principal">
-      <a href="#top">Home</a>
-      <a href="#industries" aria-current="page">Industries</a>
       <a href="#about">About Us</a>
       <a href="#contact">Contact</a>
       <a href="../login.html">Login</a>
@@ -31,7 +29,62 @@
   </header>
 
   <main>
-    <section class="industry-hero" id="industries" aria-label="Cater Vegas industries">
+    <section class="calendar-hero" id="calendar" aria-labelledby="calendar-title">
+      <div class="booking-shell" aria-label="Calendar design options">
+        <div class="booking-heading">
+          <p class="eyebrow">Start with the date</p>
+        </div>
+
+        <div class="calendar-card compact-calendar" aria-label="June 2026 compact month calendar">
+          <div class="calendar-card-header">
+            <button type="button" aria-label="Previous month">&lt;</button>
+            <strong>June 2026</strong>
+            <button type="button" aria-label="Next month">&gt;</button>
+          </div>
+
+          <div class="calendar-grid" aria-label="Calendar days">
+            <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+            <button type="button" class="muted">31</button>
+            <button type="button">1</button>
+            <button type="button">2</button>
+            <button type="button">3</button>
+            <button type="button">4</button>
+            <button type="button">5</button>
+            <button type="button">6</button>
+            <button type="button">7</button>
+            <button type="button">8</button>
+            <button type="button">9</button>
+            <button type="button">10</button>
+            <button type="button">11</button>
+            <button type="button">12</button>
+            <button type="button">13</button>
+            <button type="button">14</button>
+            <button type="button">15</button>
+            <button type="button">16</button>
+            <button type="button">17</button>
+            <button type="button" class="is-selected">18</button>
+            <button type="button">19</button>
+            <button type="button">20</button>
+            <button type="button">21</button>
+            <button type="button">22</button>
+            <button type="button">23</button>
+            <button type="button">24</button>
+            <button type="button">25</button>
+            <button type="button">26</button>
+            <button type="button">27</button>
+            <button type="button">28</button>
+            <button type="button">29</button>
+            <button type="button">30</button>
+            <button type="button" class="muted">1</button>
+            <button type="button" class="muted">2</button>
+            <button type="button" class="muted">3</button>
+            <button type="button" class="muted">4</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="industry-hero is-hidden-step" id="industries" aria-label="Cater Vegas industries">
       <article class="industry-panel industry-catering">
         <div class="panel-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24">
@@ -43,7 +96,7 @@
           <h1>Catering</h1>
           <i></i>
           <p>Premium menus, plating, staffing and full-service event execution.</p>
-          <a href="#contact">Learn more</a>
+          <a href="#catering">Start with Catering</a>
         </div>
       </article>
 
@@ -58,7 +111,7 @@
           <h2>F&amp;B</h2>
           <i></i>
           <p>Food and beverage programs for venues, hotels, pop-ups and recurring events.</p>
-          <a href="#contact">Learn more</a>
+          <a href="#start" data-start-option="F&B">Start with F&amp;B</a>
         </div>
       </article>
 
@@ -73,7 +126,7 @@
           <h2>Entertainment</h2>
           <i></i>
           <p>DJ, live talent, production timing and guest-energy planning for Las Vegas events.</p>
-          <a href="#contact">Learn more</a>
+          <a href="#start" data-start-option="Entertainment">Start with Entertainment</a>
         </div>
       </article>
 
@@ -88,12 +141,93 @@
           <h2>Hospedaje</h2>
           <i></i>
           <p>Hotel blocks, VIP arrivals, transportation notes and concierge coordination.</p>
-          <a href="#contact">Learn more</a>
+          <a href="#start" data-start-option="Hospedaje">Start with Hospedaje</a>
         </div>
       </article>
     </section>
 
-    <section class="about-section" id="about">
+    <section class="catering-showroom is-hidden-step" id="catering" aria-labelledby="catering-title">
+      <div class="showroom-intro">
+        <span id="catering-title">Catering showroom</span>
+        <p>Choose the catering area you want to build first.</p>
+      </div>
+
+      <div class="category-strip" aria-label="Catering categories">
+        <a class="category-item" href="#start" data-start-option="Catering">
+          <span class="category-icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64">
+              <path d="M17 25c0-6 30-6 30 0s-30 6-30 0zM20 28c2 4 22 4 24 0M32 31v20M24 51h16"></path>
+            </svg>
+          </span>
+          <strong>Tables</strong>
+        </a>
+
+        <a class="category-item" href="#start" data-start-option="Catering">
+          <span class="category-icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64">
+              <path d="M21 17h22v18H21zM18 35h28M23 35l-3 18M41 35l3 18M24 24h16"></path>
+            </svg>
+          </span>
+          <strong>Chairs</strong>
+        </a>
+
+        <a class="category-item" href="#start" data-start-option="Catering">
+          <span class="category-icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64">
+              <path d="M22 16l20 8-10 24-20-8 10-24zM36 20l12 8-10 24-12-8M24 26l13 6M20 36l13 6"></path>
+            </svg>
+          </span>
+          <strong>Linen</strong>
+        </a>
+
+        <a class="category-item" href="#start" data-start-option="Catering">
+          <span class="category-icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64">
+              <path d="M21 49h22M32 16v33M22 28h20M22 28l-5 13M42 28l5 13M26 16h12M25 22h14"></path>
+              <path d="M18 41h8M38 41h8"></path>
+            </svg>
+          </span>
+          <strong>Decor</strong>
+        </a>
+
+        <a class="category-item" href="#start" data-start-option="Catering">
+          <span class="category-icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64">
+              <path d="M14 49V26l18-11 18 11v23M14 26h36M20 49V31M44 49V31M25 31h14"></path>
+            </svg>
+          </span>
+          <strong>Tents</strong>
+        </a>
+
+        <a class="category-item view-all" href="#start" data-start-option="Catering">
+          <span class="category-icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64">
+              <path d="M24 16l16 16-16 16"></path>
+            </svg>
+          </span>
+          <strong>View all<br>products</strong>
+        </a>
+      </div>
+    </section>
+
+    <section class="start-section is-hidden-step" id="start" aria-labelledby="start-title">
+      <div>
+        <p class="eyebrow">Choose where to start</p>
+        <h2 id="start-title">Your event path starts with <span id="selected-path">Catering</span>.</h2>
+        <p id="selected-path-copy">
+          We will begin with menu direction, guest count, service flow and staffing needs, then connect the rest of the event around it.
+        </p>
+      </div>
+
+      <div class="start-options" aria-label="Starting options">
+        <button type="button" class="is-active" data-path="Catering">Catering</button>
+        <button type="button" data-path="F&B">F&amp;B</button>
+        <button type="button" data-path="Entertainment">Entertainment</button>
+        <button type="button" data-path="Hospedaje">Hospedaje</button>
+      </div>
+    </section>
+
+    <section class="about-section is-hidden-step" id="about">
       <p class="eyebrow">Cater Vegas</p>
       <h2>Hospitality, food, entertainment and stay planning in one clean system.</h2>
       <p>
@@ -101,14 +235,14 @@
       </p>
     </section>
 
-    <section class="contact-section" id="contact">
+    <section class="contact-section is-hidden-step" id="contact">
       <p class="eyebrow">Start Planning</p>
       <h2>Tell us what you are building in Las Vegas.</h2>
       <a class="contact-button" href="mailto:info@bastidasystems.com">info@bastidasystems.com</a>
     </section>
   </main>
 
-  <footer class="site-footer">
+  <footer class="site-footer is-hidden-step">
     <span>Cater Vegas</span>
     <p>Events, F&amp;B, Entertainment &amp; Hospitality.</p>
   </footer>
