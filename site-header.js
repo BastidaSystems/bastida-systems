@@ -3,7 +3,7 @@
     const target = document.getElementById('site-header');
     if (!target) return;
 
-    const response = await fetch('header.html');
+    const response = await fetch('header.html', { cache: 'no-store' });
     if (!response.ok) {
       throw new Error('header.html not found');
     }
