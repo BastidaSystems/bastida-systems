@@ -2287,8 +2287,9 @@ section[id] {
 }
 
 @media (max-width: 600px) {
-  .hero h1 {
+  body.agency-page .hero .hero-copy > h1 {
     text-align: center;
+    margin-inline: auto;
   }
 
   .trust-strip {
