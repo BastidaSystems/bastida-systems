@@ -2286,6 +2286,81 @@ section[id] {
   }
 }
 
+@media (max-width: 600px) {
+  .hero-copy {
+    margin-right: auto;
+    margin-left: auto;
+    text-align: center;
+  }
+
+  .hero .eyebrow {
+    display: block;
+    width: min(100%, 320px);
+    margin-right: auto;
+    margin-left: auto;
+    text-align: center;
+  }
+
+  .hero .eyebrow::before {
+    display: inline-block;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+
+  .hero h1 {
+    text-align: center;
+  }
+
+  .hero-copy > p:not(.eyebrow) {
+    margin-right: auto;
+    margin-left: auto;
+    text-align: center;
+  }
+
+  .hero .hero-actions {
+    align-items: center;
+  }
+
+  .hero .hero-actions > .button {
+    width: min(100%, 380px);
+  }
+
+  .hero-contact-card {
+    width: min(100%, 380px);
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  .hero-contact-title {
+    text-align: center;
+  }
+
+  .hero-contact-link {
+    text-align: left;
+  }
+
+  .hero-proof {
+    width: 100%;
+    max-width: 390px;
+    margin-right: auto;
+    margin-left: auto;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .proof-item {
+    width: 100%;
+    max-width: 170px;
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .proof-item > span:not(.proof-icon) {
+    grid-column: 1;
+  }
+}
+
 @media (min-width: 720px) {
   .additional-work-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
