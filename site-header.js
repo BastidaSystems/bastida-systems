@@ -16,7 +16,6 @@
         <span class="bs-brand-logo"><img src="img/logo_bastida_sys.png" alt="" aria-hidden="true"></span>
         <span class="bs-brand-text">
           <strong class="bs-brand-name">Bastida Systems</strong>
-          <span class="bs-brand-meta">Technology You Can Trust.</span>
         </span>
       </a>
 
