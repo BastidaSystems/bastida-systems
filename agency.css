@@ -576,6 +576,10 @@ section[id] {
   background: rgba(5, 8, 12, 0.58);
 }
 
+.home-founder-link--rodrigo {
+  left: calc(clamp(1.25rem, 4vw, 4.25rem) + 4.05rem + 0.875rem);
+}
+
 .home-founder-link__photo {
   display: block;
   width: 3.35rem;
@@ -993,6 +997,10 @@ section[id] {
   .home-founder-link:hover,
   .home-founder-link:focus-visible {
     transform: translate(-50%, -2px);
+  }
+
+  .home-founder-link--rodrigo {
+    left: calc(50% + 4.325rem);
   }
 
   .home-founder-link__photo {
@@ -3319,6 +3327,10 @@ body.agency-page.premium-page {
     bottom: 1rem;
     width: 3.25rem;
     height: 3.25rem;
+  }
+
+  .home-founder-link--rodrigo {
+    left: calc(50% + 4.05rem);
   }
 
   .home-founder-link__photo {
