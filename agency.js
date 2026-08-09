@@ -32,6 +32,7 @@
       "david-bastida",
       "loyal-roofing",
       "cater-vegas",
+      "whats-next",
       "footer"
     ];
     const panels = panelOrder
@@ -58,6 +59,8 @@
     ].join(",");
     const panelIds = panels.map(panel => panel.dataset.homePanel);
     const footerIndex = panelIds.indexOf("footer");
+    const progressNav = document.querySelector("[data-home-panel-progress]");
+    const siteHeader = document.getElementById("site-header");
     let activeIndex = Math.max(0, panelIds.indexOf(window.location.hash.replace("#", "")));
     let isLocked = false;
     let lockTimer = 0;
@@ -139,6 +142,34 @@
     };
 
     const updatePanels = () => {
+      const activePanelId = panelIds[activeIndex] || "";
+      const isTeaserActive = activePanelId === "whats-next";
+      const showProgress = !isTeaserActive;
+
+      stage.dataset.activeHomePanel = activePanelId;
+      document.body.classList.toggle("is-home-panel-teaser-active", isTeaserActive);
+
+      if (progressNav) {
+        progressNav.setAttribute("aria-hidden", String(!showProgress));
+      }
+
+      if (siteHeader) {
+        if (isTeaserActive) {
+          siteHeader.setAttribute("aria-hidden", "true");
+          if ("inert" in siteHeader) {
+            siteHeader.inert = true;
+          }
+          if (siteHeader.contains(document.activeElement)) {
+            document.activeElement.blur();
+          }
+        } else {
+          siteHeader.removeAttribute("aria-hidden");
+          if ("inert" in siteHeader) {
+            siteHeader.inert = false;
+          }
+        }
+      }
+
       panels.forEach((panel, index) => {
         const isActive = index === activeIndex;
         panel.classList.toggle("is-active", isActive);
@@ -150,6 +181,11 @@
       progressButtons.forEach(button => {
         const isActive = getPanelIndex(button.dataset.homePanelTarget) === activeIndex;
         button.classList.toggle("is-active", isActive);
+        if (showProgress) {
+          button.removeAttribute("tabindex");
+        } else {
+          button.setAttribute("tabindex", "-1");
+        }
         if (isActive) {
           button.setAttribute("aria-current", "true");
         } else {
