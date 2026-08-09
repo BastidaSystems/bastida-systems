@@ -3,14 +3,11 @@ const siteLanguageStorageKey = 'site-language';
 const sharedSiteTranslations = {
   en: {
     'nav.home': 'Home',
-    'nav.products': 'Store',
     'nav.store': 'Store',
-    'nav.allProducts': 'Store Catalog',
     'nav.openMenu': 'Open navigation menu',
     'nav.websitesDescription': 'Websites and digital experiences for real businesses.',
     'nav.systemsDescription': 'Custom platforms, automation, and business technology.',
     'nav.industriesDescription': 'Technology shaped around real operational needs.',
-    'nav.allProductsDescription': 'Explore Bastida Systems technology.',
     'nav.filtracoreDescription': 'Smart water monitoring hardware and software.',
     'nav.beoflowDescription': 'Event and business workflow platform.',
     'nav.solutions': 'Solutions',
@@ -90,19 +87,19 @@ const sharedSiteTranslations = {
     'home.progress.davidBastida': 'David Bastida',
     'home.progress.loyalRoofing': 'The Loyal Roofing Company',
     'home.progress.caterVegas': 'Cater Vegas',
+    'home.progress.whatsNext': "What's Next",
+    'home.next.title': "What's Next?",
+    'home.next.ariaLabel': 'Open FiltraCore App Store page in a new tab',
     'home.progress.footer': 'Footer',
     'home.footer.ariaLabel': 'Footer'
   },
   es: {
     'nav.home': 'Inicio',
-    'nav.products': 'Tienda',
     'nav.store': 'Tienda',
-    'nav.allProducts': 'Catalogo de tienda',
     'nav.openMenu': 'Abrir menu de navegacion',
     'nav.websitesDescription': 'Sitios web y experiencias digitales para negocios reales.',
     'nav.systemsDescription': 'Plataformas, automatización y tecnología empresarial.',
     'nav.industriesDescription': 'Tecnología adaptada a necesidades operativas reales.',
-    'nav.allProductsDescription': 'Explora la tecnología de Bastida Systems.',
     'nav.filtracoreDescription': 'Hardware y software inteligente para monitoreo de agua.',
     'nav.beoflowDescription': 'Plataforma de flujos de trabajo para eventos y negocios.',
     'nav.solutions': 'Soluciones',
@@ -182,6 +179,9 @@ const sharedSiteTranslations = {
     'home.progress.davidBastida': 'David Bastida',
     'home.progress.loyalRoofing': 'The Loyal Roofing Company',
     'home.progress.caterVegas': 'Cater Vegas',
+    'home.progress.whatsNext': 'Qué sigue',
+    'home.next.title': '¿Qué sigue?',
+    'home.next.ariaLabel': 'Ver FiltraCore en App Store en una nueva pestana',
     'home.progress.footer': 'Pie de pagina',
     'home.footer.ariaLabel': 'Pie de pagina'
   }
