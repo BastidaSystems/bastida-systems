@@ -3,9 +3,9 @@ const siteLanguageStorageKey = 'site-language';
 const sharedSiteTranslations = {
   en: {
     'nav.home': 'Home',
-    'nav.products': 'Products',
-    'nav.store': 'Products',
-    'nav.allProducts': 'Products & Platforms',
+    'nav.products': 'Store',
+    'nav.store': 'Store',
+    'nav.allProducts': 'Store Catalog',
     'nav.openMenu': 'Open navigation menu',
     'nav.websitesDescription': 'Websites and digital experiences for real businesses.',
     'nav.systemsDescription': 'Custom platforms, automation, and business technology.',
@@ -95,9 +95,9 @@ const sharedSiteTranslations = {
   },
   es: {
     'nav.home': 'Inicio',
-    'nav.products': 'Productos',
-    'nav.store': 'Productos',
-    'nav.allProducts': 'Productos y plataformas',
+    'nav.products': 'Tienda',
+    'nav.store': 'Tienda',
+    'nav.allProducts': 'Catalogo de tienda',
     'nav.openMenu': 'Abrir menu de navegacion',
     'nav.websitesDescription': 'Sitios web y experiencias digitales para negocios reales.',
     'nav.systemsDescription': 'Plataformas, automatización y tecnología empresarial.',

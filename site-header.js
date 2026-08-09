@@ -8,7 +8,7 @@
   };
 
   const solutionPages = new Set(['websites.html', 'systems.html', 'industries.html']);
-  const storePages = new Set(['filtracore.html', 'beoflow.html']);
+  const storePages = new Set(['store.html', 'filtracore.html', 'beoflow.html']);
 
   const markup = `
     <header class="bs-header">
@@ -48,20 +48,7 @@
           </div>
         </div>
 
-        <div class="bs-nav-group" data-nav-group="store">
-          <button class="bs-nav-dropdown-toggle" type="button" aria-expanded="false" aria-controls="bs-store-menu">
-            <span data-i18n="nav.store">Products</span>
-            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>
-          </button>
-          <div class="bs-nav-dropdown bs-nav-dropdown--store" id="bs-store-menu">
-            <a href="systems.html" data-nav-page="systems.html">
-              <strong data-i18n="nav.allProducts">Products & Platforms</strong>
-              <small data-i18n="nav.allProductsDescription">Explore Bastida Systems technology.</small>
-            </a>
-            <a href="filtracore.html" data-nav-page="filtracore.html"><strong>FiltraCore</strong><small data-i18n="nav.filtracoreDescription">Smart water monitoring hardware and software.</small></a>
-            <a href="beoflow.html" data-nav-page="beoflow.html"><strong>BEOFlow</strong><small data-i18n="nav.beoflowDescription">Event and business workflow platform.</small></a>
-          </div>
-        </div>
+        <a href="store.html" data-nav-page="store.html" data-i18n="nav.store">Store</a>
 
         <a href="about.html" data-nav-page="about.html" data-i18n="nav.about">About</a>
         <a href="contact.html" data-nav-page="contact.html" data-i18n="nav.contact">Contact</a>
@@ -103,8 +90,7 @@
       target.querySelector('[data-nav-group="solutions"] .bs-nav-dropdown-toggle')?.setAttribute('aria-current', 'page');
     }
     if (storePages.has(current)) {
-      target.querySelector('[data-nav-group="store"]')?.classList.add('is-current');
-      target.querySelector('[data-nav-group="store"] .bs-nav-dropdown-toggle')?.setAttribute('aria-current', 'page');
+      target.querySelector('[data-nav-page="store.html"]')?.setAttribute('aria-current', 'page');
     }
 
     if (mobileToggle) {
