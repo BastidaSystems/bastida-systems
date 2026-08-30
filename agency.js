@@ -318,9 +318,159 @@
     updateHash(panelIds[activeIndex], true);
   };
 
+  const initCurrentYear = () => {
+    const year = String(new Date().getFullYear());
+    document.querySelectorAll("[data-current-year]").forEach(node => {
+      node.textContent = year;
+    });
+  };
+
+  const initHomeSectionDots = () => {
+    const dots = Array.from(document.querySelectorAll(".home-hero-dots a[href^='#']"));
+    if (!dots.length) return;
+
+    const sections = dots
+      .map(dot => document.querySelector(dot.getAttribute("href")))
+      .filter(Boolean);
+
+    const setActiveDot = id => {
+      dots.forEach(dot => {
+        dot.classList.toggle("is-active", dot.getAttribute("href") === `#${id}`);
+      });
+    };
+
+    if (!("IntersectionObserver" in window)) return;
+
+    const observer = new IntersectionObserver(entries => {
+      const visible = entries
+        .filter(entry => entry.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+      if (visible?.target?.id) {
+        setActiveDot(visible.target.id);
+      }
+    }, {
+      rootMargin: "-35% 0px -45% 0px",
+      threshold: [0.08, 0.2, 0.4, 0.6]
+    });
+
+    sections.forEach(section => observer.observe(section));
+  };
+
+  const initHomePrintingVideos = () => {
+    const videos = Array.from(document.querySelectorAll(".home-print-video"));
+    if (!videos.length || document.body.dataset.printVideosInitialized) return;
+
+    document.body.dataset.printVideosInitialized = "true";
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const loadVideo = video => {
+      if (video.dataset.videoLoaded) return;
+
+      let needsLoad = false;
+      video.querySelectorAll("source[data-src]").forEach(source => {
+        source.src = source.dataset.src;
+        source.removeAttribute("data-src");
+        needsLoad = true;
+      });
+
+      video.dataset.videoLoaded = "true";
+      if (needsLoad) video.load();
+    };
+
+    if (reduceMotion) {
+      videos.forEach(video => {
+        video.removeAttribute("autoplay");
+        video.pause();
+      });
+      return;
+    }
+
+    if (!("IntersectionObserver" in window)) {
+      loadVideo(videos[0]);
+      videos[0]?.play().catch(() => {});
+      return;
+    }
+
+    const visibility = new Map(videos.map(video => [video, 0]));
+    let pendingVideo = null;
+    let pendingTimer = 0;
+    let playingVideo = null;
+
+    const syncPlayback = () => {
+      let activeVideo = null;
+      let activeRatio = 0;
+
+      visibility.forEach((ratio, video) => {
+        if (ratio > activeRatio) {
+          activeRatio = ratio;
+          activeVideo = video;
+        }
+      });
+
+      videos.forEach(video => {
+        if (video !== activeVideo) {
+          video.pause();
+        }
+      });
+
+      if (!activeVideo || activeRatio < 0.16) {
+        window.clearTimeout(pendingTimer);
+        pendingVideo = null;
+        playingVideo = null;
+        return;
+      }
+
+      if (playingVideo === activeVideo && !activeVideo.paused) return;
+      if (pendingVideo === activeVideo) return;
+
+      window.clearTimeout(pendingTimer);
+      pendingVideo = activeVideo;
+
+      const activationDelay = activeVideo.hasAttribute("data-lazy-video") ? 650 : 0;
+      pendingTimer = window.setTimeout(() => {
+        if (pendingVideo !== activeVideo) return;
+        if ((visibility.get(activeVideo) || 0) < 0.16) return;
+
+        videos.forEach(video => {
+          if (video !== activeVideo) video.pause();
+        });
+
+        loadVideo(activeVideo);
+        activeVideo.play().catch(() => {});
+        playingVideo = activeVideo;
+        pendingVideo = null;
+      }, activationDelay);
+    };
+
+    const observeVideos = () => {
+      const playbackObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          visibility.set(entry.target, entry.isIntersecting ? entry.intersectionRatio : 0);
+        });
+        syncPlayback();
+      }, {
+        threshold: [0, 0.16, 0.34, 0.58, 0.78]
+      });
+
+      videos.forEach(video => {
+        playbackObserver.observe(video);
+      });
+    };
+
+    window.setTimeout(observeVideos, window.location.hash ? 1400 : 0);
+
+    window.addEventListener("pagehide", () => {
+      videos.forEach(video => video.pause());
+    });
+  };
+
   const init = () => {
     revealNodes();
     initHomePanels();
+    initCurrentYear();
+    initHomeSectionDots();
+    initHomePrintingVideos();
   };
 
   document.addEventListener("site-header-loaded", () => {

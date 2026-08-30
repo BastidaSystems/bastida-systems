@@ -8,59 +8,36 @@
   };
 
   const solutionPages = new Set(['websites.html', 'systems.html', 'industries.html']);
-  const storePages = new Set(['store.html', 'filtracore.html', 'beoflow.html']);
+  const workPages = new Set(['work.html']);
 
   const markup = `
     <header class="bs-header">
-      <a class="bs-brand" href="index.html" aria-label="Bastida Systems home">
-        <span class="bs-brand-logo"><img src="img/logo_bastida_sys.png" alt="" aria-hidden="true"></span>
-        <span class="bs-brand-text">
-          <strong class="bs-brand-name">Bastida Systems</strong>
-        </span>
-      </a>
-
       <input class="bs-menu-toggle" type="checkbox" id="bs-mobile-menu-toggle" aria-hidden="true">
       <label class="bs-menu-button" for="bs-mobile-menu-toggle" role="button" tabindex="0" aria-label="Open navigation menu" aria-expanded="false" aria-controls="bs-primary-nav" data-menu-button data-i18n-aria-label="nav.openMenu">
         <span></span><span></span><span></span>
       </label>
 
-      <nav class="bs-nav" id="bs-primary-nav" aria-label="Primary navigation">
+      <a class="bs-brand" href="index.html" aria-label="Bastida Systems home">
+        <span class="bs-brand-logo"><img src="img/logo_bastida_sys.png" alt="" aria-hidden="true"></span>
+      </a>
+
+      <nav class="bs-nav site-menu-links" id="bs-primary-nav" aria-label="Primary navigation">
         <a href="index.html" data-nav-page="index.html" data-i18n="nav.home">Home</a>
-
-        <div class="bs-nav-group" data-nav-group="solutions">
-          <button class="bs-nav-dropdown-toggle" type="button" aria-expanded="false" aria-controls="bs-solutions-menu">
-            <span data-i18n="nav.solutions">Solutions</span>
-            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>
-          </button>
-          <div class="bs-nav-dropdown" id="bs-solutions-menu">
-            <a href="websites.html" data-nav-page="websites.html">
-              <strong data-i18n="nav.websites">Websites</strong>
-              <small data-i18n="nav.websitesDescription">Premium digital experiences for real businesses.</small>
-            </a>
-            <a href="systems.html" data-nav-page="systems.html">
-              <strong data-i18n="nav.systems">Systems</strong>
-              <small data-i18n="nav.systemsDescription">Custom platforms, automation, and business technology.</small>
-            </a>
-            <a href="industries.html" data-nav-page="industries.html">
-              <strong data-i18n="nav.industries">Industries</strong>
-              <small data-i18n="nav.industriesDescription">Technology shaped around real operational needs.</small>
-            </a>
-          </div>
-        </div>
-
-        <a href="store.html" data-nav-page="store.html" data-i18n="nav.store">Store</a>
-
+        <a href="index.html#solutions" data-nav-section="solutions" data-i18n="nav.solutions">Solutions</a>
+        <a href="work.html" data-nav-page="work.html" data-i18n="nav.work">Work</a>
+        <a href="index.html#process" data-i18n="nav.process">Process</a>
         <a href="about.html" data-nav-page="about.html" data-i18n="nav.about">About</a>
-        <a href="contact.html" data-nav-page="contact.html" data-i18n="nav.contact">Contact</a>
-        <a class="bs-nav-cta" href="contact.html" data-i18n="nav.getStarted">Get Started</a>
-
-        <label class="language-picker">
-          <span data-i18n="nav.language">Language</span>
-          <select id="language-select" aria-label="Language selector" data-i18n-aria-label="nav.languageSelector">
-            <option value="en">EN</option><option value="es">ES</option>
-          </select>
-        </label>
+        <a class="bs-nav-cta" href="contact.html">
+          <span data-i18n="nav.getStarted">Start a Project</span>
+        </a>
       </nav>
+
+      <label class="language-picker">
+        <span data-i18n="nav.language">Language</span>
+        <select id="language-select" aria-label="Language selector" data-i18n-aria-label="nav.languageSelector">
+          <option value="en">EN</option><option value="es">ES</option>
+        </select>
+      </label>
     </header>`;
 
   const closeDropdowns = target => {
@@ -88,9 +65,10 @@
     if (solutionPages.has(current)) {
       target.querySelector('[data-nav-group="solutions"]')?.classList.add('is-current');
       target.querySelector('[data-nav-group="solutions"] .bs-nav-dropdown-toggle')?.setAttribute('aria-current', 'page');
+      target.querySelector('[data-nav-section="solutions"]')?.setAttribute('aria-current', 'page');
     }
-    if (storePages.has(current)) {
-      target.querySelector('[data-nav-page="store.html"]')?.setAttribute('aria-current', 'page');
+    if (workPages.has(current)) {
+      target.querySelector('[data-nav-page="work.html"]')?.setAttribute('aria-current', 'page');
     }
 
     if (mobileToggle) {

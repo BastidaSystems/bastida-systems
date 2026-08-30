@@ -33,7 +33,7 @@ body {
   margin: 0;
   background: var(--fc-bg);
   color: var(--fc-ink);
-  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 16px;
   letter-spacing: 0;
   overflow-x: hidden;

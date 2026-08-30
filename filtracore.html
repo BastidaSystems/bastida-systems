@@ -8,19 +8,25 @@
   <link rel="icon" type="image/png" href="img/LOGO_FILTRACOREXCODE.png">
 
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="agency.css?v=2026-08-26-index-nav">
   <link rel="stylesheet" href="filtra.css?v=20260531-impact">
 
   <style>
     body {
-      font-family: 'Manrope', sans-serif;
+      font-family: 'Montserrat', sans-serif;
       letter-spacing: 0;
-    }  </style>
+    }
+
+    #site-header {
+      margin-bottom: 0;
+    }
+  </style>
 </head>
 
 <body>
   <div id="site-header"></div>
-  <script src="site-header.js" defer></script>
+  <script src="site-header.js?v=2026-08-26-home-nav" defer></script>
 
   <main class="fc-page">
     <section class="fc-hero fc-watertech-hero" aria-labelledby="hero-title">
@@ -1108,15 +1114,24 @@
         'nav.language': 'Language',
         'nav.languageSelector': 'Language selector',
         'nav.home': 'Home',
+        'nav.solutions': 'Solutions',
+        'nav.products': 'Products',
+        'nav.work': 'Work',
+        'nav.process': 'Process',
+        'nav.openMenu': 'Open navigation menu',
         'nav.industries': 'Industries',
         'nav.store': 'Store',
         'nav.websites': 'Websites',
+        'nav.websitesDescription': 'Premium digital experiences for real businesses.',
         'nav.systems': 'Systems',
+        'nav.systemsDescription': 'Custom platforms, automation, and business technology.',
+        'nav.industriesDescription': 'Technology shaped around real operational needs.',
         'nav.about': 'About',
         'nav.aboutUs': 'About Us',
         'nav.portal': 'Client Portal',
         'nav.login': 'Login',
         'nav.contact': 'Contact',
+        'nav.getStarted': 'Get Started',
         'nav.privacy': 'Privacy',
         'hero.brandSystem': 'Smart Water Intelligence',
         'hero.titleDesktop': 'Smart Water Intelligence for Every Filter.',
@@ -1421,15 +1436,24 @@
         'nav.language': 'Idioma',
         'nav.languageSelector': 'Selector de idioma',
         'nav.home': 'Inicio',
+        'nav.solutions': 'Soluciones',
+        'nav.products': 'Productos',
+        'nav.work': 'Proyectos',
+        'nav.process': 'Proceso',
+        'nav.openMenu': 'Abrir menu de navegacion',
         'nav.industries': 'Industrias',
         'nav.store': 'Tienda',
         'nav.websites': 'Sitios Web',
+        'nav.websitesDescription': 'Experiencias digitales premium para negocios reales.',
         'nav.systems': 'Sistemas',
+        'nav.systemsDescription': 'Plataformas a la medida, automatizacion y tecnologia empresarial.',
+        'nav.industriesDescription': 'Tecnologia adaptada a necesidades operativas reales.',
         'nav.about': 'Acerca',
         'nav.aboutUs': 'About Us',
         'nav.portal': 'Portal de Clientes',
         'nav.login': 'Login',
         'nav.contact': 'Contacto',
+        'nav.getStarted': 'Empezar',
         'nav.privacy': 'Privacidad',
         'hero.brandSystem': 'Inteligencia para agua inteligente',
         'hero.titleDesktop': 'Inteligencia de agua para cada filtro.',
@@ -1746,14 +1770,9 @@
       if (!nav) return false;
       if (nav.dataset.filtracoreLanguageReady === 'true') return true;
 
-      nav.querySelector('a[href="store.html"]')?.setAttribute('data-i18n', 'nav.store');
-      nav.querySelector('a[href="websites.html"]')?.setAttribute('data-i18n', 'nav.websites');
-      nav.querySelector('a[href="systems.html"]')?.setAttribute('data-i18n', 'nav.systems');
-      nav.querySelector('a[href="about.html"]')?.setAttribute('data-i18n', 'nav.aboutUs');
-      nav.querySelector('a[href="portal.html"]')?.setAttribute('data-i18n', 'nav.portal');
-      nav.querySelector('a[href="index.html#contact"]')?.setAttribute('data-i18n', 'nav.contact');
-
-      const links = nav.querySelector('.site-menu-links');
+      const links = nav.classList.contains('site-menu-links')
+        ? nav
+        : nav.querySelector('.site-menu-links');
       if (!links) return false;
 
       const select = document.getElementById('language-select');
