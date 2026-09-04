@@ -15,7 +15,7 @@
   </head>
   <body>
     <div class="admin-layout admin-layout-simple">
-      <aside class="admin-sidebar" aria-label="Menu de administrador">
+      <aside class="admin-sidebar" aria-label="Menú de administrador">
         <a class="admin-logo" href="../index.html" aria-label="Cater Vegas home">
           <span>CV</span>
           <strong>CATER VEGAS</strong>
@@ -43,7 +43,7 @@
           <div class="header-title">
             <p class="eyebrow">Admin</p>
             <h1>Dashboard Admin</h1>
-            <p>Control visual de eventos, proveedores y operacion.</p>
+            <p>Control visual de eventos, proveedores y operación.</p>
           </div>
 
           <div class="header-actions">
@@ -62,10 +62,10 @@
           <article class="command-card simple-command">
             <div>
               <p class="eyebrow">Cater Vegas</p>
-              <h2>Operacion clara.</h2>
+              <h2>Operación clara.</h2>
             </div>
-            <p id="sessionStatus" class="session-status">Verificando sesion...</p>
-            <div class="quick-actions" aria-label="Acciones rapidas">
+            <p id="sessionStatus" class="session-status">Verificando sesión...</p>
+            <div class="quick-actions" aria-label="Acciones rápidas">
               <button type="button" data-scroll-target="#events">Eventos</button>
               <button type="button" data-scroll-target="#requestsSection">Solicitudes</button>
               <button type="button" data-scroll-target="#beoflow">BEOFlow</button>
@@ -118,7 +118,7 @@
         <section class="simple-dashboard-grid">
           <article class="panel simple-panel" id="events">
             <div class="panel-heading">
-              <div><span>📅</span><h2>Proximos eventos</h2></div>
+              <div><span>📅</span><h2>Próximos eventos</h2></div>
               <button id="refreshEventsButton" type="button">Actualizar</button>
             </div>
             <div class="event-list-mini" id="upcomingEventsList" aria-live="polite"></div>
@@ -195,14 +195,14 @@
                   <input id="collaboratorId" type="hidden" />
                   <label><span>Proveedor / empresa</span><input id="collaboratorName" type="text" placeholder="Cater Vegas Rentals" required /></label>
                   <label><span>Email</span><input id="collaboratorEmail" type="email" placeholder="contacto@proveedor.com" /></label>
-                  <label><span>Telefono</span><input id="collaboratorPhone" type="tel" placeholder="+1 702..." /></label>
+                  <label><span>Teléfono</span><input id="collaboratorPhone" type="tel" placeholder="+1 702..." /></label>
                   <label>
-                    <span>Categoria</span>
+                    <span>Categoría</span>
                     <select id="collaboratorRole">
                       <option value="chef" selected>Catering / Cocina</option>
                       <option value="server">Servicio</option>
-                      <option value="driver">Logistica / Delivery</option>
-                      <option value="organizer">Coordinacion</option>
+                      <option value="driver">Logística / Delivery</option>
+                      <option value="organizer">Coordinación</option>
                       <option value="staff">Staff extra</option>
                     </select>
                   </label>
@@ -218,7 +218,7 @@
                   <label><span>Disponibilidad</span><input id="providerAvailability" type="text" placeholder="Weekends, evenings..." /></label>
                   <label><span>Precios base</span><input id="providerBasePricing" type="text" placeholder="$500 setup, $45 pp..." /></label>
                   <label><span>Licencia / seguro</span><input id="providerLicenseInsurance" type="text" placeholder="Health permit, liability..." /></label>
-                  <label class="wide-field"><span>Servicios y notas</span><textarea id="collaboratorNotes" rows="4" placeholder="Menu, zona, disponibilidad, precios base, licencia o seguro"></textarea></label>
+                  <label class="wide-field"><span>Servicios y notas</span><textarea id="collaboratorNotes" rows="4" placeholder="Menú, zona, disponibilidad, precios base, licencia o seguro"></textarea></label>
                   <div class="form-actions">
                     <button class="primary-button" type="submit">Guardar proveedor</button>
                     <button class="secondary-button" id="resetCollaboratorButton" type="button">Limpiar</button>
@@ -226,12 +226,12 @@
                   <p class="admin-status" id="collaboratorFormStatus" aria-live="polite"></p>
                 </form>
 
-                <aside class="provider-info-card" aria-label="Informacion necesaria para proveedores">
+                <aside class="provider-info-card" aria-label="Información necesaria para proveedores">
                   <p class="eyebrow">Datos necesarios</p>
                   <div class="provider-checklist">
                     <span>Empresa o contacto</span>
-                    <span>Categoria</span>
-                    <span>Email y telefono</span>
+                    <span>Categoría</span>
+                    <span>Email y teléfono</span>
                     <span>Servicio principal</span>
                     <span>Zona de cobertura</span>
                     <span>Disponibilidad</span>
@@ -251,7 +251,7 @@
 
               <div class="assignment-panel">
                 <div>
-                  <p class="eyebrow">Asignacion</p>
+                  <p class="eyebrow">Asignación</p>
                   <h3>Proveedor a evento</h3>
                 </div>
 
@@ -259,12 +259,12 @@
                   <label><span>Evento</span><select id="assignmentEvent"></select></label>
                   <label><span>Proveedor</span><select id="assignmentCollaborator"></select></label>
                   <label>
-                    <span>Funcion</span>
+                    <span>Función</span>
                     <select id="assignmentRole">
                       <option value="chef" selected>Catering</option>
                       <option value="server">Servicio</option>
                       <option value="driver">Delivery</option>
-                      <option value="organizer">Coordinacion</option>
+                      <option value="organizer">Coordinación</option>
                       <option value="staff">Staff extra</option>
                     </select>
                   </label>

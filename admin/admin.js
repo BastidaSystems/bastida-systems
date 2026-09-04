@@ -133,17 +133,17 @@ function setCollaboratorStatus(message) {
 function eventSaveErrorMessage(error) {
   const message = error?.message || "";
   if (message.toLowerCase().includes("row-level security")) {
-    return "No se pudo guardar el evento. Revisa la conexion o las politicas de Supabase.";
+    return "No se pudo guardar el evento. Revisa la conexión o las políticas de Supabase.";
   }
-  return message || "No se pudo guardar el evento. Revisa la conexion o las politicas de Supabase.";
+  return message || "No se pudo guardar el evento. Revisa la conexión o las políticas de Supabase.";
 }
 
 function providerSaveErrorMessage(error) {
   const message = error?.message || "";
   if (message.toLowerCase().includes("row-level security")) {
-    return "No se pudo guardar el proveedor. Revisa la conexion o las politicas de Supabase.";
+    return "No se pudo guardar el proveedor. Revisa la conexión o las políticas de Supabase.";
   }
-  return message || "No se pudo guardar el proveedor. Revisa la conexion o las politicas de Supabase.";
+  return message || "No se pudo guardar el proveedor. Revisa la conexión o las políticas de Supabase.";
 }
 
 function setAssignmentStatus(message) {
@@ -296,8 +296,8 @@ function providerRoleLabel(role) {
   const labels = {
     chef: "Catering / Cocina",
     server: "Servicio",
-    driver: "Logistica / Delivery",
-    organizer: "Coordinacion",
+    driver: "Logística / Delivery",
+    organizer: "Coordinación",
     staff: "Staff extra",
     viewer: "Viewer",
     admin: "Admin",
@@ -507,7 +507,7 @@ function renderActivityTimeline() {
     })),
     ...allAssignments.slice(0, 2).map((assignment) => ({
       icon: "💰",
-      title: `Asignacion #${assignment.id || assignment.event_id}`,
+      title: `Asignación #${assignment.id || assignment.event_id}`,
       meta: `${providerRoleLabel(assignment.assignment_role)} · ${assignment.status || "active"}`,
     })),
   ].slice(0, 6);
@@ -627,7 +627,7 @@ function renderCollaborators(rows = []) {
               #${collaborator.id} · ${escapeHtml(providerRoleLabel(collaborator.role))} · ${statusBadge(collaborator.status)}
             </span>
             <span class="collaborator-meta">
-              ${escapeHtml(collaborator.email || "Sin email")} · ${escapeHtml(collaborator.phone || "Sin telefono")}
+              ${escapeHtml(collaborator.email || "Sin email")} · ${escapeHtml(collaborator.phone || "Sin teléfono")}
             </span>
           </button>
           <div class="collaborator-actions">
@@ -713,7 +713,7 @@ function renderCustomers(rows = []) {
       (customer) => `
         <article class="customer-row">
           <strong>${escapeHtml(customer.full_name)}</strong>
-          <span class="customer-meta">#${customer.id} · ${escapeHtml(customer.email || "Sin email")} · ${escapeHtml(customer.phone || "Sin telefono")}</span>
+          <span class="customer-meta">#${customer.id} · ${escapeHtml(customer.email || "Sin email")} · ${escapeHtml(customer.phone || "Sin teléfono")}</span>
         </article>
       `
     )
@@ -1402,7 +1402,7 @@ assignmentForm.addEventListener("submit", async (event) => {
   }
 
   assignmentNotes.value = "";
-  setAssignmentStatus("Asignacion guardada.");
+  setAssignmentStatus("Asignación guardada.");
   await loadAssignments();
 });
 

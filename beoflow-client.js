@@ -132,7 +132,7 @@ const UI_TRANSLATIONS_ES = {
   'New Provider': 'Nuevo proveedor',
   'Provider Name': 'Nombre del proveedor',
   'Provider Type': 'Tipo de proveedor',
-  'Service Category': 'Categoria de servicio',
+  'Service Category': 'Categoría de servicio',
   'Coverage Zone': 'Zona de cobertura',
   'Availability': 'Disponibilidad',
   'Base Prices': 'Precios base',
@@ -144,7 +144,7 @@ const UI_TRANSLATIONS_ES = {
   'Preferred': 'Preferido',
   'Inactive': 'Inactivo',
   'Draft': 'Borrador',
-  'Planning': 'Planeacion',
+  'Planning': 'Planeación',
   'Confirmed': 'Confirmado',
   'Completed': 'Completado',
   'Cancelled': 'Cancelado',
@@ -316,7 +316,7 @@ const UI_TRANSLATIONS_ES = {
   'Add to recipe': 'Agregar a receta',
   'Add to Recipe': 'Agregar a receta',
   'Remove ingredient': 'Eliminar ingrediente',
-  'Remove this ingredient?': 'Eliminar este ingrediente?',
+  'Remove this ingredient?': '¿Eliminar este ingrediente?',
   'Delete ingredient': 'Eliminar ingrediente',
   'Ingredient details': 'Detalles del ingrediente',
   'Inventory actions': 'Acciones de inventario',
@@ -1819,10 +1819,10 @@ async function requireCurrentSupabaseSession() {
   const session = data?.session || null;
   if (error) {
     console.error('Supabase session error:', error);
-    throw new Error('Tu sesion expiro. Inicia sesion nuevamente.');
+    throw new Error('Tu sesión expiró. Inicia sesión nuevamente.');
   }
   if (!session?.user?.id) {
-    throw new Error('Tu sesion expiro. Inicia sesion nuevamente.');
+    throw new Error('Tu sesión expiró. Inicia sesión nuevamente.');
   }
   return session;
 }
@@ -1842,9 +1842,9 @@ function getRecordMutationErrorMessage(error) {
     return 'La estructura de la tabla no coincide con el formulario.';
   }
   if (message.includes('client_id') || message.includes('workspace')) {
-    return 'No se encontro el workspace Cater Vegas.';
+    return 'No se encontró el workspace Cater Vegas.';
   }
-  return 'No se pudo guardar. Revisa la conexion o las politicas de Supabase.';
+  return 'No se pudo guardar. Revisa la conexión o las políticas de Supabase.';
 }
 
 function getModuleConfig(section) {
@@ -3526,7 +3526,7 @@ function renderFoodSection(shouldRefreshCounts = true) {
     }
   ];
 
-  els['module-count-badge'].textContent = '4 areas';
+  els['module-count-badge'].textContent = '4 áreas';
   els['module-empty-state'].hidden = true;
   els['module-record-list'].hidden = false;
   els['module-record-list'].innerHTML = `
@@ -5394,7 +5394,7 @@ function openModuleModal(section, record = null, options = {}) {
   const moduleConfig = getModuleConfig(section);
   if (!moduleConfig.table) return;
   if (isModuleReadOnly(section)) {
-    showAlert(els['workspace-message'], 'No tienes permisos para administrar este modulo.');
+    showAlert(els['workspace-message'], 'No tienes permisos para administrar este módulo.');
     return;
   }
 
@@ -5802,7 +5802,7 @@ async function saveModuleRecord(event) {
 
   try {
     if (isModuleReadOnly(section)) {
-      throw new Error('No tienes permisos para administrar este modulo.');
+      throw new Error('No tienes permisos para administrar este módulo.');
     }
 
     if (isCostingRecipeSection(section)) {
@@ -5869,7 +5869,7 @@ async function saveModuleRecord(event) {
 async function archiveModuleRecord(section, recordId) {
   const moduleConfig = getModuleConfig(section);
   if (isModuleReadOnly(section)) {
-    showAlert(els['workspace-message'], 'No tienes permisos para administrar este modulo.');
+    showAlert(els['workspace-message'], 'No tienes permisos para administrar este módulo.');
     return;
   }
   const record = getRecordById(section, recordId);
