@@ -8926,12 +8926,14 @@ body.agency-page.premium-page .portfolio-hero h1 {
   }
 
   .product-shelf-rail {
-    width: calc(100% + 48px);
-    margin-inline: -24px;
-    padding-inline: 24px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    width: 100%;
+    margin-inline: 0;
+    padding-inline: 0;
     gap: 18px;
-    scroll-padding-inline: 24px;
-    scroll-snap-type: x mandatory;
+    overflow: visible;
+    scroll-snap-type: none;
     scrollbar-width: none;
   }
 
@@ -8940,29 +8942,35 @@ body.agency-page.premium-page .portfolio-hero h1 {
   }
 
   .product-shelf-item {
-    flex-basis: min(50vw, 172px);
+    flex-basis: auto;
     min-height: 124px;
   }
 
   .product-shelf-item--wide {
-    flex-basis: min(58vw, 198px);
+    flex-basis: auto;
   }
 }
 
 @media (max-width: 480px) {
   .product-shelf-rail {
-    width: 100vw;
-    margin-inline: calc(50% - 50vw);
-    padding-inline: 16vw;
-    scroll-padding-inline: 16vw;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    margin-inline: 0;
+    padding-inline: 0;
+    gap: 16px 14px;
+    overflow: visible;
+    scroll-snap-type: none;
   }
 
   .product-shelf-item {
-    flex-basis: 68vw;
+    flex-basis: auto;
+    width: 100%;
+    min-height: 108px;
   }
 
   .product-shelf-item--wide {
-    flex-basis: 76vw;
+    flex-basis: auto;
   }
 }
 
