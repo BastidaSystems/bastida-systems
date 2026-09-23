@@ -17,15 +17,36 @@
     any element with data-track="click_contact" (etc.) fires that event
     on click, with page_path + site language attached.
 
-  Privacy: only event names, page paths and UI language are sent.
+  Privacy: GA4 also collects standard device, session and referral metadata.
+  Page/referrer URLs retain campaign parameters, omitting auth query keys and fragments.
   Never send names, emails, phone numbers or message text to analytics.
 */
 (function () {
   'use strict';
 
+  // Guard both script loading and event listeners if this file is included twice.
+  if (window.bsAnalyticsInitialized) return;
+  window.bsAnalyticsInitialized = true;
+
   var cfg = (window.BASTIDA_SITE_CONFIG || {});
   var gtmId = (cfg.gtmId || '').trim();
   var gaId = (cfg.gaMeasurementId || '').trim();
+
+  function measurementUrl(value) {
+    if (!value) return '';
+    try {
+      var url = new URL(value, window.location.href);
+      var campaign = new URLSearchParams();
+      url.searchParams.forEach(function (entry, key) {
+        if (/^(utm_(source|medium|campaign|id|term|content|source_platform|creative_format|marketing_tactic)|gclid|dclid|gbraid|wbraid)$/.test(key)) {
+          campaign.append(key, entry);
+        }
+      });
+      url.search = campaign.toString();
+      url.hash = '';
+      return url.href;
+    } catch (e) { return ''; }
+  }
 
   function siteLanguage() {
     try {
@@ -59,6 +80,10 @@
   window.dataLayer = window.dataLayer || [];
 
   function loadScript(src, attrs) {
+    // Reuse an already loaded transport instead of inserting a second tag.
+    if (Array.prototype.some.call(document.scripts, function (script) {
+      return script.src === src;
+    })) return;
     var s = document.createElement('script');
     s.async = true;
     s.src = src;
@@ -76,14 +101,17 @@
     loadScript('https://www.googletagmanager.com/gtm.js?id=' + encodeURIComponent(gtmId));
   } else if (gaId && /^G-[A-Z0-9]+$/i.test(gaId)) {
     mode = 'ga4';
-    loadScript('https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(gaId));
     window.dataLayer.push({ event: 'gtag_init' });
     window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
     window.gtag('js', new Date());
+    // The config command sends the initial page_view. Do not send another manually.
     window.gtag('config', gaId, {
       send_page_view: true,
-      page_path: window.location.pathname
+      page_path: window.location.pathname,
+      page_location: measurementUrl(window.location.href),
+      page_referrer: measurementUrl(document.referrer)
     });
+    loadScript('https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(gaId));
   }
   // else: mode stays 'off' — no scripts, no beacons.
 

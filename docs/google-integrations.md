@@ -1,7 +1,7 @@
 # Bastida Systems — Google integrations guide
 
-How to connect bastidasystems.com to Google services, step by step. No real
-credentials live in this repo: every ID goes in `site-config.js` (copied from
+How to connect bastidasystems.com to Google services, step by step. No secret
+credentials live in this repo: public IDs go in `site-config.js` (copied from
 `site-config.example.js`). Features whose value is empty stay disabled and the
 site never shows broken buttons.
 
@@ -31,6 +31,58 @@ is present. If you also set `gtmId` (below), the direct `gtag.js` snippet is
 **skipped** and everything runs through Tag Manager — events are never sent
 twice.
 
+The production Measurement ID is configured once in `site-config.js`;
+`gtmId` remains empty. `.env.example` is documentation only, not runtime
+configuration for this static site.
+
+**Coverage and duplicate protection:** all 24 standalone HTML pages load
+`site-config.js` followed by the shared `analytics.js`, including nested pages,
+client apps, and login/portal pages. `header.html` is a fragment and must not
+load analytics. `/privacy/` and `reset-password.html` are redirects: only their
+destination pages load analytics, avoiding a second pageview for one visit.
+The loader has a per-document initialization guard, reuses an existing
+transport script, and registers click listeners only once. Normal navigation
+loads a new document and sends its automatic `page_view` through `config`.
+There is no additional manual `page_view` sender or custom History API listener.
+If enhanced measurement is enabled in GA4, review its history-change settings
+there; the site uses hash navigation for sections, not a client-side router.
+
+**Verification before/after publishing:**
+- There is no package manager, TypeScript, lint command, or production build.
+  Files are served directly by GitHub Pages. Check JavaScript syntax with
+  `node --check analytics.js` and `node --check site-config.js`.
+- In the browser Network panel, verify one `gtag/js?id=...` request using the
+  configured ID per document. `window.bsAnalyticsMode` must be `ga4`, and
+  `window.dataLayer` must contain one `config` command with that ID.
+- Navigate across root and nested pages, check the console, and confirm one
+  initial `page_view` per document. Re-executing `analytics.js` must not add a
+  script, configuration command, or click listener.
+- Test an incoming URL with `utm_source`, `utm_medium`, and `utm_campaign`,
+  plus an external referrer. Those campaign values and the referrer must be
+  present in the outgoing pageview. Other query parameters and hashes are
+  omitted from `page_location` / `page_referrer` to avoid sending auth codes.
+- A working local tag is separate from a production deployment. After deploying,
+  confirm the published configuration and use Tag Assistant and GA4
+  Realtime/DebugView to verify actual ingestion; syntax checks or a network
+  request alone do not establish that data is visible in the GA4 property.
+
+**Local validation completed (2026-09-22):** syntax checks passed; standalone
+ESLint recommended rules reported 0 errors and 0 warnings for `analytics.js`
+and `site-config.js`. Chromium loaded the real Google library with HTTP 200
+on all 24 documents and both redirect destinations, with one loader request,
+one configuration command and one initial pageview per visit. Navigation from
+Home to About, campaign/referrer preservation, auth-parameter filtering,
+repeated loader execution and a single click listener passed. Collection
+requests were intercepted locally so these checks did not send test events to
+the property. No new JavaScript or console errors were found; an existing
+missing-resource 404 on `RODRIGO WEB.html` was reproduced against the unchanged
+baseline. HTML comparison confirmed that only script tags were added, with no
+visual markup changes. Typecheck and production build are not applicable to
+this repository. Deployment and GA4 Realtime/DebugView remain unverified.
+
+References: [Google tag setup](https://developers.google.com/tag-platform/gtagjs)
+and [automatic pageviews](https://developers.google.com/analytics/devguides/collection/ga4/views).
+
 **Events already wired** (via `data-track` attributes on buttons/links, plus
 the contact form):
 `click_contact, click_email, click_phone, click_project, click_product,
@@ -39,8 +91,16 @@ form_success, form_error`.
 In GA4 mark the ones you care about (e.g. `form_success`, `click_get_quote`)
 as **conversions**: Admin → Events → toggle "Mark as conversion".
 
-**Privacy:** only event names, page paths and UI language are sent. Names,
-emails, phone numbers and message text are never sent to Analytics.
+**Privacy review pending before publication:** the existing `privacy.html`
+mentions browser storage and technical information but does not explicitly
+describe GA4 or its analytics cookies. There is no consent banner, CMP, or
+Consent Mode implementation. Review the notice and applicable consent needs
+before publishing; this integration does not add a banner or change legal copy.
+GA4 collects standard device, session, page and referral metadata and may set
+analytics cookies. The direct integration filters page/referrer query parameters
+to campaign identifiers and removes fragments. Do not put personal data into
+campaign values, tracked link text/URLs, or custom event parameters. Review
+enhanced measurement and data-redaction settings in the GA4 property as well.
 
 ---
 

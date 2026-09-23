@@ -18,7 +18,7 @@
 window.BASTIDA_SITE_CONFIG = {
   /* Google Analytics 4 — Measurement ID, e.g. "G-XXXXXXXXXX".
      Used only when gtmId is empty (see below). */
-  gaMeasurementId: '',
+  gaMeasurementId: 'G-0L9W08EHKT',
 
   /* Google Tag Manager — Container ID, e.g. "GTM-XXXXXXX".
      When set, Analytics/Events load THROUGH GTM only; the direct
