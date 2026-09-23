@@ -86,6 +86,19 @@
         'store.filtracore.aria': 'View FiltraCore on the App Store in a new tab',
         'store.physicalHeading': 'Physical products',
         'store.buyNow': 'Buy Now',
+        'store.custom3d.heading': 'Custom 3D Printing',
+        'store.custom3d.title': 'Custom AI-designed pieces',
+        'store.custom3d.category': '3D Printing Service',
+        'store.custom3d.description': 'Describe the piece you need — our AI models it, we print it on our Creator 5 Pro and ship it to you.',
+        'store.custom3d.cta': 'Describe your piece',
+        'store.services.heading': 'Services',
+        'store.websites.title': 'Websites',
+        'store.websites.category': 'Web Development',
+        'store.websites.description': 'Landing pages and complete websites built for your business.',
+        'store.systems.title': 'Custom Systems',
+        'store.systems.category': 'Business Software',
+        'store.systems.description': 'Internal systems and platforms tailored to your operation.',
+        'store.quoteCta': 'Get a quote on WhatsApp',
         'store.viewProduct': 'View Product',
         'store.viewAppStore': 'Download on the App Store',
         'store.pendingAppStore': 'App Store link pending'
@@ -114,6 +127,19 @@
         'store.filtracore.aria': 'Ver FiltraCore en App Store en una nueva pestaña',
         'store.physicalHeading': 'Productos físicos',
         'store.buyNow': 'Comprar ahora',
+        'store.custom3d.heading': 'Impresión 3D personalizada',
+        'store.custom3d.title': 'Piezas personalizadas con IA',
+        'store.custom3d.category': 'Servicio de impresión 3D',
+        'store.custom3d.description': 'Describe la pieza que necesitas — nuestra IA la modela, la imprimimos en nuestra Creator 5 Pro y te la enviamos.',
+        'store.custom3d.cta': 'Describe tu pieza',
+        'store.services.heading': 'Servicios',
+        'store.websites.title': 'Páginas web',
+        'store.websites.category': 'Desarrollo web',
+        'store.websites.description': 'Landing pages y sitios completos hechos para tu negocio.',
+        'store.systems.title': 'Sistemas a medida',
+        'store.systems.category': 'Software empresarial',
+        'store.systems.description': 'Sistemas internos y plataformas a la medida de tu operación.',
+        'store.quoteCta': 'Cotizar por WhatsApp',
         'store.viewProduct': 'Ver producto',
         'store.viewAppStore': 'Descargar en App Store',
         'store.pendingAppStore': 'Enlace de App Store pendiente'
@@ -204,6 +230,61 @@
       <div class="container">
         <h2 id="physical-products-title" data-i18n="store.physicalHeading">Physical products</h2>
         <div class="store-grid" id="physical-products-grid"></div>
+      </div>
+    </section>
+
+    <section class="store-catalog" aria-labelledby="custom-3d-title">
+      <div class="container">
+        <h2 id="custom-3d-title" data-i18n="store.custom3d.heading">Custom 3D Printing</h2>
+        <div class="store-grid">
+          <article class="store-product-card reveal">
+            <div class="store-product-card__top">
+              <div class="store-product-card__identity">
+                <h2 data-i18n="store.custom3d.title">Custom AI-designed pieces</h2>
+                <span class="store-product-card__category" data-i18n="store.custom3d.category">3D Printing Service</span>
+              </div>
+            </div>
+            <p class="store-product-card__description" data-i18n="store.custom3d.description">Describe the piece you need — our AI models it, we print it on our Creator 5 Pro and ship it to you.</p>
+            <div class="store-product-card__actions">
+              <a data-track="click_whatsapp" class="store-product-card__button" href="https://wa.me/17026617149?text=Hi!%20I%20want%20a%20custom%203D-printed%20piece.%20Here%27s%20my%20idea%3A%20" target="_blank" rel="noopener" data-i18n="store.custom3d.cta">Describe your piece</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="store-catalog" aria-labelledby="store-services-title">
+      <div class="container">
+        <h2 id="store-services-title" data-i18n="store.services.heading">Services</h2>
+        <div class="store-grid">
+          <article class="store-product-card reveal">
+            <div class="store-product-card__top">
+              <div class="store-product-card__identity">
+                <h2 data-i18n="store.websites.title">Websites</h2>
+                <span class="store-product-card__category" data-i18n="store.websites.category">Web Development</span>
+              </div>
+            </div>
+            <p class="store-product-card__description" data-i18n="store.websites.description">Landing pages and complete websites built for your business.</p>
+            <div class="store-product-card__actions">
+              <a data-track="click_product" class="store-product-card__button store-product-card__button--ghost" href="websites.html" data-i18n="store.viewProduct">View Product</a>
+              <a data-track="click_whatsapp" class="store-product-card__button" href="https://wa.me/17026617149?text=Hi!%20I%27d%20like%20a%20quote%20for%20a%20website." target="_blank" rel="noopener" data-i18n="store.quoteCta">Get a quote on WhatsApp</a>
+            </div>
+          </article>
+
+          <article class="store-product-card reveal">
+            <div class="store-product-card__top">
+              <div class="store-product-card__identity">
+                <h2 data-i18n="store.systems.title">Custom Systems</h2>
+                <span class="store-product-card__category" data-i18n="store.systems.category">Business Software</span>
+              </div>
+            </div>
+            <p class="store-product-card__description" data-i18n="store.systems.description">Internal systems and platforms tailored to your operation.</p>
+            <div class="store-product-card__actions">
+              <a data-track="click_product" class="store-product-card__button store-product-card__button--ghost" href="systems.html" data-i18n="store.viewProduct">View Product</a>
+              <a data-track="click_whatsapp" class="store-product-card__button" href="https://wa.me/17026617149?text=Hi!%20I%27d%20like%20a%20quote%20for%20a%20custom%20system." target="_blank" rel="noopener" data-i18n="store.quoteCta">Get a quote on WhatsApp</a>
+            </div>
+          </article>
+        </div>
       </div>
     </section>
   </main>
