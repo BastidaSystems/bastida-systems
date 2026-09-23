@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Get a Quote | Bastida Systems</title>
+  <meta name="description" content="Get a quote in 3 easy steps: choose your product, tell us what you need, and confirm on WhatsApp.">
+  <link rel="canonical" href="https://bastidasystems.com/cotizar">
+  <link rel="icon" type="image/png" href="img/logo_bastida_sys.png">
+  <link rel="apple-touch-icon" href="img/logo_bastida_sys.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="agency.css?v=2026-08-26-index-nav">
+  <!-- Social preview -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Bastida Systems">
+  <meta property="og:url" content="https://bastidasystems.com/cotizar">
+  <meta property="og:title" content="Get a Quote | Bastida Systems">
+  <meta property="og:description" content="Get a quote in 3 easy steps: choose your product, tell us what you need, and confirm on WhatsApp.">
+  <meta property="og:image" content="https://bastidasystems.com/img/logo_bastida_sys.png">
+  <meta property="og:image:alt" content="Bastida Systems">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Get a Quote | Bastida Systems">
+  <meta name="twitter:description" content="Get a quote in 3 easy steps: choose your product, tell us what you need, and confirm on WhatsApp.">
+  <meta name="twitter:image" content="https://bastidasystems.com/img/logo_bastida_sys.png">
+  <meta name="theme-color" content="#00c676">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <style>
+    .quote-steps { display: flex; gap: 12px; justify-content: center; margin: 28px 0 8px; flex-wrap: wrap; }
+    .quote-step { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: #9aa3ad; }
+    .quote-step__num { width: 28px; height: 28px; border-radius: 50%; border: 2px solid #d5dbe1; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; }
+    .quote-step--active { color: #111; }
+    .quote-step--active .quote-step__num { border-color: #00c676; background: #00c676; color: #fff; }
+    .quote-step--done { color: #00c676; }
+    .quote-step--done .quote-step__num { border-color: #00c676; color: #00c676; }
+    .quote-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-top: 20px; }
+    .quote-option { border: 2px solid #e5e9ed; border-radius: 14px; padding: 20px; cursor: pointer; background: #fff; transition: border-color .15s, box-shadow .15s; text-align: left; width: 100%; font-family: inherit; }
+    .quote-option:hover { border-color: #00c676; }
+    .quote-option--selected { border-color: #00c676; box-shadow: 0 0 0 3px rgba(0,198,118,.18); }
+    .quote-option h3 { margin: 0 0 6px; font-size: 18px; }
+    .quote-option p { margin: 0 0 10px; font-size: 14px; color: #5b6470; }
+    .quote-option__price { font-weight: 800; font-size: 17px; color: #111; }
+    .quote-option__badge { display: inline-block; font-size: 12px; font-weight: 700; background: #fff4d6; color: #8a6d00; border-radius: 999px; padding: 3px 10px; margin-bottom: 8px; }
+    .quote-form { max-width: 560px; margin: 20px auto 0; display: grid; gap: 14px; }
+    .quote-form label { font-weight: 700; font-size: 14px; display: grid; gap: 6px; }
+    .quote-form input, .quote-form textarea { font-family: inherit; font-size: 15px; padding: 12px 14px; border: 2px solid #e5e9ed; border-radius: 10px; width: 100%; box-sizing: border-box; }
+    .quote-form input:focus, .quote-form textarea:focus { outline: none; border-color: #00c676; }
+    .quote-form .hint { font-weight: 400; font-size: 13px; color: #8a94a0; }
+    .quote-summary { max-width: 560px; margin: 20px auto 0; border: 2px solid #e5e9ed; border-radius: 14px; padding: 24px; background: #fff; }
+    .quote-summary__row { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid #eef1f4; font-size: 15px; }
+    .quote-summary__row:last-child { border-bottom: none; }
+    .quote-summary__total { font-weight: 800; font-size: 20px; }
+    .quote-nav { display: flex; gap: 12px; justify-content: center; margin-top: 28px; flex-wrap: wrap; }
+    .quote-section-title { text-align: center; margin: 10px 0 4px; }
+    .quote-section-sub { text-align: center; color: #5b6470; margin: 0 0 6px; }
+  </style>
+  <script src="site-config.js"></script>
+  <script src="analytics.js" defer></script>
+</head>
+
+<body class="agency-page premium-page store-page">
+  <div id="site-header"></div>
+  <script>
+    window.pageTranslations = {
+      en: {
+        'meta.title': 'Get a Quote | Bastida Systems',
+        'quote.eyebrow': 'QUOTE',
+        'quote.heading': 'Get your quote in 3 steps.',
+        'quote.copy': 'Choose what you need, tell us about your project, and confirm on WhatsApp. Easy and guided.',
+        'quote.step1': 'Choose',
+        'quote.step2': 'Your details',
+        'quote.step3': 'Confirm',
+        'quote.chooseProduct': 'What do you need?',
+        'quote.chooseProductSub': 'Select a product to continue.',
+        'quote.choosePlan': 'Choose your plan',
+        'quote.choosePlanSub': 'Pick the option that fits your project.',
+        'quote.yourData': 'Tell us about your project',
+        'quote.yourDataSub': 'We use this to prepare your quote. Nothing is published.',
+        'quote.name': 'Your name',
+        'quote.namePlaceholder': 'Jane Smith',
+        'quote.contact': 'WhatsApp or email',
+        'quote.contactHint': 'Where should we send your quote?',
+        'quote.contactPlaceholder': '+1 702 000 0000 or you@email.com',
+        'quote.details': 'Project details (optional)',
+        'quote.detailsPlaceholder': 'Tell us briefly what you want to achieve...',
+        'quote.review': 'Review your request',
+        'quote.reviewSub': 'Check that everything looks right before sending.',
+        'quote.product': 'Product',
+        'quote.plan': 'Plan',
+        'quote.estimated': 'Estimated price',
+        'quote.from': 'From',
+        'quote.soon': 'In development',
+        'quote.customPrice': 'Custom quote',
+        'quote.back': 'Back',
+        'quote.continue': 'Continue',
+        'quote.sendWhatsApp': 'Send on WhatsApp',
+        'quote.required': 'Please complete this field to continue.',
+        'quote.pickProductFirst': 'Choose a product to continue.',
+        'quote.pickPlanFirst': 'Choose a plan to continue.',
+        'quote.waGreeting': 'Hello Bastida Systems, I would like a quote:',
+        'quote.waProduct': 'Product',
+        'quote.waPlan': 'Plan',
+        'quote.waPrice': 'Estimated price',
+        'quote.waName': 'Name',
+        'quote.waContact': 'Contact',
+        'quote.waDetails': 'Details'
+      },
+      es: {
+        'meta.title': 'Cotizar | Bastida Systems',
+        'quote.eyebrow': 'COTIZAR',
+        'quote.heading': 'Cotiza en 3 pasos.',
+        'quote.copy': 'Elige lo que necesitas, cuéntanos de tu proyecto y confirma por WhatsApp. Fácil y guiado.',
+        'quote.step1': 'Elige',
+        'quote.step2': 'Tus datos',
+        'quote.step3': 'Confirma',
+        'quote.chooseProduct': '¿Qué necesitas?',
+        'quote.chooseProductSub': 'Selecciona un producto para continuar.',
+        'quote.choosePlan': 'Elige tu plan',
+        'quote.choosePlanSub': 'Elige la opción que se ajuste a tu proyecto.',
+        'quote.yourData': 'Cuéntanos de tu proyecto',
+        'quote.yourDataSub': 'Lo usamos para preparar tu cotización. Nada se publica.',
+        'quote.name': 'Tu nombre',
+        'quote.namePlaceholder': 'Juan Pérez',
+        'quote.contact': 'WhatsApp o correo',
+        'quote.contactHint': '¿A dónde te enviamos tu cotización?',
+        'quote.contactPlaceholder': '+1 702 000 0000 o tu@correo.com',
+        'quote.details': 'Detalles del proyecto (opcional)',
+        'quote.detailsPlaceholder': 'Cuéntanos brevemente qué quieres lograr...',
+        'quote.review': 'Revisa tu solicitud',
+        'quote.reviewSub': 'Verifica que todo esté bien antes de enviar.',
+        'quote.product': 'Producto',
+        'quote.plan': 'Plan',
+        'quote.estimated': 'Precio estimado',
+        'quote.from': 'Desde',
+        'quote.soon': 'En desarrollo',
+        'quote.customPrice': 'Cotización personalizada',
+        'quote.back': 'Atrás',
+        'quote.continue': 'Continuar',
+        'quote.sendWhatsApp': 'Enviar por WhatsApp',
+        'quote.required': 'Completa este campo para continuar.',
+        'quote.pickProductFirst': 'Elige un producto para continuar.',
+        'quote.pickPlanFirst': 'Elige un plan para continuar.',
+        'quote.waGreeting': 'Hola Bastida Systems, quiero cotizar:',
+        'quote.waProduct': 'Producto',
+        'quote.waPlan': 'Plan',
+        'quote.waPrice': 'Precio estimado',
+        'quote.waName': 'Nombre',
+        'quote.waContact': 'Contacto',
+        'quote.waDetails': 'Detalles'
+      }
+    };
+  </script>
+  <script src="site-header.js?v=2026-08-26-home-nav" defer></script>
+  <script src="site-language.js?v=2026-08-26-index-nav" defer></script>
+
+  <main class="page-main">
+    <section class="page-hero">
+      <div class="container">
+        <div class="reveal">
+          <p class="eyebrow" data-i18n="quote.eyebrow">QUOTE</p>
+          <h1 data-i18n="quote.heading">Get your quote in 3 steps.</h1>
+          <p data-i18n="quote.copy">Choose what you need, tell us about your project, and confirm on WhatsApp. Easy and guided.</p>
+          <div class="quote-steps" id="quote-steps" aria-hidden="true"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div id="quote-body"></div>
+        <div class="quote-nav" id="quote-nav"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer-v2" aria-label="Footer" data-i18n-aria-label="home.footer.ariaLabel">
+    <div class="home-container site-footer-v2__grid">
+      <div class="site-footer-v2__brand">
+        <a class="site-footer-v2__logo" href="index.html" aria-label="Bastida Systems home">
+          <img width="1080" height="1080" src="img/logo_bastida_sys.png" alt="" aria-hidden="true">
+          <strong>Bastida Systems</strong>
+        </a>
+        <p data-i18n="footer.tagline">Technology You Can Trust.</p>
+      </div>
+      <nav class="site-footer-v2__column" aria-label="Footer navigation">
+        <h2 data-i18n="footer.navigation">Navigation</h2>
+        <a href="index.html" data-i18n="nav.home">Home</a>
+        <a href="products.html" data-i18n="nav.products">Products</a>
+        <a href="work.html" data-i18n="nav.work">Work</a>
+        <a href="about.html" data-i18n="nav.about">About</a>
+      </nav>
+      <nav class="site-footer-v2__column" aria-label="Products">
+        <h2 data-i18n="nav.products">Products</h2>
+        <a href="filtracore.html">FiltraCore</a>
+        <a href="beoflow.html">BEOFlow</a>
+      </nav>
+      <nav class="site-footer-v2__column" aria-label="Store">
+        <h2 data-i18n="nav.store">Store</h2>
+        <a href="store.html" data-i18n="footer.viewStore">View Store</a>
+      </nav>
+      <div class="site-footer-v2__column">
+        <h2 data-i18n="nav.contact">Contact</h2>
+        <a data-track="click_email" href="mailto:bastidasystems@gmail.com">bastidasystems@gmail.com</a>
+      </div>
+    </div>
+    <div class="home-container site-footer-v2__bottom">
+      <p>&copy; <span data-current-year>2026</span> Bastida Systems LLC. <span data-i18n="footer.rightsShort">All rights reserved.</span></p>
+      <div>
+        <a href="privacy.html" data-i18n="nav.privacyPolicy">Privacy Policy</a>
+        <a href="terms.html" data-i18n="nav.terms">Terms of Service</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var WHATSAPP = 'https://wa.me/17026617149';
+      var PRODUCTS = [
+        { id: 'landing', price: 500, from: true,
+          name: { en: 'Landing page', es: 'Landing page' },
+          desc: { en: 'A single high-impact page to present your business and capture clients.', es: 'Una sola página de alto impacto para presentar tu negocio y captar clientes.' } },
+        { id: 'sitio',
+          name: { en: 'Complete website', es: 'Sitio web completo' },
+          desc: { en: 'A complete website built for your business.', es: 'Un sitio web completo para tu negocio.' },
+          variants: [
+            { id: 'sitio-estandar', price: 1200, name: { en: 'Standard', es: 'Estándar' } },
+            { id: 'sitio-premium', price: 2500, name: { en: 'Premium', es: 'Premium' } }
+          ] },
+        { id: 'sistema',
+          name: { en: 'Custom system', es: 'Sistema a medida' },
+          desc: { en: 'Internal systems and platforms tailored to your operation.', es: 'Sistemas internos y plataformas a la medida de tu operación.' },
+          variants: [
+            { id: 'sistema-basico', price: 4500, name: { en: 'Basic', es: 'Básico' } },
+            { id: 'sistema-intermedio', price: 8000, name: { en: 'Intermediate', es: 'Intermedio' } },
+            { id: 'sistema-avanzado', price: 12000, name: { en: 'Advanced', es: 'Avanzado' } }
+          ] },
+        { id: 'app', price: 3000, from: true,
+          name: { en: 'Mobile app', es: 'App móvil' },
+          desc: { en: 'An iOS and Android app for your business or idea.', es: 'Una app para iOS y Android para tu negocio o tu idea.' } },
+        { id: 'beoflow', price: 6000, from: true, soon: true,
+          name: { en: 'BEOFlow', es: 'BEOFlow' },
+          desc: { en: 'Event and banquet management system.', es: 'Sistema de gestión de eventos y banquetes.' } },
+        { id: 'adquisiciones', price: 4500, from: true, soon: true,
+          name: { en: 'Procurement System', es: 'Sistema de Adquisiciones' },
+          desc: { en: 'Internal control platform for procurement records.', es: 'Plataforma de control interno para expedientes de adquisiciones.' } },
+        { id: '3d', price: null,
+          name: { en: 'Custom 3D-printed piece', es: 'Pieza 3D personalizada' },
+          desc: { en: 'Describe the piece you need — our AI models it, we print it and ship it to you.', es: 'Describe la pieza que necesitas — nuestra IA la modela, la imprimimos y te la enviamos.' } }
+      ];
+
+      var state = { step: 1, productId: null, variantId: null, name: '', contact: '', details: '' };
+      var body = document.getElementById('quote-body');
+      var nav = document.getElementById('quote-nav');
+      var stepsEl = document.getElementById('quote-steps');
+
+      function lang() { return document.documentElement.lang === 'es' ? 'es' : 'en'; }
+      function t(key) {
+        var d = window.pageTranslations || {};
+        return (d[lang()] && d[lang()][key]) || (d.en && d.en[key]) || key;
+      }
+      function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]); }); }
+      function money(n) { return '$' + Number(n).toLocaleString('en-US') + ' USD'; }
+      function findProduct(id) { return PRODUCTS.find(function (p) { return p.id === id; }) || null; }
+      function findVariant(p, id) { return (p.variants || []).find(function (v) { return v.id === id; }) || null; }
+      function selectedVariant() { var p = findProduct(state.productId); return p ? findVariant(p, state.variantId) : null; }
+      function priceLabel(p, v) {
+        if (v) return money(v.price);
+        if (p.price == null) return t('quote.customPrice');
+        return (p.from ? t('quote.from') + ' ' : '') + money(p.price);
+      }
+
+      function renderSteps() {
+        var labels = [t('quote.step1'), t('quote.step2'), t('quote.step3')];
+        stepsEl.innerHTML = labels.map(function (label, i) {
+          var n = i + 1;
+          var cls = 'quote-step' + (n === state.step ? ' quote-step--active' : n < state.step ? ' quote-step--done' : '');
+          return '<span class="' + cls + '"><span class="quote-step__num">' + n + '</span>' + esc(label) + '</span>';
+        }).join('');
+      }
+
+      function optionCard(item, selected, kind) {
+        var badge = item.soon ? '<span class="quote-option__badge">' + esc(t('quote.soon')) + '</span><br>' : '';
+        return '<button type="button" class="quote-option' + (selected ? ' quote-option--selected' : '') + '" data-kind="' + kind + '" data-id="' + esc(item.id) + '">' +
+          badge + '<h3>' + esc(item.name[lang()]) + '</h3>' +
+          (item.desc ? '<p>' + esc(item.desc[lang()]) + '</p>' : '') +
+          '<span class="quote-option__price">' + esc(kind === 'variant' ? money(item.price) : priceLabel(item)) + '</span></button>';
+      }
+
+      function render() {
+        renderSteps();
+        nav.innerHTML = '';
+        if (state.step === 1) renderChoose();
+        else if (state.step === 2) renderForm();
+        else renderReview();
+      }
+
+      function renderChoose() {
+        var p = findProduct(state.productId);
+        var html = '<h2 class="quote-section-title">' + esc(t('quote.chooseProduct')) + '</h2>' +
+          '<p class="quote-section-sub">' + esc(t('quote.chooseProductSub')) + '</p>' +
+          '<div class="quote-grid">' + PRODUCTS.map(function (prod) { return optionCard(prod, state.productId === prod.id, 'product'); }).join('') + '</div>';
+        if (p && p.variants) {
+          html += '<h2 class="quote-section-title" style="margin-top:32px">' + esc(t('quote.choosePlan')) + '</h2>' +
+            '<p class="quote-section-sub">' + esc(t('quote.choosePlanSub')) + '</p>' +
+            '<div class="quote-grid">' + p.variants.map(function (v) { return optionCard(v, state.variantId === v.id, 'variant'); }).join('') + '</div>';
+        }
+        body.innerHTML = html;
+        body.querySelectorAll('.quote-option').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            if (btn.dataset.kind === 'product') {
+              state.productId = btn.dataset.id;
+              state.variantId = null;
+            } else {
+              state.variantId = btn.dataset.id;
+            }
+            render();
+          });
+        });
+        var next = document.createElement('button');
+        next.type = 'button';
+        next.className = 'store-product-card__button';
+        next.style.cssText = 'border:none;cursor:pointer;font-family:inherit;font-size:15px;';
+        next.textContent = t('quote.continue');
+        next.addEventListener('click', function () {
+          var prod = findProduct(state.productId);
+          if (!prod) { alert(t('quote.pickProductFirst')); return; }
+          if (prod.variants && !selectedVariant()) { alert(t('quote.pickPlanFirst')); return; }
+          state.step = 2;
+          render();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        nav.appendChild(next);
+      }
+
+      function renderForm() {
+        body.innerHTML = '<h2 class="quote-section-title">' + esc(t('quote.yourData')) + '</h2>' +
+          '<p class="quote-section-sub">' + esc(t('quote.yourDataSub')) + '</p>' +
+          '<div class="quote-form">' +
+          '<label>' + esc(t('quote.name')) + '<input id="q-name" type="text" placeholder="' + esc(t('quote.namePlaceholder')) + '" value="' + esc(state.name) + '"></label>' +
+          '<label>' + esc(t('quote.contact')) + '<span class="hint">' + esc(t('quote.contactHint')) + '</span><input id="q-contact" type="text" placeholder="' + esc(t('quote.contactPlaceholder')) + '" value="' + esc(state.contact) + '"></label>' +
+          '<label>' + esc(t('quote.details')) + '<textarea id="q-details" rows="4" placeholder="' + esc(t('quote.detailsPlaceholder')) + '">' + esc(state.details) + '</textarea></label>' +
+          '</div>';
+        var back = document.createElement('button');
+        back.type = 'button';
+        back.className = 'store-product-card__button store-product-card__button--ghost';
+        back.style.cssText = 'border-width:2px;cursor:pointer;font-family:inherit;font-size:15px;';
+        back.textContent = t('quote.back');
+        back.addEventListener('click', function () { state.step = 1; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+        var next = document.createElement('button');
+        next.type = 'button';
+        next.className = 'store-product-card__button';
+        next.style.cssText = 'border:none;cursor:pointer;font-family:inherit;font-size:15px;';
+        next.textContent = t('quote.continue');
+        next.addEventListener('click', function () {
+          state.name = document.getElementById('q-name').value.trim();
+          state.contact = document.getElementById('q-contact').value.trim();
+          state.details = document.getElementById('q-details').value.trim();
+          if (!state.name || !state.contact) { alert(t('quote.required')); return; }
+          state.step = 3;
+          render();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        nav.appendChild(back);
+        nav.appendChild(next);
+      }
+
+      function renderReview() {
+        var p = findProduct(state.productId);
+        var v = selectedVariant();
+        var rows = '<div class="quote-summary__row"><span>' + esc(t('quote.product')) + '</span><strong>' + esc(p.name[lang()]) + '</strong></div>';
+        if (v) rows += '<div class="quote-summary__row"><span>' + esc(t('quote.plan')) + '</span><strong>' + esc(v.name[lang()]) + '</strong></div>';
+        rows += '<div class="quote-summary__row"><span>' + esc(t('quote.name')) + '</span><strong>' + esc(state.name) + '</strong></div>';
+        rows += '<div class="quote-summary__row"><span>' + esc(t('quote.contact')) + '</span><strong>' + esc(state.contact) + '</strong></div>';
+        if (state.details) rows += '<div class="quote-summary__row"><span>' + esc(t('quote.details')) + '</span><strong>' + esc(state.details) + '</strong></div>';
+        rows += '<div class="quote-summary__row quote-summary__total"><span>' + esc(t('quote.estimated')) + '</span><span>' + esc(priceLabel(p, v)) + '</span></div>';
+        body.innerHTML = '<h2 class="quote-section-title">' + esc(t('quote.review')) + '</h2>' +
+          '<p class="quote-section-sub">' + esc(t('quote.reviewSub')) + '</p>' +
+          '<div class="quote-summary">' + rows + '</div>';
+
+        var back = document.createElement('button');
+        back.type = 'button';
+        back.className = 'store-product-card__button store-product-card__button--ghost';
+        back.style.cssText = 'border-width:2px;cursor:pointer;font-family:inherit;font-size:15px;';
+        back.textContent = t('quote.back');
+        back.addEventListener('click', function () { state.step = 2; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+
+        var lines = [t('quote.waGreeting'), '', t('quote.waProduct') + ': ' + p.name[lang()]];
+        if (v) lines.push(t('quote.waPlan') + ': ' + v.name[lang()]);
+        lines.push(t('quote.waPrice') + ': ' + priceLabel(p, v));
+        lines.push(t('quote.waName') + ': ' + state.name);
+        lines.push(t('quote.waContact') + ': ' + state.contact);
+        if (state.details) lines.push(t('quote.waDetails') + ': ' + state.details);
+
+        var send = document.createElement('a');
+        send.className = 'store-product-card__button';
+        send.style.cssText = 'font-size:16px;text-decoration:none;';
+        send.target = '_blank';
+        send.rel = 'noopener';
+        send.setAttribute('data-track', 'click_whatsapp');
+        send.href = WHATSAPP + '?text=' + encodeURIComponent(lines.join('\n'));
+        send.textContent = t('quote.sendWhatsApp');
+        nav.appendChild(back);
+        nav.appendChild(send);
+      }
+
+      // Preselect from ?producto=
+      try {
+        var params = new URLSearchParams(window.location.search);
+        var pre = params.get('producto');
+        if (pre) {
+          var prod = findProduct(pre);
+          if (prod) {
+            state.productId = prod.id;
+            state.step = prod.variants ? 1 : 2;
+          } else {
+            for (var i = 0; i < PRODUCTS.length; i++) {
+              var vv = findVariant(PRODUCTS[i], pre);
+              if (vv) { state.productId = PRODUCTS[i].id; state.variantId = vv.id; state.step = 2; break; }
+            }
+          }
+        }
+      } catch (e) { /* ignore */ }
+
+      // Re-render dynamic content when the site language changes (delegated: the picker is rendered later by site-header.js)
+      document.addEventListener('change', function (e) {
+        if (e.target && e.target.id === 'language-select') setTimeout(render, 0);
+      });
+
+      render();
+    })();
+  </script>
+  <script src="agency.js?v=2026-08-25-store" defer></script>
+  <script src="whatsapp-float.js?v=2026-09-23-wa" defer></script>
+</body>
+</html>
