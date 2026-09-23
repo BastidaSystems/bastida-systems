@@ -8743,9 +8743,50 @@ body.agency-page.premium-page .portfolio-hero h1 {
 }
 
 .product-shelf-view-all {
-  margin-bottom: 0.34rem;
   color: rgba(255, 255, 255, 0.72);
   font-size: 0.76rem;
+}
+
+.product-shelf-heading__actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 0.34rem;
+}
+
+.product-shelf-arrows {
+  display: flex;
+  gap: 8px;
+}
+
+.product-shelf-arrow {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 50%;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, opacity 0.15s;
+}
+
+.product-shelf-arrow:hover:not(:disabled) {
+  border-color: var(--home-green);
+  color: var(--home-green);
+}
+
+.product-shelf-arrow:disabled {
+  opacity: 0.28;
+  cursor: default;
+}
+
+.product-shelf-arrow svg {
+  width: 14px;
+  height: 14px;
 }
 
 .product-shelf-view-all:hover {

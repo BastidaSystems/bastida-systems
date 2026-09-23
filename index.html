@@ -80,9 +80,19 @@
               <span>Store.</span>
               <span>Technology created <br>by Bastida Systems.</span>
             </h2>
-            <a class="home-text-link product-shelf-view-all" href="store.html">
-              <span data-i18n="home.products.viewAll">View Store</span>
-            </a>
+            <div class="product-shelf-heading__actions">
+              <a class="home-text-link product-shelf-view-all" href="store.html">
+                <span data-i18n="home.products.viewAll">View Store</span>
+              </a>
+              <div class="product-shelf-arrows">
+                <button type="button" class="product-shelf-arrow" data-shelf-prev aria-label="Scroll products left" data-i18n-aria-label="home.products.prevAria">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3 5 8l5 5"/></svg>
+                </button>
+                <button type="button" class="product-shelf-arrow" data-shelf-next aria-label="Scroll products right" data-i18n-aria-label="home.products.nextAria">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg>
+                </button>
+              </div>
+            </div>
           </div>
 
           <div class="product-shelf-rail reveal" role="list" aria-label="Bastida Systems products" data-i18n-aria-label="home.products.shelfLabel">
@@ -532,5 +542,23 @@
   <script src="agency.js?v=2026-08-26-3d-video-home" defer></script>
   <script src="read-aloud.js?v=2026-09-23-read-aloud" defer></script>
   <script src="whatsapp-float.js?v=2026-09-23-wa" defer></script>
+  <script>
+    (function () {
+      var rail = document.querySelector('.product-shelf-rail');
+      var prev = document.querySelector('[data-shelf-prev]');
+      var next = document.querySelector('[data-shelf-next]');
+      if (!rail || !prev || !next) return;
+      function step() { return Math.min(rail.clientWidth * 0.8, 480); }
+      function sync() {
+        prev.disabled = rail.scrollLeft <= 4;
+        next.disabled = rail.scrollLeft >= rail.scrollWidth - rail.clientWidth - 4;
+      }
+      prev.addEventListener('click', function () { rail.scrollBy({ left: -step(), behavior: 'smooth' }); });
+      next.addEventListener('click', function () { rail.scrollBy({ left: step(), behavior: 'smooth' }); });
+      rail.addEventListener('scroll', sync, { passive: true });
+      window.addEventListener('resize', sync);
+      sync();
+    })();
+  </script>
 </body>
 </html>
