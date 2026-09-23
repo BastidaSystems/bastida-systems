@@ -9334,6 +9334,47 @@ body.agency-page.premium-page .portfolio-hero h1 {
   }
 }
 
+/* WhatsApp floating button (stacked above Read Aloud) */
+.wa-float {
+  position: fixed;
+  right: clamp(18px, 3vw, 32px);
+  bottom: calc(clamp(18px, 3vw, 32px) + 58px + 12px + env(safe-area-inset-bottom, 0px));
+  z-index: 200;
+  width: 58px;
+  height: 58px;
+  border-radius: 999px;
+  border: 1px solid rgba(37, 211, 102, 0.55);
+  background: #25d366;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
+  transition: transform 180ms ease, background 180ms ease;
+}
+
+.wa-float:hover {
+  transform: translateY(-2px);
+  background: #1fb857;
+}
+
+.wa-float:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 3px;
+}
+
+.wa-float svg {
+  width: 30px;
+  height: 30px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wa-float {
+    transition: none;
+  }
+}
+
 /* Quote form (contact.html) */
 .quote-form {
   padding: 28px;
