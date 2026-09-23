@@ -608,6 +608,10 @@ const applySiteLanguage = language => {
     element.setAttribute('aria-label', siteTranslate(element.dataset.i18nAriaLabel));
   });
 
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+    element.setAttribute('placeholder', siteTranslate(element.dataset.i18nPlaceholder));
+  });
+
   const languageSelect = document.getElementById('language-select');
   if (languageSelect) {
     languageSelect.value = activeSiteLanguage;

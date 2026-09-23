@@ -3704,13 +3704,15 @@ p {
   }
 
   .fc-print-cover-copy h1,
+  .fc-print-cover-copy h2,
   .fc-print-page-header h2 {
     color: var(--fc-ink) !important;
     font-weight: 800;
     letter-spacing: 0;
   }
 
-  .fc-print-cover-copy h1 {
+  .fc-print-cover-copy h1,
+  .fc-print-cover-copy h2 {
     margin: 0.08in 0 0;
     font-size: 37pt;
     line-height: 0.96;

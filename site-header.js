@@ -12,7 +12,7 @@
 
   const markup = `
     <header class="bs-header">
-      <input class="bs-menu-toggle" type="checkbox" id="bs-mobile-menu-toggle" aria-hidden="true">
+      <input class="bs-menu-toggle" type="checkbox" id="bs-mobile-menu-toggle" aria-hidden="true" tabindex="-1">
       <label class="bs-menu-button" for="bs-mobile-menu-toggle" role="button" tabindex="0" aria-label="Open navigation menu" aria-expanded="false" aria-controls="bs-primary-nav" data-menu-button data-i18n-aria-label="nav.openMenu">
         <span></span><span></span><span></span>
       </label>

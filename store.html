@@ -12,6 +12,50 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="agency.css?v=2026-08-26-index-nav">
+  <!-- Social preview -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Bastida Systems">
+  <meta property="og:url" content="https://bastidasystems.com/store">
+  <meta property="og:title" content="Bastida Systems Store">
+  <meta property="og:description" content="Explore products currently available from Bastida Systems, including applications and technology products for Apple platforms.">
+  <meta property="og:image" content="https://bastidasystems.com/img/logo_bastida_sys.png">
+  <meta property="og:image:alt" content="Bastida Systems">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Bastida Systems Store">
+  <meta name="twitter:description" content="Explore products currently available from Bastida Systems, including applications and technology products for Apple platforms.">
+  <meta name="twitter:image" content="https://bastidasystems.com/img/logo_bastida_sys.png">
+  <meta name="theme-color" content="#00c676">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  [
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Bastida Systems LLC",
+      "url": "https://bastidasystems.com/",
+      "logo": "https://bastidasystems.com/img/logo_bastida_sys.png",
+      "email": "bastidasystems@gmail.com",
+      "telephone": "+1-702-661-7149",
+      "description": "Bastida Systems is a Las Vegas technology company creating software, mobile apps, connected systems, physical prototypes and 3D-printed product components."
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Bastida Systems Store",
+      "description": "Explore products currently available from Bastida Systems, including applications and technology products for Apple platforms.",
+      "url": "https://bastidasystems.com/store.html",
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "Bastida Systems",
+        "url": "https://bastidasystems.com/"
+      }
+    }
+  ]
+  </script>
+  <script src="site-config.js"></script>
+  <script src="analytics.js" defer></script>
 </head>
 
 <body class="agency-page premium-page store-page">
@@ -92,7 +136,7 @@
         <div class="store-grid">
           <article class="store-product-card reveal" id="watchtuner" aria-label="View WatchTuner Pro store entry" data-i18n-aria-label="store.watch.aria">
             <div class="store-product-card__top">
-              <img class="store-product-card__icon" src="img/logo_bastida_sys.png" alt="Bastida Systems product icon" loading="lazy" decoding="async" data-i18n-alt="store.watch.alt">
+              <img width="1080" height="1080" class="store-product-card__icon" src="img/logo_bastida_sys.png" alt="Bastida Systems product icon" loading="lazy" decoding="async" data-i18n-alt="store.watch.alt">
               <div class="store-product-card__identity">
                 <h2>WatchTuner Pro</h2>
                 <span class="store-product-card__category" data-i18n="store.watch.category">Apple Product</span>
@@ -106,7 +150,7 @@
 
           <article class="store-product-card reveal" id="lineops">
             <div class="store-product-card__top">
-              <img class="store-product-card__icon" src="img/linopsmark.png" alt="LineOps ShiftRotation app icon" loading="lazy" decoding="async" data-i18n-alt="store.lineops.alt">
+              <img width="1536" height="1024" class="store-product-card__icon" src="img/linopsmark.png" alt="LineOps ShiftRotation app icon" loading="lazy" decoding="async" data-i18n-alt="store.lineops.alt">
               <div class="store-product-card__identity">
                 <h2>LineOps ShiftRotation</h2>
                 <span class="store-product-card__category" data-i18n="store.lineops.category">iPhone and iPad</span>
@@ -114,14 +158,14 @@
             </div>
             <p class="store-product-card__description" data-i18n="store.lineops.description">Turn printed schedules into clean tables, create groups, and share weekly schedules faster.</p>
             <div class="store-product-card__actions">
-              <a class="store-product-card__button store-product-card__button--ghost" href="products.html#lineops" data-i18n="store.viewProduct">View Product</a>
+              <a data-track="click_product" class="store-product-card__button store-product-card__button--ghost" href="products.html#lineops" data-i18n="store.viewProduct">View Product</a>
               <a class="store-product-card__button" href="https://apps.apple.com/us/app/lineops-shiftrotation/id6767958380" target="_blank" rel="noopener noreferrer" aria-label="View LineOps ShiftRotation on the App Store in a new tab" data-i18n="store.viewAppStore" data-i18n-aria-label="store.lineops.aria">Download on the App Store</a>
             </div>
           </article>
 
           <article class="store-product-card reveal" id="studiogameplan">
             <div class="store-product-card__top">
-              <img class="store-product-card__icon" src="IMG/studiogameplan-sgp-icon.jpg" alt="StudioGamePlan SGP app icon" loading="lazy" decoding="async" data-i18n-alt="store.sgp.alt">
+              <img width="512" height="512" class="store-product-card__icon" src="IMG/studiogameplan-sgp-icon.jpg" alt="StudioGamePlan SGP app icon" loading="lazy" decoding="async" data-i18n-alt="store.sgp.alt">
               <div class="store-product-card__identity">
                 <h2>StudioGamePlan</h2>
                 <span class="store-product-card__category" data-i18n="store.sgp.category">iPhone and iPad</span>
@@ -129,14 +173,14 @@
             </div>
             <p class="store-product-card__description" data-i18n="store.sgp.description">A game production workspace for planning ideas, tasks, and creative development.</p>
             <div class="store-product-card__actions">
-              <a class="store-product-card__button store-product-card__button--ghost" href="products.html#studiogameplan" data-i18n="store.viewProduct">View Product</a>
+              <a data-track="click_product" class="store-product-card__button store-product-card__button--ghost" href="products.html#studiogameplan" data-i18n="store.viewProduct">View Product</a>
               <a class="store-product-card__button" href="https://apps.apple.com/us/app/studiogameplan-sgp/id6773214058" target="_blank" rel="noopener noreferrer" aria-label="View StudioGamePlan SGP on the App Store in a new tab" data-i18n="store.viewAppStore" data-i18n-aria-label="store.sgp.aria">Download on the App Store</a>
             </div>
           </article>
 
           <article class="store-product-card reveal" id="filtracore">
             <div class="store-product-card__top">
-              <img class="store-product-card__icon" src="img/LOGO_FILTRACOREXCODE.png" alt="FiltraCore app icon" loading="lazy" decoding="async" data-i18n-alt="store.filtracore.alt">
+              <img width="1024" height="1024" class="store-product-card__icon" src="img/LOGO_FILTRACOREXCODE.png" alt="FiltraCore app icon" loading="lazy" decoding="async" data-i18n-alt="store.filtracore.alt">
               <div class="store-product-card__identity">
                 <h2>FiltraCore</h2>
                 <span class="store-product-card__category" data-i18n="store.filtracore.category">iPhone and iPad</span>
@@ -157,7 +201,7 @@
     <div class="home-container site-footer-v2__grid">
       <div class="site-footer-v2__brand">
         <a class="site-footer-v2__logo" href="index.html" aria-label="Bastida Systems home">
-          <img src="img/logo_bastida_sys.png" alt="" aria-hidden="true">
+          <img width="1080" height="1080" src="img/logo_bastida_sys.png" alt="" aria-hidden="true">
           <strong>Bastida Systems</strong>
         </a>
         <p data-i18n="footer.tagline">Technology You Can Trust.</p>
@@ -180,7 +224,7 @@
       </nav>
       <div class="site-footer-v2__column">
         <h2 data-i18n="nav.contact">Contact</h2>
-        <a href="mailto:bastidasystems@gmail.com">bastidasystems@gmail.com</a>
+        <a data-track="click_email" href="mailto:bastidasystems@gmail.com">bastidasystems@gmail.com</a>
       </div>
     </div>
     <div class="home-container site-footer-v2__bottom">

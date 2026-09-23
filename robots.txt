@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Internal / utility pages are excluded from the sitemap and carry
+# meta robots "noindex" instead of being disallowed here, so crawlers
+# can still see the noindex directive.
+Sitemap: https://bastidasystems.com/sitemap.xml
