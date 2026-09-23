@@ -8873,6 +8873,10 @@ body.agency-page.premium-page .portfolio-hero h1 {
   transform: scaleX(1);
 }
 
+.product-shelf-item:active {
+  transform: translateY(-6px) scale(1.07);
+}
+
 .product-shelf-item__visual {
   position: relative;
   display: grid;
