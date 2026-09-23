@@ -23,11 +23,7 @@
 
       <nav class="bs-nav site-menu-links" id="bs-primary-nav" aria-label="Primary navigation">
         <a href="index.html" data-nav-page="index.html" data-i18n="nav.home">Home</a>
-        <a href="index.html#solutions" data-nav-section="solutions" data-i18n="nav.solutions">Solutions</a>
-        <a href="work.html" data-nav-page="work.html" data-i18n="nav.work">Work</a>
-        <a href="index.html#process" data-i18n="nav.process">Process</a>
-        <a href="about.html" data-nav-page="about.html" data-i18n="nav.about">About</a>
-        <a class="bs-nav-cta" href="contact.html">
+        <a class="bs-nav-cta" href="cotizar.html" data-nav-page="cotizar.html">
           <span data-i18n="nav.getStarted">Start a Project</span>
         </a>
       </nav>
