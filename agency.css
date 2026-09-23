@@ -8781,29 +8781,7 @@ body.agency-page.premium-page .portfolio-hero h1 {
 }
 
 .product-shelf-cats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
   margin-top: clamp(10px, 1.4vw, 16px);
-}
-
-.product-shelf-cat {
-  display: inline-flex;
-  align-items: center;
-  padding: 9px 18px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 999px;
-  color: rgba(255, 255, 255, 0.88);
-  font-size: 0.82rem;
-  font-weight: 700;
-  text-decoration: none;
-  transition: border-color 0.15s, color 0.15s, background 0.15s;
-}
-
-.product-shelf-cat:hover {
-  border-color: var(--home-green);
-  color: var(--home-green);
-  background: rgba(0, 198, 118, 0.08);
 }
 
 .product-shelf-item {
