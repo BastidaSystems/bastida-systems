@@ -9272,3 +9272,64 @@ body.agency-page.premium-page .portfolio-hero h1 {
     font-size: 2.28rem;
   }
 }
+
+/* Read Aloud floating button */
+.read-aloud {
+  position: fixed;
+  right: clamp(18px, 3vw, 32px);
+  bottom: calc(clamp(18px, 3vw, 32px) + env(safe-area-inset-bottom, 0px));
+  z-index: 200;
+  width: 58px;
+  height: 58px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 198, 118, 0.45);
+  background: rgba(8, 15, 12, 0.92);
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+}
+
+.read-aloud:hover {
+  transform: translateY(-2px);
+  border-color: #3af0aa;
+}
+
+.read-aloud:focus-visible {
+  outline: 2px solid #3af0aa;
+  outline-offset: 3px;
+}
+
+.read-aloud svg {
+  width: 24px;
+  height: 24px;
+}
+
+.read-aloud.is-reading {
+  background: #00c676;
+  border-color: #00c676;
+  color: #00160d;
+}
+
+.read-aloud__stop {
+  display: none;
+}
+
+.read-aloud.is-reading .read-aloud__stop {
+  display: block;
+}
+
+.read-aloud.is-reading .read-aloud__speaker {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .read-aloud {
+    transition: none;
+  }
+}

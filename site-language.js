@@ -278,7 +278,9 @@ const sharedSiteTranslations = {
     'home.next.title': "What's Next?",
     'home.next.ariaLabel': 'Open FiltraCore App Store page in a new tab',
     'home.progress.footer': 'Footer',
-    'home.footer.ariaLabel': 'Footer'
+    'home.footer.ariaLabel': 'Footer',
+    'home.readAloud.start': 'Read this page aloud',
+    'home.readAloud.stop': 'Stop reading'
   },
   es: {
     'nav.home': 'Inicio',
@@ -557,7 +559,9 @@ const sharedSiteTranslations = {
     'home.next.title': '¿Qué sigue?',
     'home.next.ariaLabel': 'Ver FiltraCore en App Store en una nueva pestaña',
     'home.progress.footer': 'Pie de página',
-    'home.footer.ariaLabel': 'Pie de página'
+    'home.footer.ariaLabel': 'Pie de página',
+    'home.readAloud.start': 'Leer esta página en voz alta',
+    'home.readAloud.stop': 'Detener lectura'
   }
 };
 
