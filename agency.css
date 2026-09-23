@@ -9476,3 +9476,9 @@ select.form-field {
   flex-wrap: wrap;
   gap: 8px 20px;
 }
+
+/* Physical products (Supabase-driven store section) */
+.store-product-card__photo{width:100%;height:220px;object-fit:cover;border-radius:14px;margin-bottom:14px;background:#0b0f0e}
+.store-product-card__price{display:inline-block;margin-top:6px;font-weight:800;font-size:1.05rem;color:var(--bs-green-dark)}
+#physical-products{padding-top:8px}
+#physical-products h2{margin-bottom:18px}

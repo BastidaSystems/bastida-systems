@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Productos | Admin Bastida Systems</title>
+  <link rel="icon" type="image/png" href="../img/logo_bastida_sys.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg:#0b0f0e; --card:#121815; --line:#1f2a24; --txt:#eef4f0; --mut:#9fb3a8; --acc:#00c676; --danger:#e5484d; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--txt); font-family:Montserrat,system-ui,sans-serif; }
+    .wrap { max-width:1080px; margin:0 auto; padding:24px 16px 64px; }
+    header.top { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:24px; }
+    header.top h1 { font-size:1.4rem; margin:0; }
+    header.top p { color:var(--mut); margin:4px 0 0; font-size:.85rem; }
+    .btn { display:inline-block; background:var(--acc); color:#04120b; border:0; border-radius:10px; padding:10px 18px; font-weight:700; cursor:pointer; font-family:inherit; }
+    .btn.ghost { background:transparent; color:var(--txt); border:1px solid var(--line); }
+    .btn.danger { background:transparent; color:var(--danger); border:1px solid var(--danger); }
+    .btn.small { padding:6px 12px; font-size:.8rem; border-radius:8px; }
+    .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:20px; margin-bottom:20px; }
+    .card h2 { margin:0 0 16px; font-size:1.05rem; }
+    label { display:block; font-size:.8rem; color:var(--mut); margin:12px 0 6px; }
+    input, textarea, select { width:100%; background:#0b0f0e; border:1px solid var(--line); color:var(--txt); border-radius:10px; padding:10px 12px; font-family:inherit; font-size:.95rem; }
+    textarea { min-height:90px; resize:vertical; }
+    .row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    @media (max-width:640px){ .row{ grid-template-columns:1fr; } }
+    .check { display:flex; align-items:center; gap:8px; margin-top:14px; font-size:.9rem; }
+    .check input { width:auto; }
+    .status { min-height:1.4em; font-size:.9rem; margin:8px 0; }
+    .status.ok { color:var(--acc); } .status.err { color:var(--danger); }
+    table { width:100%; border-collapse:collapse; font-size:.9rem; }
+    th, td { text-align:left; padding:10px 8px; border-bottom:1px solid var(--line); vertical-align:middle; }
+    th { color:var(--mut); font-weight:600; font-size:.78rem; text-transform:uppercase; letter-spacing:.04em; }
+    .thumb { width:56px; height:56px; object-fit:cover; border-radius:8px; background:#000; }
+    .pill { display:inline-block; padding:3px 10px; border-radius:999px; font-size:.75rem; font-weight:700; }
+    .pill.on { background:rgba(0,198,118,.15); color:var(--acc); }
+    .pill.off { background:rgba(229,72,77,.12); color:var(--danger); }
+    .actions { display:flex; gap:6px; flex-wrap:wrap; }
+    .hidden { display:none !important; }
+    .login-note { color:var(--mut); }
+    a { color:var(--acc); }
+    .preview-img { max-width:180px; border-radius:10px; margin-top:8px; display:block; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <div>
+        <h1>Productos de la tienda</h1>
+        <p>Agrega, edita o pausa productos. Aparecen en bastidasystems.com/store.html</p>
+      </div>
+      <div class="actions">
+        <a class="btn ghost small" href="../store.html">Ver tienda</a>
+        <button class="btn ghost small" id="logout-btn" type="button">Salir</button>
+      </div>
+    </header>
+
+    <div id="gate" class="card">
+      <p class="login-note" id="gate-msg">Verificando sesión…</p>
+    </div>
+
+    <div id="app" class="hidden">
+      <div class="card">
+        <h2 id="form-title">Agregar producto</h2>
+        <form id="product-form" novalidate>
+          <input type="hidden" id="f-id">
+          <label for="f-name">Nombre *</label>
+          <input id="f-name" required maxlength="80" placeholder="Porta-llaves Venado">
+          <label for="f-desc">Descripción *</label>
+          <textarea id="f-desc" required maxlength="600" placeholder="Organizador de pared impreso en 3D…"></textarea>
+          <div class="row">
+            <div>
+              <label for="f-price">Precio *</label>
+              <input id="f-price" type="number" min="0" step="0.01" required placeholder="45.00">
+            </div>
+            <div>
+              <label for="f-currency">Moneda</label>
+              <select id="f-currency">
+                <option value="USD">USD</option>
+                <option value="MXN">MXN</option>
+              </select>
+            </div>
+          </div>
+          <label for="f-stripe">Link de pago de Stripe</label>
+          <input id="f-stripe" type="url" placeholder="https://buy.stripe.com/…">
+          <label for="f-image">Foto del producto</label>
+          <input id="f-image" type="file" accept="image/*">
+          <img id="f-preview" class="preview-img hidden" alt="">
+          <label class="check"><input type="checkbox" id="f-active" checked> Visible en la tienda</label>
+          <p class="status" id="form-status" role="status"></p>
+          <div class="actions">
+            <button class="btn" type="submit" id="save-btn">Guardar producto</button>
+            <button class="btn ghost hidden" type="button" id="cancel-btn">Cancelar</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>Productos (<span id="count">0</span>)</h2>
+        <p class="status" id="list-status" role="status"></p>
+        <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr><th></th><th>Nombre</th><th>Precio</th><th>Estado</th><th>Acciones</th></tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../supabase-config.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    const $ = (id) => document.getElementById(id);
+    const gate = $('gate'), gateMsg = $('gate-msg'), app = $('app');
+    let client = null, editingImageUrl = '';
+
+    function status(el, msg, ok) {
+      el.textContent = msg;
+      el.className = 'status' + (ok === true ? 'ok' : ok === false ? 'err' : '');
+    }
+    function esc(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[c]));
+    }
+    function money(price, currency) {
+      try {
+        return new Intl.NumberFormat(currency === 'MXN' ? 'es-MX' : 'en-US',
+          { style: 'currency', currency: currency || 'USD' }).format(price);
+      } catch (e) { return (currency || 'USD') + ' ' + price; }
+    }
+
+    async function init() {
+      if (!window.supabase || !window.BASTIDA_SUPABASE_CONFIG) {
+        gateMsg.textContent = 'No se pudo cargar la configuración de Supabase.';
+        return;
+      }
+      client = window.supabase.createClient(
+        window.BASTIDA_SUPABASE_CONFIG.url,
+        window.BASTIDA_SUPABASE_CONFIG.anonKey
+      );
+      const { data: sess } = await client.auth.getSession();
+      if (!sess || !sess.session) {
+        gateMsg.innerHTML = 'Necesitas iniciar sesión. <a href="../login.html">Ir al login</a>';
+        return;
+      }
+      const user = sess.session.user;
+      const { data: profile, error: pErr } = await client
+        .from('users')
+        .select('platform_role')
+        .eq('auth_user_id', user.id)
+        .maybeSingle();
+      const role = profile && profile.platform_role;
+      if (pErr || (role !== 'founder' && role !== 'owner')) {
+        gateMsg.textContent = 'Tu cuenta no tiene permiso de administrador.';
+        return;
+      }
+      gate.classList.add('hidden');
+      app.classList.remove('hidden');
+      bindForm();
+      await loadProducts();
+    }
+
+    async function loadProducts() {
+      const { data, error } = await client
+        .from('products').select('*').order('created_at', { ascending: false });
+      if (error) {
+        status($('list-status'), 'Error al cargar: ' + error.message +
+          ' ¿Ya corriste el SQL de docs/products-setup.md?', false);
+        return;
+      }
+      $('count').textContent = data.length;
+      const tb = $('rows');
+      tb.innerHTML = '';
+      data.forEach((p) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML =
+          '<td>' + (p.image_url ? '<img class="thumb" src="' + esc(p.image_url) + '" alt="">' : '') + '</td>' +
+          '<td><strong>' + esc(p.name) + '</strong><br><small style="color:var(--mut)">' +
+            esc((p.description || '').slice(0, 60)) + '</small></td>' +
+          '<td>' + esc(money(p.price, p.currency)) + '</td>' +
+          '<td><span class="pill ' + (p.active ? 'on' : 'off') + '">' +
+            (p.active ? 'Visible' : 'Pausado') + '</span></td>' +
+          '<td><div class="actions">' +
+            '<button class="btn ghost small" data-act="edit">Editar</button>' +
+            '<button class="btn ghost small" data-act="toggle">' + (p.active ? 'Pausar' : 'Activar') + '</button>' +
+            '<button class="btn danger small" data-act="del">Borrar</button>' +
+          '</div></td>';
+        tr.querySelector('[data-act="edit"]').onclick = () => startEdit(p);
+        tr.querySelector('[data-act="toggle"]').onclick = () => toggleActive(p);
+        tr.querySelector('[data-act="del"]').onclick = () => removeProduct(p);
+        tb.appendChild(tr);
+      });
+      if (!data.length) status($('list-status'), 'Aún no hay productos. Agrega el primero arriba.', true);
+      else status($('list-status'), '', null);
+    }
+
+    function bindForm() {
+      $('f-image').addEventListener('change', (e) => {
+        const f = e.target.files[0];
+        if (f) { $('f-preview').src = URL.createObjectURL(f); $('f-preview').classList.remove('hidden'); }
+      });
+      $('cancel-btn').onclick = resetForm;
+      $('logout-btn').onclick = async () => {
+        await client.auth.signOut();
+        location.href = '../login.html';
+      };
+      $('product-form').addEventListener('submit', onSubmit);
+    }
+
+    function resetForm() {
+      $('product-form').reset();
+      $('f-id').value = '';
+      $('f-active').checked = true;
+      $('f-preview').classList.add('hidden');
+      $('cancel-btn').classList.add('hidden');
+      $('form-title').textContent = 'Agregar producto';
+      editingImageUrl = '';
+      status($('form-status'), '', null);
+    }
+
+    function startEdit(p) {
+      $('f-id').value = p.id;
+      $('f-name').value = p.name || '';
+      $('f-desc').value = p.description || '';
+      $('f-price').value = p.price || '';
+      $('f-currency').value = p.currency || 'USD';
+      $('f-stripe').value = p.stripe_link || '';
+      $('f-active').checked = !!p.active;
+      editingImageUrl = p.image_url || '';
+      if (editingImageUrl) { $('f-preview').src = editingImageUrl; $('f-preview').classList.remove('hidden'); }
+      $('form-title').textContent = 'Editar producto';
+      $('cancel-btn').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    async function toggleActive(p) {
+      const { error } = await client.from('products')
+        .update({ active: !p.active }).eq('id', p.id);
+      if (error) status($('list-status'), 'Error: ' + error.message, false);
+      else loadProducts();
+    }
+
+    async function removeProduct(p) {
+      if (!confirm('¿Borrar "' + p.name + '"? Esta acción no se puede deshacer.')) return;
+      const { error } = await client.from('products').delete().eq('id', p.id);
+      if (error) status($('list-status'), 'Error: ' + error.message, false);
+      else { status($('list-status'), 'Producto borrado.', true); loadProducts(); }
+    }
+
+    async function uploadImage(file) {
+      const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
+      const path = 'products/' + crypto.randomUUID() + '.' + ext;
+      const { error } = await client.storage.from('product-images').upload(path, file, {
+        contentType: file.type, upsert: false
+      });
+      if (error) throw error;
+      const { data } = client.storage.from('product-images').getPublicUrl(path);
+      return data.publicUrl;
+    }
+
+    async function onSubmit(e) {
+      e.preventDefault();
+      const btn = $('save-btn');
+      const name = $('f-name').value.trim();
+      const description = $('f-desc').value.trim();
+      const price = parseFloat($('f-price').value);
+      if (!name || !description || isNaN(price) || price < 0) {
+        status($('form-status'), 'Completa nombre, descripción y un precio válido.', false);
+        return;
+      }
+      btn.disabled = true;
+      status($('form-status'), 'Guardando…', null);
+      try {
+        let imageUrl = editingImageUrl;
+        const file = $('f-image').files[0];
+        if (file) {
+          status($('form-status'), 'Subiendo foto…', null);
+          imageUrl = await uploadImage(file);
+        }
+        const row = {
+          name,
+          description,
+          price,
+          currency: $('f-currency').value,
+          stripe_link: $('f-stripe').value.trim(),
+          image_url: imageUrl,
+          active: $('f-active').checked
+        };
+        const id = $('f-id').value;
+        const { error } = id
+          ? await client.from('products').update(row).eq('id', id)
+          : await client.from('products').insert(row);
+        if (error) throw error;
+        status($('form-status'), id ? 'Producto actualizado.' : 'Producto agregado a la tienda.', true);
+        resetForm();
+        loadProducts();
+      } catch (err) {
+        status($('form-status'), 'Error: ' + (err.message || err), false);
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  })();
+  </script>
+</body>
+</html>

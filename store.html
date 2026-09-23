@@ -84,6 +84,8 @@
         'store.filtracore.description': 'Business app for filtration monitoring, maintenance, inventory, and operational records.',
         'store.filtracore.alt': 'FiltraCore app icon',
         'store.filtracore.aria': 'View FiltraCore on the App Store in a new tab',
+        'store.physicalHeading': 'Physical products',
+        'store.buyNow': 'Buy Now',
         'store.viewProduct': 'View Product',
         'store.viewAppStore': 'Download on the App Store',
         'store.pendingAppStore': 'App Store link pending'
@@ -110,6 +112,8 @@
         'store.filtracore.description': 'App empresarial para monitoreo de filtración, mantenimiento, inventario y registros operativos.',
         'store.filtracore.alt': 'Icono de la app FiltraCore',
         'store.filtracore.aria': 'Ver FiltraCore en App Store en una nueva pestaña',
+        'store.physicalHeading': 'Productos físicos',
+        'store.buyNow': 'Comprar ahora',
         'store.viewProduct': 'Ver producto',
         'store.viewAppStore': 'Descargar en App Store',
         'store.pendingAppStore': 'Enlace de App Store pendiente'
@@ -195,6 +199,13 @@
         </div>
       </div>
     </section>
+
+    <section class="store-catalog" id="physical-products" aria-labelledby="physical-products-title" hidden>
+      <div class="container">
+        <h2 id="physical-products-title" data-i18n="store.physicalHeading">Physical products</h2>
+        <div class="store-grid" id="physical-products-grid"></div>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer-v2" aria-label="Footer" data-i18n-aria-label="home.footer.ariaLabel">
@@ -236,6 +247,9 @@
     </div>
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="store-products.js" defer></script>
   <script src="agency.js?v=2026-08-25-store" defer></script>
 </body>
 </html>
