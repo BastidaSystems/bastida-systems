@@ -43,6 +43,7 @@
     .quote-option p { margin: 0 0 10px; font-size: 14px; color: #5b6470; }
     .quote-option__price { font-weight: 800; font-size: 17px; color: #111; }
     .quote-option__badge { display: inline-block; font-size: 12px; font-weight: 700; background: #fff4d6; color: #8a6d00; border-radius: 999px; padding: 3px 10px; margin-bottom: 8px; }
+    a.quote-option { text-decoration: none; color: inherit; display: block; box-sizing: border-box; }
     .quote-form { max-width: 560px; margin: 20px auto 0; display: grid; gap: 14px; }
     .quote-form label { font-weight: 700; font-size: 14px; display: grid; gap: 6px; }
     .quote-form input, .quote-form textarea { font-family: inherit; font-size: 15px; padding: 12px 14px; border: 2px solid #e5e9ed; border-radius: 10px; width: 100%; box-sizing: border-box; }
@@ -282,10 +283,14 @@
 
       function optionCard(item, selected, kind) {
         var badge = item.soon ? '<span class="quote-option__badge">' + esc(t('quote.soon')) + '</span><br>' : '';
-        return '<button type="button" class="quote-option' + (selected ? ' quote-option--selected' : '') + '" data-kind="' + kind + '" data-id="' + esc(item.id) + '">' +
-          badge + '<h3>' + esc(item.name[lang()]) + '</h3>' +
+        var inner = badge + '<h3>' + esc(item.name[lang()]) + '</h3>' +
           (item.desc ? '<p>' + esc(item.desc[lang()]) + '</p>' : '') +
-          '<span class="quote-option__price">' + esc(kind === 'variant' ? money(item.price) : priceLabel(item)) + '</span></button>';
+          '<span class="quote-option__price">' + esc(kind === 'variant' ? money(item.price) : priceLabel(item)) + '</span>';
+        if (kind === 'product' && item.id === 'pagina-express') {
+          return '<a class="quote-option" href="generador.html" data-kind="product" data-id="' + esc(item.id) + '">' + inner + '</a>';
+        }
+        return '<button type="button" class="quote-option' + (selected ? ' quote-option--selected' : '') + '" data-kind="' + kind + '" data-id="' + esc(item.id) + '">' +
+          inner + '</button>';
       }
 
       function render() {
@@ -308,6 +313,7 @@
         }
         body.innerHTML = html;
         body.querySelectorAll('.quote-option').forEach(function (btn) {
+          if (btn.tagName === 'A') return; // Express Page card links straight to the generator
           btn.addEventListener('click', function () {
             if (btn.dataset.kind === 'product') {
               state.productId = btn.dataset.id;
@@ -411,6 +417,7 @@
         var pre = params.get('producto');
         if (pre) {
           var prod = findProduct(pre);
+          if (prod && prod.id === 'pagina-express') { window.location.replace('generador.html'); return; }
           if (prod) {
             state.productId = prod.id;
             state.step = prod.variants ? 1 : 2;
