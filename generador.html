@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Your Express Page | Bastida Systems</title>
+  <meta name="description" content="Answer a few questions, choose from 3 designs, and download your super simple web page instantly. $25 USD.">
+  <link rel="canonical" href="https://bastidasystems.com/generador">
+  <link rel="icon" type="image/png" href="img/logo_bastida_sys.png">
+  <link rel="apple-touch-icon" href="img/logo_bastida_sys.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="agency.css?v=2026-08-26-index-nav">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Bastida Systems">
+  <meta property="og:url" content="https://bastidasystems.com/generador">
+  <meta property="og:title" content="Create Your Express Page | Bastida Systems">
+  <meta property="og:description" content="Answer a few questions, choose from 3 designs, and download your super simple web page instantly. $25 USD.">
+  <meta property="og:image" content="https://bastidasystems.com/img/logo_bastida_sys.png">
+  <meta property="og:image:alt" content="Bastida Systems">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Create Your Express Page | Bastida Systems">
+  <meta name="twitter:description" content="Answer a few questions, choose from 3 designs, and download your super simple web page instantly. $25 USD.">
+  <meta name="twitter:image" content="https://bastidasystems.com/img/logo_bastida_sys.png">
+  <meta name="theme-color" content="#00c676">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <style>
+    .gen-steps { display:flex; gap:12px; justify-content:center; margin:28px 0 8px; flex-wrap:wrap; }
+    .gen-step { display:flex; align-items:center; gap:8px; font-size:14px; font-weight:600; color:#9aa3ad; }
+    .gen-step__num { width:28px; height:28px; border-radius:50%; border:2px solid #d5dbe1; display:inline-flex; align-items:center; justify-content:center; font-size:13px; }
+    .gen-step--active { color:#111; }
+    .gen-step--active .gen-step__num { border-color:#00c676; background:#00c676; color:#fff; }
+    .gen-step--done { color:#00c676; }
+    .gen-step--done .gen-step__num { border-color:#00c676; color:#00c676; }
+    .gen-title { text-align:center; margin:10px 0 4px; }
+    .gen-sub { text-align:center; color:#5b6470; margin:0 auto 6px; max-width:640px; }
+    .gen-form { max-width:620px; margin:24px auto 0; display:grid; gap:16px; }
+    .gen-form label { font-weight:700; font-size:14px; display:grid; gap:6px; }
+    .gen-form input, .gen-form textarea { font-family:inherit; font-size:15px; padding:12px 14px; border:2px solid #e5e9ed; border-radius:10px; width:100%; box-sizing:border-box; }
+    .gen-form input:focus, .gen-form textarea:focus { outline:none; border-color:#00c676; }
+    .gen-form .hint { font-weight:400; font-size:13px; color:#8a94a0; }
+    .gen-form .req { color:#e5484d; }
+    .gen-swatches { display:flex; gap:10px; flex-wrap:wrap; }
+    .gen-swatch { width:44px; height:44px; border-radius:50%; border:3px solid transparent; cursor:pointer; padding:0; }
+    .gen-swatch--selected { border-color:#111; box-shadow:0 0 0 3px rgba(0,198,118,.35); }
+    .gen-designs { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:18px; max-width:860px; margin:24px auto 0; }
+    .gen-design { border:2px solid #e5e9ed; border-radius:16px; overflow:hidden; cursor:pointer; background:#fff; transition:border-color .15s, box-shadow .15s, transform .15s; text-align:left; font-family:inherit; padding:0; }
+    .gen-design:hover { transform:translateY(-3px); }
+    .gen-design--selected { border-color:#00c676; box-shadow:0 0 0 3px rgba(0,198,118,.18); }
+    .gen-design__mock { height:150px; position:relative; overflow:hidden; }
+    .gen-design__body { padding:14px 16px; }
+    .gen-design__body h3 { margin:0 0 4px; font-size:17px; }
+    .gen-design__body p { margin:0; font-size:13px; color:#5b6470; }
+    .gen-preview-wrap { max-width:900px; margin:24px auto 0; border:2px solid #e5e9ed; border-radius:16px; overflow:hidden; background:#fff; }
+    .gen-preview-bar { display:flex; align-items:center; gap:8px; padding:10px 14px; background:#f2f4f6; border-bottom:2px solid #e5e9ed; }
+    .gen-preview-bar .dot { width:11px; height:11px; border-radius:50%; background:#d5dbe1; }
+    .gen-preview-bar .url { flex:1; background:#fff; border-radius:8px; font-size:12px; color:#8a94a0; padding:6px 12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    #gen-preview { width:100%; height:620px; border:0; display:block; background:#fff; }
+    .gen-paybox { max-width:620px; margin:28px auto 0; border:2px solid #e5e9ed; border-radius:16px; padding:26px; background:#fff; text-align:center; }
+    .gen-paybox__price { font-size:34px; font-weight:800; margin:6px 0 4px; }
+    .gen-paybox__note { font-size:13px; color:#8a94a0; margin:0 0 18px; }
+    .gen-btn { display:inline-block; font-family:inherit; font-weight:700; font-size:16px; padding:14px 30px; border-radius:12px; border:0; cursor:pointer; background:#00c676; color:#fff; text-decoration:none; transition:transform .15s, box-shadow .15s; }
+    .gen-btn:hover { transform:translateY(-2px); box-shadow:0 10px 24px rgba(0,198,118,.35); }
+    .gen-btn--ghost { background:#fff; color:#111; border:2px solid #e5e9ed; }
+    .gen-btn--ghost:hover { box-shadow:none; border-color:#00c676; }
+    .gen-nav { display:flex; gap:12px; justify-content:center; margin-top:28px; flex-wrap:wrap; }
+    .gen-error { max-width:620px; margin:16px auto 0; background:#fdecec; color:#b3261e; border-radius:10px; padding:12px 16px; font-size:14px; font-weight:600; display:none; }
+    .gen-hero { padding:70px 0 30px; }
+    @media (max-width:640px){ #gen-preview{ height:520px; } .gen-hero{ padding:50px 0 20px; } }
+  </style>
+  <script src="site-config.js"></script>
+  <script src="analytics.js" defer></script>
+</head>
+
+<body class="agency-page premium-page store-page">
+  <div id="site-header"></div>
+  <script>
+    window.pageTranslations = {
+      en: {
+        'meta.title': 'Create Your Express Page | Bastida Systems',
+        'gen.eyebrow': 'EXPRESS PAGE · $25 USD',
+        'gen.heading': 'Create your page in 3 steps.',
+        'gen.copy': 'Answer the questions, choose from 3 professional designs, and download your super simple page instantly. No advanced features.',
+        'gen.step1': 'Your info',
+        'gen.step2': 'Design',
+        'gen.step3': 'Preview & download',
+        'gen.f_name': 'Business name',
+        'gen.f_tagline': 'Slogan',
+        'gen.f_taglineHint': 'A short catchy phrase. Example: "Tacos al pastor since 1998".',
+        'gen.f_desc': 'Short description',
+        'gen.f_descHint': 'What do you do? 1–2 sentences.',
+        'gen.f_services': 'Services or products',
+        'gen.f_servicesHint': 'One per line. Up to 8.',
+        'gen.f_whatsapp': 'WhatsApp number',
+        'gen.f_whatsappHint': 'With country code. Example: 17025550134.',
+        'gen.f_email': 'Email (optional)',
+        'gen.f_address': 'Address (optional)',
+        'gen.f_color': 'Main color',
+        'gen.required': 'Please complete the required fields.',
+        'gen.back': 'Back',
+        'gen.next': 'Continue',
+        'gen.designTitle': 'Choose your design',
+        'gen.designSub': 'Three professional styles. Your content adapts automatically.',
+        'gen.t1name': 'Modern',
+        'gen.t1desc': 'Dark and bold.',
+        'gen.t2name': 'Clean',
+        'gen.t2desc': 'Light and elegant.',
+        'gen.t3name': 'Vibrant',
+        'gen.t3desc': 'Colorful and energetic.',
+        'gen.previewTitle': 'Preview',
+        'gen.previewSub': 'This is how your page will look with your info.',
+        'gen.payTitle': 'Get your page',
+        'gen.payNote': 'Secure payment. After paying, download your page file below.',
+        'gen.payBtn': 'Pay $25 USD',
+        'gen.downloadBtn': 'Download my page',
+        'gen.servicesTitle': 'Services',
+        'gen.contactTitle': 'Contact',
+        'gen.contactCta': 'Chat on WhatsApp',
+        'gen.credit': 'Page created with Bastida Systems Express'
+      },
+      es: {
+        'meta.title': 'Crea tu Página Express | Bastida Systems',
+        'gen.eyebrow': 'PÁGINA EXPRESS · $25 USD',
+        'gen.heading': 'Crea tu página en 3 pasos.',
+        'gen.copy': 'Responde las preguntas, elige entre 3 diseños profesionales y descarga tu página súper simple al instante. Sin funciones avanzadas.',
+        'gen.step1': 'Tus datos',
+        'gen.step2': 'Diseño',
+        'gen.step3': 'Vista previa y descarga',
+        'gen.f_name': 'Nombre del negocio',
+        'gen.f_tagline': 'Eslogan',
+        'gen.f_taglineHint': 'Una frase corta que enganche. Ejemplo: "Tacos al pastor desde 1998".',
+        'gen.f_desc': 'Descripción corta',
+        'gen.f_descHint': '¿A qué te dedicas? 1–2 oraciones.',
+        'gen.f_services': 'Servicios o productos',
+        'gen.f_servicesHint': 'Uno por línea. Máximo 8.',
+        'gen.f_whatsapp': 'Número de WhatsApp',
+        'gen.f_whatsappHint': 'Con código de país. Ejemplo: 17025550134.',
+        'gen.f_email': 'Correo (opcional)',
+        'gen.f_address': 'Dirección (opcional)',
+        'gen.f_color': 'Color principal',
+        'gen.required': 'Completa los campos obligatorios.',
+        'gen.back': 'Atrás',
+        'gen.next': 'Continuar',
+        'gen.designTitle': 'Elige tu diseño',
+        'gen.designSub': 'Tres estilos profesionales. Tu contenido se adapta automáticamente.',
+        'gen.t1name': 'Moderno',
+        'gen.t1desc': 'Oscuro y llamativo.',
+        'gen.t2name': 'Claro',
+        'gen.t2desc': 'Limpio y elegante.',
+        'gen.t3name': 'Vibrante',
+        'gen.t3desc': 'Colorido y enérgico.',
+        'gen.previewTitle': 'Vista previa',
+        'gen.previewSub': 'Así se verá tu página con tu información.',
+        'gen.payTitle': 'Obtén tu página',
+        'gen.payNote': 'Pago seguro. Después de pagar, descarga el archivo de tu página abajo.',
+        'gen.payBtn': 'Pagar $25 USD',
+        'gen.downloadBtn': 'Descargar mi página',
+        'gen.servicesTitle': 'Servicios',
+        'gen.contactTitle': 'Contacto',
+        'gen.contactCta': 'Escríbenos por WhatsApp',
+        'gen.credit': 'Página creada con Bastida Systems Express'
+      }
+    };
+  </script>
+  <script src="site-header.js?v=2026-08-26-home-nav" defer></script>
+
+  <main>
+    <section class="gen-hero">
+      <div class="container">
+        <p class="eyebrow" style="text-align:center" data-i18n="gen.eyebrow">EXPRESS PAGE · $25 USD</p>
+        <h1 class="gen-title" data-i18n="gen.heading">Create your page in 3 steps.</h1>
+        <p class="gen-sub" data-i18n="gen.copy">Answer the questions, choose from 3 professional designs, and download your super simple page instantly.</p>
+        <div class="gen-steps" id="gen-steps"></div>
+        <div class="gen-error" id="gen-error" role="alert"></div>
+        <div id="gen-body"></div>
+        <div class="gen-nav" id="gen-nav"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer-v2" aria-label="Footer">
+    <div class="home-container site-footer-v2__grid">
+      <div class="site-footer-v2__brand">
+        <a class="site-footer-v2__logo" href="index.html" aria-label="Bastida Systems home">
+          <img width="1080" height="1080" src="img/logo_bastida_sys.png" alt="" aria-hidden="true">
+          <strong>Bastida Systems</strong>
+        </a>
+        <p data-i18n="footer.tagline">Technology You Can Trust.</p>
+      </div>
+    </div>
+    <div class="home-container site-footer-v2__bottom">
+      <p>&copy; <span data-current-year>2026</span> Bastida Systems LLC. <span data-i18n="footer.rightsShort">All rights reserved.</span></p>
+    </div>
+  </footer>
+  <script>
+    (function () {
+      'use strict';
+      /* ============================================================
+         CONFIGURACIÓN — Rodrigo: pega aquí tu link de pago de Stripe
+         (Payment Link de $25 USD). Si lo dejas vacío, el botón de
+         pago lleva al cliente a WhatsApp para pagar por ese medio.
+         ============================================================ */
+      var STRIPE_PAYMENT_LINK = '';
+      var WHATSAPP_NUMBER = '17026617149';
+
+      var COLORS = ['#00c676', '#2563eb', '#7c3aed', '#ea580c'];
+
+      var state = {
+        step: 1, design: null, color: COLORS[0],
+        name: '', tagline: '', desc: '', services: '',
+        whatsapp: '', email: '', address: ''
+      };
+
+      var body = document.getElementById('gen-body');
+      var nav = document.getElementById('gen-nav');
+      var stepsEl = document.getElementById('gen-steps');
+      var errorEl = document.getElementById('gen-error');
+
+      function lang() { return document.documentElement.lang === 'es' ? 'es' : 'en'; }
+      function t(key) {
+        var d = window.pageTranslations || {};
+        return (d[lang()] && d[lang()][key]) || (d.en && d.en[key]) || key;
+      }
+      function esc(s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+      }
+      function slug(s) {
+        return String(s || 'mi-pagina').toLowerCase().normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '') || 'mi-pagina';
+      }
+      function shade(hex, amt) {
+        var n = hex.replace('#', ''), r = parseInt(n.substr(0, 2), 16),
+            g = parseInt(n.substr(2, 2), 16), b = parseInt(n.substr(4, 2), 16);
+        r = Math.max(0, Math.min(255, r + amt)); g = Math.max(0, Math.min(255, g + amt)); b = Math.max(0, Math.min(255, b + amt));
+        return '#' + [r, g, b].map(function (v) { return ('0' + v.toString(16)).slice(-2); }).join('');
+      }
+
+      function docData() {
+        var wa = state.whatsapp.replace(/\D/g, '');
+        var services = state.services.split('\n').map(function (s) { return s.trim(); })
+          .filter(Boolean).slice(0, 8);
+        var waText = encodeURIComponent((lang() === 'es' ? 'Hola ' : 'Hello ') + state.name);
+        return {
+          name: state.name, tagline: state.tagline, desc: state.desc, services: services,
+          email: state.email, address: state.address, color: state.color,
+          waLink: 'https://wa.me/' + wa + '?text=' + waText
+        };
+      }
+
+      /* ---------------- Templates (self-contained documents) ---------------- */
+      var TEMPLATES = {
+        moderno: function (d, L) {
+          var c = d.color, dark = shade(c, -70);
+          var svc = d.services.map(function (s) {
+            return '<div class="card"><span class="tick">✓</span><span>' + esc(s) + '</span></div>';
+          }).join('');
+          return '<!DOCTYPE html><html lang="' + L + '"><head><meta charset="UTF-8">' +
+          '<meta name="viewport" content="width=device-width,initial-scale=1.0"><title>' + esc(d.name) + '</title>' +
+          '<style>*{box-sizing:border-box;margin:0;padding:0}' +
+          'body{font-family:Montserrat,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#0d0d10;color:#fff;line-height:1.6}' +
+          '.wrap{max-width:920px;margin:0 auto;padding:0 22px}' +
+          'header{padding:20px 0;border-bottom:1px solid #222}' +
+          '.nav{display:flex;justify-content:space-between;align-items:center}' +
+          '.brand{font-weight:800;font-size:20px}' +
+          '.btn{display:inline-block;background:' + c + ';color:#fff;font-weight:700;text-decoration:none;padding:13px 28px;border-radius:12px}' +
+          '.hero{padding:84px 0;text-align:center;background:radial-gradient(700px 340px at 50% 0%,' + dark + ',#0d0d10)}' +
+          '.hero h1{font-size:clamp(34px,6vw,58px);font-weight:800;letter-spacing:-1px}' +
+          '.hero .tag{color:' + c + ';font-weight:700;font-size:19px;margin:10px 0}' +
+          '.hero p{color:#b9bcc4;max-width:620px;margin:0 auto 26px}' +
+          'section{padding:56px 0}h2{font-size:28px;margin-bottom:22px}' +
+          '.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}' +
+          '.card{background:#15151a;border:1px solid #232329;border-radius:14px;padding:18px;display:flex;gap:12px;align-items:flex-start}' +
+          '.tick{color:' + c + ';font-weight:800}' +
+          '.contact{background:#111114;border-top:1px solid #222;border-bottom:1px solid #222}' +
+          '.contact a{color:' + c + ';text-decoration:none;font-weight:600}' +
+          '.contact p{margin:8px 0;color:#b9bcc4}' +
+          'footer{padding:26px 0;text-align:center;color:#6b6f78;font-size:13px}' +
+          '@media(max-width:600px){.hero{padding:60px 0}}</style></head><body>' +
+          '<header><div class="wrap nav"><span class="brand">' + esc(d.name) + '</span>' +
+          '<a class="btn" href="' + d.waLink + '">WhatsApp</a></div></header>' +
+          '<div class="hero"><div class="wrap"><h1>' + esc(d.name) + '</h1>' +
+          (d.tagline ? '<p class="tag">' + esc(d.tagline) + '</p>' : '') +
+          (d.desc ? '<p>' + esc(d.desc) + '</p>' : '') +
+          '<a class="btn" href="' + d.waLink + '">' + esc(t('gen.contactCta')) + '</a></div></div>' +
+          (svc ? '<section><div class="wrap"><h2>' + esc(t('gen.servicesTitle')) + '</h2><div class="grid">' + svc + '</div></div></section>' : '') +
+          '<section class="contact"><div class="wrap"><h2>' + esc(t('gen.contactTitle')) + '</h2>' +
+          '<p><a href="' + d.waLink + '">WhatsApp</a></p>' +
+          (d.email ? '<p>' + esc(d.email) + '</p>' : '') +
+          (d.address ? '<p>' + esc(d.address) + '</p>' : '') + '</div></section>' +
+          '<footer>' + esc(t('gen.credit')) + '</footer></body></html>';
+        },
+        claro: function (d, L) {
+          var c = d.color;
+          var svc = d.services.map(function (s) {
+            return '<li><span class="tick">✓</span><span>' + esc(s) + '</span></li>';
+          }).join('');
+          return '<!DOCTYPE html><html lang="' + L + '"><head><meta charset="UTF-8">' +
+          '<meta name="viewport" content="width=device-width,initial-scale=1.0"><title>' + esc(d.name) + '</title>' +
+          '<style>*{box-sizing:border-box;margin:0;padding:0}' +
+          'body{font-family:Montserrat,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#fff;color:#1c1e21;line-height:1.65}' +
+          '.wrap{max-width:920px;margin:0 auto;padding:0 22px}' +
+          'header{padding:22px 0;border-bottom:1px solid #eef0f2}' +
+          '.nav{display:flex;justify-content:space-between;align-items:center}' +
+          '.brand{font-weight:800;font-size:20px;color:' + c + '}' +
+          '.btn{display:inline-block;background:' + c + ';color:#fff;font-weight:700;text-decoration:none;padding:13px 28px;border-radius:999px}' +
+          '.hero{padding:80px 0;text-align:center;background:#f7f9fa}' +
+          '.hero h1{font-size:clamp(32px,5.5vw,52px);font-weight:800;letter-spacing:-.5px}' +
+          '.hero .tag{font-size:19px;color:' + c + ';font-weight:600;margin:10px 0}' +
+          '.hero p{color:#5b6470;max-width:620px;margin:0 auto 26px}' +
+          'section{padding:54px 0}h2{font-size:26px;margin-bottom:20px}' +
+          'ul{list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}' +
+          'li{background:#f7f9fa;border-radius:12px;padding:16px 18px;display:flex;gap:10px;align-items:flex-start}' +
+          '.tick{color:' + c + ';font-weight:800}' +
+          '.contact p{margin:8px 0;color:#5b6470}.contact a{color:' + c + ';font-weight:600;text-decoration:none}' +
+          'footer{padding:26px 0;text-align:center;color:#9aa3ad;font-size:13px;border-top:1px solid #eef0f2}' +
+          '@media(max-width:600px){.hero{padding:56px 0}}</style></head><body>' +
+          '<header><div class="wrap nav"><span class="brand">' + esc(d.name) + '</span>' +
+          '<a class="btn" href="' + d.waLink + '">WhatsApp</a></div></header>' +
+          '<div class="hero"><div class="wrap"><h1>' + esc(d.name) + '</h1>' +
+          (d.tagline ? '<p class="tag">' + esc(d.tagline) + '</p>' : '') +
+          (d.desc ? '<p>' + esc(d.desc) + '</p>' : '') +
+          '<a class="btn" href="' + d.waLink + '">' + esc(t('gen.contactCta')) + '</a></div></div>' +
+          (svc ? '<section><div class="wrap"><h2>' + esc(t('gen.servicesTitle')) + '</h2><ul>' + svc + '</ul></div></section>' : '') +
+          '<section class="contact"><div class="wrap"><h2>' + esc(t('gen.contactTitle')) + '</h2>' +
+          '<p><a href="' + d.waLink + '">WhatsApp</a></p>' +
+          (d.email ? '<p>' + esc(d.email) + '</p>' : '') +
+          (d.address ? '<p>' + esc(d.address) + '</p>' : '') + '</div></section>' +
+          '<footer>' + esc(t('gen.credit')) + '</footer></body></html>';
+        },
+        vibrante: function (d, L) {
+          var c = d.color, dark = shade(c, -60);
+          var svc = d.services.map(function (s) {
+            return '<div class="card"><strong>' + esc(s) + '</strong></div>';
+          }).join('');
+          return '<!DOCTYPE html><html lang="' + L + '"><head><meta charset="UTF-8">' +
+          '<meta name="viewport" content="width=device-width,initial-scale=1.0"><title>' + esc(d.name) + '</title>' +
+          '<style>*{box-sizing:border-box;margin:0;padding:0}' +
+          'body{font-family:Montserrat,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#fff8f0;color:#23211d;line-height:1.6}' +
+          '.wrap{max-width:920px;margin:0 auto;padding:0 22px}' +
+          '.hero{background:linear-gradient(135deg,' + c + ',' + dark + ');color:#fff;padding:70px 0 90px;text-align:center}' +
+          '.hero h1{font-size:clamp(34px,6vw,56px);font-weight:800}' +
+          '.hero .tag{font-size:20px;font-weight:600;opacity:.95;margin:10px 0}' +
+          '.hero p{opacity:.9;max-width:620px;margin:0 auto 26px}' +
+          '.btn{display:inline-block;background:#fff;color:' + dark + ';font-weight:800;text-decoration:none;padding:14px 30px;border-radius:999px}' +
+          '.btn2{display:inline-block;background:' + c + ';color:#fff;font-weight:700;text-decoration:none;padding:13px 28px;border-radius:999px}' +
+          '.top{display:flex;justify-content:space-between;align-items:center;padding:18px 0;color:#fff;font-weight:800;font-size:19px}' +
+          '.top a{color:#fff;text-decoration:none;font-size:14px;font-weight:700;border:2px solid rgba(255,255,255,.7);padding:8px 18px;border-radius:999px}' +
+          '.cards{margin-top:-46px;position:relative;z-index:2}' +
+          'section{padding:50px 0}h2{font-size:26px;margin-bottom:20px}' +
+          '.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}' +
+          '.card{background:#fff;border-radius:16px;padding:22px;box-shadow:0 12px 32px rgba(0,0,0,.09);border-top:5px solid ' + c + '}' +
+          '.contact{background:#23211d;color:#f5efe6;border-radius:24px;margin:0 12px 12px}' +
+          '.contact a{color:' + c + ';font-weight:700;text-decoration:none}' +
+          '.contact p{margin:8px 0;opacity:.85}' +
+          'footer{padding:24px 0 34px;text-align:center;color:#9a938a;font-size:13px}' +
+          '@media(max-width:600px){.hero{padding:50px 0 80px}}</style></head><body>' +
+          '<div class="hero"><div class="wrap"><div class="top"><span>' + esc(d.name) + '</span>' +
+          '<a href="' + d.waLink + '">WhatsApp</a></div>' +
+          '<h1>' + esc(d.name) + '</h1>' +
+          (d.tagline ? '<p class="tag">' + esc(d.tagline) + '</p>' : '') +
+          (d.desc ? '<p>' + esc(d.desc) + '</p>' : '') +
+          '<a class="btn" href="' + d.waLink + '">' + esc(t('gen.contactCta')) + '</a></div></div>' +
+          (svc ? '<section><div class="wrap cards"><h2>' + esc(t('gen.servicesTitle')) + '</h2><div class="grid">' + svc + '</div></div></section>' : '') +
+          '<section><div class="contact"><div class="wrap" style="padding-top:44px;padding-bottom:44px"><h2>' + esc(t('gen.contactTitle')) + '</h2>' +
+          '<p><a href="' + d.waLink + '">WhatsApp</a></p>' +
+          (d.email ? '<p>' + esc(d.email) + '</p>' : '') +
+          (d.address ? '<p>' + esc(d.address) + '</p>' : '') +
+          '<p style="margin-top:18px"><a class="btn2" href="' + d.waLink + '">' + esc(t('gen.contactCta')) + '</a></p>' +
+          '</div></div></section>' +
+          '<footer>' + esc(t('gen.credit')) + '</footer></body></html>';
+        }
+      };
+
+      var MOCKS = {
+        moderno: '<div style="height:100%;background:#0d0d10;padding:16px"><div style="height:10px;width:40%;background:#00c676;border-radius:5px;margin-bottom:12px"></div><div style="height:16px;width:85%;background:#2a2a30;border-radius:6px;margin-bottom:8px"></div><div style="height:16px;width:65%;background:#2a2a30;border-radius:6px;margin-bottom:14px"></div><div style="height:26px;width:45%;background:#00c676;border-radius:13px"></div></div>',
+        claro: '<div style="height:100%;background:#f7f9fa;padding:16px"><div style="height:10px;width:40%;background:#c9d2d9;border-radius:5px;margin-bottom:12px"></div><div style="height:16px;width:85%;background:#e3e8ec;border-radius:6px;margin-bottom:8px"></div><div style="height:16px;width:65%;background:#e3e8ec;border-radius:6px;margin-bottom:14px"></div><div style="height:26px;width:45%;background:#00c676;border-radius:13px"></div></div>',
+        vibrante: '<div style="height:100%;background:linear-gradient(135deg,#00c676,#047857);padding:16px"><div style="height:10px;width:40%;background:rgba(255,255,255,.85);border-radius:5px;margin-bottom:12px"></div><div style="height:16px;width:85%;background:rgba(255,255,255,.5);border-radius:6px;margin-bottom:8px"></div><div style="height:16px;width:65%;background:rgba(255,255,255,.5);border-radius:6px;margin-bottom:14px"></div><div style="height:26px;width:45%;background:#fff;border-radius:13px"></div></div>'
+      };
+
+      function buildDoc() {
+        var d = docData();
+        var fn = TEMPLATES[state.design] || TEMPLATES.moderno;
+        return fn(d, lang());
+      }
+
+      /* ---------------- Steps UI ---------------- */
+      function renderSteps() {
+        var labels = [t('gen.step1'), t('gen.step2'), t('gen.step3')];
+        stepsEl.innerHTML = labels.map(function (label, i) {
+          var n = i + 1;
+          var cls = 'gen-step' + (n === state.step ? ' gen-step--active' : n < state.step ? ' gen-step--done' : '');
+          return '<span class="' + cls + '"><span class="gen-step__num">' + n + '</span>' + esc(label) + '</span>';
+        }).join('');
+      }
+
+      function showError(msg) {
+        errorEl.textContent = msg;
+        errorEl.style.display = msg ? 'block' : 'none';
+        if (msg) errorEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      function field(id, labelKey, hintKey, required, multiline, inputType) {
+        var req = required ? ' <span class="req">*</span>' : '';
+        var hint = hintKey ? '<span class="hint">' + esc(t(hintKey)) + '</span>' : '';
+        var val = esc(state[id.replace('g_', '')] || '');
+        var input = multiline
+          ? '<textarea id="' + id + '" rows="4">' + val + '</textarea>'
+          : '<input id="' + id + '" type="' + (inputType || 'text') + '" value="' + val + '">';
+        return '<label>' + esc(t(labelKey)) + req + hint + input + '</label>';
+      }
+
+      function renderForm() {
+        var sw = COLORS.map(function (c) {
+          var sel = state.color === c ? ' gen-swatch--selected' : '';
+          return '<button type="button" class="gen-swatch' + sel + '" data-color="' + c +
+            '" style="background:' + c + '" aria-label="' + c + '"></button>';
+        }).join('');
+        body.innerHTML =
+          '<div class="gen-form">' +
+          field('g_name', 'gen.f_name', null, true) +
+          field('g_tagline', 'gen.f_tagline', 'gen.f_taglineHint', false) +
+          field('g_desc', 'gen.f_desc', 'gen.f_descHint', false, true) +
+          field('g_services', 'gen.f_services', 'gen.f_servicesHint', false, true) +
+          field('g_whatsapp', 'gen.f_whatsapp', 'gen.f_whatsappHint', true, false, 'tel') +
+          field('g_email', 'gen.f_email', null, false, false, 'email') +
+          field('g_address', 'gen.f_address', null, false) +
+          '<label>' + esc(t('gen.f_color')) + '<span class="gen-swatches">' + sw + '</span></label>' +
+          '</div>';
+        nav.innerHTML = '<button class="gen-btn" id="gen-next">' + esc(t('gen.next')) + '</button>';
+        body.querySelectorAll('.gen-swatch').forEach(function (b) {
+          b.addEventListener('click', function () {
+            state.color = b.getAttribute('data-color');
+            body.querySelectorAll('.gen-swatch').forEach(function (x) { x.classList.remove('gen-swatch--selected'); });
+            b.classList.add('gen-swatch--selected');
+          });
+        });
+        document.getElementById('gen-next').addEventListener('click', function () {
+          collect();
+          if (!state.name.trim() || state.whatsapp.replace(/\D/g, '').length < 7) {
+            showError(t('gen.required')); return;
+          }
+          showError('');
+          state.step = 2; render();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      }
+
+      function collect() {
+        ['name', 'tagline', 'desc', 'services', 'whatsapp', 'email', 'address'].forEach(function (k) {
+          var el = document.getElementById('g_' + k);
+          if (el) state[k] = el.value;
+        });
+      }
+
+      function renderDesigns() {
+        var defs = [
+          { id: 'moderno', name: t('gen.t1name'), desc: t('gen.t1desc') },
+          { id: 'claro', name: t('gen.t2name'), desc: t('gen.t2desc') },
+          { id: 'vibrante', name: t('gen.t3name'), desc: t('gen.t3desc') }
+        ];
+        body.innerHTML =
+          '<h2 class="gen-title">' + esc(t('gen.designTitle')) + '</h2>' +
+          '<p class="gen-sub">' + esc(t('gen.designSub')) + '</p>' +
+          '<div class="gen-designs">' + defs.map(function (d) {
+            var sel = state.design === d.id ? ' gen-design--selected' : '';
+            return '<button type="button" class="gen-design' + sel + '" data-design="' + d.id + '">' +
+              '<span class="gen-design__mock">' + MOCKS[d.id] + '</span>' +
+              '<span class="gen-design__body"><h3>' + esc(d.name) + '</h3><p>' + esc(d.desc) + '</p></span></button>';
+          }).join('') + '</div>';
+        nav.innerHTML =
+          '<button class="gen-btn gen-btn--ghost" id="gen-back">' + esc(t('gen.back')) + '</button>' +
+          '<button class="gen-btn" id="gen-next">' + esc(t('gen.next')) + '</button>';
+        body.querySelectorAll('.gen-design').forEach(function (b) {
+          b.addEventListener('click', function () {
+            state.design = b.getAttribute('data-design');
+            body.querySelectorAll('.gen-design').forEach(function (x) { x.classList.remove('gen-design--selected'); });
+            b.classList.add('gen-design--selected');
+            showError('');
+          });
+        });
+        document.getElementById('gen-back').addEventListener('click', function () { state.step = 1; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+        document.getElementById('gen-next').addEventListener('click', function () {
+          if (!state.design) { showError(t('gen.designTitle')); return; }
+          showError('');
+          state.step = 3; render();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      }
+
+      function payHref() {
+        if (STRIPE_PAYMENT_LINK) return STRIPE_PAYMENT_LINK;
+        var msg = encodeURIComponent(lang() === 'es'
+          ? 'Hola, quiero pagar mi Página Express ($25 USD).'
+          : 'Hello, I want to pay for my Express Page ($25 USD).');
+        return 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + msg;
+      }
+
+      function renderResult() {
+        var doc = buildDoc();
+        body.innerHTML =
+          '<h2 class="gen-title">' + esc(t('gen.previewTitle')) + '</h2>' +
+          '<p class="gen-sub">' + esc(t('gen.previewSub')) + '</p>' +
+          '<div class="gen-preview-wrap"><div class="gen-preview-bar">' +
+          '<span class="dot"></span><span class="dot"></span><span class="dot"></span>' +
+          '<span class="url">' + esc(slug(state.name)) + '.html</span></div>' +
+          '<iframe id="gen-preview" title="preview" sandbox="allow-same-origin"></iframe></div>' +
+          '<div class="gen-paybox"><h2 style="margin:0">' + esc(t('gen.payTitle')) + '</h2>' +
+          '<div class="gen-paybox__price">$25 USD</div>' +
+          '<p class="gen-paybox__note">' + esc(t('gen.payNote')) + '</p>' +
+          '<p><a class="gen-btn" id="gen-pay" href="' + esc(payHref()) + '" target="_blank" rel="noopener">' + esc(t('gen.payBtn')) + '</a></p>' +
+          '<p style="margin:18px 0 0"><button class="gen-btn gen-btn--ghost" id="gen-download">' + esc(t('gen.downloadBtn')) + '</button></p></div>';
+        var frame = document.getElementById('gen-preview');
+        // srcdoc via JS to avoid quoting issues
+        frame.srcdoc = doc;
+        nav.innerHTML =
+          '<button class="gen-btn gen-btn--ghost" id="gen-back">' + esc(t('gen.back')) + '</button>';
+        document.getElementById('gen-back').addEventListener('click', function () { state.step = 2; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+        document.getElementById('gen-download').addEventListener('click', function () {
+          var blob = new Blob([buildDoc()], { type: 'text/html' });
+          var a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = slug(state.name) + '.html';
+          document.body.appendChild(a); a.click();
+          setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 800);
+        });
+      }
+
+      function render() {
+        showError('');
+        renderSteps();
+        if (state.step === 1) renderForm();
+        else if (state.step === 2) renderDesigns();
+        else renderResult();
+      }
+
+      document.addEventListener('change', function (e) {
+        if (e.target && e.target.id === 'language-select') setTimeout(render, 0);
+      });
+
+      render();
+    })();
+  </script>
+  <script src="agency.js?v=2026-08-25-store" defer></script>
+  <script src="whatsapp-float.js?v=2026-09-23-wa" defer></script>
+</body>
+</html>
