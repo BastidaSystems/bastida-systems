@@ -4,7 +4,6 @@ const sharedSiteTranslations = {
   en: {
     'nav.home': 'Home',
     'nav.store': 'Store',
-    'nav.inventory': 'Inventory',
     'nav.products': 'Products',
     'nav.work': 'Work',
     'nav.process': 'Process',
@@ -307,7 +306,6 @@ const sharedSiteTranslations = {
   es: {
     'nav.home': 'Inicio',
     'nav.store': 'Tienda',
-    'nav.inventory': 'Inventario',
     'nav.products': 'Productos',
     'nav.work': 'Proyectos',
     'nav.process': 'Proceso',

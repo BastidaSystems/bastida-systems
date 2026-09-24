@@ -1896,7 +1896,8 @@
           'view.documents': 'Documents',
           'view.deliverables': 'Deliverables',
           'view.workLogs': 'Work Logs',
-          'view.payments': 'Payments'
+          'view.payments': 'Payments',
+          'view.inventory': 'Inventory'
         },
         es: {
           'auth.acceptInvitation': 'Aceptar invitación',
@@ -1954,7 +1955,8 @@
           'view.documents': 'Documentos',
           'view.deliverables': 'Entregables',
           'view.workLogs': 'Registros de trabajo',
-          'view.payments': 'Pagos'
+          'view.payments': 'Pagos',
+          'view.inventory': 'Inventario'
         }
       };
       let activePortalLanguage = localStorage.getItem(portalLanguageStorageKey) || (navigator.language.startsWith('es') ? 'es' : 'en');
@@ -1975,7 +1977,8 @@
         documents: t('view.documents'),
         deliverables: t('view.deliverables'),
         workLogs: t('view.workLogs'),
-        payments: t('view.payments')
+        payments: t('view.payments'),
+        inventory: t('view.inventory')
       };
       const roleLabels = {
         founder: t('role.founder'),
@@ -2119,6 +2122,7 @@
         viewLabels.deliverables = t('view.deliverables');
         viewLabels.workLogs = t('view.workLogs');
         viewLabels.payments = t('view.payments');
+        viewLabels.inventory = t('view.inventory');
         roleLabels.founder = t('role.founder');
         roleLabels.owner = t('role.owner');
         roleLabels.core_collaborator = t('role.core_collaborator');
@@ -2393,6 +2397,9 @@
               </section>
               <section class="view ${state.activeView === 'payments' ? 'is-active' : ''}" data-view="payments">
                 ${renderPayments()}
+              </section>
+              <section class="view ${state.activeView === 'inventory' ? 'is-active' : ''}" data-view="inventory">
+                <iframe src="admin/inventario.html" title="Inventario" loading="lazy" style="width:100%;min-height:80vh;border:0;display:block;"></iframe>
               </section>
             </main>
             ${state.invite.isOpen ? renderInviteModal() : ''}
