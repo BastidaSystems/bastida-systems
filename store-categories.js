@@ -1,8 +1,9 @@
 /* Bastida Systems store: live catalog grouped by category.
    Reads products flagged "show in store" from Supabase and renders them
-   under the same categories used in the Bastida Stock app.
-   Category mapping is maintained here; tell Dudu when a product changes
-   category so the store keeps matching the app. */
+   under the same categories used in the inventory app.
+   The category comes from the product's "category" column (synced from the
+   app); a small slug map below is only a fallback for products with no
+   category set. */
 (function () {
   'use strict';
 
@@ -18,6 +19,8 @@
   ];
 
   // Product slug -> category id, mirroring the app on 2026-09-23.
+  // Product slug -> category id, used only when the product has no
+  // category set in Supabase (the app syncs the category column).
   var SLUG_CATEGORY = {
     'sitio-web-completo': 1,
     'landing': 1,
@@ -27,9 +30,24 @@
     'filtracore': 7,
     'beoflow': 7,
     'lineops': 3,
-    'app': 3
+    'app': 3,
+    'treenest-desktop-organizer': 4,
+    'pieza-3d': 4
   };
   var FALLBACK_CATEGORY = 5; // Recomendados / Featured
+
+  // Category name (as synced from the app) -> category id.
+  var CATEGORY_ID_BY_NAME = {};
+  CATEGORIES.forEach(function (cat) {
+    CATEGORY_ID_BY_NAME[cat.es.toLowerCase()] = cat.id;
+    CATEGORY_ID_BY_NAME[cat.en.toLowerCase()] = cat.id;
+  });
+
+  function categoryIdFor(p) {
+    var name = p.category ? String(p.category).toLowerCase() : '';
+    if (name && CATEGORY_ID_BY_NAME[name]) return CATEGORY_ID_BY_NAME[name];
+    return SLUG_CATEGORY[p.slug] || FALLBACK_CATEGORY;
+  }
 
   var WHATSAPP = 'https://wa.me/17026617149';
 
@@ -104,7 +122,7 @@
 
     var groups = {};
     cachedProducts.forEach(function (p) {
-      var catId = SLUG_CATEGORY[p.slug] || FALLBACK_CATEGORY;
+      var catId = categoryIdFor(p);
       (groups[catId] = groups[catId] || []).push(p);
     });
 
@@ -131,7 +149,7 @@
   function init() {
     var cfg = window.BASTIDA_SUPABASE_CONFIG;
     if (!cfg || !cfg.url || !cfg.anonKey) return;
-    fetch(cfg.url + '/rest/v1/products?select=slug,name,description,price,currency,image_url&active=eq.true&show_in_store=eq.true&order=name', {
+    fetch(cfg.url + '/rest/v1/products?select=slug,name,description,price,currency,image_url,category&active=eq.true&show_in_store=eq.true&order=name', {
       headers: { apikey: cfg.anonKey, Authorization: 'Bearer ' + cfg.anonKey }
     })
       .then(function (res) {
