@@ -140,6 +140,8 @@
       text-align: left;
       font-size: 14px;
       font-weight: 600;
+      text-decoration: none;
+      box-sizing: border-box;
       transition: background 160ms ease, color 160ms ease, transform 160ms ease;
     }
 
@@ -1867,6 +1869,7 @@
           'language.english': 'English',
           'language.spanish': 'Spanish',
           'nav.selectSection': 'Select section',
+          'nav.products': 'Products',
           'portal.errorTitle': 'Portal is not ready',
           'portal.loadingCopy': 'Validating your Supabase session.',
           'portal.loadingTitle': 'Loading Bastida OS',
@@ -1924,6 +1927,7 @@
           'language.english': 'Inglés',
           'language.spanish': 'Español',
           'nav.selectSection': 'Seleccionar sección',
+          'nav.products': 'Productos',
           'portal.errorTitle': 'El portal no está listo',
           'portal.loadingCopy': 'Validando tu sesión de Supabase.',
           'portal.loadingTitle': 'Cargando Bastida OS',
@@ -2338,6 +2342,7 @@
               <nav class="nav">
                 ${Object.entries(viewLabels).map(([view, label]) => navButton(view, label)).join('')}
               </nav>
+              ${isStoreAdmin() ? `<a class="nav-button" style="margin-top:4px" href="admin/productos.html"><span>${escapeHtml(t('nav.products'))}</span></a>` : ''}
               <div class="sidebar-footer">
                 ${escapeHtml(t('footer.supabase'))}
               </div>
@@ -2407,8 +2412,12 @@
         bindAppEvents();
       }
 
-      function navButton(view, label) {
-        const count = getViewCount(view);
+      function isStoreAdmin() {
+        const r = state.profile && state.profile.platform_role;
+        return r === 'founder' || r === 'owner';
+      }
+
+      function navButton(view, label) {        const count = getViewCount(view);
         return `
           <button class="nav-button ${state.activeView === view ? 'is-active' : ''}" type="button" data-nav="${view}">
             <span>${escapeHtml(label)}</span>
