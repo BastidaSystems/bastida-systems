@@ -24,6 +24,7 @@
     header.top { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:8px; }
     header.top h1 { font-size:1.25rem; margin:0; color:var(--navy); }
     header.top p { color:var(--mut); margin:4px 0 0; font-size:.82rem; }
+    .kicker { color:var(--acc); font-weight:800; font-size:.78rem; letter-spacing:.16em; text-transform:uppercase; margin:0 0 6px; }
     .actions { display:flex; gap:8px; flex-wrap:wrap; }
     .btn { display:inline-block; background:var(--acc); color:#fff; border:0; border-radius:12px; padding:11px 20px; font-weight:700; cursor:pointer; font-family:inherit; font-size:.95rem; }
     .btn.ghost { background:transparent; color:var(--navy); border:1px solid var(--line); }
@@ -44,6 +45,13 @@
 
     .status { min-height:1.4em; font-size:.9rem; margin:10px 0; color:var(--mut); }
     .status.ok { color:var(--ok); } .status.err { color:var(--danger); }
+
+    /* Resumen como en la app */
+    .stats { display:flex; border-top:1px solid var(--line); border-bottom:1px solid var(--line); margin:2px 0 18px; }
+    .stat { flex:1; padding:16px 6px 16px 18px; }
+    .stat + .stat { border-left:1px solid var(--line); }
+    .stat b { display:block; font-size:2rem; font-weight:800; color:var(--navy); line-height:1.1; }
+    .stat span { color:var(--mut); font-size:.88rem; }
 
     /* Tarjetas de categoría, como en la app */
     .cat-card {
@@ -118,8 +126,8 @@
   <div class="wrap">
     <header class="top">
       <div>
+        <p class="kicker">Catálogo de Bastida</p>
         <h1>Bastida Stock · Compartido</h1>
-        <p>Inventario de Rodrigo y David. Cambios guardados en Supabase.</p>
       </div>
       <div class="actions">
         <a class="btn ghost small" href="../store.html">Ver tienda</a>
@@ -300,6 +308,15 @@
       head.innerHTML = '<h2>Categorías</h2><p>Toca una para ver sus productos.</p>' +
         '<button class="btn btn-big" id="add-cat-btn" type="button">+&nbsp;&nbsp;Agregar categoría</button>';
       box.appendChild(head);
+      const totalProducts = groups.reduce((n, g) => n + g[1].length, 0);
+      const totalAvail = groups.reduce((n, g) => n + g[1].filter((p) => p.active).length, 0);
+      const stats = document.createElement('div');
+      stats.className = 'stats';
+      stats.innerHTML =
+        '<div class="stat"><b>' + groups.length + '</b><span>Categorías</span></div>' +
+        '<div class="stat"><b>' + totalProducts + '</b><span>' +
+        (totalProducts === 1 ? 'Producto' : 'Productos') + ' · ' + totalAvail + ' disponibles</span></div>';
+      box.appendChild(stats);
       head.querySelector('#add-cat-btn').onclick = () => {
         const name = prompt('Nombre de la nueva categoría:');
         if (name && name.trim()) openModal(null, name.trim());
