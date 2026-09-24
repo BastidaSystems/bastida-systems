@@ -36,7 +36,7 @@
       ? '<a data-track="click_product" class="store-product-card__button" href="' +
         esc(p.stripe_link) + '" target="_blank" rel="noopener noreferrer">' + esc(buyLabel) + '</a>'
       : '';
-    return '<article class="store-product-card reveal">' +
+    return '<article class="store-product-card">' +
       (p.image_url ? '<img class="store-product-card__photo" src="' + esc(p.image_url) + '" alt="' +
         esc(p.name) + '" loading="lazy" decoding="async" width="800" height="600">' : '') +
       '<div class="store-product-card__top">' +
