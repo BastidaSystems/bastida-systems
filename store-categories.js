@@ -43,6 +43,16 @@
     CATEGORY_ID_BY_NAME[cat.en.toLowerCase()] = cat.id;
   });
 
+  // Local photo fallback, used while the app's photo sync to Supabase
+  // has not uploaded image_url yet. Supabase image_url always wins.
+  var LOCAL_IMAGES = {
+    'treenest-desktop-organizer': 'images/products/treenest.jpg'
+  };
+
+  function productImage(p) {
+    return p.image_url || LOCAL_IMAGES[p.slug] || '';
+  }
+
   function categoryIdFor(p) {
     var name = p.category ? String(p.category).toLowerCase() : '';
     if (name && CATEGORY_ID_BY_NAME[name]) return CATEGORY_ID_BY_NAME[name];
@@ -91,8 +101,9 @@
       href = WHATSAPP + '?text=' + encodeURIComponent(msg);
       cta = lang() === 'es' ? 'Cotizar' : 'Get a quote';
     }
-    var img = p.image_url
-      ? '<img width="512" height="512" class="store-product-card__icon" src="' + esc(p.image_url) + '" alt="' + esc(p.name) + '" loading="lazy" decoding="async">'
+    var imgSrc = productImage(p);
+    var img = imgSrc
+      ? '<img width="512" height="512" class="store-product-card__icon" src="' + esc(imgSrc) + '" alt="' + esc(p.name) + '" loading="lazy" decoding="async">'
       : '';
     var desc = p.description
       ? '<p class="store-product-card__description">' + esc(p.description) + '</p>'
