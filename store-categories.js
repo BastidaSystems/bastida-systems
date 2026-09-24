@@ -31,7 +31,8 @@
     'beoflow': 7,
     'lineops': 3,
     'app': 3,
-    'treenest-desktop-organizer': 4
+    'treenest-desktop-organizer': 4,
+    'pieza-3d': 4
   };
   var FALLBACK_CATEGORY = 5; // Recomendados / Featured
 
