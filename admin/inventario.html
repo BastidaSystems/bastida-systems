@@ -36,27 +36,51 @@
     a.btn { text-decoration:none; }
     .hidden { display:none !important; }
 
-    /* Hero estilo app */
-    .eyebrow { color:var(--acc); font-weight:800; letter-spacing:.14em; font-size:.85rem; margin:26px 0 10px; }
-    .hero h2 { color:var(--navy); font-size:clamp(2.4rem,7vw,4rem); line-height:1.02; margin:0 0 14px; font-weight:800; letter-spacing:-.01em; }
-    .hero p { color:var(--mut); font-size:1.02rem; line-height:1.55; margin:0 0 22px; max-width:34em; }
+    .view-head { margin:26px 0 18px; }
+    .view-head h2 { color:var(--txt); font-size:2rem; margin:0 0 6px; font-weight:700; letter-spacing:-.01em; }
+    .view-head p { color:var(--mut); margin:0 0 18px; font-size:.95rem; }
 
-    /* Stats */
-    .stats { display:grid; grid-template-columns:1fr 1fr; background:var(--card); border:1px solid var(--line); border-radius:16px; margin:26px 0; overflow:hidden; }
-    .stat { padding:22px 24px; }
-    .stat + .stat { border-left:1px solid var(--line); }
-    .stat b { display:block; color:var(--navy); font-size:2.6rem; font-weight:800; line-height:1; }
-    .stat span { color:var(--mut); font-size:.92rem; }
+    .back-link { background:none; border:0; color:var(--navy); font-family:inherit; font-size:1rem; font-weight:600; cursor:pointer; padding:0; margin:0 0 10px; }
 
     .status { min-height:1.4em; font-size:.9rem; margin:10px 0; color:var(--mut); }
     .status.ok { color:var(--ok); } .status.err { color:var(--danger); }
 
-    /* Categorías */
-    .cat { margin:30px 0 8px; }
-    .cat-head { display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:14px; }
-    .cat-head h3 { color:var(--navy); font-size:1.5rem; margin:0; font-weight:800; }
-    .cat-head small { color:var(--mut); }
-    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:14px; }
+    /* Tarjetas de categoría, como en la app */
+    .cat-card {
+      display:flex; align-items:stretch; width:100%;
+      background:var(--card); border:1px solid var(--line); border-radius:16px;
+      margin:0 0 14px; padding:0; overflow:hidden; cursor:pointer;
+      font-family:inherit; text-align:left; position:relative;
+    }
+    .cat-card::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:6px;
+      background:var(--cat,#0e7c7b);
+    }
+    .cat-main { display:flex; align-items:center; gap:14px; flex:1; padding:20px 8px 20px 18px; min-width:0; }
+    .cat-ico {
+      flex:0 0 auto; width:56px; height:56px; border-radius:14px;
+      background:var(--cat,#0e7c7b); display:flex; align-items:center; justify-content:center;
+    }
+    .cat-ico svg { width:30px; height:30px; fill:none; stroke:#fff; stroke-width:1.8; }
+    .cat-meta { min-width:0; }
+    .cat-meta strong { display:block; font-size:1.25rem; font-weight:800; color:var(--cat,#0e7c7b); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .cat-meta small { color:var(--mut); font-size:.85rem; }
+    .cat-chev { flex:0 0 auto; color:var(--cat,#0e7c7b); font-size:1.6rem; font-weight:400; padding-right:4px; }
+    .cat-tools {
+      flex:0 0 auto; display:flex; flex-direction:column; align-items:center; justify-content:center;
+      gap:14px; padding:12px 16px; background:color-mix(in srgb, var(--cat,#0e7c7b) 10%, #fff);
+      border-left:1px solid var(--line);
+    }
+    .cat-tools button { background:none; border:0; padding:4px; cursor:pointer; line-height:0; }
+    .cat-tools svg { width:22px; height:22px; fill:none; stroke-width:1.8; }
+    .cat-tools .t-edit svg { stroke:var(--txt); }
+    .cat-tools .t-del svg { stroke:var(--danger); }
+
+    /* Productos */
+    .cat-title-row { display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin:6px 0 16px; }
+    .cat-title-row h2 { color:var(--navy); font-size:1.7rem; margin:0; font-weight:800; }
+    .cat-title-row small { color:var(--mut); }
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:14px; margin-top:18px; }
     .prod { background:var(--card); border:1px solid var(--line); border-radius:16px; overflow:hidden; display:flex; flex-direction:column; }
     .prod img { width:100%; height:150px; object-fit:cover; background:#e9edf1; display:block; }
     .prod .noimg { width:100%; height:150px; background:#e9edf1; display:flex; align-items:center; justify-content:center; color:var(--mut); font-size:.8rem; }
@@ -106,20 +130,8 @@
     <div id="gate" class="status"><p class="login-note" id="gate-msg">Verificando sesión…</p></div>
 
     <div id="app" class="hidden">
-      <section class="hero">
-        <div class="eyebrow">CATÁLOGO DE BASTIDA</div>
-        <h2>Tus categorías,<br>en orden.</h2>
-        <p>Organiza primero las áreas de Bastida Systems. Entra a una categoría para ver y editar sus productos.</p>
-        <button class="btn btn-big" id="add-cat-btn" type="button">+&nbsp;&nbsp;Agregar categoría</button>
-      </section>
-
-      <section class="stats" aria-label="Resumen">
-        <div class="stat"><b id="stat-cats">0</b><span>Categorías</span></div>
-        <div class="stat"><b id="stat-prods">0</b><span id="stat-prods-sub">Productos</span></div>
-      </section>
-
       <p class="status" id="list-status" role="status"></p>
-      <div id="cats"></div>
+      <div id="view"></div>
     </div>
   </div>
 
@@ -174,8 +186,23 @@
   (function () {
     'use strict';
     const $ = (id) => document.getElementById(id);
-    const gate = $('gate'), gateMsg = $('gate-msg'), app = $('app');
+    const gate = $('gate'), gateMsg = $('gate-msg'), app = $('app'), viewBox = $('view');
     let client = null, editingImageUrl = '', productsCache = [];
+    let currentView = { name: 'cats' };
+
+    /* Colores de categoría: estables por nombre, iguales para ambos */
+    const PALETTE = ['#0e7c7b', '#2f5d9f', '#1d7a4f', '#c25e1e', '#b03a5b', '#6b4fa1', '#0f766e', '#9a3412'];
+    function catColor(name) {
+      let h = 0;
+      for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) | 0;
+      return PALETTE[Math.abs(h) % PALETTE.length];
+    }
+
+    const SVG = {
+      folder: '<svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>',
+      pencil: '<svg viewBox="0 0 24 24"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg>',
+      trash: '<svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>'
+    };
 
     function esc(s) {
       return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({
@@ -192,6 +219,7 @@
           { style: 'currency', currency: currency || 'USD' }).format(price);
       } catch (e) { return (currency || 'USD') + ' ' + price; }
     }
+    function catName(p) { return (p.category || '').trim() || 'Sin categoría'; }
 
     /* ---------- Puerta de login (mismo patrón que admin/productos.html) ---------- */
     async function init() {
@@ -226,7 +254,7 @@
       await loadProducts();
     }
 
-    /* ---------- Carga y vista agrupada por categoría ---------- */
+    /* ---------- Carga ---------- */
     async function loadProducts() {
       status($('list-status'), 'Cargando productos…', null);
       const { data, error } = await client
@@ -237,6 +265,11 @@
         return;
       }
       productsCache = data || [];
+      // Si la categoría abierta ya no existe, volver a la lista
+      if (currentView.name === 'cat' &&
+          !productsCache.some((p) => catName(p) === currentView.category)) {
+        currentView = { name: 'cats' };
+      }
       renderAll();
       status($('list-status'), '', null);
     }
@@ -244,44 +277,137 @@
     function groupByCategory(rows) {
       const map = new Map();
       rows.forEach((p) => {
-        const c = (p.category || '').trim() || 'Sin categoría';
+        const c = catName(p);
         if (!map.has(c)) map.set(c, []);
         map.get(c).push(p);
       });
       return [...map.entries()].sort((a, b) => a[0].localeCompare(b[0], 'es'));
     }
 
+    /* ---------- Vistas ---------- */
     function renderAll() {
       const groups = groupByCategory(productsCache);
-      const total = productsCache.length;
-      const ready = productsCache.filter((p) => p.active && p.show_in_store).length;
-      $('stat-cats').textContent = groups.length;
-      $('stat-prods').textContent = total;
-      $('stat-prods-sub').textContent = 'Productos · ' + ready + ' listos';
-
       const dl = $('cat-list');
       dl.innerHTML = groups.map(([c]) => '<option value="' + esc(c) + '">').join('');
+      viewBox.innerHTML = '';
+      if (currentView.name === 'cat') renderCatDetail(viewBox, groups, currentView.category);
+      else renderCatCards(viewBox, groups);
+    }
 
-      const box = $('cats');
-      box.innerHTML = '';
+    function renderCatCards(box, groups) {
+      const head = document.createElement('div');
+      head.className = 'view-head';
+      head.innerHTML = '<h2>Categorías</h2><p>Toca una para ver sus productos.</p>' +
+        '<button class="btn btn-big" id="add-cat-btn" type="button">+&nbsp;&nbsp;Agregar categoría</button>';
+      box.appendChild(head);
+      head.querySelector('#add-cat-btn').onclick = () => {
+        const name = prompt('Nombre de la nueva categoría:');
+        if (name && name.trim()) openModal(null, name.trim());
+      };
       if (!groups.length) {
-        box.innerHTML = '<p class="empty">Aún no hay productos. Agrega la primera categoría arriba.</p>';
+        const p = document.createElement('p');
+        p.className = 'empty';
+        p.textContent = 'Aún no hay categorías. Agrega la primera arriba.';
+        box.appendChild(p);
         return;
       }
       groups.forEach(([cat, items]) => {
-        const sec = document.createElement('section');
-        sec.className = 'cat';
-        const head = document.createElement('div');
-        head.className = 'cat-head';
-        head.innerHTML = '<h3>' + esc(cat) + '</h3><small>' + items.length +
-          (items.length === 1 ? ' producto' : ' productos') + '</small>';
-        const grid = document.createElement('div');
-        grid.className = 'grid';
-        items.forEach((p) => grid.appendChild(productCard(p)));
-        sec.appendChild(head);
-        sec.appendChild(grid);
-        box.appendChild(sec);
+        const color = catColor(cat);
+        const avail = items.filter((p) => p.active).length;
+        const card = document.createElement('div');
+        card.className = 'cat-card';
+        card.style.setProperty('--cat', color);
+        card.innerHTML =
+          '<div class="cat-main" role="button" tabindex="0" aria-label="Abrir ' + esc(cat) + '">' +
+            '<span class="cat-ico">' + SVG.folder + '</span>' +
+            '<span class="cat-meta"><strong>' + esc(cat) + '</strong>' +
+              '<small>' + items.length + (items.length === 1 ? ' producto' : ' productos') +
+              ' · ' + avail + ' disponibles</small></span>' +
+            '<span class="cat-chev">›</span>' +
+          '</div>' +
+          (cat === 'Sin categoría' ? '' :
+            '<div class="cat-tools">' +
+              '<button class="t-edit" type="button" aria-label="Editar categoría">' + SVG.pencil + '</button>' +
+              '<button class="t-del" type="button" aria-label="Borrar categoría">' + SVG.trash + '</button>' +
+            '</div>');
+        const open = () => { currentView = { name: 'cat', category: cat }; renderAll(); };
+        const main = card.querySelector('.cat-main');
+        main.onclick = open;
+        main.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } };
+        const bEdit = card.querySelector('.t-edit');
+        if (bEdit) bEdit.onclick = (e) => { e.stopPropagation(); renameCategory(cat); };
+        const bDel = card.querySelector('.t-del');
+        if (bDel) bDel.onclick = (e) => { e.stopPropagation(); deleteCategory(cat); };
+        box.appendChild(card);
       });
+    }
+
+    function renderCatDetail(box, groups, cat) {
+      const items = (groups.find(([c]) => c === cat) || [cat, []])[1];
+      const back = document.createElement('button');
+      back.className = 'back-link';
+      back.type = 'button';
+      back.textContent = '‹ Categorías';
+      back.onclick = () => { currentView = { name: 'cats' }; renderAll(); };
+      box.appendChild(back);
+
+      const row = document.createElement('div');
+      row.className = 'cat-title-row';
+      row.innerHTML = '<h2>' + esc(cat) + '</h2><small>' + items.length +
+        (items.length === 1 ? ' producto' : ' productos') + '</small>';
+      box.appendChild(row);
+
+      const add = document.createElement('button');
+      add.className = 'btn btn-big';
+      add.type = 'button';
+      add.innerHTML = '+&nbsp;&nbsp;Agregar producto';
+      add.onclick = () => openModal(null, cat);
+      box.appendChild(add);
+
+      if (!items.length) {
+        const p = document.createElement('p');
+        p.className = 'empty';
+        p.textContent = 'Sin productos en esta categoría.';
+        box.appendChild(p);
+        return;
+      }
+      const grid = document.createElement('div');
+      grid.className = 'grid';
+      items.forEach((p) => grid.appendChild(productCard(p)));
+      box.appendChild(grid);
+    }
+
+    /* ---------- Categorías: renombrar / borrar ---------- */
+    async function renameCategory(oldName) {
+      const name = prompt('Nuevo nombre de la categoría:', oldName);
+      if (!name || !name.trim() || name.trim() === oldName) return;
+      const nn = name.trim();
+      if (productsCache.some((p) => catName(p) === nn)) {
+        alert('Ya existe una categoría con ese nombre.');
+        return;
+      }
+      status($('list-status'), 'Renombrando categoría…', null);
+      const { error } = await client.from('products').update({ category: nn }).eq('category', oldName);
+      if (error) { status($('list-status'), 'Error: ' + error.message, false); return; }
+      if (currentView.name === 'cat' && currentView.category === oldName) {
+        currentView = { name: 'cat', category: nn };
+      }
+      await loadProducts();
+    }
+
+    async function deleteCategory(cat) {
+      const items = productsCache.filter((p) => catName(p) === cat);
+      const extra = items.length
+        ? ' Sus ' + items.length + (items.length === 1 ? ' producto pasará' : ' productos pasarán') + ' a "Sin categoría" (no se borran).'
+        : '';
+      if (!confirm('¿Borrar la categoría "' + cat + '".' + extra)) return;
+      status($('list-status'), 'Borrando categoría…', null);
+      const { error } = await client.from('products').update({ category: '' }).eq('category', cat);
+      if (error) { status($('list-status'), 'Error: ' + error.message, false); return; }
+      if (currentView.name === 'cat' && currentView.category === cat) {
+        currentView = { name: 'cats' };
+      }
+      await loadProducts();
     }
 
     function productCard(p) {
@@ -308,19 +434,15 @@
         '</div>';
       card.querySelector('[data-act="edit"]').onclick = () => openModal(p);
       card.querySelector('[data-act="toggle"]').onclick = () => toggleActive(p);
-      card.querySelector('[data-act="del"]').onclick = () => removeProduct(p, card);
+      card.querySelector('[data-act="del"]').onclick = () => removeProduct(p);
       return card;
     }
 
-    /* ---------- UI: modal, categoría, salir ---------- */
+    /* ---------- UI: modal, salir ---------- */
     function bindUI() {
       $('logout-btn').onclick = async () => {
         await client.auth.signOut();
         location.href = '../login.html';
-      };
-      $('add-cat-btn').onclick = () => {
-        const name = prompt('Nombre de la nueva categoría:');
-        if (name && name.trim()) openModal(null, name.trim());
       };
       $('cancel-btn').onclick = closeModal;
       $('modal').addEventListener('click', (e) => { if (e.target === $('modal')) closeModal(); });
@@ -333,7 +455,13 @@
 
     function openModal(p, presetCategory) {
       resetForm();
-      if (presetCategory) $('f-category').value = presetCategory;
+      if (presetCategory) {
+        $('f-category').value = presetCategory;
+        const exists = productsCache.some((x) => catName(x) === presetCategory);
+        $('form-sub').textContent = exists
+          ? 'Se guarda en Supabase y lo ven ambos.'
+          : 'Al guardar el primer producto se creará la categoría "' + presetCategory + '".';
+      }
       if (p) {
         $('form-title').textContent = 'Editar producto';
         $('f-id').value = p.id;
@@ -364,6 +492,7 @@
       $('f-show').checked = true;
       $('f-preview').classList.add('hidden');
       $('form-title').textContent = 'Agregar producto';
+      $('form-sub').textContent = 'Se guarda en Supabase y lo ven ambos.';
       editingImageUrl = '';
       status($('form-status'), '', null);
     }
@@ -376,7 +505,7 @@
       else loadProducts();
     }
 
-    async function removeProduct(p, card) {
+    async function removeProduct(p) {
       if (!confirm('¿Borrar "' + p.name + '"? Esta acción no se puede deshacer.')) return;
       const { error } = await client.from('products').delete().eq('id', p.id);
       if (error) {
@@ -437,7 +566,9 @@
           : await client.from('products').insert(row);
         if (error) throw error;
         status($('form-status'), id ? 'Producto actualizado.' : 'Producto agregado.', true);
+        const newCat = !id ? category : null;
         closeModal();
+        if (newCat) currentView = { name: 'cat', category: newCat };
         loadProducts();
       } catch (err) {
         status($('form-status'), 'Error: ' + (err.message || err), false);
