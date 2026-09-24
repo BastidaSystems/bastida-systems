@@ -155,11 +155,15 @@
       const user = sess.session.user;
       const { data: profile, error: pErr } = await client
         .from('users')
-        .select('platform_role')
+        .select('platform_role, active')
         .eq('auth_user_id', user.id)
         .maybeSingle();
       const role = profile && profile.platform_role;
-      if (pErr || (role !== 'founder' && role !== 'owner')) {
+      if (pErr) {
+        gateMsg.textContent = 'No se pudo verificar tu perfil. Revisa la configuración del proyecto y los pasos de docs/products-setup.md.';
+        return;
+      }
+      if (!profile || profile.active !== true || (role !== 'founder' && role !== 'owner')) {
         gateMsg.textContent = 'Tu cuenta no tiene permiso de administrador.';
         return;
       }

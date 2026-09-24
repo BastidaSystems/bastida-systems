@@ -2,6 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <script>
+    // Dashboard invitations return to the Site URL unless redirectTo is supplied.
+    (function () {
+      const params = new URLSearchParams(window.location.hash.slice(1));
+      const type = params.get('type');
+      const authError = params.has('error') || new URLSearchParams(window.location.search).has('error');
+      if (((type === 'invite' || type === 'recovery') && params.has('access_token')) || authError) {
+        window.location.replace('/set-password.html' + window.location.search + window.location.hash);
+      }
+    })();
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="google-site-verification" content="Z4FaWNsb9LLGormYfUzISqdT-P8K8VOB7nHd5y2ckug">
   <title>Bastida Systems | Technology You Can Trust</title>
