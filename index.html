@@ -83,6 +83,95 @@
       </div>
       <div class="home-tech-grid" aria-hidden="true"></div>
 
+      <div class="home-product-shelf home-product-shelf--hero" id="products" role="region" aria-labelledby="products-title">
+        <div class="home-product-shelf-grid" aria-hidden="true"></div>
+        <div class="home-container">
+          <div class="product-shelf-heading reveal">
+            <h2 id="products-title" class="product-shelf-title" data-i18n-html="home.products.heading">
+              <span>Store.</span>
+              <span>Technology created <br>by Bastida Systems.</span>
+            </h2>
+            <a class="home-text-link product-shelf-view-all" href="store.html">
+              <span data-i18n="home.products.viewAll">View Store</span>
+            </a>
+          </div>
+
+          <div class="product-shelf-rail-wrap reveal">
+            <div class="product-shelf-arrows">
+              <button type="button" class="product-shelf-arrow" data-shelf-prev aria-label="Scroll products left" data-i18n-aria-label="home.products.prevAria">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3 5 8l5 5"/></svg>
+              </button>
+              <button type="button" class="product-shelf-arrow" data-shelf-next aria-label="Scroll products right" data-i18n-aria-label="home.products.nextAria">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg>
+              </button>
+            </div>
+
+          <div class="product-shelf-rail" role="list" aria-label="Bastida Systems products" data-i18n-aria-label="home.products.shelfLabel">
+            <a class="product-shelf-item" role="listitem" href="cotizar.html?producto=sitio" aria-label="Websites" data-i18n-aria-label="home.products.cat.websitesAria">
+              <span class="product-shelf-item__visual product-shelf-item__visual--icon">
+                <img width="1600" height="1600" src="img/cat-websites.png" alt="Websites category icon" loading="lazy" decoding="async" data-i18n-alt="home.products.cat.websitesAlt">
+              </span>
+              <span class="product-shelf-item__name" data-i18n="home.products.cat.websites">Websites</span>
+            </a>
+            <a class="product-shelf-item" role="listitem" href="cotizar.html?producto=sistema" aria-label="Custom Systems" data-i18n-aria-label="home.products.cat.systemsAria">
+              <span class="product-shelf-item__visual product-shelf-item__visual--icon">
+                <img width="1600" height="1600" src="img/cat-systems.png" alt="Custom systems category icon" loading="lazy" decoding="async" data-i18n-alt="home.products.cat.systemsAlt">
+              </span>
+              <span class="product-shelf-item__name" data-i18n="home.products.cat.systems">Custom Systems</span>
+            </a>
+            <a class="product-shelf-item" role="listitem" href="store.html#store-products-title" aria-label="Mobile Apps" data-i18n-aria-label="home.products.cat.appsAria">
+              <span class="product-shelf-item__visual product-shelf-item__visual--icon">
+                <img width="1600" height="1600" src="img/cat-apps.png" alt="Mobile apps category icon" loading="lazy" decoding="async" data-i18n-alt="home.products.cat.appsAlt">
+              </span>
+              <span class="product-shelf-item__name" data-i18n="home.products.cat.apps">Mobile Apps</span>
+            </a>
+            <a class="product-shelf-item" role="listitem" href="store.html#store-soon-title" aria-label="Coming Soon" data-i18n-aria-label="home.products.cat.soonAria">
+              <span class="product-shelf-item__visual product-shelf-item__visual--icon">
+                <img width="1600" height="1600" src="img/cat-soon.png" alt="Coming soon category icon" loading="lazy" decoding="async" data-i18n-alt="home.products.cat.soonAlt">
+              </span>
+              <span class="product-shelf-item__name" data-i18n="home.products.cat.soon">Coming Soon</span>
+            </a>
+            <a class="product-shelf-item" role="listitem" href="cotizar.html?producto=3d" aria-label="3D Printing" data-i18n-aria-label="home.products.cat.3dAria">
+              <span class="product-shelf-item__visual product-shelf-item__visual--icon">
+                <img width="1600" height="1600" src="img/cat-3d.png" alt="3D printing category icon" loading="lazy" decoding="async" data-i18n-alt="home.products.cat.3dAlt">
+              </span>
+              <span class="product-shelf-item__name" data-i18n="home.products.cat.3d">3D Printing</span>
+            </a>
+            <a class="product-shelf-item" href="https://apps.apple.com/us/app/filtracore/id6767891950" target="_blank" rel="noopener noreferrer" role="listitem" aria-label="View FiltraCore on the App Store in a new tab" data-i18n-aria-label="home.products.filtracore.aria">
+              <span class="product-shelf-item__visual product-shelf-item__visual--icon">
+                <img width="1024" height="1024" src="img/LOGO_FILTRACOREXCODE.png" alt="FiltraCore app icon" loading="lazy" decoding="async" data-i18n-alt="home.products.filtracore.alt">
+              </span>
+              <span class="product-shelf-item__name">FiltraCore</span>
+              <span class="product-shelf-item__category" data-i18n="home.products.filtracore.category">Water Monitoring</span>
+            </a>
+
+            <a class="product-shelf-item" href="https://apps.apple.com/us/app/watchtuner-pro/id6801949693" target="_blank" rel="noopener noreferrer" role="listitem" aria-label="View WatchTuner Pro on the App Store in a new tab" data-i18n-aria-label="home.products.watchtuner.aria">
+              <span class="product-shelf-item__visual product-shelf-item__visual--icon">
+                <img width="512" height="512" src="img/watchtuner-pro-icon.jpg" alt="WatchTuner Pro app icon" loading="lazy" decoding="async" data-i18n-alt="home.products.watchtuner.alt">
+              </span>
+              <span class="product-shelf-item__name">WatchTuner Pro</span>
+              <span class="product-shelf-item__category" data-i18n="home.products.watchtuner.category">Music</span>
+            </a>
+
+            <a class="product-shelf-item product-shelf-item--wide" href="https://apps.apple.com/us/app/lineops-shiftrotation/id6767958380" target="_blank" rel="noopener noreferrer" role="listitem" aria-label="View LineOps ShiftRotation on the App Store in a new tab" data-i18n-aria-label="home.products.lineops.aria">
+              <span class="product-shelf-item__visual product-shelf-item__visual--devices">
+                <img width="1200" height="745" src="img/lineops-devices.png" alt="LineOps ShiftRotation app screens" loading="lazy" decoding="async" data-i18n-alt="home.products.lineops.alt">
+              </span>
+              <span class="product-shelf-item__name">LineOps ShiftRotation</span>
+              <span class="product-shelf-item__category" data-i18n="home.products.lineops.category">Operations</span>
+            </a>
+
+            <a class="product-shelf-item" href="https://apps.apple.com/us/app/studiogameplan-sgp/id6773214058" target="_blank" rel="noopener noreferrer" role="listitem" aria-label="View StudioGamePlan on the App Store in a new tab" data-i18n-aria-label="home.products.studiogameplan.aria">
+              <span class="product-shelf-item__visual product-shelf-item__visual--icon">
+                <img width="512" height="512" src="IMG/studiogameplan-sgp-icon.jpg" alt="StudioGamePlan SGP app icon" loading="lazy" decoding="async" data-i18n-alt="home.products.studiogameplan.alt">
+              </span>
+              <span class="product-shelf-item__name">StudioGamePlan</span>
+              <span class="product-shelf-item__category" data-i18n="home.products.studiogameplan.category">Game Planning</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
       <div class="home-container home-hero-layout">
         <div class="home-redesign-hero__content reveal">
           <h1 id="home-hero-title" class="home-redesign-hero__title" aria-label="Bastida Systems. Software, hardware and product development." data-i18n-aria-label="home.hero.ariaTitle">
@@ -116,17 +205,6 @@
           </div>
           <div class="map-core" aria-hidden="true"></div>
         </div>
-      </div>
-    </section>
-
-    <section class="home-section home-store-section" id="store" aria-labelledby="store-title">
-      <div class="home-container">
-        <div class="home-section-heading reveal">
-          <p class="home-eyebrow" data-i18n="home.store.eyebrow">STORE</p>
-          <h2 id="store-title" data-i18n-html="home.store.heading">One store. <span>Every product.</span></h2>
-          <p data-i18n="home.store.copy">Every product from our inventory, with live prices. Change it in the app and it changes here.</p>
-        </div>
-        <div class="store-grid home-store-grid" id="home-store-grid" role="list" aria-live="polite"></div>
       </div>
     </section>
 
@@ -475,8 +553,23 @@
   <script src="agency.js?v=2026-08-26-3d-video-home" defer></script>
   <script src="read-aloud.js?v=2026-09-23-read-aloud" defer></script>
   <script src="whatsapp-float.js?v=2026-09-23-wa" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js"></script>
-  <script src="store-catalog.js?v=2026-09-24-store" defer></script>
+  <script>
+    (function () {
+      var rail = document.querySelector('.product-shelf-rail');
+      var prev = document.querySelector('[data-shelf-prev]');
+      var next = document.querySelector('[data-shelf-next]');
+      if (!rail || !prev || !next) return;
+      function step() { return Math.min(rail.clientWidth * 0.8, 480); }
+      function sync() {
+        prev.disabled = rail.scrollLeft <= 4;
+        next.disabled = rail.scrollLeft >= rail.scrollWidth - rail.clientWidth - 4;
+      }
+      prev.addEventListener('click', function () { rail.scrollBy({ left: -step(), behavior: 'smooth' }); });
+      next.addEventListener('click', function () { rail.scrollBy({ left: step(), behavior: 'smooth' }); });
+      rail.addEventListener('scroll', sync, { passive: true });
+      window.addEventListener('resize', sync);
+      sync();
+    })();
+  </script>
 </body>
 </html>

@@ -9575,14 +9575,3 @@ select.form-field {
 .store-product-card__price{display:inline-block;margin-top:6px;font-weight:800;font-size:1.05rem;color:var(--bs-green-dark)}
 #physical-products{padding-top:8px}
 #physical-products h2{margin-bottom:18px}
-
-/* Single dynamic store on the homepage (replaces the old icon shelf + store.html) */
-.home-store-section{background:var(--bs-charcoal);color:#e9f2ec}
-.home-store-section .home-section-heading h2{color:#fff}
-.home-store-section .home-section-heading h2 span{color:var(--bs-green-strong)}
-.home-store-section .home-section-heading>p{color:rgba(233,242,236,.72)}
-.home-store-section .home-eyebrow{color:var(--bs-green-strong)}
-.home-store-grid{width:100%;max-width:1180px;margin-top:36px}
-.home-store-apps-break{grid-column:1/-1;margin:28px 0 4px}
-.home-store-apps-break h3{margin:0;color:#fff;font-size:1.02rem;font-weight:750;letter-spacing:.01em}
-.home-store-error{grid-column:1/-1;color:rgba(233,242,236,.7)}

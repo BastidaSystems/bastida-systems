@@ -1,15 +1,395 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Store — Bastida Systems</title>
-  <meta name="description" content="The Bastida Systems store now lives on our homepage.">
-  <link rel="canonical" href="https://bastidasystems.com/#store">
-  <meta http-equiv="refresh" content="0;url=./#store">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bastida Systems Store</title>
+  <meta name="description" content="Explore products currently available from Bastida Systems, including applications and technology products for Apple platforms.">
+  <link rel="canonical" href="https://bastidasystems.com/store">
+  <link rel="icon" type="image/png" href="img/logo_bastida_sys.png">
+  <link rel="apple-touch-icon" href="img/logo_bastida_sys.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="agency.css?v=2026-08-26-index-nav">
+  <!-- Social preview -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Bastida Systems">
+  <meta property="og:url" content="https://bastidasystems.com/store">
+  <meta property="og:title" content="Bastida Systems Store">
+  <meta property="og:description" content="Explore products currently available from Bastida Systems, including applications and technology products for Apple platforms.">
+  <meta property="og:image" content="https://bastidasystems.com/img/logo_bastida_sys.png">
+  <meta property="og:image:alt" content="Bastida Systems">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Bastida Systems Store">
+  <meta name="twitter:description" content="Explore products currently available from Bastida Systems, including applications and technology products for Apple platforms.">
+  <meta name="twitter:image" content="https://bastidasystems.com/img/logo_bastida_sys.png">
+  <meta name="theme-color" content="#00c676">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  [
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Bastida Systems LLC",
+      "url": "https://bastidasystems.com/",
+      "logo": "https://bastidasystems.com/img/logo_bastida_sys.png",
+      "email": "bastidasystems@gmail.com",
+      "telephone": "+1-702-661-7149",
+      "description": "Bastida Systems is a Las Vegas technology company creating software, mobile apps, connected systems, physical prototypes and 3D-printed product components."
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Bastida Systems Store",
+      "description": "Explore products currently available from Bastida Systems, including applications and technology products for Apple platforms.",
+      "url": "https://bastidasystems.com/store.html",
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "Bastida Systems",
+        "url": "https://bastidasystems.com/"
+      }
+    }
+  ]
+  </script>
+  <script src="site-config.js"></script>
+  <script src="analytics.js" defer></script>
 </head>
-<body>
-  <p>Our store moved <a href="./#store">here</a>.</p>
-  <script>location.replace('./#store');</script>
+
+<body class="agency-page premium-page store-page">
+  <div id="site-header"></div>
+  <script>
+    window.pageTranslations = {
+      en: {
+        'meta.title': 'Bastida Systems Store',
+        'store.eyebrow': 'STORE',
+        'store.heading': 'Store',
+        'store.copy': 'Products currently available to buy, download, or access from Bastida Systems.',
+        'store.productsHeading': 'Available store products',
+        'store.watch.category': 'Apple Product',
+        'store.watch.description': 'WatchTuner Pro is available on the App Store.',
+        'store.watch.alt': 'WatchTuner Pro app icon',
+        'store.watch.aria': 'View WatchTuner Pro on the App Store in a new tab',
+        'store.lineops.category': 'iPhone and iPad',
+        'store.lineops.description': 'Turn printed schedules into clean tables, create groups, and share weekly schedules faster.',
+        'store.lineops.alt': 'LineOps ShiftRotation app icon',
+        'store.lineops.aria': 'View LineOps ShiftRotation on the App Store in a new tab',
+        'store.sgp.category': 'iPhone and iPad',
+        'store.sgp.description': 'A game production workspace for planning ideas, tasks, and creative development.',
+        'store.sgp.alt': 'StudioGamePlan SGP app icon',
+        'store.sgp.aria': 'View StudioGamePlan SGP on the App Store in a new tab',
+        'store.filtracore.category': 'iPhone and iPad',
+        'store.filtracore.description': 'Business app for filtration monitoring, maintenance, inventory, and operational records.',
+        'store.filtracore.alt': 'FiltraCore app icon',
+        'store.filtracore.aria': 'View FiltraCore on the App Store in a new tab',
+        'store.physicalHeading': 'Physical products',
+        'store.buyNow': 'Buy Now',
+        'store.custom3d.heading': 'Custom 3D Printing',
+        'store.custom3d.title': 'Custom AI-designed pieces',
+        'store.custom3d.category': '3D Printing Service',
+        'store.custom3d.description': 'Describe the piece you need — our AI models it, we print it on our Creator 5 Pro and ship it to you.',
+        'store.custom3d.cta': 'Describe your piece',
+        'store.services.heading': 'Services',
+        'store.websites.title': 'Websites',
+        'store.websites.category': 'Web Development',
+        'store.websites.description': 'Landing pages and complete websites built for your business.',
+        'store.express.title': 'Express Page',
+        'store.express.category': 'Web Development',
+        'store.express.description': 'Super simple auto-generated page. Choose from 3 designs — no advanced features.',
+        'store.express.price': '$25 USD',
+        'store.express.cta': 'Create my page',
+        'store.systems.title': 'Custom Systems',
+        'store.systems.category': 'Business Software',
+        'store.systems.description': 'Internal systems and platforms tailored to your operation.',
+        'store.quoteCta': 'Get a quote',
+        'store.viewProduct': 'View Product',
+        'store.viewAppStore': 'Download on the App Store',
+        'store.pendingAppStore': 'App Store link pending',
+        'store.soon.heading': 'Coming soon',
+        'store.soon.badge': 'In development',
+        'store.beoflow.category': 'Business Software',
+        'store.beoflow.description': 'Event and banquet management system.',
+        'store.beoflow.price': 'From $6,000 USD'
+      },
+      es: {
+        'meta.title': 'Tienda Bastida Systems',
+        'store.eyebrow': 'TIENDA',
+        'store.heading': 'Tienda',
+        'store.copy': 'Productos disponibles actualmente para comprar, descargar u obtener de Bastida Systems.',
+        'store.productsHeading': 'Productos disponibles en la tienda',
+        'store.watch.category': 'Producto Apple',
+        'store.watch.description': 'WatchTuner Pro disponible en el App Store.',
+        'store.watch.alt': 'Icono de la app WatchTuner Pro',
+        'store.watch.aria': 'Ver WatchTuner Pro en App Store en una nueva pestaña',
+        'store.lineops.category': 'iPhone y iPad',
+        'store.lineops.description': 'Convierte horarios impresos en tablas limpias, crea grupos y comparte horarios semanales más rápido.',
+        'store.lineops.alt': 'Icono de la app LineOps ShiftRotation',
+        'store.lineops.aria': 'Ver LineOps ShiftRotation en App Store en una nueva pestaña',
+        'store.sgp.category': 'iPhone y iPad',
+        'store.sgp.description': 'Workspace de producción de videojuegos para planear ideas, tareas y desarrollo creativo.',
+        'store.sgp.alt': 'Icono de la app StudioGamePlan SGP',
+        'store.sgp.aria': 'Ver StudioGamePlan SGP en App Store en una nueva pestaña',
+        'store.filtracore.category': 'iPhone y iPad',
+        'store.filtracore.description': 'App empresarial para monitoreo de filtración, mantenimiento, inventario y registros operativos.',
+        'store.filtracore.alt': 'Icono de la app FiltraCore',
+        'store.filtracore.aria': 'Ver FiltraCore en App Store en una nueva pestaña',
+        'store.physicalHeading': 'Productos físicos',
+        'store.buyNow': 'Comprar ahora',
+        'store.custom3d.heading': 'Impresión 3D personalizada',
+        'store.custom3d.title': 'Piezas personalizadas con IA',
+        'store.custom3d.category': 'Servicio de impresión 3D',
+        'store.custom3d.description': 'Describe la pieza que necesitas — nuestra IA la modela, la imprimimos en nuestra Creator 5 Pro y te la enviamos.',
+        'store.custom3d.cta': 'Describe tu pieza',
+        'store.services.heading': 'Servicios',
+        'store.websites.title': 'Páginas web',
+        'store.websites.category': 'Desarrollo web',
+        'store.websites.description': 'Landing pages y sitios completos hechos para tu negocio.',
+        'store.express.title': 'Página Express',
+        'store.express.category': 'Desarrollo web',
+        'store.express.description': 'Página súper simple generada automáticamente. Elige entre 3 diseños, sin funciones avanzadas.',
+        'store.express.price': '$25 USD',
+        'store.express.cta': 'Crear mi página',
+        'store.systems.title': 'Sistemas a medida',
+        'store.systems.category': 'Software empresarial',
+        'store.systems.description': 'Sistemas internos y plataformas a la medida de tu operación.',
+        'store.quoteCta': 'Cotizar',
+        'store.viewProduct': 'Ver producto',
+        'store.viewAppStore': 'Descargar en App Store',
+        'store.pendingAppStore': 'Enlace de App Store pendiente',
+        'store.soon.heading': 'Próximamente',
+        'store.soon.badge': 'En desarrollo',
+        'store.beoflow.category': 'Software empresarial',
+        'store.beoflow.description': 'Sistema de gestión de eventos y banquetes.',
+        'store.beoflow.price': 'Desde $6,000 USD'
+      }
+    };
+  </script>
+  <script src="site-header.js?v=2026-08-26-home-nav" defer></script>
+  <script src="site-language.js?v=2026-08-26-index-nav" defer></script>
+
+  <main class="page-main">
+    <section class="store-hero">
+      <div class="container">
+        <div class="store-hero__inner reveal">
+          <p class="eyebrow" data-i18n="store.eyebrow">STORE</p>
+          <h1 data-i18n="store.heading">Store</h1>
+          <p data-i18n="store.copy">Products currently available to buy, download, or access from Bastida Systems.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="store-catalog" aria-labelledby="store-products-title">
+      <div class="container">
+        <h2 class="home-sr-only" id="store-products-title" data-i18n="store.productsHeading">Available store products</h2>
+        <div class="store-grid">
+          <article class="store-product-card reveal" id="watchtuner" aria-label="View WatchTuner Pro on the App Store in a new tab" data-i18n-aria-label="store.watch.aria">
+            <div class="store-product-card__top">
+              <img width="512" height="512" class="store-product-card__icon" src="img/watchtuner-pro-icon.jpg" alt="WatchTuner Pro app icon" loading="lazy" decoding="async" data-i18n-alt="store.watch.alt">
+              <div class="store-product-card__identity">
+                <h2>WatchTuner Pro</h2>
+                <span class="store-product-card__category" data-i18n="store.watch.category">Apple Product</span>
+              </div>
+            </div>
+            <p class="store-product-card__description" data-i18n="store.watch.description">WatchTuner Pro is available on the App Store.</p>
+            <div class="store-product-card__actions">
+              <a class="store-product-card__button" href="https://apps.apple.com/us/app/watchtuner-pro/id6801949693" target="_blank" rel="noopener noreferrer" aria-label="View WatchTuner Pro on the App Store in a new tab" data-i18n="store.viewAppStore" data-i18n-aria-label="store.watch.aria">Download on the App Store</a>
+            </div>
+          </article>
+
+          <article class="store-product-card reveal" id="lineops">
+            <div class="store-product-card__top">
+              <img width="512" height="512" class="store-product-card__icon" src="img/lineops-logo.png" alt="LineOps ShiftRotation app icon" loading="lazy" decoding="async" data-i18n-alt="store.lineops.alt">
+              <div class="store-product-card__identity">
+                <h2>LineOps ShiftRotation</h2>
+                <span class="store-product-card__category" data-i18n="store.lineops.category">iPhone and iPad</span>
+              </div>
+            </div>
+            <p class="store-product-card__description" data-i18n="store.lineops.description">Turn printed schedules into clean tables, create groups, and share weekly schedules faster.</p>
+            <div class="store-product-card__actions">
+              <a data-track="click_product" class="store-product-card__button store-product-card__button--ghost" href="products.html#lineops" data-i18n="store.viewProduct">View Product</a>
+              <a class="store-product-card__button" href="https://apps.apple.com/us/app/lineops-shiftrotation/id6767958380" target="_blank" rel="noopener noreferrer" aria-label="View LineOps ShiftRotation on the App Store in a new tab" data-i18n="store.viewAppStore" data-i18n-aria-label="store.lineops.aria">Download on the App Store</a>
+            </div>
+          </article>
+
+          <article class="store-product-card reveal" id="studiogameplan">
+            <div class="store-product-card__top">
+              <img width="512" height="512" class="store-product-card__icon" src="IMG/studiogameplan-sgp-icon.jpg" alt="StudioGamePlan SGP app icon" loading="lazy" decoding="async" data-i18n-alt="store.sgp.alt">
+              <div class="store-product-card__identity">
+                <h2>StudioGamePlan</h2>
+                <span class="store-product-card__category" data-i18n="store.sgp.category">iPhone and iPad</span>
+              </div>
+            </div>
+            <p class="store-product-card__description" data-i18n="store.sgp.description">A game production workspace for planning ideas, tasks, and creative development.</p>
+            <div class="store-product-card__actions">
+              <a data-track="click_product" class="store-product-card__button store-product-card__button--ghost" href="products.html#studiogameplan" data-i18n="store.viewProduct">View Product</a>
+              <a class="store-product-card__button" href="https://apps.apple.com/us/app/studiogameplan-sgp/id6773214058" target="_blank" rel="noopener noreferrer" aria-label="View StudioGamePlan SGP on the App Store in a new tab" data-i18n="store.viewAppStore" data-i18n-aria-label="store.sgp.aria">Download on the App Store</a>
+            </div>
+          </article>
+
+          <article class="store-product-card reveal" id="filtracore">
+            <div class="store-product-card__top">
+              <img width="1024" height="1024" class="store-product-card__icon" src="img/LOGO_FILTRACOREXCODE.png" alt="FiltraCore app icon" loading="lazy" decoding="async" data-i18n-alt="store.filtracore.alt">
+              <div class="store-product-card__identity">
+                <h2>FiltraCore</h2>
+                <span class="store-product-card__category" data-i18n="store.filtracore.category">iPhone and iPad</span>
+              </div>
+            </div>
+            <p class="store-product-card__description" data-i18n="store.filtracore.description">Business app for filtration monitoring, maintenance, inventory, and operational records.</p>
+            <div class="store-product-card__actions">
+              <a class="store-product-card__button store-product-card__button--ghost" href="filtracore.html" data-i18n="store.viewProduct">View Product</a>
+              <a class="store-product-card__button" href="https://apps.apple.com/us/app/filtracore/id6767891950" target="_blank" rel="noopener noreferrer" aria-label="View FiltraCore on the App Store in a new tab" data-i18n="store.viewAppStore" data-i18n-aria-label="store.filtracore.aria">Download on the App Store</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="store-catalog" id="physical-products" aria-labelledby="physical-products-title" hidden>
+      <div class="container">
+        <h2 id="physical-products-title" data-i18n="store.physicalHeading">Physical products</h2>
+        <div class="store-grid" id="physical-products-grid"></div>
+      </div>
+    </section>
+
+    <section class="store-catalog" aria-labelledby="custom-3d-title">
+      <div class="container">
+        <h2 id="custom-3d-title" data-i18n="store.custom3d.heading">Custom 3D Printing</h2>
+        <div class="store-grid">
+          <article class="store-product-card reveal">
+            <div class="store-product-card__top">
+              <div class="store-product-card__identity">
+                <h2 data-i18n="store.custom3d.title">Custom AI-designed pieces</h2>
+                <span class="store-product-card__category" data-i18n="store.custom3d.category">3D Printing Service</span>
+              </div>
+            </div>
+            <p class="store-product-card__description" data-i18n="store.custom3d.description">Describe the piece you need — our AI models it, we print it on our Creator 5 Pro and ship it to you.</p>
+            <div class="store-product-card__actions">
+              <a data-track="click_quote" class="store-product-card__button" href="cotizar.html?producto=3d" data-i18n="store.custom3d.cta">Describe your piece</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="store-catalog" aria-labelledby="store-services-title">
+      <div class="container">
+        <h2 id="store-services-title" data-i18n="store.services.heading">Services</h2>
+        <div class="store-grid">
+          <article class="store-product-card reveal" id="pagina-express">
+            <div class="store-product-card__top">
+              <div class="store-product-card__identity">
+                <h2 data-i18n="store.express.title">Express Page</h2>
+                <span class="store-product-card__category" data-i18n="store.express.category">Web Development</span>
+                <span class="store-product-card__price" data-price-slug="pagina-express">$25 USD</span>
+              </div>
+            </div>
+            <p class="store-product-card__description" data-i18n="store.express.description">Super simple auto-generated page. Choose from 3 designs — no advanced features.</p>
+            <div class="store-product-card__actions">
+              <a data-track="click_quote" class="store-product-card__button" href="generador.html" data-i18n="store.express.cta">Create my page</a>
+            </div>
+          </article>
+
+          <article class="store-product-card reveal">
+            <div class="store-product-card__top">
+              <div class="store-product-card__identity">
+                <h2 data-i18n="store.websites.title">Websites</h2>
+                <span class="store-product-card__category" data-i18n="store.websites.category">Web Development</span>
+                <span class="store-product-card__price" data-price-slug="landing" data-price-from="1">From $500 USD</span>
+              </div>
+            </div>
+            <p class="store-product-card__description" data-i18n="store.websites.description">Landing pages and complete websites built for your business.</p>
+            <div class="store-product-card__actions">
+              <a data-track="click_product" class="store-product-card__button store-product-card__button--ghost" href="websites.html" data-i18n="store.viewProduct">View Product</a>
+              <a data-track="click_quote" class="store-product-card__button" href="cotizar.html?producto=sitio" data-i18n="store.quoteCta">Get a quote</a>
+            </div>
+          </article>
+
+          <article class="store-product-card reveal">
+            <div class="store-product-card__top">
+              <div class="store-product-card__identity">
+                <h2 data-i18n="store.systems.title">Custom Systems</h2>
+                <span class="store-product-card__category" data-i18n="store.systems.category">Business Software</span>
+                <span class="store-product-card__price" data-price-slug="sistema-basico" data-price-from="1">From $4,500 USD</span>
+              </div>
+            </div>
+            <p class="store-product-card__description" data-i18n="store.systems.description">Internal systems and platforms tailored to your operation.</p>
+            <div class="store-product-card__actions">
+              <a data-track="click_product" class="store-product-card__button store-product-card__button--ghost" href="systems.html" data-i18n="store.viewProduct">View Product</a>
+              <a data-track="click_quote" class="store-product-card__button" href="cotizar.html?producto=sistema" data-i18n="store.quoteCta">Get a quote</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+    <section class="store-catalog" aria-labelledby="store-soon-title">
+      <div class="container">
+        <h2 id="store-soon-title" data-i18n="store.soon.heading">Coming soon</h2>
+        <div class="store-grid">
+          <article class="store-product-card reveal">
+            <div class="store-product-card__top">
+              <div class="store-product-card__identity">
+                <h2>BEOFlow</h2>
+                <span class="store-product-card__category" data-i18n="store.beoflow.category">Business Software</span>
+                <span class="store-product-card__meta" data-i18n="store.soon.badge">In development</span>
+                <span class="store-product-card__price" data-price-slug="beoflow" data-price-from="1">From $6,000 USD</span>
+              </div>
+            </div>
+            <p class="store-product-card__description" data-i18n="store.beoflow.description">Event and banquet management system.</p>
+            <div class="store-product-card__actions">
+              <a data-track="click_quote" class="store-product-card__button" href="cotizar.html?producto=beoflow" data-i18n="store.quoteCta">Get a quote</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer-v2" aria-label="Footer" data-i18n-aria-label="home.footer.ariaLabel">
+    <div class="home-container site-footer-v2__grid">
+      <div class="site-footer-v2__brand">
+        <a class="site-footer-v2__logo" href="index.html" aria-label="Bastida Systems home">
+          <img width="1080" height="1080" src="img/logo_bastida_sys.png" alt="" aria-hidden="true">
+          <strong>Bastida Systems</strong>
+        </a>
+        <p data-i18n="footer.tagline">Technology You Can Trust.</p>
+      </div>
+      <nav class="site-footer-v2__column" aria-label="Footer navigation">
+        <h2 data-i18n="footer.navigation">Navigation</h2>
+        <a href="index.html" data-i18n="nav.home">Home</a>
+        <a href="products.html" data-i18n="nav.products">Products</a>
+        <a href="work.html" data-i18n="nav.work">Work</a>
+        <a href="about.html" data-i18n="nav.about">About</a>
+      </nav>
+      <nav class="site-footer-v2__column" aria-label="Products">
+        <h2 data-i18n="nav.products">Products</h2>
+        <a href="filtracore.html">FiltraCore</a>
+        <a href="beoflow.html">BEOFlow</a>
+      </nav>
+      <nav class="site-footer-v2__column" aria-label="Store">
+        <h2 data-i18n="nav.store">Store</h2>
+        <a href="store.html" data-i18n="footer.viewStore">View Store</a>
+      </nav>
+      <div class="site-footer-v2__column">
+        <h2 data-i18n="nav.contact">Contact</h2>
+        <a data-track="click_email" href="mailto:bastidasystems@gmail.com">bastidasystems@gmail.com</a>
+      </div>
+    </div>
+    <div class="home-container site-footer-v2__bottom">
+      <p>&copy; <span data-current-year>2026</span> Bastida Systems LLC. <span data-i18n="footer.rightsShort">All rights reserved.</span></p>
+      <div>
+        <a href="privacy.html" data-i18n="nav.privacyPolicy">Privacy Policy</a>
+        <a href="terms.html" data-i18n="nav.terms">Terms of Service</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="store-products.js" defer></script>
+  <script src="prices.js?v=2026-09-23-live" defer></script>
+  <script src="agency.js?v=2026-08-25-store" defer></script>
+  <script src="whatsapp-float.js?v=2026-09-23-wa" defer></script>
 </body>
 </html>
