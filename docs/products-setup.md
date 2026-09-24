@@ -82,16 +82,26 @@ $$;
 -- 1. Products table
 create table if not exists public.products (
   id uuid primary key default gen_random_uuid(),
+  slug text not null default '',
   name text not null,
   description text not null default '',
+  category text not null default '',
   price numeric(10, 2) not null default 0,
   currency text not null default 'USD',
   image_url text not null default '',
   stripe_link text not null default '',
   active boolean not null default true,
+  show_in_store boolean not null default false,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+-- Si la tabla ya existe (creada con una versión anterior de este SQL),
+-- estas líneas agregan las columnas que la app y la tienda esperan.
+-- Son seguras de correr aunque las columnas ya existan.
+alter table public.products add column if not exists slug text not null default '';
+alter table public.products add column if not exists category text not null default '';
+alter table public.products add column if not exists show_in_store boolean not null default false;
 
 alter table public.products enable row level security;
 
