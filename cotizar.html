@@ -155,6 +155,9 @@
   </script>
   <script src="site-header.js?v=2026-08-26-home-nav" defer></script>
   <script src="site-language.js?v=2026-08-26-index-nav" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="prices.js?v=2026-09-23-live" defer></script>
 
   <main class="page-main">
     <section class="page-hero">
@@ -250,6 +253,30 @@
           name: { en: 'Custom 3D-printed piece', es: 'Pieza 3D personalizada' },
           desc: { en: 'Describe the piece you need — our AI models it, we print it and ship it to you.', es: 'Describe la pieza que necesitas — nuestra IA la modela, la imprimimos y te la enviamos.' } }
       ];
+
+      // Live prices from Supabase (panel-editable). Falls back to the
+      // hardcoded prices above when the database is unreachable.
+      function applyLivePrices() {
+        if (!window.BS_PRICES) return;
+        window.BS_PRICES.load().then(function () {
+          var changed = false;
+          PRODUCTS.forEach(function (p) {
+            var live = window.BS_PRICES.get(p.id);
+            if (live && live.price !== null && live.price !== undefined) {
+              var v = Number(live.price);
+              if (p.price === null ? v > 0 : v !== Number(p.price)) { p.price = v > 0 ? v : null; changed = true; }
+            }
+            (p.variants || []).forEach(function (pv) {
+              var lv = window.BS_PRICES.get(pv.id);
+              if (lv && lv.price !== null && lv.price !== undefined) {
+                var nv = Number(lv.price);
+                if (nv !== Number(pv.price)) { pv.price = nv; changed = true; }
+              }
+            });
+          });
+          if (changed) render();
+        });
+      }
 
       var state = { step: 1, productId: null, variantId: null, name: '', contact: '', details: '' };
       var body = document.getElementById('quote-body');
@@ -435,6 +462,7 @@
         if (e.target && e.target.id === 'language-select') setTimeout(render, 0);
       });
 
+      applyLivePrices();
       render();
     })();
   </script>

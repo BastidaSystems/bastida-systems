@@ -94,7 +94,7 @@
         'store.services.heading': 'Services',
         'store.websites.title': 'Websites',
         'store.websites.category': 'Web Development',
-        'store.websites.description': 'Landing pages from $500 USD and complete websites from $1,200 USD, built for your business.',
+        'store.websites.description': 'Landing pages and complete websites built for your business.',
         'store.express.title': 'Express Page',
         'store.express.category': 'Web Development',
         'store.express.description': 'Super simple auto-generated page. Choose from 3 designs — no advanced features.',
@@ -102,7 +102,7 @@
         'store.express.cta': 'Create my page',
         'store.systems.title': 'Custom Systems',
         'store.systems.category': 'Business Software',
-        'store.systems.description': 'Internal systems and platforms tailored to your operation, from $4,500 USD.',
+        'store.systems.description': 'Internal systems and platforms tailored to your operation.',
         'store.quoteCta': 'Get a quote',
         'store.viewProduct': 'View Product',
         'store.viewAppStore': 'Download on the App Store',
@@ -145,7 +145,7 @@
         'store.services.heading': 'Servicios',
         'store.websites.title': 'Páginas web',
         'store.websites.category': 'Desarrollo web',
-        'store.websites.description': 'Landing pages desde $500 USD y sitios completos desde $1,200 USD, hechos para tu negocio.',
+        'store.websites.description': 'Landing pages y sitios completos hechos para tu negocio.',
         'store.express.title': 'Página Express',
         'store.express.category': 'Desarrollo web',
         'store.express.description': 'Página súper simple generada automáticamente. Elige entre 3 diseños, sin funciones avanzadas.',
@@ -153,7 +153,7 @@
         'store.express.cta': 'Crear mi página',
         'store.systems.title': 'Sistemas a medida',
         'store.systems.category': 'Software empresarial',
-        'store.systems.description': 'Sistemas internos y plataformas a la medida de tu operación, desde $4,500 USD.',
+        'store.systems.description': 'Sistemas internos y plataformas a la medida de tu operación.',
         'store.quoteCta': 'Cotizar',
         'store.viewProduct': 'Ver producto',
         'store.viewAppStore': 'Descargar en App Store',
@@ -282,7 +282,7 @@
               <div class="store-product-card__identity">
                 <h2 data-i18n="store.express.title">Express Page</h2>
                 <span class="store-product-card__category" data-i18n="store.express.category">Web Development</span>
-                <span class="store-product-card__price" data-i18n="store.express.price">$25 USD</span>
+                <span class="store-product-card__price" data-price-slug="pagina-express">$25 USD</span>
               </div>
             </div>
             <p class="store-product-card__description" data-i18n="store.express.description">Super simple auto-generated page. Choose from 3 designs — no advanced features.</p>
@@ -296,6 +296,7 @@
               <div class="store-product-card__identity">
                 <h2 data-i18n="store.websites.title">Websites</h2>
                 <span class="store-product-card__category" data-i18n="store.websites.category">Web Development</span>
+                <span class="store-product-card__price" data-price-slug="landing" data-price-from="1">From $500 USD</span>
               </div>
             </div>
             <p class="store-product-card__description" data-i18n="store.websites.description">Landing pages and complete websites built for your business.</p>
@@ -310,6 +311,7 @@
               <div class="store-product-card__identity">
                 <h2 data-i18n="store.systems.title">Custom Systems</h2>
                 <span class="store-product-card__category" data-i18n="store.systems.category">Business Software</span>
+                <span class="store-product-card__price" data-price-slug="sistema-basico" data-price-from="1">From $4,500 USD</span>
               </div>
             </div>
             <p class="store-product-card__description" data-i18n="store.systems.description">Internal systems and platforms tailored to your operation.</p>
@@ -331,7 +333,7 @@
                 <h2>BEOFlow</h2>
                 <span class="store-product-card__category" data-i18n="store.beoflow.category">Business Software</span>
                 <span class="store-product-card__meta" data-i18n="store.soon.badge">In development</span>
-                <span class="store-product-card__price" data-i18n="store.beoflow.price">From $6,000 USD</span>
+                <span class="store-product-card__price" data-price-slug="beoflow" data-price-from="1">From $6,000 USD</span>
               </div>
             </div>
             <p class="store-product-card__description" data-i18n="store.beoflow.description">Event and banquet management system.</p>
@@ -386,6 +388,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <script src="store-products.js" defer></script>
+  <script src="prices.js?v=2026-09-23-live" defer></script>
   <script src="agency.js?v=2026-08-25-store" defer></script>
   <script src="whatsapp-float.js?v=2026-09-23-wa" defer></script>
 </body>

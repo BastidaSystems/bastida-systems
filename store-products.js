@@ -63,6 +63,7 @@
       var res = await client.from('products')
         .select('name,description,price,currency,image_url,stripe_link')
         .eq('active', true)
+        .eq('show_in_store', true)
         .order('created_at', { ascending: false });
       if (res.error || !res.data || !res.data.length) return;
       grid.innerHTML = res.data.map(card).join('');

@@ -165,6 +165,9 @@
     };
   </script>
   <script src="site-header.js?v=2026-08-26-home-nav" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="prices.js?v=2026-09-23-live" defer></script>
 
   <main>
     <section class="gen-hero">
@@ -204,6 +207,31 @@
          ============================================================ */
       var STRIPE_PAYMENT_LINK = 'https://buy.stripe.com/bJe3cv93RfFCcFI6CigA800';
       var WHATSAPP_NUMBER = '17026617149';
+
+      // Precio y link de pago vivos desde Supabase (editables en el panel).
+      // Si la base de datos no responde, se usan los valores de aquí.
+      var LIVE_PRICE = 25;
+      var LIVE_LINK = STRIPE_PAYMENT_LINK;
+
+      function fmtPrice(v) {
+        try {
+          return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(v);
+        } catch (e) { return 'USD ' + v; }
+      }
+
+      function refreshLive() {
+        if (!window.BS_PRICES) return;
+        window.BS_PRICES.load().then(function () {
+          var p = window.BS_PRICES.get('pagina-express');
+          if (!p) return;
+          var changed = false;
+          if (p.price !== null && p.price !== undefined && Number(p.price) !== LIVE_PRICE && Number(p.price) > 0) {
+            LIVE_PRICE = Number(p.price); changed = true;
+          }
+          if (p.stripe_link && p.stripe_link !== LIVE_LINK) { LIVE_LINK = p.stripe_link; changed = true; }
+          if (changed) render();
+        });
+      }
 
       var COLORS = ['#00c676', '#2563eb', '#7c3aed', '#ea580c'];
 
@@ -493,10 +521,10 @@
       }
 
       function payHref() {
-        if (STRIPE_PAYMENT_LINK) return STRIPE_PAYMENT_LINK;
+        if (LIVE_LINK) return LIVE_LINK;
         var msg = encodeURIComponent(lang() === 'es'
-          ? 'Hola, quiero pagar mi Página Express ($25 USD).'
-          : 'Hello, I want to pay for my Express Page ($25 USD).');
+          ? 'Hola, quiero pagar mi Página Express (' + fmtPrice(LIVE_PRICE) + ' USD).'
+          : 'Hello, I want to pay for my Express Page (' + fmtPrice(LIVE_PRICE) + ' USD).');
         return 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + msg;
       }
 
@@ -510,9 +538,9 @@
           '<span class="url">' + esc(slug(state.name)) + '.html</span></div>' +
           '<iframe id="gen-preview" title="preview" sandbox="allow-same-origin"></iframe></div>' +
           '<div class="gen-paybox"><h2 style="margin:0">' + esc(t('gen.payTitle')) + '</h2>' +
-          '<div class="gen-paybox__price">$25 USD</div>' +
+          '<div class="gen-paybox__price">' + esc(fmtPrice(LIVE_PRICE) + ' USD') + '</div>' +
           '<p class="gen-paybox__note">' + esc(t('gen.payNote')) + '</p>' +
-          '<p><a class="gen-btn" id="gen-pay" href="' + esc(payHref()) + '" target="_blank" rel="noopener">' + esc(t('gen.payBtn')) + '</a></p>' +
+          '<p><a class="gen-btn" id="gen-pay" href="' + esc(payHref()) + '" target="_blank" rel="noopener">' + esc((lang() === 'es' ? 'Pagar ' : 'Pay ') + fmtPrice(LIVE_PRICE) + ' USD') + '</a></p>' +
           '<p style="margin:18px 0 0"><button class="gen-btn gen-btn--ghost" id="gen-download">' + esc(t('gen.downloadBtn')) + '</button></p></div>';
         var frame = document.getElementById('gen-preview');
         // srcdoc via JS to avoid quoting issues
@@ -536,12 +564,18 @@
         if (state.step === 1) renderForm();
         else if (state.step === 2) renderDesigns();
         else renderResult();
+        // Eyebrow con precio vivo
+        var eyebrow = document.querySelector('[data-i18n="gen.eyebrow"]');
+        if (eyebrow) {
+          eyebrow.textContent = (lang() === 'es' ? 'PÁGINA EXPRESS · ' : 'EXPRESS PAGE · ') + fmtPrice(LIVE_PRICE) + ' USD';
+        }
       }
 
       document.addEventListener('change', function (e) {
         if (e.target && e.target.id === 'language-select') setTimeout(render, 0);
       });
 
+      refreshLive();
       render();
     })();
   </script>

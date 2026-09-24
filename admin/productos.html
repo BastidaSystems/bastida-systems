@@ -86,10 +86,13 @@
           </div>
           <label for="f-stripe">Link de pago de Stripe</label>
           <input id="f-stripe" type="url" placeholder="https://buy.stripe.com/…">
+          <label for="f-slug">Clave (slug) <small style="color:var(--mut)">— la usan las páginas para mostrar este precio. No la cambies en servicios.</small></label>
+          <input id="f-slug" maxlength="60" placeholder="mi-producto">
           <label for="f-image">Foto del producto</label>
           <input id="f-image" type="file" accept="image/*">
           <img id="f-preview" class="preview-img hidden" alt="">
           <label class="check"><input type="checkbox" id="f-active" checked> Visible en la tienda</label>
+          <label class="check"><input type="checkbox" id="f-show" checked> Mostrar en la tienda <small style="color:var(--mut)">(los servicios van apagados: solo cambian precios de páginas)</small></label>
           <p class="status" id="form-status" role="status"></p>
           <div class="actions">
             <button class="btn" type="submit" id="save-btn">Guardar producto</button>
@@ -188,7 +191,7 @@
         const tr = document.createElement('tr');
         tr.innerHTML =
           '<td>' + (p.image_url ? '<img class="thumb" src="' + esc(p.image_url) + '" alt="">' : '') + '</td>' +
-          '<td><strong>' + esc(p.name) + '</strong><br><small style="color:var(--mut)">' +
+          '<td><strong>' + esc(p.name) + '</strong>' + (p.slug ? '<br><small style="color:var(--mut)">clave: ' + esc(p.slug) + '</small>' : '') + '<br><small style="color:var(--mut)">' +
             esc((p.description || '').slice(0, 60)) + '</small></td>' +
           '<td>' + esc(money(p.price, p.currency)) + '</td>' +
           '<td><span class="pill ' + (p.active ? 'on' : 'off') + '">' +
@@ -224,6 +227,7 @@
       $('product-form').reset();
       $('f-id').value = '';
       $('f-active').checked = true;
+      $('f-show').checked = true;
       $('f-preview').classList.add('hidden');
       $('cancel-btn').classList.add('hidden');
       $('form-title').textContent = 'Agregar producto';
@@ -238,7 +242,9 @@
       $('f-price').value = p.price || '';
       $('f-currency').value = p.currency || 'USD';
       $('f-stripe').value = p.stripe_link || '';
+      $('f-slug').value = p.slug || '';
       $('f-active').checked = !!p.active;
+      $('f-show').checked = p.show_in_store !== false;
       editingImageUrl = p.image_url || '';
       if (editingImageUrl) { $('f-preview').src = editingImageUrl; $('f-preview').classList.remove('hidden'); }
       $('form-title').textContent = 'Editar producto';
@@ -296,6 +302,8 @@
           price,
           currency: $('f-currency').value,
           stripe_link: $('f-stripe').value.trim(),
+          slug: $('f-slug').value.trim().toLowerCase().replace(/[^a-z0-9-]+/g, '-') || null,
+          show_in_store: $('f-show').checked,
           image_url: imageUrl,
           active: $('f-active').checked
         };
