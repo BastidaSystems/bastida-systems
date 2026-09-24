@@ -61,6 +61,12 @@
 
   var WHATSAPP = 'https://wa.me/17026617149';
 
+  // Product slug -> Stripe Payment Link for direct checkout.
+  // Products listed here show "Buy now"/"Comprar" instead of the WhatsApp quote button.
+  var STRIPE_LINKS = {
+    'treenest-desktop-organizer': 'https://buy.stripe.com/4gM14n3Jxctq9tw0dUgA801'
+  };
+
   function lang() {
     try {
       var stored = localStorage.getItem('site-language');
@@ -92,14 +98,21 @@
 
   function cardHtml(p, catLabel) {
     var isExpress = p.slug === 'pagina-express';
-    var cta, href;
+    var stripeLink = STRIPE_LINKS[p.slug] || '';
+    var cta, href, newTab;
     if (isExpress) {
       href = 'generador.html';
       cta = lang() === 'es' ? 'Comprar' : 'Buy now';
+      newTab = false;
+    } else if (stripeLink) {
+      href = stripeLink;
+      cta = lang() === 'es' ? 'Comprar' : 'Buy now';
+      newTab = true;
     } else {
       var msg = (lang() === 'es' ? 'Hola, me interesa ' : "Hi, I'm interested in ") + p.name;
       href = WHATSAPP + '?text=' + encodeURIComponent(msg);
       cta = lang() === 'es' ? 'Cotizar' : 'Get a quote';
+      newTab = true;
     }
     var imgSrc = productImage(p);
     var img = imgSrc
@@ -121,7 +134,7 @@
         '</div>' + desc +
         '<div class="store-product-card__footer">' +
           '<strong class="store-product-card__price">' + esc(money(p.price, p.currency)) + '</strong>' +
-          '<a class="store-product-card__button" href="' + esc(href) + '"' + (isExpress ? '' : ' target="_blank" rel="noopener"') + '>' + esc(cta) + '</a>' +
+          '<a class="store-product-card__button" href="' + esc(href) + '"' + (newTab ? ' target="_blank" rel="noopener"' : '') + '>' + esc(cta) + '</a>' +
         '</div>' +
       '</article>';
   }
