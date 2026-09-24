@@ -111,7 +111,9 @@
         'store.soon.badge': 'In development',
         'store.beoflow.category': 'Business Software',
         'store.beoflow.description': 'Event and banquet management system.',
-        'store.beoflow.price': 'From $6,000 USD'
+        'store.beoflow.price': 'From $6,000 USD',
+        'store.categories.heading': 'Shop by category',
+        'store.categories.sub': 'Live catalog from Bastida Stock, grouped by category.'
       },
       es: {
         'meta.title': 'Tienda Bastida Systems',
@@ -162,7 +164,9 @@
         'store.soon.badge': 'En desarrollo',
         'store.beoflow.category': 'Software empresarial',
         'store.beoflow.description': 'Sistema de gestión de eventos y banquetes.',
-        'store.beoflow.price': 'Desde $6,000 USD'
+        'store.beoflow.price': 'Desde $6,000 USD',
+        'store.categories.heading': 'Comprar por categoría',
+        'store.categories.sub': 'Catálogo en vivo de Bastida Stock, agrupado por categoría.'
       }
     };
   </script>
@@ -243,6 +247,14 @@
             </div>
           </article>
         </div>
+      </div>
+    </section>
+
+    <section class="store-catalog" id="shop-by-category" aria-labelledby="shop-by-category-title" hidden>
+      <div class="container">
+        <h2 id="shop-by-category-title" data-i18n="store.categories.heading">Shop by category</h2>
+        <p data-i18n="store.categories.sub">Live catalog from Bastida Stock, grouped by category.</p>
+        <div id="store-categories"></div>
       </div>
     </section>
 
@@ -380,6 +392,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
+  <script src="store-categories.js?v=2026-09-23-cat" defer></script>
   <script src="prices.js?v=2026-09-23-live" defer></script>
   <script src="agency.js?v=2026-08-25-store" defer></script>
   <script src="whatsapp-float.js?v=2026-09-23-wa" defer></script>

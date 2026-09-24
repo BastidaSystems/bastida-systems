@@ -3630,6 +3630,9 @@ body.agency-page.premium-page {
 .store-product-card__link{color:var(--bs-green-dark);font-size:.82rem;font-weight:740;line-height:1.25}
 .store-product-card__arrow{color:rgba(7,17,13,.5);font-size:1.08rem;line-height:1;transition:transform 180ms ease,color 180ms ease}
 .store-product-card:hover .store-product-card__arrow,.store-product-card:focus-visible .store-product-card__arrow{color:var(--bs-green-dark);transform:translate(2px,-2px)}
+.store-category-block{margin-top:30px}
+.store-category-block:first-child{margin-top:8px}
+.store-category-block__title{margin:0 0 14px;font-size:1.3rem;font-weight:780;color:var(--bs-ink);letter-spacing:0}
 
 @media(max-width:900px){
 #site-header .bs-nav-group{display:grid;width:100%}
