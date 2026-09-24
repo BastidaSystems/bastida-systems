@@ -24,6 +24,7 @@
       <nav class="bs-nav site-menu-links" id="bs-primary-nav" aria-label="Primary navigation">
         <a href="index.html" data-nav-page="index.html" data-i18n="nav.home">Home</a>
         <a href="store.html" data-nav-page="store.html" data-i18n="nav.store">Store</a>
+        <a href="admin/inventario.html" data-nav-page="admin/inventario.html" data-i18n="nav.inventory">Inventory</a>
         <a class="bs-nav-cta" href="cotizar.html" data-nav-page="cotizar.html">
           <span data-i18n="nav.getStarted">Start a Project</span>
         </a>

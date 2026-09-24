@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Bastida Stock compartido | Admin Bastida Systems</title>
+  <link rel="icon" type="image/png" href="../img/logo_bastida_sys.png">
+  <script src="../site-config.js"></script>
+  <script src="../analytics.js" defer></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#f3f5f7; --card:#ffffff; --line:#e3e9ef;
+      --navy:#173a5e; --navy-soft:#2c5379;
+      --txt:#22303d; --mut:#75859a;
+      --acc:#f2671a; --acc-dark:#d9530f;
+      --ok:#0d9d5f; --danger:#e5484d;
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--txt); font-family:Montserrat,system-ui,sans-serif; }
+    .wrap { max-width:1080px; margin:0 auto; padding:24px 16px 80px; }
+    header.top { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:8px; }
+    header.top h1 { font-size:1.25rem; margin:0; color:var(--navy); }
+    header.top p { color:var(--mut); margin:4px 0 0; font-size:.82rem; }
+    .actions { display:flex; gap:8px; flex-wrap:wrap; }
+    .btn { display:inline-block; background:var(--acc); color:#fff; border:0; border-radius:12px; padding:11px 20px; font-weight:700; cursor:pointer; font-family:inherit; font-size:.95rem; }
+    .btn.ghost { background:transparent; color:var(--navy); border:1px solid var(--line); }
+    .btn.danger { background:transparent; color:var(--danger); border:1px solid var(--danger); }
+    .btn.small { padding:7px 13px; font-size:.8rem; border-radius:9px; }
+    .btn:disabled { opacity:.55; cursor:wait; }
+    .btn-big { width:100%; font-size:1.05rem; padding:18px; border-radius:16px;
+      box-shadow:0 4px 0 var(--acc-dark); }
+    .btn-big:active { transform:translateY(2px); box-shadow:0 2px 0 var(--acc-dark); }
+    a.btn { text-decoration:none; }
+    .hidden { display:none !important; }
+
+    /* Hero estilo app */
+    .eyebrow { color:var(--acc); font-weight:800; letter-spacing:.14em; font-size:.85rem; margin:26px 0 10px; }
+    .hero h2 { color:var(--navy); font-size:clamp(2.4rem,7vw,4rem); line-height:1.02; margin:0 0 14px; font-weight:800; letter-spacing:-.01em; }
+    .hero p { color:var(--mut); font-size:1.02rem; line-height:1.55; margin:0 0 22px; max-width:34em; }
+
+    /* Stats */
+    .stats { display:grid; grid-template-columns:1fr 1fr; background:var(--card); border:1px solid var(--line); border-radius:16px; margin:26px 0; overflow:hidden; }
+    .stat { padding:22px 24px; }
+    .stat + .stat { border-left:1px solid var(--line); }
+    .stat b { display:block; color:var(--navy); font-size:2.6rem; font-weight:800; line-height:1; }
+    .stat span { color:var(--mut); font-size:.92rem; }
+
+    .status { min-height:1.4em; font-size:.9rem; margin:10px 0; color:var(--mut); }
+    .status.ok { color:var(--ok); } .status.err { color:var(--danger); }
+
+    /* Categorías */
+    .cat { margin:30px 0 8px; }
+    .cat-head { display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:14px; }
+    .cat-head h3 { color:var(--navy); font-size:1.5rem; margin:0; font-weight:800; }
+    .cat-head small { color:var(--mut); }
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:14px; }
+    .prod { background:var(--card); border:1px solid var(--line); border-radius:16px; overflow:hidden; display:flex; flex-direction:column; }
+    .prod img { width:100%; height:150px; object-fit:cover; background:#e9edf1; display:block; }
+    .prod .noimg { width:100%; height:150px; background:#e9edf1; display:flex; align-items:center; justify-content:center; color:var(--mut); font-size:.8rem; }
+    .prod-body { padding:14px 14px 12px; display:flex; flex-direction:column; gap:8px; flex:1; }
+    .prod-body strong { color:var(--navy); font-size:.98rem; }
+    .prod-body .price { font-weight:800; color:var(--txt); font-size:1.02rem; }
+    .prod-body .desc { color:var(--mut); font-size:.8rem; line-height:1.45; }
+    .pills { display:flex; gap:6px; flex-wrap:wrap; }
+    .pill { display:inline-block; padding:3px 10px; border-radius:999px; font-size:.72rem; font-weight:700; }
+    .pill.on { background:rgba(13,157,95,.12); color:var(--ok); }
+    .pill.off { background:rgba(229,72,77,.1); color:var(--danger); }
+    .pill.store { background:rgba(23,58,94,.08); color:var(--navy-soft); }
+    .prod .actions { margin-top:auto; padding-top:6px; }
+
+    .empty { color:var(--mut); font-size:.9rem; padding:8px 0 20px; }
+
+    /* Modal */
+    .modal-back { position:fixed; inset:0; background:rgba(15,25,35,.5); display:flex; align-items:flex-start; justify-content:center; padding:24px 14px; z-index:50; overflow-y:auto; }
+    .modal { background:var(--card); border-radius:18px; padding:24px; width:100%; max-width:560px; box-shadow:0 20px 60px rgba(0,0,0,.25); }
+    .modal h3 { margin:0 0 6px; color:var(--navy); font-size:1.2rem; }
+    .modal p.sub { color:var(--mut); font-size:.85rem; margin:0 0 8px; }
+    label { display:block; font-size:.8rem; color:var(--mut); margin:14px 0 6px; font-weight:600; }
+    input, textarea, select { width:100%; background:#f8fafc; border:1px solid var(--line); color:var(--txt); border-radius:10px; padding:10px 12px; font-family:inherit; font-size:.95rem; }
+    textarea { min-height:84px; resize:vertical; }
+    .row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    @media (max-width:560px){ .row{ grid-template-columns:1fr; } }
+    .check { display:flex; align-items:center; gap:8px; margin-top:14px; font-size:.9rem; }
+    .check input { width:auto; }
+    .preview-img { max-width:180px; border-radius:10px; margin-top:8px; display:block; }
+    .login-note { color:var(--mut); }
+    a { color:var(--acc); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <div>
+        <h1>Bastida Stock · Compartido</h1>
+        <p>Inventario de Rodrigo y David. Cambios guardados en Supabase.</p>
+      </div>
+      <div class="actions">
+        <a class="btn ghost small" href="../store.html">Ver tienda</a>
+        <button class="btn ghost small" id="logout-btn" type="button">Salir</button>
+      </div>
+    </header>
+
+    <div id="gate" class="status"><p class="login-note" id="gate-msg">Verificando sesión…</p></div>
+
+    <div id="app" class="hidden">
+      <section class="hero">
+        <div class="eyebrow">CATÁLOGO DE BASTIDA</div>
+        <h2>Tus categorías,<br>en orden.</h2>
+        <p>Organiza primero las áreas de Bastida Systems. Entra a una categoría para ver y editar sus productos.</p>
+        <button class="btn btn-big" id="add-cat-btn" type="button">+&nbsp;&nbsp;Agregar categoría</button>
+      </section>
+
+      <section class="stats" aria-label="Resumen">
+        <div class="stat"><b id="stat-cats">0</b><span>Categorías</span></div>
+        <div class="stat"><b id="stat-prods">0</b><span id="stat-prods-sub">Productos</span></div>
+      </section>
+
+      <p class="status" id="list-status" role="status"></p>
+      <div id="cats"></div>
+    </div>
+  </div>
+
+  <!-- Modal agregar/editar producto -->
+  <div id="modal" class="modal-back hidden" role="dialog" aria-modal="true" aria-labelledby="form-title">
+    <div class="modal">
+      <h3 id="form-title">Agregar producto</h3>
+      <p class="sub" id="form-sub">Se guarda en Supabase y lo ven ambos.</p>
+      <form id="product-form" novalidate>
+        <input type="hidden" id="f-id">
+        <label for="f-name">Nombre *</label>
+        <input id="f-name" required maxlength="80" placeholder="TreeNest™ Desktop Organizer">
+        <label for="f-desc">Descripción *</label>
+        <textarea id="f-desc" required maxlength="600" placeholder="Organizador de escritorio impreso en 3D…"></textarea>
+        <div class="row">
+          <div>
+            <label for="f-price">Precio *</label>
+            <input id="f-price" type="number" min="0" step="0.01" required placeholder="15.00">
+          </div>
+          <div>
+            <label for="f-currency">Moneda</label>
+            <select id="f-currency">
+              <option value="USD">USD</option>
+              <option value="MXN">MXN</option>
+            </select>
+          </div>
+        </div>
+        <label for="f-category">Categoría *</label>
+        <input id="f-category" required maxlength="60" list="cat-list" placeholder="Impresión 3D">
+        <datalist id="cat-list"></datalist>
+        <label for="f-slug">Clave (slug)</label>
+        <input id="f-slug" maxlength="60" placeholder="treenest-desktop-organizer">
+        <label for="f-stripe">Link de pago de Stripe</label>
+        <input id="f-stripe" type="url" placeholder="https://buy.stripe.com/…">
+        <label for="f-image">Foto del producto</label>
+        <input id="f-image" type="file" accept="image/*">
+        <img id="f-preview" class="preview-img hidden" alt="">
+        <label class="check"><input type="checkbox" id="f-active" checked> Activo (visible)</label>
+        <label class="check"><input type="checkbox" id="f-show" checked> Mostrar en la tienda</label>
+        <p class="status" id="form-status" role="status"></p>
+        <div class="actions" style="margin-top:14px">
+          <button class="btn" type="submit" id="save-btn">Guardar producto</button>
+          <button class="btn ghost" type="button" id="cancel-btn">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../supabase-config.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    const $ = (id) => document.getElementById(id);
+    const gate = $('gate'), gateMsg = $('gate-msg'), app = $('app');
+    let client = null, editingImageUrl = '', productsCache = [];
+
+    function esc(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[c]));
+    }
+    function status(el, msg, ok) {
+      el.textContent = msg;
+      el.className = 'status' + (ok === true ? ' ok' : ok === false ? ' err' : '');
+    }
+    function money(price, currency) {
+      try {
+        return new Intl.NumberFormat(currency === 'MXN' ? 'es-MX' : 'en-US',
+          { style: 'currency', currency: currency || 'USD' }).format(price);
+      } catch (e) { return (currency || 'USD') + ' ' + price; }
+    }
+
+    /* ---------- Puerta de login (mismo patrón que admin/productos.html) ---------- */
+    async function init() {
+      if (!window.supabase || !window.BASTIDA_SUPABASE_CONFIG) {
+        gateMsg.textContent = 'No se pudo cargar la configuración de Supabase.';
+        return;
+      }
+      client = window.supabase.createClient(
+        window.BASTIDA_SUPABASE_CONFIG.url,
+        window.BASTIDA_SUPABASE_CONFIG.anonKey
+      );
+      const { data: sess } = await client.auth.getSession();
+      if (!sess || !sess.session) { location.href = '../login.html'; return; }
+      const user = sess.session.user;
+      const { data: profile, error: pErr } = await client
+        .from('users')
+        .select('platform_role, active')
+        .eq('auth_user_id', user.id)
+        .maybeSingle();
+      if (pErr) {
+        gateMsg.textContent = 'No se pudo verificar tu perfil. Revisa la configuración del proyecto y los pasos de docs/products-setup.md.';
+        return;
+      }
+      const role = profile && profile.platform_role;
+      if (!profile || profile.active !== true || (role !== 'founder' && role !== 'owner')) {
+        gateMsg.textContent = 'Tu cuenta no tiene permiso de administrador.';
+        return;
+      }
+      gate.classList.add('hidden');
+      app.classList.remove('hidden');
+      bindUI();
+      await loadProducts();
+    }
+
+    /* ---------- Carga y vista agrupada por categoría ---------- */
+    async function loadProducts() {
+      status($('list-status'), 'Cargando productos…', null);
+      const { data, error } = await client
+        .from('products').select('*').order('category').order('created_at', { ascending: false });
+      if (error) {
+        status($('list-status'), 'Error al cargar: ' + error.message +
+          ' ¿Ya corriste el SQL de docs/products-setup.md?', false);
+        return;
+      }
+      productsCache = data || [];
+      renderAll();
+      status($('list-status'), '', null);
+    }
+
+    function groupByCategory(rows) {
+      const map = new Map();
+      rows.forEach((p) => {
+        const c = (p.category || '').trim() || 'Sin categoría';
+        if (!map.has(c)) map.set(c, []);
+        map.get(c).push(p);
+      });
+      return [...map.entries()].sort((a, b) => a[0].localeCompare(b[0], 'es'));
+    }
+
+    function renderAll() {
+      const groups = groupByCategory(productsCache);
+      const total = productsCache.length;
+      const ready = productsCache.filter((p) => p.active && p.show_in_store).length;
+      $('stat-cats').textContent = groups.length;
+      $('stat-prods').textContent = total;
+      $('stat-prods-sub').textContent = 'Productos · ' + ready + ' listos';
+
+      const dl = $('cat-list');
+      dl.innerHTML = groups.map(([c]) => '<option value="' + esc(c) + '">').join('');
+
+      const box = $('cats');
+      box.innerHTML = '';
+      if (!groups.length) {
+        box.innerHTML = '<p class="empty">Aún no hay productos. Agrega la primera categoría arriba.</p>';
+        return;
+      }
+      groups.forEach(([cat, items]) => {
+        const sec = document.createElement('section');
+        sec.className = 'cat';
+        const head = document.createElement('div');
+        head.className = 'cat-head';
+        head.innerHTML = '<h3>' + esc(cat) + '</h3><small>' + items.length +
+          (items.length === 1 ? ' producto' : ' productos') + '</small>';
+        const grid = document.createElement('div');
+        grid.className = 'grid';
+        items.forEach((p) => grid.appendChild(productCard(p)));
+        sec.appendChild(head);
+        sec.appendChild(grid);
+        box.appendChild(sec);
+      });
+    }
+
+    function productCard(p) {
+      const card = document.createElement('article');
+      card.className = 'prod';
+      const media = p.image_url
+        ? '<img src="' + esc(p.image_url) + '" alt="" loading="lazy">'
+        : '<div class="noimg">Sin foto</div>';
+      card.innerHTML = media +
+        '<div class="prod-body">' +
+          '<strong>' + esc(p.name) + '</strong>' +
+          '<span class="price">' + esc(money(p.price, p.currency)) + '</span>' +
+          (p.description ? '<span class="desc">' + esc(p.description.slice(0, 90)) +
+            (p.description.length > 90 ? '…' : '') + '</span>' : '') +
+          '<div class="pills">' +
+            '<span class="pill ' + (p.active ? 'on' : 'off') + '">' + (p.active ? 'Visible' : 'Pausado') + '</span>' +
+            '<span class="pill store">' + (p.show_in_store ? 'En tienda' : 'Oculto') + '</span>' +
+          '</div>' +
+          '<div class="actions">' +
+            '<button class="btn ghost small" data-act="edit">Editar</button>' +
+            '<button class="btn ghost small" data-act="toggle">' + (p.active ? 'Pausar' : 'Activar') + '</button>' +
+            '<button class="btn danger small" data-act="del">Borrar</button>' +
+          '</div>' +
+        '</div>';
+      card.querySelector('[data-act="edit"]').onclick = () => openModal(p);
+      card.querySelector('[data-act="toggle"]').onclick = () => toggleActive(p);
+      card.querySelector('[data-act="del"]').onclick = () => removeProduct(p, card);
+      return card;
+    }
+
+    /* ---------- UI: modal, categoría, salir ---------- */
+    function bindUI() {
+      $('logout-btn').onclick = async () => {
+        await client.auth.signOut();
+        location.href = '../login.html';
+      };
+      $('add-cat-btn').onclick = () => {
+        const name = prompt('Nombre de la nueva categoría:');
+        if (name && name.trim()) openModal(null, name.trim());
+      };
+      $('cancel-btn').onclick = closeModal;
+      $('modal').addEventListener('click', (e) => { if (e.target === $('modal')) closeModal(); });
+      $('f-image').addEventListener('change', (e) => {
+        const f = e.target.files[0];
+        if (f) { $('f-preview').src = URL.createObjectURL(f); $('f-preview').classList.remove('hidden'); }
+      });
+      $('product-form').addEventListener('submit', onSubmit);
+    }
+
+    function openModal(p, presetCategory) {
+      resetForm();
+      if (presetCategory) $('f-category').value = presetCategory;
+      if (p) {
+        $('form-title').textContent = 'Editar producto';
+        $('f-id').value = p.id;
+        $('f-name').value = p.name || '';
+        $('f-desc').value = p.description || '';
+        $('f-price').value = p.price != null ? p.price : '';
+        $('f-currency').value = p.currency || 'USD';
+        $('f-category').value = p.category || '';
+        $('f-slug').value = p.slug || '';
+        $('f-stripe').value = p.stripe_link || '';
+        $('f-active').checked = !!p.active;
+        $('f-show').checked = p.show_in_store !== false;
+        editingImageUrl = p.image_url || '';
+        if (editingImageUrl) { $('f-preview').src = editingImageUrl; $('f-preview').classList.remove('hidden'); }
+      }
+      $('modal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal() {
+      $('modal').classList.add('hidden');
+      document.body.style.overflow = '';
+      resetForm();
+    }
+    function resetForm() {
+      $('product-form').reset();
+      $('f-id').value = '';
+      $('f-active').checked = true;
+      $('f-show').checked = true;
+      $('f-preview').classList.add('hidden');
+      $('form-title').textContent = 'Agregar producto';
+      editingImageUrl = '';
+      status($('form-status'), '', null);
+    }
+
+    /* ---------- CRUD contra Supabase ---------- */
+    async function toggleActive(p) {
+      const { error } = await client.from('products')
+        .update({ active: !p.active }).eq('id', p.id);
+      if (error) status($('list-status'), 'Error: ' + error.message, false);
+      else loadProducts();
+    }
+
+    async function removeProduct(p, card) {
+      if (!confirm('¿Borrar "' + p.name + '"? Esta acción no se puede deshacer.')) return;
+      const { error } = await client.from('products').delete().eq('id', p.id);
+      if (error) {
+        status($('list-status'), 'No se pudo borrar en Supabase: ' + error.message +
+          ' El producto se conserva en la vista.', false);
+        return;
+      }
+      status($('list-status'), 'Producto borrado.', true);
+      loadProducts();
+    }
+
+    async function uploadImage(file) {
+      const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
+      const path = 'products/' + crypto.randomUUID() + '.' + ext;
+      const { error } = await client.storage.from('product-images').upload(path, file, {
+        contentType: file.type, upsert: false
+      });
+      if (error) throw error;
+      const { data } = client.storage.from('product-images').getPublicUrl(path);
+      return data.publicUrl;
+    }
+
+    async function onSubmit(e) {
+      e.preventDefault();
+      const btn = $('save-btn');
+      const name = $('f-name').value.trim();
+      const description = $('f-desc').value.trim();
+      const price = parseFloat($('f-price').value);
+      const category = $('f-category').value.trim();
+      if (!name || !description || isNaN(price) || price < 0 || !category) {
+        status($('form-status'), 'Completa nombre, descripción, categoría y un precio válido.', false);
+        return;
+      }
+      btn.disabled = true;
+      status($('form-status'), 'Guardando…', null);
+      try {
+        let imageUrl = editingImageUrl;
+        const file = $('f-image').files[0];
+        if (file) {
+          status($('form-status'), 'Subiendo foto…', null);
+          imageUrl = await uploadImage(file);
+        }
+        const row = {
+          name,
+          description,
+          price,
+          currency: $('f-currency').value,
+          category,
+          slug: $('f-slug').value.trim().toLowerCase().replace(/[^a-z0-9-]+/g, '-') || null,
+          stripe_link: $('f-stripe').value.trim() || null,
+          show_in_store: $('f-show').checked,
+          image_url: imageUrl || null,
+          active: $('f-active').checked
+        };
+        const id = $('f-id').value;
+        const { error } = id
+          ? await client.from('products').update(row).eq('id', id)
+          : await client.from('products').insert(row);
+        if (error) throw error;
+        status($('form-status'), id ? 'Producto actualizado.' : 'Producto agregado.', true);
+        closeModal();
+        loadProducts();
+      } catch (err) {
+        status($('form-status'), 'Error: ' + (err.message || err), false);
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  })();
+  </script>
+</body>
+</html>
