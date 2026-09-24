@@ -98,7 +98,7 @@
 
   function cardHtml(p, catLabel) {
     var isExpress = p.slug === 'pagina-express';
-    var stripeLink = STRIPE_LINKS[p.slug] || '';
+    var stripeLink = (p.stripe_link || '').trim() || STRIPE_LINKS[p.slug] || '';
     var cta, href, newTab;
     if (isExpress) {
       href = 'generador.html';
@@ -173,7 +173,7 @@
   function init() {
     var cfg = window.BASTIDA_SUPABASE_CONFIG;
     if (!cfg || !cfg.url || !cfg.anonKey) return;
-    fetch(cfg.url + '/rest/v1/products?select=slug,name,description,price,currency,image_url,category&active=eq.true&show_in_store=eq.true&order=name', {
+    fetch(cfg.url + '/rest/v1/products?select=slug,name,description,price,currency,image_url,category,stripe_link&active=eq.true&show_in_store=eq.true&order=name', {
       headers: { apikey: cfg.anonKey, Authorization: 'Bearer ' + cfg.anonKey }
     })
       .then(function (res) {
