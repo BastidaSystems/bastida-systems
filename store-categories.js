@@ -45,8 +45,8 @@
 
   // Local photo fallback, used while the app's photo sync to Supabase
   // has not uploaded image_url yet. Supabase image_url always wins.
+  // (Empty for now: Rodrigo is testing the app's own photo sync.)
   var LOCAL_IMAGES = {
-    'treenest-desktop-organizer': 'images/products/treenest.jpg'
   };
 
   function productImage(p) {
