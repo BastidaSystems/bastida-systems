@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>Amazon | Admin Bastida Systems</title>
+  <title>Amazon LineOps | Admin Bastida Systems</title>
   <link rel="icon" type="image/png" href="../img/logo_bastida_sys.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -45,8 +45,8 @@
   <div class="wrap">
     <header class="top">
       <div>
-        <h1>Amazon</h1>
-        <p>Solo nombre, foto y link de afiliado. Aparecen en el Market de la app LineOps.</p>
+        <h1>Amazon LineOps</h1>
+        <p>Solo nombre, descripción, foto y link de afiliado. Solo aparecen en el Market de la app LineOps.</p>
       </div>
       <div class="actions">
         <a class="btn ghost small" href="productos.html">Bastida Stock</a>
@@ -60,7 +60,7 @@
 
     <div id="app" class="hidden">
       <div class="card">
-        <h2 id="form-title">Agregar producto de Amazon</h2>
+        <h2 id="form-title">Agregar producto a LineOps</h2>
         <form id="product-form" novalidate>
           <input type="hidden" id="f-id">
           <label for="f-name">Nombre *</label>
@@ -81,7 +81,7 @@
       </div>
 
       <div class="card">
-        <h2>Productos de Amazon (<span id="count">0</span>)</h2>
+        <h2>Productos de LineOps (<span id="count">0</span>)</h2>
         <p class="status" id="list-status" role="status"></p>
         <div style="overflow-x:auto">
         <table>
@@ -208,7 +208,7 @@
         tr.querySelector('[data-act="del"]').onclick = function () { removeProduct(p); };
         tb.appendChild(tr);
       });
-      if (!data.length) status($('list-status'), 'Aún no hay productos de Amazon. Agrega el primero arriba.', true);
+      if (!data.length) status($('list-status'), 'Aún no hay productos. Agrega el primero arriba.', true);
       else status($('list-status'), '', null);
     }
 
@@ -230,7 +230,7 @@
       $('f-id').value = '';
       $('f-preview').classList.add('hidden');
       $('cancel-btn').classList.add('hidden');
-      $('form-title').textContent = 'Agregar producto de Amazon';
+      $('form-title').textContent = 'Agregar producto a LineOps';
       editingImageUrl = '';
       status($('form-status'), '', null);
     }
@@ -242,7 +242,7 @@
       $('f-amazon').value = p.amazon_url || '';
       editingImageUrl = p.image_url || '';
       if (editingImageUrl) { $('f-preview').src = editingImageUrl; $('f-preview').classList.remove('hidden'); }
-      $('form-title').textContent = 'Editar producto de Amazon';
+      $('form-title').textContent = 'Editar producto de LineOps';
       $('cancel-btn').classList.remove('hidden');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -255,7 +255,7 @@
     }
 
     async function removeProduct(p) {
-      if (!confirm('¿Borrar "' + p.name + '"? Esta acción no se puede deshacer.')) return;
+      if (!confirm('¿Quitar del Market de LineOps "' + p.name + '"? Esta acción no se puede deshacer.')) return;
       var res = await client.from('products').delete().eq('id', p.id);
       if (res.error) status($('list-status'), 'Error: ' + res.error.message, false);
       else { status($('list-status'), 'Producto borrado.', true); loadProducts(); }
@@ -309,7 +309,7 @@
           ? await client.from('products').update(row).eq('id', id)
           : await client.from('products').insert(row);
         if (res.error) throw res.error;
-        status($('form-status'), id ? 'Producto actualizado.' : 'Producto agregado al Market.', true);
+        status($('form-status'), id ? 'Producto actualizado.' : 'Producto agregado al Market de LineOps.', true);
         resetForm();
         loadProducts();
       } catch (err) {
