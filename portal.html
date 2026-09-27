@@ -1895,6 +1895,7 @@
           'language.spanish': 'Spanish',
           'nav.selectSection': 'Select section',
           'nav.products': 'Bastida Stock',
+          'nav.amazon': 'Amazon',
           'portal.errorTitle': 'Portal is not ready',
           'portal.loadingCopy': 'Validating your Supabase session.',
           'portal.loadingTitle': 'Loading Bastida OS',
@@ -1954,6 +1955,7 @@
           'language.spanish': 'Español',
           'nav.selectSection': 'Seleccionar sección',
           'nav.products': 'Bastida Stock',
+          'nav.amazon': 'Amazon',
           'portal.errorTitle': 'El portal no está listo',
           'portal.loadingCopy': 'Validando tu sesión de Supabase.',
           'portal.loadingTitle': 'Cargando Bastida OS',
@@ -2372,6 +2374,7 @@
                 ${Object.entries(viewLabels).map(([view, label]) => navButton(view, label)).join('')}
               </nav>
               ${isStoreAdmin() ? `<a class="nav-button" style="margin-top:4px" href="admin/productos.html"><span>${escapeHtml(t('nav.products'))}</span></a>` : ''}
+              ${isStoreAdmin() ? `<a class="nav-button" style="margin-top:4px" href="admin/amazon.html"><span>${escapeHtml(t('nav.amazon'))}</span></a>` : ''}
               <div class="sidebar-footer">
                 ${escapeHtml(t('footer.supabase'))}
               </div>
