@@ -33,11 +33,23 @@
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
-.home-redesign-page .wa-float,
-.home-redesign-page .wa-float:hover {
-  top: 50%;
+.home-redesign-page .wa-header,
+.home-redesign-page .wa-header:hover {
+  position: static;
+  top: auto;
   bottom: auto;
-  transform: translateY(-50%);
+  right: auto;
+  transform: none;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  box-shadow: none;
+}
+.home-redesign-page .wa-header svg { width: 24px; height: 24px; }
+.home-redesign-page #site-header .bs-header-actions { display: flex; align-items: center; justify-self: end; gap: 10px; }
+@media (max-width: 900px) {
+  .home-redesign-page #site-header .bs-header { grid-template-columns: 38px 1fr auto; }
+  .home-redesign-page #site-header .bs-header-actions { grid-column: 3; }
 }
 
 .home-updates__heading,

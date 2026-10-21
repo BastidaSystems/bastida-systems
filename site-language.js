@@ -2,6 +2,7 @@ const siteLanguageStorageKey = 'site-language';
 
 const sharedSiteTranslations = {
   en: {
+    'nav.whatsapp': 'Chat on WhatsApp',
     'home.updates.closeInfo': 'Close information',
     "home.updates.acquisitions.title": "Procurement Management System",
     "home.updates.acquisitions.category": "MANAGEMENT · WEB APP",
@@ -356,6 +357,7 @@ const sharedSiteTranslations = {
     'home.readAloud.stop': 'Stop reading'
   },
   es: {
+    'nav.whatsapp': 'Chatear por WhatsApp',
     'home.updates.closeInfo': 'Cerrar información',
     "home.updates.acquisitions.title": "Sistema de Gestión de Adquisiciones",
     "home.updates.acquisitions.category": "GESTIÓN · APLICACIÓN WEB",
