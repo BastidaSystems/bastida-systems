@@ -127,3 +127,19 @@ body.tv-page { margin: 0; font-family: 'Montserrat', system-ui, -apple-system, '
 .tv-cap { color: #b9b3cc; font-size: .98rem; margin-top: .8rem; text-align: center; }
 .tv-hero__banner { max-width: 900px; }
 .tv-hero__banner img { width: 100%; display: block; }
+
+/* Corrección de proporción del hero (2026-10-21) */
+:root { --tv-grad: linear-gradient(92deg, #e8a33d 0%, #f6c453 100%); }
+body.tv-page { background: #faf6ee; }
+.tv-hero { background: linear-gradient(150deg, #071a24 0%, #0b2e35 52%, #0e4d3c 100%); padding-top: 3.6rem; }
+.tv-hero__inner { display: flex; flex-direction: column; align-items: center; text-align: center; max-width: 840px; }
+.tv-hero .tv-logo { width: min(300px, 74vw); height: auto; margin: 0 auto .6rem; }
+.tv-hero .tv-kicker { color: #e8a33d; }
+.tv-hero__body { max-width: 640px; }
+.tv-hero__cta { justify-content: center; }
+.tv-hero__banner { margin-top: 2.4rem; }
+.tv-label { color: #0e7a5f; }
+.tv-section--dark { background: #0b2e35; }
+.tv-section--dark .tv-label { color: #e8a33d; }
+.tv-section--tint { background: #f3ecdb; }
+.tv-phase { border-top-color: #0e7a5f; }
