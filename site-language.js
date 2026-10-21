@@ -2,6 +2,18 @@ const siteLanguageStorageKey = 'site-language';
 
 const sharedSiteTranslations = {
   en: {
+    'home.updates.info': 'View information',
+    'home.updates.website': 'Website',
+    'home.updates.about': 'About the project',
+    'home.updates.creator': 'Created by',
+    'home.updates.process': 'How it was made',
+    'home.updates.resources': 'Technology and materials',
+    'home.updates.game.process': 'A browser game built with 3D scenes, characters, animation and interactive gameplay.',
+    'home.updates.game.resources': 'JavaScript and Three.js, with 3D models, textures, sound and ambient effects. A digital project with no physical materials.',
+    'home.updates.filtracore.process': 'Developed by combining a physical prototype with software for water-system monitoring and maintenance.',
+    'home.updates.filtracore.resources': 'Pressure sensing, connected hardware, a mobile interface and a monitoring dashboard.',
+    'home.updates.printing.process': 'Design, physical prototyping and in-house 3D printing to turn an idea into a functional part.',
+    'home.updates.printing.resources': '3D models and printing equipment. The printing material is selected according to the requirements of each part.',
     'home.updates.heading': 'Updates',
     'home.updates.carousel': 'carousel',
     'home.updates.game.category': 'GAMES',
@@ -321,6 +333,18 @@ const sharedSiteTranslations = {
     'home.readAloud.stop': 'Stop reading'
   },
   es: {
+    'home.updates.info': 'Ver información',
+    'home.updates.website': 'Página web',
+    'home.updates.about': 'Acerca del proyecto',
+    'home.updates.creator': 'Creado por',
+    'home.updates.process': 'Cómo se creó',
+    'home.updates.resources': 'Tecnología y materiales',
+    'home.updates.game.process': 'Un juego para navegador construido con escenarios 3D, personajes, animación y mecánicas interactivas.',
+    'home.updates.game.resources': 'JavaScript y Three.js, con modelos 3D, texturas, sonido y efectos ambientales. Es un proyecto digital, sin materiales físicos.',
+    'home.updates.filtracore.process': 'Desarrollado combinando un prototipo físico con software para el monitoreo y mantenimiento de sistemas de agua.',
+    'home.updates.filtracore.resources': 'Medición de presión, hardware conectado, interfaz móvil y un panel de monitoreo.',
+    'home.updates.printing.process': 'Diseño, prototipado físico e impresión 3D interna para convertir una idea en una pieza funcional.',
+    'home.updates.printing.resources': 'Modelos 3D y equipos de impresión. El material de impresión se selecciona según los requisitos de cada pieza.',
     'home.updates.heading': 'Novedades',
     'home.updates.carousel': 'carrusel',
     'home.updates.game.category': 'VIDEOJUEGOS',

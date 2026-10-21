@@ -25,7 +25,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="agency.css?v=2026-09-23-read-aloud">
   <link rel="stylesheet" href="monster-promo.css?v=2026-10-20-cover">
-  <link rel="stylesheet" href="home-updates.css?v=2026-10-20">
+  <link rel="stylesheet" href="home-updates.css?v=2026-10-20-details">
   <!-- Social preview -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Bastida Systems">
@@ -74,7 +74,7 @@
 <body class="agency-page home-redesign-page">
   <div id="site-header"></div>
   <script src="site-header.js?v=2026-08-26-home-nav" defer></script>
-  <script src="site-language.js?v=2026-10-20-updates" defer></script>
+  <script src="site-language.js?v=2026-10-20-details" defer></script>
 
   <dialog class="monster-promo" id="monster-promo" aria-labelledby="monster-promo-title" aria-describedby="monster-promo-description">
     <div class="monster-promo__content">
@@ -130,7 +130,18 @@
                 <p class="home-update__category" data-i18n="home.updates.game.category">VIDEOJUEGOS</p>
                 <h3>Monster Apocalypse</h3>
                 <p data-i18n="home.updates.game.description">El apocalipsis te espera. Entra al mundo de Monster Apocalypse, un juego de Bastida Systems.</p>
-                <a href="https://monster-apocalypse-bastida-systems.vercel.app/" data-i18n="home.monster.play">Jugar ahora</a>
+                <div class="home-update__actions">
+                  <button type="button" class="home-update__info" data-update-toggle aria-expanded="false" aria-controls="update-details-game" hidden><span data-i18n="home.updates.info">Ver información</span><span aria-hidden="true"> +</span></button>
+                  <a href="https://monster-apocalypse-bastida-systems.vercel.app/" data-update-website><span data-i18n="home.updates.website">Página web</span> <span aria-hidden="true">↗</span></a>
+                </div>
+              </div>
+              <div class="home-update__details" id="update-details-game" data-update-details hidden>
+                <h4 data-i18n="home.updates.about">Acerca del proyecto</h4>
+                <dl>
+                  <div><dt data-i18n="home.updates.creator">Creado por</dt><dd>Bastida Systems</dd></div>
+                  <div><dt data-i18n="home.updates.process">Cómo se creó</dt><dd data-i18n="home.updates.game.process"></dd></div>
+                  <div><dt data-i18n="home.updates.resources">Tecnología y materiales</dt><dd data-i18n="home.updates.game.resources"></dd></div>
+                </dl>
               </div>
             </article>
             <article class="home-update" data-update-slide hidden>
@@ -139,7 +150,18 @@
                 <p class="home-update__category" data-i18n="home.updates.filtracore.category">TECNOLOGÍA CONECTADA</p>
                 <h3>FiltraCore</h3>
                 <p data-i18n="home.updates.filtracore.description">Hardware y software conectados para monitorear la presión y comprender lo que ocurre en los sistemas de agua.</p>
-                <a href="filtracore.html" data-i18n="home.updates.explore">Conocer el proyecto</a>
+                <div class="home-update__actions">
+                  <button type="button" class="home-update__info" data-update-toggle aria-expanded="false" aria-controls="update-details-filtracore" hidden><span data-i18n="home.updates.info">Ver información</span><span aria-hidden="true"> +</span></button>
+                  <a href="filtracore.html" data-update-website><span data-i18n="home.updates.website">Página web</span> <span aria-hidden="true">↗</span></a>
+                </div>
+              </div>
+              <div class="home-update__details" id="update-details-filtracore" data-update-details hidden>
+                <h4 data-i18n="home.updates.about">Acerca del proyecto</h4>
+                <dl>
+                  <div><dt data-i18n="home.updates.creator">Creado por</dt><dd>Bastida Systems</dd></div>
+                  <div><dt data-i18n="home.updates.process">Cómo se creó</dt><dd data-i18n="home.updates.filtracore.process"></dd></div>
+                  <div><dt data-i18n="home.updates.resources">Tecnología y materiales</dt><dd data-i18n="home.updates.filtracore.resources"></dd></div>
+                </dl>
               </div>
             </article>
             <article class="home-update" data-update-slide hidden>
@@ -148,7 +170,18 @@
                 <p class="home-update__category" data-i18n="home.updates.printing.category">IMPRESIÓN 3D</p>
                 <h3 data-i18n="home.updates.printing.title">De la idea a lo físico.</h3>
                 <p data-i18n="home.updates.printing.description">Prototipos, carcasas y piezas personalizadas producidas por Bastida Systems. Descubre lo que podemos crear.</p>
-                <a href="store.html" data-i18n="home.updates.store">Explorar la tienda</a>
+                <div class="home-update__actions">
+                  <button type="button" class="home-update__info" data-update-toggle aria-expanded="false" aria-controls="update-details-printing" hidden><span data-i18n="home.updates.info">Ver información</span><span aria-hidden="true"> +</span></button>
+                  <a href="store.html" data-update-website><span data-i18n="home.updates.website">Página web</span> <span aria-hidden="true">↗</span></a>
+                </div>
+              </div>
+              <div class="home-update__details" id="update-details-printing" data-update-details hidden>
+                <h4 data-i18n="home.updates.about">Acerca del proyecto</h4>
+                <dl>
+                  <div><dt data-i18n="home.updates.creator">Creado por</dt><dd>Bastida Systems</dd></div>
+                  <div><dt data-i18n="home.updates.process">Cómo se creó</dt><dd data-i18n="home.updates.printing.process"></dd></div>
+                  <div><dt data-i18n="home.updates.resources">Tecnología y materiales</dt><dd data-i18n="home.updates.printing.resources"></dd></div>
+                </dl>
               </div>
             </article>
           </div>
@@ -175,7 +208,7 @@
     </div>
   </footer>
 
-  <script src="home-updates.js?v=2026-10-20" defer></script>
+  <script src="home-updates.js?v=2026-10-20-details" defer></script>
   <script src="agency.js?v=2026-08-26-3d-video-home" defer></script>
   <script src="read-aloud.js?v=2026-09-23-read-aloud" defer></script>
   <script src="whatsapp-float.js?v=2026-09-23-wa" defer></script>

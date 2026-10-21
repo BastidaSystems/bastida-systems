@@ -5,6 +5,19 @@
     const slides = Array.from(carousel.querySelectorAll('[data-update-slide]'));
     const count = carousel.querySelector('[data-updates-count]');
     let index = 0;
+    let lastSwipe = 0;
+    slides.forEach(slide => {
+      const button = slide.querySelector('[data-update-toggle]');
+      const details = slide.querySelector('[data-update-details]');
+      if (!button || !details) return;
+      button.hidden = false;
+      slide.addEventListener('click', event => {
+        if (event.target.closest('a, [data-update-details]') || Date.now() - lastSwipe < 400) return;
+        details.hidden = !details.hidden;
+        button.setAttribute('aria-expanded', String(!details.hidden));
+        button.querySelector('[aria-hidden]').textContent = details.hidden ? ' +' : ' −';
+      });
+    });
     const move = direction => {
       const focusInSlide = slides[index].contains(document.activeElement);
       index = (index + direction + slides.length) % slides.length;
@@ -28,7 +41,10 @@
       if (!start) return;
       const dx = event.changedTouches[0].clientX - start.x;
       const dy = event.changedTouches[0].clientY - start.y;
-      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) move(dx < 0 ? 1 : -1);
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+        lastSwipe = Date.now();
+        move(dx < 0 ? 1 : -1);
+      }
       start = null;
     }, { passive: true });
     carousel.addEventListener('touchcancel', () => { start = null; });
