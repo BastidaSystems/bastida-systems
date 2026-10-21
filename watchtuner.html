@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" href="img/logo_bastida_sys.png">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="agency.css?v=2026-08-26-index-nav">
-  <link rel="stylesheet" href="watchtuner.css?v=2026-10-21-a">
+  <link rel="stylesheet" href="watchtuner.css?v=2026-10-21-b">
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"SoftwareApplication","name":"WatchTuner Pro","applicationCategory":"MultimediaApplication","operatingSystem":"iOS","creator":{"@type":"Organization","name":"Bastida Systems"},"description":"Afinador y herramientas de práctica, aprendizaje y composición para músicos, con soporte para Apple Watch."}
   </script>
@@ -25,21 +25,18 @@
     <!-- HERO -->
     <section class="wt-hero">
       <div class="wt-hero__inner">
-        <div class="wt-hero__text">
-          <p class="wt-kicker" data-i18n="hero.kicker">App de música · iPhone y Apple Watch</p>
-          <h1 data-i18n="hero.heading">Afina, practica y crea — desde tu muñeca.</h1>
-          <p class="wt-hero__body" data-i18n="hero.body">WatchTuner Pro reúne afinación, ejercicios, aprendizaje y composición en una sola app para músicos, con herramientas para distintos instrumentos y soporte para Apple Watch.</p>
-          <div class="wt-hero__cta">
-            <a class="btn btn--light" href="https://apps.apple.com/us/app/watchtuner-pro/id6801949693" data-i18n="hero.ctaApp">Descargar la app</a>
-            <a class="btn btn--ghost-light" href="#herramientas" data-i18n="hero.ctaHow">Ver las herramientas</a>
-          </div>
+        <img class="wt-hero__icon" src="assets/watchtuner/store-icon.jpg" alt="WatchTuner Pro" width="512" height="512">
+        <p class="wt-kicker" data-i18n="hero.kicker">App de música · iPhone y Apple Watch</p>
+        <h1><span data-i18n="hero.headingA">Afina, practica y crea —</span> <span class="wt-grad" data-i18n="hero.headingB">desde tu muñeca.</span></h1>
+        <p class="wt-hero__body" data-i18n="hero.body">WatchTuner Pro reúne afinación, ejercicios, aprendizaje y composición en una sola app para músicos, con herramientas para distintos instrumentos y soporte para Apple Watch.</p>
+        <div class="wt-hero__cta">
+          <a class="btn btn--light" href="https://apps.apple.com/us/app/watchtuner-pro/id6801949693" data-i18n="hero.ctaApp">Descargar la app</a>
+          <a class="btn btn--ghost-light" href="#galeria" data-i18n="hero.ctaHow">Verla en acción</a>
         </div>
-        <figure class="wt-frame wt-hero__shot">
-          <span class="wt-frame__bar"><i></i><i></i><i></i></span>
-          <img src="assets/watchtuner/tuner-mock.jpg" data-i18n-alt="hero.imgAlt" alt="Afinador de WatchTuner Pro mostrando la nota A a 440 Hz" width="1400" height="900">
-        </figure>
       </div>
-      <p class="wt-note wt-note--hero" data-i18n="hero.note">Ilustración de la interfaz del afinador.</p>
+      <figure class="wt-hero__banner reveal">
+        <img src="assets/watchtuner/store-1.jpg" data-i18n-alt="hero.imgAlt" alt="WatchTuner Pro en iPhone y Apple Watch" width="1284" height="593">
+      </figure>
     </section>
 
     <!-- QUÉ ES -->
@@ -53,45 +50,71 @@
       </div>
     </section>
 
-    <!-- HERRAMIENTAS -->
-    <section class="wt-section" id="herramientas">
-      <p class="wt-label" data-i18n="tools.label">Herramientas</p>
-      <h2 data-i18n="tools.heading">Pensada para músicos de verdad.</h2>
-
-      <div class="wt-feature reveal">
-        <div class="wt-feature__text"><h3 data-i18n="tools.f1t">El afinador, siempre a la mano</h3><p data-i18n="tools.f1b">Abres la app y afinas: la nota detectada, los hertz y los cents se leen de un vistazo, en el iPhone o en el Apple Watch.</p></div>
-        <div class="wt-phones">
-          <img src="assets/watchtuner/app-2.jpg" loading="lazy" alt="WatchTuner Pro en iPhone" width="222" height="480">
-        </div>
+    <!-- GALERÍA -->
+    <section class="wt-section wt-section--dark" id="galeria">
+      <p class="wt-label" data-i18n="gal.label">Galería</p>
+      <h2 data-i18n="gal.heading">Directo del App Store.</h2>
+      <div class="wt-gallery">
+        <figure class="reveal">
+          <div class="wt-poster"><img src="assets/watchtuner/store-2.jpg" loading="lazy" data-i18n-alt="gal.cap2" alt="Cambia de instrumento desde tu muñeca" width="760" height="1645"></div>
+          <figcaption class="wt-cap" data-i18n="gal.cap2">Cambia de instrumento desde tu muñeca</figcaption>
+        </figure>
+        <figure class="reveal">
+          <div class="wt-poster"><img src="assets/watchtuner/store-3.jpg" loading="lazy" data-i18n-alt="gal.cap3" alt="Practica. Mejora. Toca." width="760" height="1645"></div>
+          <figcaption class="wt-cap" data-i18n="gal.cap3">Practica. Mejora. Toca.</figcaption>
+        </figure>
       </div>
+    </section>
 
-      <div class="wt-feature wt-feature--flip reveal">
-        <div class="wt-feature__text"><h3 data-i18n="tools.f2t">También en Apple Watch</h3><p data-i18n="tools.f2b">WatchTuner Pro incluye funciones para Apple Watch: afina y practica sin sacar el teléfono, directo desde tu muñeca.</p></div>
-        <figure class="wt-frame"><span class="wt-frame__bar"><i></i><i></i><i></i></span><img src="assets/watchtuner/app-1.jpg" loading="lazy" data-i18n-alt="tools.f2alt" alt="WatchTuner Pro en iPhone y Apple Watch" width="320" height="148"></figure>
+    <!-- INSTRUMENTOS -->
+    <section class="wt-section">
+      <p class="wt-label" data-i18n="inst.label">Instrumentos</p>
+      <h2 data-i18n="inst.heading">Siete instrumentos, una sola app.</h2>
+      <p class="wt-wide" data-i18n="inst.body">Cambia de instrumento y de afinación en segundos — también desde el Apple Watch, sin sacar el iPhone. Tu Watch y tu iPhone se mantienen en sincronía.</p>
+      <div class="wt-chips">
+        <span class="wt-chip" data-i18n="inst.i1">Guitarra</span>
+        <span class="wt-chip" data-i18n="inst.i2">Bajo</span>
+        <span class="wt-chip" data-i18n="inst.i3">Ukelele</span>
+        <span class="wt-chip" data-i18n="inst.i4">Violín</span>
+        <span class="wt-chip" data-i18n="inst.i5">Viola</span>
+        <span class="wt-chip" data-i18n="inst.i6">Violonchelo</span>
+        <span class="wt-chip" data-i18n="inst.i7">Mandolina</span>
+      </div>
+    </section>
+
+    <!-- MODOS DE PRÁCTICA -->
+    <section class="wt-section wt-section--tint">
+      <p class="wt-label" data-i18n="modes.label">Práctica</p>
+      <h2 data-i18n="modes.heading">Practica con propósito.</h2>
+      <div class="wt-phases">
+        <article class="wt-phase"><h3>Hit</h3><p data-i18n="modes.m1b">Toca la nota objetivo y déjala afinada.</p></article>
+        <article class="wt-phase"><h3>Hold</h3><p data-i18n="modes.m2b">Mantén la nota estable el mayor tiempo posible.</p></article>
+        <article class="wt-phase"><h3>Streak</h3><p data-i18n="modes.m3b">Encadena notas correctas y estira tu racha.</p></article>
+        <article class="wt-phase"><h3>Challenge</h3><p data-i18n="modes.m4b">Desafíos y metas diarias para no soltar el instrumento.</p></article>
       </div>
     </section>
 
     <!-- FUNCIONES -->
-    <section class="wt-section wt-section--dark">
+    <section class="wt-section">
       <p class="wt-label" data-i18n="feat.label">Funciones</p>
       <h2 data-i18n="feat.heading">Lo que trae WatchTuner Pro.</h2>
       <ul class="wt-checks">
-        <li data-i18n="feat.b1">Afinador con nota, frecuencia y desviación en cents</li>
-        <li data-i18n="feat.b2">Ejercicios interactivos de práctica</li>
-        <li data-i18n="feat.b3">Recursos de aprendizaje para avanzar a tu ritmo</li>
-        <li data-i18n="feat.b4">Compositor para capturar ideas musicales</li>
-        <li data-i18n="feat.b5">Herramientas para distintos instrumentos</li>
-        <li data-i18n="feat.b6">Funciones para Apple Watch</li>
+        <li data-i18n="feat.b1">Afinador con nota, frecuencia y desviación en cents, en tiempo real</li>
+        <li data-i18n="feat.b2">Ejercicios interactivos: Hit, Hold, Streak y Challenge</li>
+        <li data-i18n="feat.b3">Progreso a la vista: tiempo, notas, precisión y rachas</li>
+        <li data-i18n="feat.b4">Recursos de aprendizaje para avanzar a tu ritmo</li>
+        <li data-i18n="feat.b5">Compositor para capturar ideas musicales</li>
+        <li data-i18n="feat.b6">Apple Watch y iPhone siempre en sincronía</li>
       </ul>
     </section>
 
     <!-- FAQ -->
-    <section class="wt-section">
+    <section class="wt-section wt-section--tint">
       <p class="wt-label" data-i18n="faq.label">Preguntas frecuentes</p>
       <h2 data-i18n="faq.heading">Lo esencial, en claro.</h2>
       <div class="wt-faq">
         <div class="wt-faq__item"><h3 data-i18n="faq.q1q">¿Qué necesito para usarla?</h3><p data-i18n="faq.q1a">Un iPhone con la app instalada. Si además tienes Apple Watch, puedes usar sus funciones desde la muñeca.</p></div>
-        <div class="wt-faq__item"><h3 data-i18n="faq.q2q">¿Para qué instrumentos sirve?</h3><p data-i18n="faq.q2a">Está pensada para distintos instrumentos: afinar, practicar y aprender en un solo lugar.</p></div>
+        <div class="wt-faq__item"><h3 data-i18n="faq.q2q">¿Para qué instrumentos sirve?</h3><p data-i18n="faq.q2a">Para guitarra, bajo, ukelele, violín, viola, violonchelo y mandolina — cambias de instrumento y de afinación en segundos.</p></div>
         <div class="wt-faq__item"><h3 data-i18n="faq.q3q">¿Sirve si estoy aprendiendo?</h3><p data-i18n="faq.q3a">Sí. Además del afinador, trae ejercicios interactivos y recursos de aprendizaje para avanzar a tu ritmo.</p></div>
       </div>
     </section>
@@ -153,12 +176,12 @@
       "meta.title": "WatchTuner Pro — Afinador y herramientas para músicos | Bastida Systems",
       "meta.description": "WatchTuner Pro: afina, practica, aprende y captura ideas musicales. Herramientas para distintos instrumentos, con soporte para Apple Watch.",
       "hero.kicker": "App de música · iPhone y Apple Watch",
-      "hero.heading": "Afina, practica y crea — desde tu muñeca.",
+      "hero.headingA": "Afina, practica y crea —",
+      "hero.headingB": "desde tu muñeca.",
       "hero.body": "WatchTuner Pro reúne afinación, ejercicios, aprendizaje y composición en una sola app para músicos, con herramientas para distintos instrumentos y soporte para Apple Watch.",
       "hero.ctaApp": "Descargar la app",
-      "hero.ctaHow": "Ver las herramientas",
-      "hero.imgAlt": "Afinador de WatchTuner Pro mostrando la nota A a 440 Hz",
-      "hero.note": "Ilustración de la interfaz del afinador.",
+      "hero.ctaHow": "Verla en acción",
+      "hero.imgAlt": "WatchTuner Pro en iPhone y Apple Watch",
       "what.label": "La app",
       "what.heading": "Todo tu práctica musical, en un solo lugar.",
       "what.c1t": "Afinador profesional",
@@ -167,27 +190,40 @@
       "what.c2b": "Practica con ejercicios dentro de la app y mantén tu rutina sin cambiar de herramienta.",
       "what.c3t": "Aprende y captura ideas",
       "what.c3b": "Recursos para aprender a tu ritmo y un compositor para guardar las ideas en cuanto aparecen.",
-      "tools.label": "Herramientas",
-      "tools.heading": "Pensada para músicos de verdad.",
-      "tools.f1t": "El afinador, siempre a la mano",
-      "tools.f1b": "Abres la app y afinas: la nota detectada, los hertz y los cents se leen de un vistazo, en el iPhone o en el Apple Watch.",
-      "tools.f2t": "También en Apple Watch",
-      "tools.f2b": "WatchTuner Pro incluye funciones para Apple Watch: afina y practica sin sacar el teléfono, directo desde tu muñeca.",
-      "tools.f2alt": "WatchTuner Pro en iPhone y Apple Watch",
+      "gal.label": "Galería",
+      "gal.heading": "Directo del App Store.",
+      "gal.cap2": "Cambia de instrumento desde tu muñeca",
+      "gal.cap3": "Practica. Mejora. Toca.",
+      "inst.label": "Instrumentos",
+      "inst.heading": "Siete instrumentos, una sola app.",
+      "inst.body": "Cambia de instrumento y de afinación en segundos — también desde el Apple Watch, sin sacar el iPhone. Tu Watch y tu iPhone se mantienen en sincronía.",
+      "inst.i1": "Guitarra",
+      "inst.i2": "Bajo",
+      "inst.i3": "Ukelele",
+      "inst.i4": "Violín",
+      "inst.i5": "Viola",
+      "inst.i6": "Violonchelo",
+      "inst.i7": "Mandolina",
+      "modes.label": "Práctica",
+      "modes.heading": "Practica con propósito.",
+      "modes.m1b": "Toca la nota objetivo y déjala afinada.",
+      "modes.m2b": "Mantén la nota estable el mayor tiempo posible.",
+      "modes.m3b": "Encadena notas correctas y estira tu racha.",
+      "modes.m4b": "Desafíos y metas diarias para no soltar el instrumento.",
       "feat.label": "Funciones",
       "feat.heading": "Lo que trae WatchTuner Pro.",
-      "feat.b1": "Afinador con nota, frecuencia y desviación en cents",
-      "feat.b2": "Ejercicios interactivos de práctica",
-      "feat.b3": "Recursos de aprendizaje para avanzar a tu ritmo",
-      "feat.b4": "Compositor para capturar ideas musicales",
-      "feat.b5": "Herramientas para distintos instrumentos",
-      "feat.b6": "Funciones para Apple Watch",
+      "feat.b1": "Afinador con nota, frecuencia y desviación en cents, en tiempo real",
+      "feat.b2": "Ejercicios interactivos: Hit, Hold, Streak y Challenge",
+      "feat.b3": "Progreso a la vista: tiempo, notas, precisión y rachas",
+      "feat.b4": "Recursos de aprendizaje para avanzar a tu ritmo",
+      "feat.b5": "Compositor para capturar ideas musicales",
+      "feat.b6": "Apple Watch y iPhone siempre en sincronía",
       "faq.label": "Preguntas frecuentes",
       "faq.heading": "Lo esencial, en claro.",
       "faq.q1q": "¿Qué necesito para usarla?",
       "faq.q1a": "Un iPhone con la app instalada. Si además tienes Apple Watch, puedes usar sus funciones desde la muñeca.",
       "faq.q2q": "¿Para qué instrumentos sirve?",
-      "faq.q2a": "Está pensada para distintos instrumentos: afinar, practicar y aprender en un solo lugar.",
+      "faq.q2a": "Para guitarra, bajo, ukelele, violín, viola, violonchelo y mandolina — cambias de instrumento y de afinación en segundos.",
       "faq.q3q": "¿Sirve si estoy aprendiendo?",
       "faq.q3a": "Sí. Además del afinador, trae ejercicios interactivos y recursos de aprendizaje para avanzar a tu ritmo.",
       "cta.heading": "Tu próxima sesión empieza afinado.",
@@ -222,12 +258,12 @@
       "meta.title": "WatchTuner Pro — Tuner and tools for musicians | Bastida Systems",
       "meta.description": "WatchTuner Pro: tune, practice, learn and capture musical ideas. Tools for multiple instruments, with Apple Watch support.",
       "hero.kicker": "Music app · iPhone and Apple Watch",
-      "hero.heading": "Tune, practice and create — from your wrist.",
+      "hero.headingA": "Tune, practice and create —",
+      "hero.headingB": "from your wrist.",
       "hero.body": "WatchTuner Pro brings tuning, exercises, learning and composition together in one app for musicians, with tools for multiple instruments and Apple Watch support.",
       "hero.ctaApp": "Download the app",
-      "hero.ctaHow": "See the tools",
-      "hero.imgAlt": "WatchTuner Pro tuner showing the note A at 440 Hz",
-      "hero.note": "Illustration of the tuner interface.",
+      "hero.ctaHow": "See it in action",
+      "hero.imgAlt": "WatchTuner Pro on iPhone and Apple Watch",
       "what.label": "The app",
       "what.heading": "Your whole music practice, in one place.",
       "what.c1t": "Professional tuner",
@@ -236,27 +272,40 @@
       "what.c2b": "Practice with exercises inside the app and keep your routine without switching tools.",
       "what.c3t": "Learn and capture ideas",
       "what.c3b": "Resources to learn at your pace and a composer to save ideas the moment they appear.",
-      "tools.label": "Tools",
-      "tools.heading": "Built for real musicians.",
-      "tools.f1t": "The tuner, always at hand",
-      "tools.f1b": "Open the app and tune: the detected note, hertz and cents read at a glance, on iPhone or Apple Watch.",
-      "tools.f2t": "On Apple Watch too",
-      "tools.f2b": "WatchTuner Pro includes Apple Watch features: tune and practice without taking out your phone, right from your wrist.",
-      "tools.f2alt": "WatchTuner Pro on iPhone and Apple Watch",
+      "gal.label": "Gallery",
+      "gal.heading": "Straight from the App Store.",
+      "gal.cap2": "Switch instruments from your wrist",
+      "gal.cap3": "Practice. Perfect. Perform.",
+      "inst.label": "Instruments",
+      "inst.heading": "Seven instruments, one app.",
+      "inst.body": "Switch instruments and tunings in seconds — from your Apple Watch too, without taking out your iPhone. Your Watch and iPhone stay in sync.",
+      "inst.i1": "Guitar",
+      "inst.i2": "Bass",
+      "inst.i3": "Ukulele",
+      "inst.i4": "Violin",
+      "inst.i5": "Viola",
+      "inst.i6": "Cello",
+      "inst.i7": "Mandolin",
+      "modes.label": "Practice",
+      "modes.heading": "Practice with purpose.",
+      "modes.m1b": "Play the target note and let it settle in tune.",
+      "modes.m2b": "Hold the note steady for as long as you can.",
+      "modes.m3b": "Chain correct notes and stretch your streak.",
+      "modes.m4b": "Challenges and daily goals to keep you playing.",
       "feat.label": "Features",
       "feat.heading": "What WatchTuner Pro includes.",
-      "feat.b1": "Tuner with note, frequency and deviation in cents",
-      "feat.b2": "Interactive practice exercises",
-      "feat.b3": "Learning resources to progress at your pace",
-      "feat.b4": "Composer to capture musical ideas",
-      "feat.b5": "Tools for multiple instruments",
-      "feat.b6": "Apple Watch features",
+      "feat.b1": "Tuner with note, frequency and deviation in cents, in real time",
+      "feat.b2": "Interactive exercises: Hit, Hold, Streak and Challenge",
+      "feat.b3": "Progress in sight: time, notes, accuracy and streaks",
+      "feat.b4": "Learning resources to progress at your pace",
+      "feat.b5": "Composer to capture musical ideas",
+      "feat.b6": "Apple Watch and iPhone always in sync",
       "faq.label": "FAQ",
       "faq.heading": "The essentials, plainly.",
       "faq.q1q": "What do I need to use it?",
       "faq.q1a": "An iPhone with the app installed. If you also have an Apple Watch, you can use its features from your wrist.",
       "faq.q2q": "Which instruments is it for?",
-      "faq.q2a": "It is built for multiple instruments: tune, practice and learn in one place.",
+      "faq.q2a": "Guitar, bass, ukulele, violin, viola, cello and mandolin — switch instruments and tunings in seconds.",
       "faq.q3q": "Does it work if I am learning?",
       "faq.q3a": "Yes. Beyond the tuner, it includes interactive exercises and learning resources to progress at your pace.",
       "cta.heading": "Your next session starts in tune.",
