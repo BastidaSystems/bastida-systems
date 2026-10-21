@@ -1,0 +1,129 @@
+/* Sistema de Adquisiciones — página de producto */
+body.tv-page { margin: 0; font-family: 'Montserrat', system-ui, -apple-system, 'Segoe UI', sans-serif; background: #f6f8fb; color: #14384f; }
+#site-header { margin-bottom: 0; }
+.tv-page img { display: block; max-width: 100%; height: auto; }
+.tv-page h1, .tv-page h2, .tv-page h3 { line-height: 1.15; margin: 0; }
+.tv-page h2 { font-size: clamp(1.7rem, 3.4vw, 2.5rem); font-weight: 800; color: #0d2b45; max-width: 22em; }
+.tv-page h3 { font-size: 1.25rem; font-weight: 700; color: #0d2b45; }
+.tv-page p { line-height: 1.6; }
+
+.btn { display: inline-block; padding: 0.85rem 1.6rem; border-radius: 999px; font-weight: 700; text-decoration: none; font-size: 1rem; transition: transform .15s ease, box-shadow .15s ease; }
+.btn:hover { transform: translateY(-2px); }
+.btn--light { background: #ffffff; color: #0d2b45; box-shadow: 0 10px 24px rgba(3, 20, 38, .28); }
+.btn--ghost-light { border: 2px solid rgba(255,255,255,.75); color: #ffffff; }
+
+.tv-kicker { text-transform: uppercase; letter-spacing: .22em; font-weight: 800; font-size: .85rem; color: #7fb2e8; margin: 0 0 1rem; }
+.tv-label { text-transform: uppercase; letter-spacing: .2em; font-weight: 800; font-size: .8rem; color: #1f5fd0; margin: 0 0 .8rem; }
+.tv-note { color: #5c7488; font-size: .95rem; max-width: 60em; }
+.tv-note--hero { color: rgba(255,255,255,.65); text-align: center; margin: 1.2rem auto 0; padding: 0 1.5rem; }
+
+/* HERO */
+.tv-hero { background: linear-gradient(150deg, #081f38 0%, #0d2b45 46%, #14509c 100%); color: #fff; padding: 5.2rem 1.5rem 3.4rem; overflow: hidden; }
+.tv-hero__inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1.15fr; gap: 3rem; align-items: center; }
+.tv-hero h1 { font-size: clamp(2rem, 4.2vw, 3.2rem); font-weight: 800; }
+.tv-hero__body { color: #c9dcee; font-size: 1.08rem; margin: 1.2rem 0 1.8rem; }
+.tv-hero__cta { display: flex; gap: .9rem; flex-wrap: wrap; }
+
+/* Marco tipo navegador */
+.tv-frame { margin: 0; background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 24px 50px rgba(3, 20, 38, .35); }
+.tv-frame__bar { display: flex; gap: 6px; padding: 9px 12px; background: #e8eef5; }
+.tv-frame__bar i { width: 11px; height: 11px; border-radius: 50%; background: #b8c7d6; }
+.tv-frame__bar i:first-child { background: #e0655f; } .tv-frame__bar i:nth-child(2) { background: #e8b34b; } .tv-frame__bar i:nth-child(3) { background: #57b06a; }
+
+/* SECCIONES */
+.tv-section { max-width: 1200px; margin: 0 auto; padding: 4.5rem 1.5rem; }
+.tv-section--tint { background: #eaf0f7; max-width: none; }
+.tv-section--tint > * { max-width: 1200px; margin-left: auto; margin-right: auto; }
+.tv-section--dark { background: #0d2b45; max-width: none; color: #dbe7f3; }
+.tv-section--dark > * { max-width: 1200px; margin-left: auto; margin-right: auto; }
+.tv-section--dark h2, .tv-section--dark h3 { color: #fff; }
+.tv-section--dark .tv-label { color: #7fb2e8; }
+
+/* FASES */
+.tv-phases { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.1rem; margin-top: 2.2rem; }
+.tv-phase { background: #fff; border: 1px solid #dbe5ef; border-top: 5px solid #1f5fd0; border-radius: 12px; padding: 1.4rem 1.3rem; }
+.tv-phase h3 { margin-bottom: .6rem; }
+.tv-phase p { margin: 0; color: #43586c; }
+
+/* PROBLEMA */
+.tv-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.1rem; margin-top: 2.2rem; }
+.tv-card { background: #fff; border: 1px solid #dbe5ef; border-radius: 12px; padding: 1.5rem 1.4rem; }
+.tv-card h3 { margin-bottom: .6rem; }
+.tv-card p { margin: 0; color: #43586c; }
+
+/* FUNCIONES */
+.tv-feature { display: grid; grid-template-columns: 1fr 1.35fr; gap: 2.6rem; align-items: center; margin-top: 3.2rem; }
+.tv-feature--flip .tv-feature__text { order: 2; }
+.tv-feature__text p { color: #43586c; margin-top: .8rem; }
+.tv-feature .tv-frame { box-shadow: 0 18px 40px rgba(13, 43, 69, .18); }
+
+/* SEGUIMIENTO */
+.tv-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 1.6rem; margin-top: 2.4rem; }
+.tv-duo__item h3 { margin: 1.2rem 0 .5rem; }
+.tv-duo__item p { margin: 0; color: #b9cddd; }
+.tv-duo .tv-frame { box-shadow: 0 18px 40px rgba(0, 0, 0, .35); }
+
+/* DOCUMENTOS */
+.tv-chips { list-style: none; display: flex; flex-wrap: wrap; gap: .7rem; padding: 0; margin: 2rem 0 1.4rem; }
+.tv-chips li { background: #0d2b45; color: #fff; font-weight: 600; padding: .6rem 1.1rem; border-radius: 999px; font-size: .95rem; }
+.tv-wide { font-size: 1.1rem; color: #43586c; max-width: 62em; margin-top: 1.2rem; }
+
+/* CTA */
+.tv-cta { background: linear-gradient(150deg, #0d2b45, #14509c); color: #fff; text-align: center; padding: 4.5rem 1.5rem 5rem; }
+.tv-cta h2 { color: #fff; margin: 0 auto; }
+.tv-cta p { color: #c9dcee; margin: 1rem auto 2rem; max-width: 46em; }
+.tv-cta .tv-hero__cta { justify-content: center; }
+
+/* Reveal */
+.reveal { opacity: 0; transform: translateY(22px); transition: opacity .6s ease, transform .6s ease; }
+.reveal.is-visible { opacity: 1; transform: none; }
+
+@media (max-width: 980px) {
+  .tv-hero__inner { grid-template-columns: 1fr; }
+  .tv-phases { grid-template-columns: repeat(2, 1fr); }
+  .tv-cards { grid-template-columns: 1fr; }
+  .tv-feature, .tv-duo { grid-template-columns: 1fr; }
+  .tv-feature--flip .tv-feature__text { order: 0; }
+}
+@media (max-width: 560px) {
+  .tv-phases { grid-template-columns: 1fr; }
+  .tv-hero { padding-top: 3.6rem; }
+}
+
+.tv-price{font-size:2rem;font-weight:800;color:var(--tv-navy);margin:.2rem 0 .5rem}
+.tv-price span{font-size:1rem;font-weight:600;color:var(--tv-muted)}
+
+.tv-phones{display:flex;gap:1.2rem;justify-content:center;align-items:flex-start}
+.tv-phones img{height:430px;width:auto;border-radius:26px;box-shadow:0 18px 40px rgba(6,42,66,.25);border:1px solid rgba(6,42,66,.12)}
+.tv-checks{list-style:none;margin:1.4rem 0 0;padding:0;display:grid;gap:.6rem;max-width:640px}
+.tv-checks li{position:relative;padding-left:1.9rem;line-height:1.55}
+.tv-checks li::before{content:"✓";position:absolute;left:0;top:0;font-weight:800;color:var(--tv-accent)}
+.tv-section--dark .tv-checks li::before{color:#7cc4ff}
+.tv-faq{max-width:840px;display:grid;gap:1.1rem}
+.tv-faq__item{background:#fff;border:1px solid rgba(10,42,66,.09);border-radius:16px;padding:1.2rem 1.3rem;box-shadow:0 8px 22px rgba(10,42,66,.05)}
+.tv-faq__item h3{margin:0 0 .4rem}
+.tv-faq__item p{margin:0;color:var(--tv-muted);line-height:1.6}
+@media (max-width:640px){.tv-phones img{height:340px}}
+
+/* Destinos con foto */
+.tv-dest { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.1rem; }
+.tv-dest figure { margin: 0; }
+.tv-dest .tv-poster { aspect-ratio: 3/4; }
+.tv-dest .tv-poster img { height: 100%; object-fit: cover; }
+.tv-logo { height: 46px; width: auto; margin: 0 auto 1.1rem; }
+.tv-credits { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem 1.6rem; color: rgba(255,255,255,.55); font-size: .78rem; background: #0c2420; max-width: none; text-align: center; }
+@media (max-width: 900px) { .tv-dest { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 520px) { .tv-dest { grid-template-columns: 1fr; } }
+
+/* Iconos SVG y precios visibles */
+.tv-ic { display: inline-flex; align-items: center; justify-content: center; width: 46px; height: 46px; border-radius: 50%; background: #fdf3e0; color: #b45309; margin-bottom: .8rem; }
+.tv-ic svg { width: 24px; height: 24px; }
+.tv-dest .tv-poster { position: relative; }
+.tv-price { position: absolute; top: .7rem; right: .7rem; background: #e8a33d; color: #231600; font-weight: 800; font-size: .85rem; padding: .32rem .7rem; border-radius: 999px; box-shadow: 0 8px 18px rgba(0,0,0,.35); }
+
+/* Banner, gradiente y captions (patrón del sitio) */
+.tv-grad { background: var(--tv-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.tv-hero__banner { max-width: 1060px; margin: 3rem auto 0; border-radius: 24px; overflow: hidden; box-shadow: 0 30px 60px rgba(20,16,29,.30); border: 1px solid rgba(20,16,29,.08); }
+.tv-cap { color: #b9b3cc; font-size: .98rem; margin-top: .8rem; text-align: center; }
+.tv-hero__banner { max-width: 900px; }
+.tv-hero__banner img { width: 100%; display: block; }
