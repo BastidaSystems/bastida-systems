@@ -122,6 +122,12 @@
     const target = document.getElementById('site-header');
     if (!target) return;
     target.innerHTML = markup;
+    if (document.body.classList.contains('home-redesign-page')) {
+      const name = document.createElement('span');
+      name.className = 'bs-brand-name';
+      name.textContent = 'Bastida Systems';
+      target.querySelector('.bs-brand').appendChild(name);
+    }
     bind(target);
     document.dispatchEvent(new CustomEvent('site-header-loaded', { detail: { target } }));
   };

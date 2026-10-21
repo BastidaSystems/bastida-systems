@@ -1,27 +1,13 @@
-.home-hero-brand {
-  display: flex;
-  align-items: center;
-  gap: clamp(16px, 2vw, 28px);
+.home-hero-intro-space {
+  height: max(clamp(80px, 9vw, 120px), calc(clamp(48px, 7.2vw, 108px) * 1.68));
 }
-
-.home-hero-brand__logo {
-  flex: 0 0 auto;
-  width: clamp(80px, 9vw, 120px);
-  height: auto;
-}
-
-.home-redesign-page .home-hero-brand .home-redesign-hero__title {
-  min-width: 0;
-  font-size: clamp(48px, 7.2vw, 108px);
-}
-
-.home-hero-brand + .home-hero-kicker { margin-top: 72px; }
-
+.home-hero-intro-space + .home-hero-kicker { margin-top: 72px; }
+.home-redesign-page #site-header .bs-brand-name { white-space: nowrap; }
 @media (max-width: 600px) {
-  .home-hero-brand { gap: 14px; }
-  .home-hero-brand__logo { width: 64px; }
-  .home-redesign-page .home-hero-brand .home-redesign-hero__title { font-size: clamp(30px, 10vw, 52px); }
-  .home-hero-brand + .home-hero-kicker { margin-top: 56px; }
+  .home-hero-intro-space { height: max(64px, calc(clamp(30px, 10vw, 52px) * 1.68)); }
+  .home-hero-intro-space + .home-hero-kicker { margin-top: 56px; }
+  .home-redesign-page #site-header .bs-brand { gap: 6px; min-width: 0; }
+  .home-redesign-page #site-header .bs-brand-name { max-width: 66px; white-space: normal; font-size: 11px; line-height: 1.2; }
 }
 
 .home-updates {
