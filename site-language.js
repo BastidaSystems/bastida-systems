@@ -2,6 +2,20 @@ const siteLanguageStorageKey = 'site-language';
 
 const sharedSiteTranslations = {
   en: {
+    'home.updates.heading': 'Updates',
+    'home.updates.carousel': 'carousel',
+    'home.updates.game.category': 'GAMES',
+    'home.updates.game.description': 'The apocalypse awaits. Step into Monster Apocalypse, a game by Bastida Systems.',
+    'home.updates.filtracore.category': 'CONNECTED TECHNOLOGY',
+    'home.updates.filtracore.description': 'Connected hardware and software to monitor pressure and understand what happens in water systems.',
+    'home.updates.explore': 'Explore the project',
+    'home.updates.printing.category': '3D PRINTING',
+    'home.updates.printing.title': 'From idea to physical.',
+    'home.updates.printing.description': 'Prototypes, enclosures and custom parts produced by Bastida Systems. Discover what we can create.',
+    'home.updates.store': 'Explore the store',
+    'home.updates.controls': 'Explore our projects',
+    'home.updates.previous': 'Previous update',
+    'home.updates.next': 'Next update',
     'home.monster.close': 'Close',
     'home.monster.description': 'The apocalypse awaits. Discover Monster Apocalypse, a game by Bastida Systems.',
     'home.monster.play': 'Play now',
@@ -307,6 +321,20 @@ const sharedSiteTranslations = {
     'home.readAloud.stop': 'Stop reading'
   },
   es: {
+    'home.updates.heading': 'Novedades',
+    'home.updates.carousel': 'carrusel',
+    'home.updates.game.category': 'VIDEOJUEGOS',
+    'home.updates.game.description': 'El apocalipsis te espera. Entra al mundo de Monster Apocalypse, un juego de Bastida Systems.',
+    'home.updates.filtracore.category': 'TECNOLOGÍA CONECTADA',
+    'home.updates.filtracore.description': 'Hardware y software conectados para monitorear la presión y comprender lo que ocurre en los sistemas de agua.',
+    'home.updates.explore': 'Conocer el proyecto',
+    'home.updates.printing.category': 'IMPRESIÓN 3D',
+    'home.updates.printing.title': 'De la idea a lo físico.',
+    'home.updates.printing.description': 'Prototipos, carcasas y piezas personalizadas producidas por Bastida Systems. Descubre lo que podemos crear.',
+    'home.updates.store': 'Explorar la tienda',
+    'home.updates.controls': 'Explora nuestros proyectos',
+    'home.updates.previous': 'Novedad anterior',
+    'home.updates.next': 'Siguiente novedad',
     'home.monster.close': 'Cerrar',
     'home.monster.description': 'El apocalipsis te espera. Descubre Monster Apocalypse, un juego de Bastida Systems.',
     'home.monster.play': 'Jugar ahora',
@@ -654,6 +682,10 @@ const applySiteLanguage = language => {
 
   document.querySelectorAll('[data-i18n-aria-label]').forEach(element => {
     element.setAttribute('aria-label', siteTranslate(element.dataset.i18nAriaLabel));
+  });
+
+  document.querySelectorAll('[data-i18n-aria-roledescription]').forEach(element => {
+    element.setAttribute('aria-roledescription', siteTranslate(element.dataset.i18nAriaRoledescription));
   });
 
   document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {

@@ -25,6 +25,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="agency.css?v=2026-09-23-read-aloud">
   <link rel="stylesheet" href="monster-promo.css?v=2026-10-20-cover">
+  <link rel="stylesheet" href="home-updates.css?v=2026-10-20">
   <!-- Social preview -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Bastida Systems">
@@ -73,7 +74,7 @@
 <body class="agency-page home-redesign-page">
   <div id="site-header"></div>
   <script src="site-header.js?v=2026-08-26-home-nav" defer></script>
-  <script src="site-language.js?v=2026-10-20-monster-promo" defer></script>
+  <script src="site-language.js?v=2026-10-20-updates" defer></script>
 
   <dialog class="monster-promo" id="monster-promo" aria-labelledby="monster-promo-title" aria-describedby="monster-promo-description">
     <div class="monster-promo__content">
@@ -117,20 +118,47 @@
           </div>
         </div>
 
-        <div class="home-hero-system-map reveal" aria-label="Software, hardware, prototype and product workflow" data-i18n-aria-label="home.hero.diagramLabel">
-          <div class="map-node map-node--software">
-            <span data-i18n="home.hero.diagram.software">Software</span>
+        <div class="home-updates reveal" role="region" aria-roledescription="carousel" aria-labelledby="home-updates-title" data-i18n-aria-roledescription="home.updates.carousel" data-home-updates tabindex="0">
+          <div class="home-updates__heading">
+            <h2 id="home-updates-title" data-i18n="home.updates.heading">Novedades</h2>
+            <span class="home-updates__count" data-updates-count aria-live="polite" aria-atomic="true">01 / 03</span>
           </div>
-          <div class="map-node map-node--hardware">
-            <span data-i18n="home.hero.diagram.hardware">Hardware</span>
+          <div class="home-updates__slides">
+            <article class="home-update" data-update-slide>
+              <img src="IMG/monster-apocalypse-cover.webp" width="1672" height="941" alt="" decoding="async">
+              <div class="home-update__copy">
+                <p class="home-update__category" data-i18n="home.updates.game.category">VIDEOJUEGOS</p>
+                <h3>Monster Apocalypse</h3>
+                <p data-i18n="home.updates.game.description">El apocalipsis te espera. Entra al mundo de Monster Apocalypse, un juego de Bastida Systems.</p>
+                <a href="https://monster-apocalypse-bastida-systems.vercel.app/" data-i18n="home.monster.play">Jugar ahora</a>
+              </div>
+            </article>
+            <article class="home-update" data-update-slide hidden>
+              <img src="IMG/home-real/filtracore-prototype.jpg" width="1600" height="900" alt="" decoding="async">
+              <div class="home-update__copy">
+                <p class="home-update__category" data-i18n="home.updates.filtracore.category">TECNOLOGÍA CONECTADA</p>
+                <h3>FiltraCore</h3>
+                <p data-i18n="home.updates.filtracore.description">Hardware y software conectados para monitorear la presión y comprender lo que ocurre en los sistemas de agua.</p>
+                <a href="filtracore.html" data-i18n="home.updates.explore">Conocer el proyecto</a>
+              </div>
+            </article>
+            <article class="home-update" data-update-slide hidden>
+              <img src="IMG/3d-printing/printing-reveal-loop-poster.jpg" width="1600" height="900" alt="" decoding="async">
+              <div class="home-update__copy">
+                <p class="home-update__category" data-i18n="home.updates.printing.category">IMPRESIÓN 3D</p>
+                <h3 data-i18n="home.updates.printing.title">De la idea a lo físico.</h3>
+                <p data-i18n="home.updates.printing.description">Prototipos, carcasas y piezas personalizadas producidas por Bastida Systems. Descubre lo que podemos crear.</p>
+                <a href="store.html" data-i18n="home.updates.store">Explorar la tienda</a>
+              </div>
+            </article>
           </div>
-          <div class="map-node map-node--product">
-            <span data-i18n="home.hero.diagram.product">Product</span>
+          <div class="home-updates__controls" data-updates-controls hidden>
+            <p data-i18n="home.updates.controls">Explora nuestros proyectos</p>
+            <div>
+              <button type="button" data-updates-prev aria-label="Novedad anterior" data-i18n-aria-label="home.updates.previous"><span aria-hidden="true">←</span></button>
+              <button type="button" data-updates-next aria-label="Siguiente novedad" data-i18n-aria-label="home.updates.next"><span aria-hidden="true">→</span></button>
+            </div>
           </div>
-          <div class="map-node map-node--prototype">
-            <span data-i18n="home.hero.diagram.prototype">Prototype</span>
-          </div>
-          <div class="map-core" aria-hidden="true"></div>
         </div>
       </div>
     </section>
@@ -147,6 +175,7 @@
     </div>
   </footer>
 
+  <script src="home-updates.js?v=2026-10-20" defer></script>
   <script src="agency.js?v=2026-08-26-3d-video-home" defer></script>
   <script src="read-aloud.js?v=2026-09-23-read-aloud" defer></script>
   <script src="whatsapp-float.js?v=2026-09-23-wa" defer></script>
