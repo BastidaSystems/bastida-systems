@@ -24,6 +24,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="agency.css?v=2026-09-23-read-aloud">
+  <link rel="stylesheet" href="monster-promo.css?v=2026-10-20">
   <!-- Social preview -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Bastida Systems">
@@ -72,7 +73,21 @@
 <body class="agency-page home-redesign-page">
   <div id="site-header"></div>
   <script src="site-header.js?v=2026-08-26-home-nav" defer></script>
-  <script src="site-language.js?v=2026-09-23-store-home" defer></script>
+  <script src="site-language.js?v=2026-10-20-monster-promo" defer></script>
+
+  <dialog class="monster-promo" id="monster-promo" aria-labelledby="monster-promo-title" aria-describedby="monster-promo-description">
+    <div class="monster-promo__content">
+      <button class="monster-promo__close" type="button" data-monster-promo-close autofocus>
+        <span aria-hidden="true">×</span>
+        <span data-i18n="home.monster.close">Cerrar</span>
+      </button>
+      <p class="monster-promo__eyebrow">BASTIDA SYSTEMS · GAMES</p>
+      <h2 id="monster-promo-title">Monster<br>Apocalypse</h2>
+      <p class="monster-promo__description" id="monster-promo-description" data-i18n="home.monster.description">El apocalipsis te espera. Descubre Monster Apocalypse, un juego de Bastida Systems.</p>
+      <a class="monster-promo__play" href="https://monster-apocalypse-bastida-systems.vercel.app/" data-i18n="home.monster.play">Jugar ahora</a>
+    </div>
+  </dialog>
+  <script src="monster-promo.js?v=2026-10-20" defer></script>
 
   <main class="page-main">
     <section class="home-redesign-hero" id="home" aria-labelledby="home-hero-title">

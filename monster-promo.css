@@ -1,0 +1,110 @@
+html.monster-promo-open,
+html.monster-promo-open body {
+  overflow: hidden;
+}
+
+.monster-promo {
+  width: min(520px, calc(100% - 32px));
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 0;
+  overflow-y: auto;
+  border: 1px solid #e5e5e7;
+  border-radius: 28px;
+  background: #fbfbfd;
+  color: #1d1d1f;
+  box-shadow: 0 32px 100px #0004;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  text-align: center;
+}
+
+.monster-promo::backdrop {
+  background: #11182770;
+  backdrop-filter: blur(8px);
+}
+
+.monster-promo:not([open]) {
+  display: none;
+}
+
+.monster-promo__content {
+  padding: 24px 40px 48px;
+}
+
+.monster-promo__close {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  margin: 0 0 32px auto;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 22px;
+  background: #e8e8ed;
+  color: #343438;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.monster-promo__close > span:first-child {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.monster-promo__eyebrow {
+  margin: 0 0 18px;
+  color: #626268;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+}
+
+.monster-promo h2 {
+  margin: 0;
+  font-size: clamp(32px, 8vw, 52px);
+  font-weight: 650;
+  line-height: 1.06;
+  letter-spacing: -0.045em;
+}
+
+.monster-promo__description {
+  margin: 24px auto 30px;
+  max-width: 340px;
+  color: #626268;
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+body.agency-page .monster-promo__play {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 48px;
+  padding: 12px 30px;
+  border-radius: 28px;
+  background: #0066cc;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+body.agency-page .monster-promo__play:hover {
+  background: #0059b3;
+}
+
+body.agency-page .monster-promo :focus-visible {
+  outline: 3px solid #0066cc;
+  outline-offset: 4px;
+}
+
+@media (max-width: 480px) {
+  .monster-promo__content {
+    padding: 16px 24px 32px;
+  }
+
+  .monster-promo__play {
+    width: 100%;
+  }
+}

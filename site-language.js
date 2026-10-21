@@ -2,6 +2,9 @@ const siteLanguageStorageKey = 'site-language';
 
 const sharedSiteTranslations = {
   en: {
+    'home.monster.close': 'Close',
+    'home.monster.description': 'The apocalypse awaits. Discover Monster Apocalypse, a game by Bastida Systems.',
+    'home.monster.play': 'Play now',
     'nav.home': 'Home',
     'nav.store': 'Store',
     'nav.products': 'Products',
@@ -304,6 +307,9 @@ const sharedSiteTranslations = {
     'home.readAloud.stop': 'Stop reading'
   },
   es: {
+    'home.monster.close': 'Cerrar',
+    'home.monster.description': 'El apocalipsis te espera. Descubre Monster Apocalypse, un juego de Bastida Systems.',
+    'home.monster.play': 'Jugar ahora',
     'nav.home': 'Inicio',
     'nav.store': 'Tienda',
     'nav.products': 'Productos',
