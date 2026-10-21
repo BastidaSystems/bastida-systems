@@ -1,0 +1,21 @@
+/* White navigation bar on the dark homepage. */
+body.home-redesign-page.agency-page #site-header {
+  background: #fff;
+  border-bottom: 1px solid #e5e7e6;
+}
+body.home-redesign-page.agency-page #site-header .bs-header { color: #1d1d1f; }
+body.home-redesign-page.agency-page #site-header .bs-brand,
+body.home-redesign-page.agency-page #site-header .bs-brand-name { color: #1d1d1f; }
+body.home-redesign-page.agency-page #site-header .bs-nav { color: #515954; background: #fff; border-color: #e5e7e6; }
+body.home-redesign-page.agency-page #site-header .bs-nav a { border-color: #e5e7e6; }
+body.home-redesign-page.agency-page #site-header .bs-nav a:hover,
+body.home-redesign-page.agency-page #site-header .bs-nav a[aria-current="page"] { color: #1d1d1f; }
+body.home-redesign-page.agency-page #site-header .bs-nav .bs-nav-cta { color: #1d1d1f !important; }
+body.home-redesign-page.agency-page #site-header .bs-nav .bs-nav-cta:hover { color: #006c43 !important; }
+body.home-redesign-page.agency-page #site-header .language-picker { color: #5d6660; }
+body.home-redesign-page.agency-page #site-header .language-picker select { color: #1d1d1f; border-color: #cbd2ce; background: #fff; }
+body.home-redesign-page.agency-page #site-header .bs-menu-button { color: #1d1d1f; border-color: #cbd2ce; background: #fff; }
+
+body.home-redesign-page.agency-page #site-header a:focus-visible,
+body.home-redesign-page.agency-page #site-header button:focus-visible,
+body.home-redesign-page.agency-page #site-header select:focus-visible { outline: 3px solid #006c43; outline-offset: 4px; }
