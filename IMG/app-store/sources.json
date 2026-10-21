@@ -1,0 +1,46 @@
+{
+  "retrievedOn": "2026-10-20",
+  "source": "Apple iTunes Lookup API, US storefront",
+  "products": [
+    {
+      "product": "LineOps ShiftRotation",
+      "version": "1.5",
+      "appStoreURL": "https://apps.apple.com/us/app/lineops-shiftrotation/id6767958380",
+      "icon": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/36/99/2d/36992de5-1956-fce1-445d-4ad7d7b6eb60/AppIcon-0-0-1x_U007epad-0-1-85-220.png/512x512bb.jpg",
+      "screenshots": [
+        "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/03/ad/fe/03adfeca-3724-772f-1125-fdf393dca2ff/shot-01-final.png/320x480bb.jpg",
+        "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/c0/85/50/c0855049-ddc6-33f6-bd10-03b40fb98984/shot-05.png/320x480bb.jpg"
+      ]
+    },
+    {
+      "product": "FiltraCore",
+      "version": "1.2.1",
+      "appStoreURL": "https://apps.apple.com/us/app/filtracore/id6767891950",
+      "icon": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/0f/c3/ef/0fc3efb0-3d20-2c4a-6122-aa37f162c759/AppIcon-0-0-1x_U007epad-0-1-85-220.png/512x512bb.jpg",
+      "screenshots": [
+        "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/c7/20/5e/c7205ee9-f530-3765-09fc-5e36b87082dc/appstore_iphone65_01_dashboard.png/320x480bb.jpg",
+        "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/15/ab/db/15abdbe5-a439-0430-4672-7f9af78fbfe7/appstore_iphone65_05_add_machine.png/320x480bb.jpg"
+      ]
+    },
+    {
+      "product": "WatchTuner Pro",
+      "version": "1.0",
+      "appStoreURL": "https://apps.apple.com/us/app/watchtuner-pro/id6801949693",
+      "icon": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/d2/20/c1/d220c188-5e5f-50d4-e3d8-109cf9befabf/AppIcon-0-0-1x_U007ephone-0-1-85-220.png/512x512bb.jpg",
+      "screenshots": [
+        "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/5a/4a/18/5a4a181c-114c-fda8-e19c-5096876f0544/1.png/320x480bb.jpg",
+        "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/ad/64/35/ad643506-0b15-0df4-c3fb-4d26cedb154c/2.png/320x480bb.jpg"
+      ]
+    },
+    {
+      "product": "StudioGamePlan (SGP)",
+      "version": "1.1",
+      "appStoreURL": "https://apps.apple.com/us/app/studiogameplan-sgp/id6773214058",
+      "icon": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/aa/da/c7/aadac78f-4b43-2f8b-899e-208dcf2f4824/AppIcon-0-0-1x_U007epad-0-1-P3-85-220.png/512x512bb.jpg",
+      "screenshots": [
+        "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/71/2a/61/712a6175-730b-bec3-4ca1-71f68cc1feae/iphone_03_gdd.png/320x480bb.jpg",
+        "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/48/08/b1/4808b134-8d76-18da-5f6c-b39da47554ef/iphone_04_guia.png/320x480bb.jpg"
+      ]
+    }
+  ]
+}

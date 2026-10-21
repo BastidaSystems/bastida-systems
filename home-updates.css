@@ -72,6 +72,41 @@ body.agency-page .home-update a.home-update__primary {
   text-decoration: none;
 }
 body.agency-page .home-update a.home-update__primary:hover { background: #47eca8; }
+.home-update button.home-update__primary {
+  min-height: 46px;
+  margin-bottom: 18px;
+  padding: 12px 24px;
+  border: 1px solid #ffffff40;
+  border-radius: 24px;
+  background: #ffffff0d;
+  color: #bac2be;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: default;
+}
+.home-update__app-media {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  aspect-ratio: 16 / 9;
+  padding: 16px;
+  overflow: hidden;
+  background: #eef1f8;
+}
+.home-update__app-media img {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  aspect-ratio: auto;
+  object-fit: contain;
+}
+.home-update__app-media .home-update__app-icon { height: auto; border-radius: 14px; }
+.home-update__app-media--upcoming { display: flex; justify-content: center; background: radial-gradient(circle at 50% 50%, #34414e, #141d27); }
+.home-update__app-media--upcoming .home-update__app-icon { width: 120px; height: 120px; border-radius: 26px; }
+.home-update[data-product="acquisitions"] > img { object-fit: contain; background: #f5f6f9; }
+@media (max-width: 480px) { .home-update__app-media { grid-template-columns: 48px minmax(0, 1fr) minmax(0, 1fr); gap: 8px; padding: 12px; } }
 .home-update__actions a { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; }
 .home-update__info { min-height: 44px; padding: 10px 14px; border: 1px solid #ffffff40; border-radius: 24px; background: #ffffff0d; color: #fff; font: inherit; font-size: 14px; cursor: pointer; }
 .home-update__info:hover { background: #ffffff22; }
