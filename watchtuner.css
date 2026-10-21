@@ -1,0 +1,106 @@
+/* Sistema de Adquisiciones — página de producto */
+body.wt-page { margin: 0; font-family: 'Montserrat', system-ui, -apple-system, 'Segoe UI', sans-serif; background: #f6f8fb; color: #14384f; }
+#site-header { margin-bottom: 0; }
+.wt-page img { display: block; max-width: 100%; height: auto; }
+.wt-page h1, .wt-page h2, .wt-page h3 { line-height: 1.15; margin: 0; }
+.wt-page h2 { font-size: clamp(1.7rem, 3.4vw, 2.5rem); font-weight: 800; color: #0d2b45; max-width: 22em; }
+.wt-page h3 { font-size: 1.25rem; font-weight: 700; color: #0d2b45; }
+.wt-page p { line-height: 1.6; }
+
+.btn { display: inline-block; padding: 0.85rem 1.6rem; border-radius: 999px; font-weight: 700; text-decoration: none; font-size: 1rem; transition: transform .15s ease, box-shadow .15s ease; }
+.btn:hover { transform: translateY(-2px); }
+.btn--light { background: #ffffff; color: #0d2b45; box-shadow: 0 10px 24px rgba(3, 20, 38, .28); }
+.btn--ghost-light { border: 2px solid rgba(255,255,255,.75); color: #ffffff; }
+
+.wt-kicker { text-transform: uppercase; letter-spacing: .22em; font-weight: 800; font-size: .85rem; color: #7fb2e8; margin: 0 0 1rem; }
+.wt-label { text-transform: uppercase; letter-spacing: .2em; font-weight: 800; font-size: .8rem; color: #1f5fd0; margin: 0 0 .8rem; }
+.wt-note { color: #5c7488; font-size: .95rem; max-width: 60em; }
+.wt-note--hero { color: rgba(255,255,255,.65); text-align: center; margin: 1.2rem auto 0; padding: 0 1.5rem; }
+
+/* HERO */
+.wt-hero { background: linear-gradient(150deg, #081f38 0%, #0d2b45 46%, #14509c 100%); color: #fff; padding: 5.2rem 1.5rem 3.4rem; overflow: hidden; }
+.wt-hero__inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1.15fr; gap: 3rem; align-items: center; }
+.wt-hero h1 { font-size: clamp(2rem, 4.2vw, 3.2rem); font-weight: 800; }
+.wt-hero__body { color: #c9dcee; font-size: 1.08rem; margin: 1.2rem 0 1.8rem; }
+.wt-hero__cta { display: flex; gap: .9rem; flex-wrap: wrap; }
+
+/* Marco tipo navegador */
+.wt-frame { margin: 0; background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 24px 50px rgba(3, 20, 38, .35); }
+.wt-frame__bar { display: flex; gap: 6px; padding: 9px 12px; background: #e8eef5; }
+.wt-frame__bar i { width: 11px; height: 11px; border-radius: 50%; background: #b8c7d6; }
+.wt-frame__bar i:first-child { background: #e0655f; } .wt-frame__bar i:nth-child(2) { background: #e8b34b; } .wt-frame__bar i:nth-child(3) { background: #57b06a; }
+
+/* SECCIONES */
+.wt-section { max-width: 1200px; margin: 0 auto; padding: 4.5rem 1.5rem; }
+.wt-section--tint { background: #eaf0f7; max-width: none; }
+.wt-section--tint > * { max-width: 1200px; margin-left: auto; margin-right: auto; }
+.wt-section--dark { background: #0d2b45; max-width: none; color: #dbe7f3; }
+.wt-section--dark > * { max-width: 1200px; margin-left: auto; margin-right: auto; }
+.wt-section--dark h2, .wt-section--dark h3 { color: #fff; }
+.wt-section--dark .wt-label { color: #7fb2e8; }
+
+/* FASES */
+.wt-phases { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.1rem; margin-top: 2.2rem; }
+.wt-phase { background: #fff; border: 1px solid #dbe5ef; border-top: 5px solid #1f5fd0; border-radius: 12px; padding: 1.4rem 1.3rem; }
+.wt-phase h3 { margin-bottom: .6rem; }
+.wt-phase p { margin: 0; color: #43586c; }
+
+/* PROBLEMA */
+.wt-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.1rem; margin-top: 2.2rem; }
+.wt-card { background: #fff; border: 1px solid #dbe5ef; border-radius: 12px; padding: 1.5rem 1.4rem; }
+.wt-card h3 { margin-bottom: .6rem; }
+.wt-card p { margin: 0; color: #43586c; }
+
+/* FUNCIONES */
+.wt-feature { display: grid; grid-template-columns: 1fr 1.35fr; gap: 2.6rem; align-items: center; margin-top: 3.2rem; }
+.wt-feature--flip .wt-feature__text { order: 2; }
+.wt-feature__text p { color: #43586c; margin-top: .8rem; }
+.wt-feature .wt-frame { box-shadow: 0 18px 40px rgba(13, 43, 69, .18); }
+
+/* SEGUIMIENTO */
+.wt-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 1.6rem; margin-top: 2.4rem; }
+.wt-duo__item h3 { margin: 1.2rem 0 .5rem; }
+.wt-duo__item p { margin: 0; color: #b9cddd; }
+.wt-duo .wt-frame { box-shadow: 0 18px 40px rgba(0, 0, 0, .35); }
+
+/* DOCUMENTOS */
+.wt-chips { list-style: none; display: flex; flex-wrap: wrap; gap: .7rem; padding: 0; margin: 2rem 0 1.4rem; }
+.wt-chips li { background: #0d2b45; color: #fff; font-weight: 600; padding: .6rem 1.1rem; border-radius: 999px; font-size: .95rem; }
+.wt-wide { font-size: 1.1rem; color: #43586c; max-width: 62em; margin-top: 1.2rem; }
+
+/* CTA */
+.wt-cta { background: linear-gradient(150deg, #0d2b45, #14509c); color: #fff; text-align: center; padding: 4.5rem 1.5rem 5rem; }
+.wt-cta h2 { color: #fff; margin: 0 auto; }
+.wt-cta p { color: #c9dcee; margin: 1rem auto 2rem; max-width: 46em; }
+.wt-cta .wt-hero__cta { justify-content: center; }
+
+/* Reveal */
+.reveal { opacity: 0; transform: translateY(22px); transition: opacity .6s ease, transform .6s ease; }
+.reveal.is-visible { opacity: 1; transform: none; }
+
+@media (max-width: 980px) {
+  .wt-hero__inner { grid-template-columns: 1fr; }
+  .wt-phases { grid-template-columns: repeat(2, 1fr); }
+  .wt-cards { grid-template-columns: 1fr; }
+  .wt-feature, .wt-duo { grid-template-columns: 1fr; }
+  .wt-feature--flip .wt-feature__text { order: 0; }
+}
+@media (max-width: 560px) {
+  .wt-phases { grid-template-columns: 1fr; }
+  .wt-hero { padding-top: 3.6rem; }
+}
+
+.wt-price{font-size:2rem;font-weight:800;color:var(--wt-navy);margin:.2rem 0 .5rem}
+.wt-price span{font-size:1rem;font-weight:600;color:var(--wt-muted)}
+
+.wt-phones{display:flex;gap:1.2rem;justify-content:center;align-items:flex-start}
+.wt-phones img{height:430px;width:auto;border-radius:26px;box-shadow:0 18px 40px rgba(6,42,66,.25);border:1px solid rgba(6,42,66,.12)}
+.wt-checks{list-style:none;margin:1.4rem 0 0;padding:0;display:grid;gap:.6rem;max-width:640px}
+.wt-checks li{position:relative;padding-left:1.9rem;line-height:1.55}
+.wt-checks li::before{content:"✓";position:absolute;left:0;top:0;font-weight:800;color:var(--wt-accent)}
+.wt-section--dark .wt-checks li::before{color:#6ee7b7}
+.wt-faq{max-width:840px;display:grid;gap:1.1rem}
+.wt-faq__item{background:#fff;border:1px solid rgba(10,42,66,.09);border-radius:16px;padding:1.2rem 1.3rem;box-shadow:0 8px 22px rgba(10,42,66,.05)}
+.wt-faq__item h3{margin:0 0 .4rem}
+.wt-faq__item p{margin:0;color:var(--wt-muted);line-height:1.6}
+@media (max-width:640px){.wt-phones img{height:340px}}
