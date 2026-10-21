@@ -36,7 +36,7 @@ html.monster-promo-open body {
   align-items: center;
   gap: 6px;
   min-height: 44px;
-  margin: 0 0 32px auto;
+  margin: 0 0 16px auto;
   padding: 8px 12px;
   border: 0;
   border-radius: 22px;
@@ -50,6 +50,14 @@ html.monster-promo-open body {
 .monster-promo__close > span:first-child {
   font-size: 24px;
   line-height: 1;
+}
+
+.monster-promo__cover {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0 0 24px;
+  border-radius: 16px;
 }
 
 .monster-promo__eyebrow {
@@ -106,5 +114,11 @@ body.agency-page .monster-promo :focus-visible {
 
   .monster-promo__play {
     width: 100%;
+  }
+
+  .monster-promo__description {
+    margin: 16px auto 24px;
+    font-size: 15px;
+    line-height: 1.5;
   }
 }
