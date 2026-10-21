@@ -23,7 +23,7 @@
   gap: 12px;
 }
 
-.home-updates__heading { margin-bottom: 20px; }
+.home-updates__heading { margin-bottom: 12px; }
 .home-updates__heading h2 {
   margin: 0;
   font-size: 13px;
@@ -33,7 +33,10 @@
 }
 .home-updates__count { color: #b4bcb8; font-size: 13px; font-variant-numeric: tabular-nums; }
 .home-update {
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-height: calc(100svh - 200px);
+  scrollbar-width: thin;
   border: 1px solid #ffffff26;
   border-radius: 22px;
   background: #09120eed;
@@ -43,29 +46,29 @@
 .home-update__details { cursor: auto; }
 .home-update img {
   width: 100%;
-  height: auto;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
+  height: clamp(112px, 21svh, 176px);
+  object-fit: contain;
+  background: #070c09;
 }
-.home-update__copy { padding: 24px; min-height: 248px; }
+.home-update__copy { padding: 16px 18px; }
 .home-update__category {
-  margin: 0 0 12px;
+  margin: 0 0 8px;
   color: #00df91;
   font-size: 11px;
   letter-spacing: 0.08em;
   font-weight: 600;
 }
-.home-update h3 { margin: 0; font-size: clamp(24px, 2.2vw, 32px); line-height: 1.15; letter-spacing: -0.03em; }
-.home-update__copy > p:not(.home-update__category) { margin: 14px 0 22px; color: #bac2be; font-size: 16px; line-height: 1.6; }
+.home-update h3 { margin: 0; font-size: clamp(22px, 2vw, 27px); line-height: 1.15; letter-spacing: -0.03em; }
+.home-update__copy > p:not(.home-update__category) { margin: 10px 0 14px; color: #bac2be; font-size: 15px; line-height: 1.45; }
 body.agency-page .home-update a { color: #47eca8; font-size: 15px; font-weight: 600; text-decoration: underline; text-underline-offset: 5px; }
 .home-update__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
 body.agency-page .home-update a.home-update__primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 46px;
-  margin-bottom: 18px;
-  padding: 12px 24px;
+  min-height: 44px;
+  margin-bottom: 10px;
+  padding: 10px 20px;
   border-radius: 24px;
   background: #00c676;
   color: #04100a;
@@ -73,9 +76,9 @@ body.agency-page .home-update a.home-update__primary {
 }
 body.agency-page .home-update a.home-update__primary:hover { background: #47eca8; }
 .home-update button.home-update__primary {
-  min-height: 46px;
-  margin-bottom: 18px;
-  padding: 12px 24px;
+  min-height: 44px;
+  margin-bottom: 10px;
+  padding: 10px 20px;
   border: 1px solid #ffffff40;
   border-radius: 24px;
   background: #ffffff0d;
@@ -87,11 +90,11 @@ body.agency-page .home-update a.home-update__primary:hover { background: #47eca8
 }
 .home-update__app-media {
   display: grid;
-  grid-template-columns: 64px minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: 56px minmax(0, 1fr) minmax(0, 1fr);
   align-items: center;
   gap: 12px;
-  aspect-ratio: 16 / 9;
-  padding: 16px;
+  height: clamp(112px, 21svh, 176px);
+  padding: 12px;
   overflow: hidden;
   background: #eef1f8;
 }
@@ -101,10 +104,11 @@ body.agency-page .home-update a.home-update__primary:hover { background: #47eca8
   min-height: 0;
   aspect-ratio: auto;
   object-fit: contain;
+  background: transparent;
 }
 .home-update__app-media .home-update__app-icon { height: auto; border-radius: 14px; }
 .home-update__app-media--upcoming { display: flex; justify-content: center; background: radial-gradient(circle at 50% 50%, #34414e, #141d27); }
-.home-update__app-media--upcoming .home-update__app-icon { width: 120px; height: 120px; border-radius: 26px; }
+.home-update__app-media--upcoming .home-update__app-icon { width: 96px; height: 96px; border-radius: 22px; }
 .home-update[data-product="acquisitions"] > img { object-fit: contain; background: #f5f6f9; }
 @media (max-width: 480px) { .home-update__app-media { grid-template-columns: 48px minmax(0, 1fr) minmax(0, 1fr); gap: 8px; padding: 12px; } }
 .home-update__actions a { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; }
@@ -116,7 +120,7 @@ body.agency-page .home-update a.home-update__primary:hover { background: #47eca8
 .home-update__details dl > div + div { margin-top: 20px; }
 .home-update__details dt { margin-bottom: 6px; color: #47eca8; font-size: 13px; font-weight: 600; }
 .home-update__details dd { margin: 0; color: #bac2be; font-size: 15px; line-height: 1.65; }
-.home-updates__controls { margin-top: 18px; }
+.home-updates__controls { margin-top: 12px; }
 .home-updates__controls p { margin: 0; font-size: 13px; color: #b4bcb8; }
 .home-updates__controls button {
   width: 44px;
@@ -133,6 +137,6 @@ body.agency-page .home-update a.home-update__primary:hover { background: #47eca8
 .home-updates:focus-visible { outline: 3px solid #00c676; outline-offset: 6px; border-radius: 8px; }
 @media (max-width: 900px) { .home-updates { max-width: 580px; justify-self: center; } }
 @media (max-width: 480px) {
-  .home-update__copy { padding: 20px; min-height: 248px; }
+  .home-update__copy { padding: 14px 16px; }
   .home-updates__controls p { max-width: 160px; line-height: 1.5; }
 }
