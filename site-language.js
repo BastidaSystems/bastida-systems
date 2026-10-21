@@ -2,6 +2,8 @@ const siteLanguageStorageKey = 'site-language';
 
 const sharedSiteTranslations = {
   en: {
+    'home.updates.download': 'Download app',
+    'home.updates.products': 'View products',
     'home.updates.info': 'View information',
     'home.updates.website': 'Website',
     'home.updates.about': 'About the project',
@@ -333,6 +335,8 @@ const sharedSiteTranslations = {
     'home.readAloud.stop': 'Stop reading'
   },
   es: {
+    'home.updates.download': 'Descargar app',
+    'home.updates.products': 'Ver productos',
     'home.updates.info': 'Ver información',
     'home.updates.website': 'Página web',
     'home.updates.about': 'Acerca del proyecto',
