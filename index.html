@@ -25,7 +25,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="agency.css?v=2026-09-23-read-aloud">
   <link rel="stylesheet" href="monster-promo.css?v=2026-10-20-cover">
-  <link rel="stylesheet" href="home-updates.css?v=2026-10-20-brand">
+  <link rel="stylesheet" href="home-updates.css?v=2026-10-20-external">
   <!-- Social preview -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Bastida Systems">
@@ -74,7 +74,7 @@
 <body class="agency-page home-redesign-page">
   <div id="site-header"></div>
   <script src="site-header.js?v=2026-08-26-home-nav" defer></script>
-  <script src="site-language.js?v=2026-10-20-products6" defer></script>
+  <script src="site-language.js?v=2026-10-20-external" defer></script>
 
   <dialog class="monster-promo" id="monster-promo" aria-labelledby="monster-promo-title" aria-describedby="monster-promo-description">
     <div class="monster-promo__content">
@@ -133,19 +133,11 @@
                 <p class="home-update__category" data-i18n="home.updates.game.category">VIDEOJUEGOS</p>
                 <h3 >Monster Apocalypse</h3>
                 <p data-i18n="home.updates.game.description">El apocalipsis te espera. Entra al mundo de Monster Apocalypse, un juego de Bastida Systems.</p>
-                <a class="home-update__primary" data-update-primary href="https://monster-apocalypse-bastida-systems.vercel.app/" data-i18n="home.monster.play">Jugar ahora</a>
                 <div class="home-update__actions">
-                  <button type="button" class="home-update__info" data-update-toggle aria-expanded="false" aria-controls="update-details-game" hidden><span data-i18n="home.updates.info">Ver información</span><span aria-hidden="true"> +</span></button>
-                  <a href="https://monster-apocalypse-bastida-systems.vercel.app/" data-update-website><span data-i18n="home.updates.website">Página web</span> <span aria-hidden="true">↗</span></a>
+                  <a class="home-update__primary" data-update-primary href="https://monster-apocalypse-bastida-systems.vercel.app/" data-i18n="home.monster.play">Jugar ahora</a>
+                  <button type="button" class="home-update__info home-update__icon" data-update-toggle aria-expanded="false" aria-controls="update-details-game" aria-label="Ver información" data-i18n-title="home.updates.info" data-i18n-aria-label="home.updates.info" title="Ver información" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><circle cx="12" cy="7.5" r=".8" fill="currentColor" stroke="none"/></svg></button>
+                  <a class="home-update__icon" href="https://monster-apocalypse-bastida-systems.vercel.app/" data-update-website aria-label="Página web" data-i18n-title="home.updates.website" data-i18n-aria-label="home.updates.website" title="Página web"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18"/></svg></a>
                 </div>
-              </div>
-              <div class="home-update__details" id="update-details-game" data-update-details hidden>
-                <h4 data-i18n="home.updates.about">Acerca del proyecto</h4>
-                <dl>
-                  <div><dt data-i18n="home.updates.creator">Creado por</dt><dd>Bastida Systems</dd></div>
-                  <div><dt data-i18n="home.updates.process">Cómo se creó</dt><dd data-i18n="home.updates.game.process">Un juego para navegador construido con escenarios 3D, personajes, animación y mecánicas interactivas.</dd></div>
-                  <div><dt data-i18n="home.updates.resources">Tecnología y materiales</dt><dd data-i18n="home.updates.game.resources">JavaScript y Three.js, con modelos 3D, texturas, sonido y efectos ambientales. Es un proyecto digital, sin materiales físicos.</dd></div>
-                </dl>
               </div>
             </article>
             <article class="home-update" data-update-slide tabindex="0" data-product="acquisitions" hidden>
@@ -154,19 +146,11 @@
                 <p class="home-update__category" data-i18n="home.updates.acquisitions.category">GESTIÓN · APLICACIÓN WEB</p>
                 <h3 data-i18n="home.updates.acquisitions.title">Sistema de Gestión de Adquisiciones</h3>
                 <p data-i18n="home.updates.acquisitions.description">Expedientes, investigaciones de mercado y documentos de adquisiciones en un solo lugar. Acceso para usuarios autorizados.</p>
-                <a class="home-update__primary" data-update-primary href="https://sistema-adquisiciones-rose.vercel.app/" data-i18n="home.updates.openSystem">Abrir sistema</a>
                 <div class="home-update__actions">
-                  <button type="button" class="home-update__info" data-update-toggle aria-expanded="false" aria-controls="update-details-acquisitions" hidden><span data-i18n="home.updates.info">Ver información</span><span aria-hidden="true"> +</span></button>
-                  <a href="https://sistema-adquisiciones-rose.vercel.app/" data-update-website><span data-i18n="home.updates.website">Página web</span> <span aria-hidden="true">↗</span></a>
+                  <a class="home-update__primary" data-update-primary href="https://sistema-adquisiciones-rose.vercel.app/" data-i18n="home.updates.openSystem">Abrir sistema</a>
+                  <button type="button" class="home-update__info home-update__icon" data-update-toggle aria-expanded="false" aria-controls="update-details-acquisitions" aria-label="Ver información" data-i18n-title="home.updates.info" data-i18n-aria-label="home.updates.info" title="Ver información" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><circle cx="12" cy="7.5" r=".8" fill="currentColor" stroke="none"/></svg></button>
+                  <a class="home-update__icon" href="https://sistema-adquisiciones-rose.vercel.app/" data-update-website aria-label="Página web" data-i18n-title="home.updates.website" data-i18n-aria-label="home.updates.website" title="Página web"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18"/></svg></a>
                 </div>
-              </div>
-              <div class="home-update__details" id="update-details-acquisitions" data-update-details hidden>
-                <h4 data-i18n="home.updates.about">Acerca del proyecto</h4>
-                <dl>
-                  <div><dt data-i18n="home.updates.creator">Creado por</dt><dd>Bastida Systems</dd></div>
-                  <div><dt data-i18n="home.updates.process">Cómo se creó</dt><dd data-i18n="home.updates.acquisitions.process">Diseñado como un flujo de trabajo por expediente, con módulos para investigación de mercado, comparativos, documentación y seguimiento.</dd></div>
-                  <div><dt data-i18n="home.updates.resources">Tecnología y materiales</dt><dd data-i18n="home.updates.acquisitions.resources">Aplicación web desarrollada con Next.js y TypeScript. Usa formularios, documentos digitales y controles de acceso por usuario.</dd></div>
-                </dl>
               </div>
             </article>
             <article class="home-update" data-update-slide tabindex="0" data-product="lineops" hidden>
@@ -175,19 +159,11 @@
                 <p class="home-update__category" data-i18n="home.updates.lineops.category">APP · HORARIOS Y EQUIPOS</p>
                 <h3 >LineOps ShiftRotation</h3>
                 <p data-i18n="home.updates.lineops.description">Convierte fotos de horarios en tablas claras, organiza grupos y comparte los turnos semanales de tu equipo.</p>
-                <a class="home-update__primary" data-update-primary href="https://apps.apple.com/us/app/lineops-shiftrotation/id6767958380" data-i18n="home.updates.download">Descargar app</a>
                 <div class="home-update__actions">
-                  <button type="button" class="home-update__info" data-update-toggle aria-expanded="false" aria-controls="update-details-lineops" hidden><span data-i18n="home.updates.info">Ver información</span><span aria-hidden="true"> +</span></button>
-                  <a href="products.html#lineops" data-update-website><span data-i18n="home.updates.website">Página web</span> <span aria-hidden="true">↗</span></a>
+                  <a class="home-update__primary" data-update-primary href="https://apps.apple.com/us/app/lineops-shiftrotation/id6767958380" data-i18n="home.updates.download">Descargar app</a>
+                  <button type="button" class="home-update__info home-update__icon" data-update-toggle aria-expanded="false" aria-controls="update-details-lineops" aria-label="Ver información" data-i18n-title="home.updates.info" data-i18n-aria-label="home.updates.info" title="Ver información" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><circle cx="12" cy="7.5" r=".8" fill="currentColor" stroke="none"/></svg></button>
+                  <a class="home-update__icon" href="products.html#lineops" data-update-website aria-label="Página web" data-i18n-title="home.updates.website" data-i18n-aria-label="home.updates.website" title="Página web"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18"/></svg></a>
                 </div>
-              </div>
-              <div class="home-update__details" id="update-details-lineops" data-update-details hidden>
-                <h4 data-i18n="home.updates.about">Acerca del proyecto</h4>
-                <dl>
-                  <div><dt data-i18n="home.updates.creator">Creado por</dt><dd>Bastida Systems</dd></div>
-                  <div><dt data-i18n="home.updates.process">Cómo se creó</dt><dd data-i18n="home.updates.lineops.process">Creada para simplificar el paso de un horario impreso a una tabla que se puede revisar, editar y compartir.</dd></div>
-                  <div><dt data-i18n="home.updates.resources">Tecnología y materiales</dt><dd data-i18n="home.updates.lineops.resources">Aplicación móvil nativa con captura de horarios, tablas editables, grupos de equipo y herramientas para compartir. Proyecto digital, sin materiales físicos.</dd></div>
-                </dl>
               </div>
             </article>
             <article class="home-update" data-update-slide tabindex="0" data-product="filtracore" hidden>
@@ -196,19 +172,11 @@
                 <p class="home-update__category" data-i18n="home.updates.filtracore.category">APP · FILTRACIÓN Y MANTENIMIENTO</p>
                 <h3 >FiltraCore</h3>
                 <p data-i18n="home.updates.filtracore.description">Organiza equipos, filtros, inventario y mantenimiento de sistemas de filtración de agua desde una sola app.</p>
-                <a class="home-update__primary" data-update-primary href="https://apps.apple.com/us/app/filtracore/id6767891950" data-i18n="home.updates.download">Descargar app</a>
                 <div class="home-update__actions">
-                  <button type="button" class="home-update__info" data-update-toggle aria-expanded="false" aria-controls="update-details-filtracore" hidden><span data-i18n="home.updates.info">Ver información</span><span aria-hidden="true"> +</span></button>
-                  <a href="filtracore.html" data-update-website><span data-i18n="home.updates.website">Página web</span> <span aria-hidden="true">↗</span></a>
+                  <a class="home-update__primary" data-update-primary href="https://apps.apple.com/us/app/filtracore/id6767891950" data-i18n="home.updates.download">Descargar app</a>
+                  <button type="button" class="home-update__info home-update__icon" data-update-toggle aria-expanded="false" aria-controls="update-details-filtracore" aria-label="Ver información" data-i18n-title="home.updates.info" data-i18n-aria-label="home.updates.info" title="Ver información" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><circle cx="12" cy="7.5" r=".8" fill="currentColor" stroke="none"/></svg></button>
+                  <a class="home-update__icon" href="filtracore.html" data-update-website aria-label="Página web" data-i18n-title="home.updates.website" data-i18n-aria-label="home.updates.website" title="Página web"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18"/></svg></a>
                 </div>
-              </div>
-              <div class="home-update__details" id="update-details-filtracore" data-update-details hidden>
-                <h4 data-i18n="home.updates.about">Acerca del proyecto</h4>
-                <dl>
-                  <div><dt data-i18n="home.updates.creator">Creado por</dt><dd>Bastida Systems</dd></div>
-                  <div><dt data-i18n="home.updates.process">Cómo se creó</dt><dd data-i18n="home.updates.filtracore.process">Creada para reunir el registro de equipos, los cambios de filtros, el mantenimiento y la información de proveedores en una interfaz móvil.</dd></div>
-                  <div><dt data-i18n="home.updates.resources">Tecnología y materiales</dt><dd data-i18n="home.updates.filtracore.resources">Aplicación móvil con registros digitales de equipos, filtros, inventario y mantenimiento. Disponible para iPhone y iPad.</dd></div>
-                </dl>
               </div>
             </article>
             <article class="home-update" data-update-slide tabindex="0" data-product="watchtuner" hidden>
@@ -217,19 +185,11 @@
                 <p class="home-update__category" data-i18n="home.updates.watchtuner.category">APP · MÚSICA</p>
                 <h3 >WatchTuner Pro</h3>
                 <p data-i18n="home.updates.watchtuner.description">Afina, practica, aprende y captura ideas musicales. Herramientas para distintos instrumentos, con soporte para Apple Watch.</p>
-                <a class="home-update__primary" data-update-primary href="https://apps.apple.com/us/app/watchtuner-pro/id6801949693" data-i18n="home.updates.download">Descargar app</a>
                 <div class="home-update__actions">
-                  <button type="button" class="home-update__info" data-update-toggle aria-expanded="false" aria-controls="update-details-watchtuner" hidden><span data-i18n="home.updates.info">Ver información</span><span aria-hidden="true"> +</span></button>
-                  <a href="store.html#watchtuner" data-update-website><span data-i18n="home.updates.website">Página web</span> <span aria-hidden="true">↗</span></a>
+                  <a class="home-update__primary" data-update-primary href="https://apps.apple.com/us/app/watchtuner-pro/id6801949693" data-i18n="home.updates.download">Descargar app</a>
+                  <button type="button" class="home-update__info home-update__icon" data-update-toggle aria-expanded="false" aria-controls="update-details-watchtuner" aria-label="Ver información" data-i18n-title="home.updates.info" data-i18n-aria-label="home.updates.info" title="Ver información" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><circle cx="12" cy="7.5" r=".8" fill="currentColor" stroke="none"/></svg></button>
+                  <a class="home-update__icon" href="store.html#watchtuner" data-update-website aria-label="Página web" data-i18n-title="home.updates.website" data-i18n-aria-label="home.updates.website" title="Página web"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18"/></svg></a>
                 </div>
-              </div>
-              <div class="home-update__details" id="update-details-watchtuner" data-update-details hidden>
-                <h4 data-i18n="home.updates.about">Acerca del proyecto</h4>
-                <dl>
-                  <div><dt data-i18n="home.updates.creator">Creado por</dt><dd>Bastida Systems</dd></div>
-                  <div><dt data-i18n="home.updates.process">Cómo se creó</dt><dd data-i18n="home.updates.watchtuner.process">Desarrollada para reunir afinación, ejercicios, aprendizaje y composición en una misma experiencia para músicos.</dd></div>
-                  <div><dt data-i18n="home.updates.resources">Tecnología y materiales</dt><dd data-i18n="home.updates.watchtuner.resources">Aplicación nativa con afinador, ejercicios interactivos y herramientas de composición. Incluye funciones para Apple Watch; no requiere materiales físicos propios.</dd></div>
-                </dl>
               </div>
             </article>
             <article class="home-update" data-update-slide tabindex="0" data-product="studiogameplan" hidden>
@@ -238,19 +198,11 @@
                 <p class="home-update__category" data-i18n="home.updates.studiogameplan.category">STUDIO GAME PLAN · PRÓXIMAMENTE</p>
                 <h3 >Bastida Play</h3>
                 <p data-i18n="home.updates.studiogameplan.description">La nueva evolución de Studio Game Plan: una consola para descubrir y jugar videojuegos independientes. Próximamente.</p>
-                <button class="home-update__primary" type="button" data-update-primary disabled data-i18n="home.updates.comingSoon">Próximamente</button>
                 <div class="home-update__actions">
-                  <button type="button" class="home-update__info" data-update-toggle aria-expanded="false" aria-controls="update-details-studiogameplan" hidden><span data-i18n="home.updates.info">Ver información</span><span aria-hidden="true"> +</span></button>
-                  <a href="https://apps.apple.com/us/app/studiogameplan-sgp/id6773214058" data-update-website><span data-i18n="home.updates.currentVersion">Página web</span> <span aria-hidden="true">↗</span></a>
+                  <button class="home-update__primary" type="button" data-update-primary disabled data-i18n="home.updates.comingSoon">Próximamente</button>
+                  <button type="button" class="home-update__info home-update__icon" data-update-toggle aria-expanded="false" aria-controls="update-details-studiogameplan" aria-label="Ver información" data-i18n-title="home.updates.info" data-i18n-aria-label="home.updates.info" title="Ver información" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><circle cx="12" cy="7.5" r=".8" fill="currentColor" stroke="none"/></svg></button>
+                  <a class="home-update__icon" href="https://apps.apple.com/us/app/studiogameplan-sgp/id6773214058" data-update-website aria-label="Página web" data-i18n-title="home.updates.currentVersion" data-i18n-aria-label="home.updates.currentVersion" title="Página web"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18"/></svg></a>
                 </div>
-              </div>
-              <div class="home-update__details" id="update-details-studiogameplan" data-update-details hidden>
-                <h4 data-i18n="home.updates.about">Acerca del proyecto</h4>
-                <dl>
-                  <div><dt data-i18n="home.updates.creator">Creado por</dt><dd>Bastida Systems</dd></div>
-                  <div><dt data-i18n="home.updates.process">Cómo se creó</dt><dd data-i18n="home.updates.studiogameplan.process">La nueva versión se está desarrollando como una consola nativa con catálogo de juegos y perfil de jugador. Todavía está en preparación.</dd></div>
-                  <div><dt data-i18n="home.updates.resources">Tecnología y materiales</dt><dd data-i18n="home.updates.studiogameplan.resources">Swift y SwiftUI para la aplicación iOS, con recursos gráficos y un reproductor de juegos web. Las imágenes de App Store corresponden a la versión publicada de StudioGamePlan; Bastida Play aún no está disponible.</dd></div>
-                </dl>
               </div>
             </article>
           </div>
@@ -265,6 +217,67 @@
       </div>
     </section>
 
+    <section class="home-product-details" id="home-product-details" data-home-product-details hidden aria-label="Acerca del proyecto" data-i18n-aria-label="home.updates.about">
+      <div class="home-container">
+        <div class="home-product-details__toolbar">
+          <button type="button" class="home-update__icon" data-update-details-close aria-label="Cerrar información" data-i18n-aria-label="home.updates.closeInfo"><span aria-hidden="true">×</span></button>
+        </div>
+        <div class="home-product-details__panel" id="update-details-game" data-update-details hidden tabindex="-1" role="region" aria-labelledby="update-details-game-title">
+          <p class="home-product-details__eyebrow" data-i18n="home.updates.about">Acerca del proyecto</p>
+          <h2 id="update-details-game-title" >Monster Apocalypse</h2>
+          <dl>
+                  <div><dt data-i18n="home.updates.creator">Creado por</dt><dd>Bastida Systems</dd></div>
+                  <div><dt data-i18n="home.updates.process">Cómo se creó</dt><dd data-i18n="home.updates.game.process">Un juego para navegador construido con escenarios 3D, personajes, animación y mecánicas interactivas.</dd></div>
+                  <div><dt data-i18n="home.updates.resources">Tecnología y materiales</dt><dd data-i18n="home.updates.game.resources">JavaScript y Three.js, con modelos 3D, texturas, sonido y efectos ambientales. Es un proyecto digital, sin materiales físicos.</dd></div>
+                </dl>
+        </div>
+        <div class="home-product-details__panel" id="update-details-acquisitions" data-update-details hidden tabindex="-1" role="region" aria-labelledby="update-details-acquisitions-title">
+          <p class="home-product-details__eyebrow" data-i18n="home.updates.about">Acerca del proyecto</p>
+          <h2 id="update-details-acquisitions-title" data-i18n="home.updates.acquisitions.title">Sistema de Gestión de Adquisiciones</h2>
+          <dl>
+                  <div><dt data-i18n="home.updates.creator">Creado por</dt><dd>Bastida Systems</dd></div>
+                  <div><dt data-i18n="home.updates.process">Cómo se creó</dt><dd data-i18n="home.updates.acquisitions.process">Diseñado como un flujo de trabajo por expediente, con módulos para investigación de mercado, comparativos, documentación y seguimiento.</dd></div>
+                  <div><dt data-i18n="home.updates.resources">Tecnología y materiales</dt><dd data-i18n="home.updates.acquisitions.resources">Aplicación web desarrollada con Next.js y TypeScript. Usa formularios, documentos digitales y controles de acceso por usuario.</dd></div>
+                </dl>
+        </div>
+        <div class="home-product-details__panel" id="update-details-lineops" data-update-details hidden tabindex="-1" role="region" aria-labelledby="update-details-lineops-title">
+          <p class="home-product-details__eyebrow" data-i18n="home.updates.about">Acerca del proyecto</p>
+          <h2 id="update-details-lineops-title" >LineOps ShiftRotation</h2>
+          <dl>
+                  <div><dt data-i18n="home.updates.creator">Creado por</dt><dd>Bastida Systems</dd></div>
+                  <div><dt data-i18n="home.updates.process">Cómo se creó</dt><dd data-i18n="home.updates.lineops.process">Creada para simplificar el paso de un horario impreso a una tabla que se puede revisar, editar y compartir.</dd></div>
+                  <div><dt data-i18n="home.updates.resources">Tecnología y materiales</dt><dd data-i18n="home.updates.lineops.resources">Aplicación móvil nativa con captura de horarios, tablas editables, grupos de equipo y herramientas para compartir. Proyecto digital, sin materiales físicos.</dd></div>
+                </dl>
+        </div>
+        <div class="home-product-details__panel" id="update-details-filtracore" data-update-details hidden tabindex="-1" role="region" aria-labelledby="update-details-filtracore-title">
+          <p class="home-product-details__eyebrow" data-i18n="home.updates.about">Acerca del proyecto</p>
+          <h2 id="update-details-filtracore-title" >FiltraCore</h2>
+          <dl>
+                  <div><dt data-i18n="home.updates.creator">Creado por</dt><dd>Bastida Systems</dd></div>
+                  <div><dt data-i18n="home.updates.process">Cómo se creó</dt><dd data-i18n="home.updates.filtracore.process">Creada para reunir el registro de equipos, los cambios de filtros, el mantenimiento y la información de proveedores en una interfaz móvil.</dd></div>
+                  <div><dt data-i18n="home.updates.resources">Tecnología y materiales</dt><dd data-i18n="home.updates.filtracore.resources">Aplicación móvil con registros digitales de equipos, filtros, inventario y mantenimiento. Disponible para iPhone y iPad.</dd></div>
+                </dl>
+        </div>
+        <div class="home-product-details__panel" id="update-details-watchtuner" data-update-details hidden tabindex="-1" role="region" aria-labelledby="update-details-watchtuner-title">
+          <p class="home-product-details__eyebrow" data-i18n="home.updates.about">Acerca del proyecto</p>
+          <h2 id="update-details-watchtuner-title" >WatchTuner Pro</h2>
+          <dl>
+                  <div><dt data-i18n="home.updates.creator">Creado por</dt><dd>Bastida Systems</dd></div>
+                  <div><dt data-i18n="home.updates.process">Cómo se creó</dt><dd data-i18n="home.updates.watchtuner.process">Desarrollada para reunir afinación, ejercicios, aprendizaje y composición en una misma experiencia para músicos.</dd></div>
+                  <div><dt data-i18n="home.updates.resources">Tecnología y materiales</dt><dd data-i18n="home.updates.watchtuner.resources">Aplicación nativa con afinador, ejercicios interactivos y herramientas de composición. Incluye funciones para Apple Watch; no requiere materiales físicos propios.</dd></div>
+                </dl>
+        </div>
+        <div class="home-product-details__panel" id="update-details-studiogameplan" data-update-details hidden tabindex="-1" role="region" aria-labelledby="update-details-studiogameplan-title">
+          <p class="home-product-details__eyebrow" data-i18n="home.updates.about">Acerca del proyecto</p>
+          <h2 id="update-details-studiogameplan-title" >Bastida Play</h2>
+          <dl>
+                  <div><dt data-i18n="home.updates.creator">Creado por</dt><dd>Bastida Systems</dd></div>
+                  <div><dt data-i18n="home.updates.process">Cómo se creó</dt><dd data-i18n="home.updates.studiogameplan.process">La nueva versión se está desarrollando como una consola nativa con catálogo de juegos y perfil de jugador. Todavía está en preparación.</dd></div>
+                  <div><dt data-i18n="home.updates.resources">Tecnología y materiales</dt><dd data-i18n="home.updates.studiogameplan.resources">Swift y SwiftUI para la aplicación iOS, con recursos gráficos y un reproductor de juegos web. Las imágenes de App Store corresponden a la versión publicada de StudioGamePlan; Bastida Play aún no está disponible.</dd></div>
+                </dl>
+        </div>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer-v2" aria-label="Footer" data-i18n-aria-label="home.footer.ariaLabel">
@@ -277,7 +290,7 @@
     </div>
   </footer>
 
-  <script src="home-updates.js?v=2026-10-20-details" defer></script>
+  <script src="home-updates.js?v=2026-10-20-external" defer></script>
   <script src="agency.js?v=2026-08-26-3d-video-home" defer></script>
   <script src="whatsapp-float.js?v=2026-09-23-wa" defer></script>
 </body>

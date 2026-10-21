@@ -6,22 +6,40 @@
     const count = carousel.querySelector('[data-updates-count]');
     let index = 0;
     let lastSwipe = 0;
+    const detailSection = document.querySelector('[data-home-product-details]');
+    const detailPanels = slides.map(slide => document.getElementById(slide.querySelector('[data-update-toggle]').getAttribute('aria-controls')));
+    const showDetails = (position, open) => {
+      detailPanels.forEach((panel, i) => {
+        panel.hidden = !open || i !== position;
+        slides[i].querySelector('[data-update-toggle]').setAttribute('aria-expanded', String(open && i === position));
+      });
+      detailSection.hidden = !open;
+    };
     slides.forEach(slide => {
       const button = slide.querySelector('[data-update-toggle]');
-      const details = slide.querySelector('[data-update-details]');
+      const details = document.getElementById(button.getAttribute('aria-controls'));
       if (!button || !details) return;
       button.hidden = false;
       slide.addEventListener('click', event => {
-        if (event.target.closest('a, [data-update-details]') || Date.now() - lastSwipe < 400) return;
-        details.hidden = !details.hidden;
-        button.setAttribute('aria-expanded', String(!details.hidden));
-        button.querySelector('[aria-hidden]').textContent = details.hidden ? ' +' : ' −';
+        if (event.target.closest('a, [data-update-primary]') || Date.now() - lastSwipe < 400) return;
+        const open = details.hidden;
+        showDetails(slides.indexOf(slide), open);
+        if (open) {
+          detailSection.scrollIntoView({ behavior: 'instant', block: 'start' });
+          details.focus({ preventScroll: true });
+        }
       });
+    });
+    detailSection.querySelector('[data-update-details-close]').addEventListener('click', () => {
+      showDetails(index, false);
+      slides[index].querySelector('[data-update-toggle]').focus({ preventScroll: true });
+      carousel.scrollIntoView({ behavior: 'instant', block: 'nearest' });
     });
     const move = direction => {
       const focusInSlide = slides[index].contains(document.activeElement);
       index = (index + direction + slides.length) % slides.length;
       slides.forEach((slide, position) => { slide.hidden = position !== index; });
+      if (!detailSection.hidden) showDetails(index, true);
       count.textContent = `${String(index + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
       if (focusInSlide) slides[index].querySelector('a').focus({ preventScroll: true });
     };

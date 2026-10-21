@@ -2,6 +2,7 @@ const siteLanguageStorageKey = 'site-language';
 
 const sharedSiteTranslations = {
   en: {
+    'home.updates.closeInfo': 'Close information',
     "home.updates.acquisitions.title": "Procurement Management System",
     "home.updates.acquisitions.category": "MANAGEMENT · WEB APP",
     "home.updates.acquisitions.description": "Procurement records, market research and documents in one place. Access for authorized users.",
@@ -355,6 +356,7 @@ const sharedSiteTranslations = {
     'home.readAloud.stop': 'Stop reading'
   },
   es: {
+    'home.updates.closeInfo': 'Cerrar información',
     "home.updates.acquisitions.title": "Sistema de Gestión de Adquisiciones",
     "home.updates.acquisitions.category": "GESTIÓN · APLICACIÓN WEB",
     "home.updates.acquisitions.description": "Expedientes, investigaciones de mercado y documentos de adquisiciones en un solo lugar. Acceso para usuarios autorizados.",
@@ -754,6 +756,10 @@ const applySiteLanguage = language => {
 
   document.querySelectorAll('[data-i18n-aria-roledescription]').forEach(element => {
     element.setAttribute('aria-roledescription', siteTranslate(element.dataset.i18nAriaRoledescription));
+  });
+
+  document.querySelectorAll('[data-i18n-title]').forEach(element => {
+    element.title = siteTranslate(element.dataset.i18nTitle);
   });
 
   document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
