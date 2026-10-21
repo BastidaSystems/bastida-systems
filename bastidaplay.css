@@ -130,3 +130,29 @@ body.bp-page { margin: 0; font-family: 'Montserrat', system-ui, -apple-system, '
   .bp-phones img { height: 340px; }
   .bp-hero { padding-top: 3.4rem; }
 }
+
+/* HERO cinematográfico (concepto de David, 2026-10-21) */
+.bp-hero { position: relative; }
+.bp-hero__bg { position: absolute; inset: 0; overflow: hidden; }
+.bp-hero__bg img { width: 100%; height: 100%; object-fit: cover; opacity: .55; }
+.bp-hero__bg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(7,7,13,.55) 0%, rgba(7,7,13,.25) 40%, #07070d 96%); }
+.bp-hero__inner, .bp-covers, .bp-hero .bp-note { position: relative; z-index: 2; }
+.bp-hero .btn--light { background: #fff; color: #0a0a12; box-shadow: 0 14px 30px rgba(0,0,0,.45); }
+.bp-hero .btn--ghost-light { border-color: rgba(255,255,255,.75); color: #fff; background: rgba(10,10,18,.25); }
+.bp-feat { text-transform: uppercase; letter-spacing: .24em; font-weight: 800; font-size: .78rem; color: #d9d4ff; margin: 0 0 .9rem; }
+.bp-chipsrow { display: flex; gap: .5rem; justify-content: center; flex-wrap: wrap; margin: 0 auto 1.7rem; }
+.bp-chipsrow .bp-chip { background: rgba(10,10,18,.55); color: #fff; border-color: rgba(255,255,255,.35); box-shadow: none; backdrop-filter: blur(6px); }
+.bp-covers { display: flex; gap: 1rem; justify-content: center; align-items: flex-end; max-width: 1020px; margin: 2.8rem auto 0; padding: 0 1rem; }
+.bp-cover { width: 148px; aspect-ratio: 3/4; border-radius: 16px; overflow: hidden; box-shadow: 0 22px 44px rgba(0,0,0,.55); border: 1px solid rgba(255,255,255,.16); margin: 0; flex: none; }
+.bp-cover img { width: 100%; height: 100%; object-fit: cover; }
+.bp-cover--main { width: 196px; }
+.bp-cover--soon { background: linear-gradient(160deg, #1a1a2e, #0b0b16); display: flex; align-items: center; justify-content: center; }
+.bp-cover--soon span { writing-mode: vertical-rl; letter-spacing: .32em; text-transform: uppercase; font-size: .7rem; color: #8f94b8; font-weight: 800; }
+.bp-covers .bp-cover:nth-child(1) { transform: rotate(-5deg); }
+.bp-covers .bp-cover:nth-child(2) { transform: rotate(-2.5deg); }
+.bp-covers .bp-cover:nth-child(4) { transform: rotate(2.5deg); }
+.bp-covers .bp-cover:nth-child(5) { transform: rotate(5deg); }
+@media (max-width: 700px) {
+  .bp-covers .bp-cover:nth-child(1), .bp-covers .bp-cover:nth-child(5) { display: none; }
+  .bp-cover { width: 104px; } .bp-cover--main { width: 138px; }
+}
