@@ -69,11 +69,11 @@
 .home-update img {
   width: 100%;
   height: auto;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 2 / 1;
   object-fit: contain;
   background: #070c09;
 }
-.home-update__copy { padding: 24px; min-height: 248px; }
+.home-update__copy { padding: 22px; min-height: 232px; }
 .home-update__category {
   margin: 0 0 12px;
   color: #00df91;
@@ -81,8 +81,8 @@
   letter-spacing: 0.08em;
   font-weight: 600;
 }
-.home-update h3 { margin: 0; font-size: clamp(24px, 2.2vw, 32px); line-height: 1.15; letter-spacing: -0.03em; }
-.home-update__copy > p:not(.home-update__category) { margin: 14px 0 22px; color: #bac2be; font-size: 16px; line-height: 1.6; }
+.home-update h3 { margin: 0; font-size: clamp(24px, 2.1vw, 30px); line-height: 1.15; letter-spacing: -0.03em; }
+.home-update__copy > p:not(.home-update__category) { margin: 12px 0 18px; color: #bac2be; font-size: 16px; line-height: 1.55; }
 body.agency-page .home-update a { color: #47eca8; font-size: 15px; font-weight: 600; text-decoration: underline; text-underline-offset: 5px; }
 .home-update__actions { display: grid; grid-template-columns: minmax(0, max-content) 44px 44px; align-items: center; gap: 10px; }
 body.agency-page .home-update a.home-update__primary {
@@ -116,7 +116,7 @@ body.agency-page .home-update a.home-update__primary:hover { background: #47eca8
   grid-template-columns: 64px minmax(0, 1fr) minmax(0, 1fr);
   align-items: center;
   gap: 12px;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 2 / 1;
   padding: 16px;
   overflow: hidden;
   background: #eef1f8;
@@ -131,7 +131,7 @@ body.agency-page .home-update a.home-update__primary:hover { background: #47eca8
 }
 .home-update__app-media .home-update__app-icon { height: auto; border-radius: 14px; }
 .home-update__app-media--upcoming { display: flex; justify-content: center; background: radial-gradient(circle at 50% 50%, #34414e, #141d27); }
-.home-update__app-media--upcoming .home-update__app-icon { width: 120px; height: 120px; border-radius: 26px; }
+.home-update__app-media--upcoming .home-update__app-icon { width: 112px; height: 112px; border-radius: 24px; }
 .home-update[data-product="acquisitions"] > img { object-fit: contain; background: #f5f6f9; }
 @media (max-width: 480px) { .home-update__app-media { grid-template-columns: 48px minmax(0, 1fr) minmax(0, 1fr); gap: 8px; padding: 12px; } }
 .home-update__actions a { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; }
@@ -200,6 +200,6 @@ body.agency-page .home-update .home-update__icon[aria-expanded="true"] { border-
 }
 @media (max-width: 900px) { .home-updates { max-width: 580px; justify-self: center; } }
 @media (max-width: 480px) {
-  .home-update__copy { padding: 20px; min-height: 248px; }
+  .home-update__copy { padding: 18px; min-height: 232px; }
   .home-updates__controls p { max-width: 160px; line-height: 1.5; }
 }
