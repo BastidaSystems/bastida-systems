@@ -24,7 +24,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="agency.css?v=2026-09-23-read-aloud">
-  <link rel="stylesheet" href="barberlink-promo.css?v=2026-10-31">
+  <link rel="stylesheet" href="barberlink-promo.css?v=2026-10-31-minimal">
   <link rel="stylesheet" href="home-updates.css?v=2026-10-21-mobile-spacing">
   <link rel="stylesheet" href="home-nav-light.css?v=2026-10-20">
   <!-- Social preview -->
@@ -78,38 +78,31 @@
   <script src="site-language.js?v=2026-10-22-presupuesto" defer></script>
 
   <dialog class="bl-launch" id="barberlink-launch" aria-labelledby="bl-launch-title" aria-describedby="bl-launch-description">
-    <div class="bl-launch__layout">
-      <div class="bl-launch__visual" aria-hidden="true">
-        <img class="bl-launch__photo" src="assets/barberlink/hero.jpg" width="1280" height="853" alt="" decoding="async">
-        <div class="bl-launch__brand"><img src="assets/barberlink/logo.png" width="56" height="56" alt=""><span>BarberLink<small>BY BASTIDA SYSTEMS</small></span></div>
-        <p data-launch-copy="visual">El próximo capítulo de tu barbería empieza aquí.</p>
+    <div class="bl-launch__content">
+      <button class="bl-launch__close" type="button" data-launch-close aria-label="Cerrar anuncio"><span aria-hidden="true">×</span></button>
+      <img class="bl-launch__logo" src="assets/barberlink/logo.png" width="72" height="72" alt="" decoding="async">
+      <h2 id="bl-launch-title" data-launch-copy="title">BarberLink.</h2>
+      <p class="bl-launch__description" id="bl-launch-description" data-launch-copy="description">Únete antes del lanzamiento.</p>
+      <div class="bl-launch__timer" role="timer" aria-label="Tiempo hasta el lanzamiento previsto" data-launch-timer>
+        <div><strong data-launch-days>30</strong><span data-launch-copy="days">Días</span></div>
+        <div><strong data-launch-hours>00</strong><span data-launch-copy="hours">Horas</span></div>
+        <div><strong data-launch-minutes>00</strong><span data-launch-copy="minutes">Min</span></div>
       </div>
-      <div class="bl-launch__content">
-        <button class="bl-launch__close" type="button" data-launch-close aria-label="Cerrar anuncio" autofocus><span aria-hidden="true">×</span></button>
-        <p class="bl-launch__eyebrow"><span></span> WHAT’S NEW · BARBERLINK</p>
-        <h2 id="bl-launch-title" data-launch-copy="title">Tu talento.<br>Tu próxima comunidad.</h2>
-        <p class="bl-launch__description" id="bl-launch-description" data-launch-copy="description">¿Ofreces servicios de barbería? Crea tu perfil y forma parte de BarberLink antes del lanzamiento de la app.</p>
-        <p class="bl-launch__target" data-launch-copy="target">Lanzamiento previsto · 30 de noviembre de 2026</p>
-        <div class="bl-launch__timer" role="timer" aria-label="Tiempo hasta el lanzamiento previsto" data-launch-timer>
-          <div><strong data-launch-days>30</strong><span data-launch-copy="days">Días</span></div>
-          <div><strong data-launch-hours>00</strong><span data-launch-copy="hours">Horas</span></div>
-          <div><strong data-launch-minutes>00</strong><span data-launch-copy="minutes">Min</span></div>
-          <div><strong data-launch-seconds>00</strong><span data-launch-copy="seconds">Seg</span></div>
-        </div>
-        <div class="bl-launch__stats">
-          <div><strong data-launch-barbers>3</strong><span data-launch-copy="barbers">Barberos inscritos</span></div>
-          <div><strong data-launch-community>5</strong><span data-launch-copy="community">Comunidad inscrita</span></div>
-        </div>
-        <p class="bl-launch__verified" data-launch-copy="verified">Registros al 31 oct 2026 · La comunidad incluye a los barberos.</p>
-        <div class="bl-launch__actions">
-          <a class="bl-launch__primary" href="https://barberlinknv.com/acceso?professional=true&amp;continueProfessional=true" data-launch-copy="barberCta">Soy barbero · Quiero unirme <span aria-hidden="true">↗</span></a>
-          <a class="bl-launch__secondary" href="https://barberlinknv.com/acceso" data-launch-copy="communityCta">Quiero ser parte de la comunidad</a>
-        </div>
-        <p class="bl-launch__note" data-launch-copy="note">La web ya está disponible. Adelántate a la app.</p>
+      <p class="bl-launch__target" data-launch-copy="target">30 de noviembre · Lanzamiento previsto</p>
+      <div class="bl-launch__stats" aria-describedby="bl-launch-stats-note">
+        <span><strong data-launch-barbers>3</strong> <span data-launch-copy="barbers">barberos</span></span>
+        <span class="bl-launch__dot" aria-hidden="true">·</span>
+        <span><strong data-launch-community>5</strong> <span data-launch-copy="community">en comunidad</span></span>
+      </div>
+      <span id="bl-launch-stats-note" class="bl-launch__sr-only" data-launch-copy="statsNote">La comunidad incluye a los barberos.</span>
+      <p class="bl-launch__verified" data-launch-copy="verified">Datos al 31 oct 2026</p>
+      <div class="bl-launch__actions">
+        <a class="bl-launch__primary" href="https://barberlinknv.com/acceso?professional=true&amp;continueProfessional=true" data-launch-copy="barberCta">Soy barbero</a>
+        <a class="bl-launch__secondary" href="https://barberlinknv.com/acceso" data-launch-copy="communityCta">Unirme como cliente</a>
       </div>
     </div>
   </dialog>
-  <script src="barberlink-promo.js?v=2026-10-31" defer></script>
+  <script src="barberlink-promo.js?v=2026-10-31-minimal" defer></script>
 
   <main class="page-main">
     <section class="home-redesign-hero" id="home" aria-labelledby="home-hero-title">
@@ -147,7 +140,7 @@
               <div class="home-update__copy">
                 <p class="home-update__category" data-launch-copy="category">PRÓXIMAMENTE · BARBERLINK</p>
                 <h3 >BarberLink</h3>
-                <p data-launch-copy="description">¿Ofreces servicios de barbería? Crea tu perfil y forma parte de BarberLink antes del lanzamiento de la app.</p>
+                <p data-launch-copy="description">Únete antes del lanzamiento.</p>
                 <div class="home-update__actions">
                   <a class="home-update__primary" data-update-primary href="barberlink.html" data-launch-open data-launch-copy="detailsCta">Ver lanzamiento</a>
                   <button type="button" class="home-update__info home-update__icon" data-update-toggle aria-expanded="false" aria-controls="update-details-barberlink" aria-label="Ver información" data-i18n-title="home.updates.info" data-i18n-aria-label="home.updates.info" title="Ver información" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><circle cx="12" cy="7.5" r=".8" fill="currentColor" stroke="none"/></svg></button>

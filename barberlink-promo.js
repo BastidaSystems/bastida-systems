@@ -2,32 +2,28 @@
   'use strict';
   const copy = {
     es: {
-      visual: 'El próximo capítulo de tu barbería empieza aquí.',
-      title: 'Tu talento.\nTu próxima comunidad.',
-      description: '¿Ofreces servicios de barbería? Crea tu perfil y forma parte de BarberLink antes del lanzamiento de la app.',
-      target: 'Lanzamiento previsto · 30 de noviembre de 2026',
+      title: 'BarberLink.',
+      description: 'Únete antes del lanzamiento.',
+      target: '30 de noviembre · Lanzamiento previsto',
       days: 'Días', hours: 'Horas', minutes: 'Min', seconds: 'Seg',
-      barbers: 'Barberos inscritos', community: 'Comunidad inscrita',
-      barberCta: 'Soy barbero · Quiero unirme ↗', communityCta: 'Quiero ser parte de la comunidad',
-      note: 'La web ya está disponible. Adelántate a la app.',
+      barbers: 'barberos', community: 'en comunidad',
+      barberCta: 'Soy barbero', communityCta: 'Unirme como cliente',
       category: 'PRÓXIMAMENTE · BARBERLINK', detailsCta: 'Ver lanzamiento',
       close: 'Cerrar anuncio', timer: 'Tiempo hasta el lanzamiento previsto',
       reached: 'La cuenta regresiva terminó. Consulta las novedades de la app.',
-      verified: 'Registros al {date} · La comunidad incluye a los barberos.'
+      verified: 'Datos al {date}', statsNote: 'La comunidad incluye a los barberos.'
     },
     en: {
-      visual: 'Your barbershop’s next chapter starts here.',
-      title: 'Your talent.\nYour next community.',
-      description: 'Offer barbering services? Create your profile and join BarberLink before the app launches.',
-      target: 'Target launch · November 30, 2026',
+      title: 'BarberLink.',
+      description: 'Join before launch.',
+      target: 'November 30 · Target launch',
       days: 'Days', hours: 'Hours', minutes: 'Min', seconds: 'Sec',
-      barbers: 'Barbers registered', community: 'Community registered',
-      barberCta: 'I’m a barber · Join now ↗', communityCta: 'Join the community',
-      note: 'Already available on the web. Get ahead of the app.',
+      barbers: 'barbers', community: 'in the community',
+      barberCta: 'I’m a barber', communityCta: 'Join as a client',
       category: 'COMING SOON · BARBERLINK', detailsCta: 'See the launch',
       close: 'Close announcement', timer: 'Time until the target launch',
       reached: 'The countdown has ended. Check the latest app updates.',
-      verified: 'Registered as of {date} · Community includes barbers.'
+      verified: 'As of {date}', statsNote: 'Community includes barbers.'
     }
   };
   // One fixed calendar-month target, shared by every visitor; never reset on reload.
@@ -40,7 +36,7 @@
     const renderTimer = () => {
       let remaining = Math.max(0, Math.floor((launchAt - Date.now()) / 1000));
       const units = { days: Math.floor(remaining / 86400), hours: Math.floor(remaining % 86400 / 3600),
-        minutes: Math.floor(remaining % 3600 / 60), seconds: remaining % 60 };
+        minutes: Math.floor(remaining % 3600 / 60) };
       Object.entries(units).forEach(([unit, value]) => {
         dialog.querySelector(`[data-launch-${unit}]`).textContent = String(value).padStart(2, '0');
       });
@@ -48,7 +44,7 @@
     };
     const render = () => {
       const lang = language(), strings = copy[lang];
-      const date = new Intl.DateTimeFormat(lang === 'es' ? 'es-US' : 'en-US', {
+      const date = new Intl.DateTimeFormat(lang === 'es' ? 'es-MX' : 'en-US', {
         day: 'numeric', month: 'short', year: 'numeric', timeZone: 'America/Los_Angeles'
       }).format(new Date(snapshot.updatedAt));
       document.querySelectorAll('[data-launch-copy]').forEach(element => {
