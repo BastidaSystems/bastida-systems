@@ -12,7 +12,14 @@ html.bl-launch-open, html.bl-launch-open body { overflow: hidden; }
 .bl-launch__founder { max-width: 270px; margin: 0 auto 22px; padding: 12px 14px; border-radius: 14px; background: #f5f5f7; color: #6e6e73; font-size: 12px; line-height: 1.55; text-wrap: balance; }
 .bl-launch__founder span { display: block; }
 .bl-launch__founder span + span { margin-top: 5px; }
-.bl-launch__founder strong { display: block; margin-bottom: 3px; color: #1d1d1f; font-size: 12px; font-weight: 600; }
+.bl-launch__founder strong { display: block; margin-bottom: 3px; color: #0066cc; font-size: 12px; font-weight: 600; }
+.bl-launch__info { margin-top: 8px; }
+.bl-launch__info summary { display: inline-flex; align-items: center; justify-content: center; gap: 4px; min-height: 36px; color: #06c; cursor: pointer; list-style: none; }
+.bl-launch__info summary::-webkit-details-marker { display: none; }
+.bl-launch__info summary span { display: inline; margin: 0; }
+.bl-launch__info p { margin: 6px 0; font-size: 11px; line-height: 1.6; }
+.bl-launch__info a { color: #06c; text-decoration: none; }
+.bl-launch__info a:hover { text-decoration: underline; }
 .bl-launch__timer { display: grid; grid-template-columns: repeat(3, 1fr); max-width: 270px; margin: 0 auto; }
 .bl-launch__timer > div + div { border-left: 1px solid #e8e8ed; }
 .bl-launch__timer strong { display: block; font-size: 32px; font-weight: 500; letter-spacing: -.04em; font-variant-numeric: tabular-nums; line-height: 1.2; }
