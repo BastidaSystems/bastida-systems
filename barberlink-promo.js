@@ -4,6 +4,7 @@
     es: {
       title: 'BarberLink.',
       description: 'Únete antes del lanzamiento.',
+      founderTitle: 'Primeros 100 barberos', founderBenefit: 'Insignia de fundador y $9.99 USD/mes de por vida.',
       target: '30 de noviembre · Lanzamiento previsto',
       days: 'Días', hours: 'Horas', minutes: 'Min', seconds: 'Seg',
       barbers: 'barberos', community: 'en comunidad',
@@ -16,6 +17,7 @@
     en: {
       title: 'BarberLink.',
       description: 'Join before launch.',
+      founderTitle: 'First 100 barbers', founderBenefit: 'Founder badge and $9.99 USD/month for life.',
       target: 'November 30 · Target launch',
       days: 'Days', hours: 'Hours', minutes: 'Min', seconds: 'Sec',
       barbers: 'barbers', community: 'in the community',
