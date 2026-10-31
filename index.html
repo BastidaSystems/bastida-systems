@@ -24,7 +24,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="agency.css?v=2026-09-23-read-aloud">
-  <link rel="stylesheet" href="monster-promo.css?v=2026-10-20-cover">
+  <link rel="stylesheet" href="barberlink-promo.css?v=2026-10-31">
   <link rel="stylesheet" href="home-updates.css?v=2026-10-21-mobile-spacing">
   <link rel="stylesheet" href="home-nav-light.css?v=2026-10-20">
   <!-- Social preview -->
@@ -77,20 +77,39 @@
   <script src="site-header.js?v=2026-10-20-nav-brand" defer></script>
   <script src="site-language.js?v=2026-10-22-presupuesto" defer></script>
 
-  <dialog class="monster-promo" id="monster-promo" aria-labelledby="monster-promo-title" aria-describedby="monster-promo-description">
-    <div class="monster-promo__content">
-      <button class="monster-promo__close" type="button" data-monster-promo-close autofocus>
-        <span aria-hidden="true">×</span>
-        <span data-i18n="home.monster.close">Cerrar</span>
-      </button>
-      <img class="monster-promo__cover" src="IMG/monster-apocalypse-cover.webp" width="1672" height="941" alt="" decoding="async">
-      <p class="monster-promo__eyebrow">BASTIDA SYSTEMS · GAMES</p>
-      <h2 id="monster-promo-title">Monster<br>Apocalypse</h2>
-      <p class="monster-promo__description" id="monster-promo-description" data-i18n="home.monster.description">El apocalipsis te espera. Descubre Monster Apocalypse, un juego de Bastida Systems.</p>
-      <a class="monster-promo__play" href="https://monster-apocalypse-bastida-systems.vercel.app/" data-i18n="home.monster.play">Jugar ahora</a>
+  <dialog class="bl-launch" id="barberlink-launch" aria-labelledby="bl-launch-title" aria-describedby="bl-launch-description">
+    <div class="bl-launch__layout">
+      <div class="bl-launch__visual" aria-hidden="true">
+        <img class="bl-launch__photo" src="assets/barberlink/hero.jpg" width="1280" height="853" alt="" decoding="async">
+        <div class="bl-launch__brand"><img src="assets/barberlink/logo.png" width="56" height="56" alt=""><span>BarberLink<small>BY BASTIDA SYSTEMS</small></span></div>
+        <p data-launch-copy="visual">El próximo capítulo de tu barbería empieza aquí.</p>
+      </div>
+      <div class="bl-launch__content">
+        <button class="bl-launch__close" type="button" data-launch-close aria-label="Cerrar anuncio" autofocus><span aria-hidden="true">×</span></button>
+        <p class="bl-launch__eyebrow"><span></span> WHAT’S NEW · BARBERLINK</p>
+        <h2 id="bl-launch-title" data-launch-copy="title">Tu talento.<br>Tu próxima comunidad.</h2>
+        <p class="bl-launch__description" id="bl-launch-description" data-launch-copy="description">¿Ofreces servicios de barbería? Crea tu perfil y forma parte de BarberLink antes del lanzamiento de la app.</p>
+        <p class="bl-launch__target" data-launch-copy="target">Lanzamiento previsto · 30 de noviembre de 2026</p>
+        <div class="bl-launch__timer" role="timer" aria-label="Tiempo hasta el lanzamiento previsto" data-launch-timer>
+          <div><strong data-launch-days>30</strong><span data-launch-copy="days">Días</span></div>
+          <div><strong data-launch-hours>00</strong><span data-launch-copy="hours">Horas</span></div>
+          <div><strong data-launch-minutes>00</strong><span data-launch-copy="minutes">Min</span></div>
+          <div><strong data-launch-seconds>00</strong><span data-launch-copy="seconds">Seg</span></div>
+        </div>
+        <div class="bl-launch__stats">
+          <div><strong data-launch-barbers>3</strong><span data-launch-copy="barbers">Barberos inscritos</span></div>
+          <div><strong data-launch-community>5</strong><span data-launch-copy="community">Comunidad inscrita</span></div>
+        </div>
+        <p class="bl-launch__verified" data-launch-copy="verified">Registros al 31 oct 2026 · La comunidad incluye a los barberos.</p>
+        <div class="bl-launch__actions">
+          <a class="bl-launch__primary" href="https://barberlinknv.com/acceso?professional=true&amp;continueProfessional=true" data-launch-copy="barberCta">Soy barbero · Quiero unirme <span aria-hidden="true">↗</span></a>
+          <a class="bl-launch__secondary" href="https://barberlinknv.com/acceso" data-launch-copy="communityCta">Quiero ser parte de la comunidad</a>
+        </div>
+        <p class="bl-launch__note" data-launch-copy="note">La web ya está disponible. Adelántate a la app.</p>
+      </div>
     </div>
   </dialog>
-  <script src="monster-promo.js?v=2026-10-20" defer></script>
+  <script src="barberlink-promo.js?v=2026-10-31" defer></script>
 
   <main class="page-main">
     <section class="home-redesign-hero" id="home" aria-labelledby="home-hero-title">
@@ -119,11 +138,24 @@
 
         <div class="home-updates reveal" role="region" aria-roledescription="carousel" aria-labelledby="home-updates-title" data-i18n-aria-roledescription="home.updates.carousel" data-home-updates tabindex="0">
           <div class="home-updates__heading">
-            <h2 id="home-updates-title" data-i18n="home.updates.heading">Novedades</h2>
+            <h2 id="home-updates-title">What’s New</h2>
             <span class="home-updates__count" data-updates-count aria-live="polite" aria-atomic="true">01 / 09</span>
           </div>
           <div class="home-updates__slides">
-            <article class="home-update" data-update-slide tabindex="0" data-product="game">
+            <article class="home-update" data-update-slide tabindex="0" data-product="barberlink">
+              <img src="assets/barberlink/web-desktop.jpg" width="1920" height="1080" alt="" decoding="async">
+              <div class="home-update__copy">
+                <p class="home-update__category" data-launch-copy="category">PRÓXIMAMENTE · BARBERLINK</p>
+                <h3 >BarberLink</h3>
+                <p data-launch-copy="description">¿Ofreces servicios de barbería? Crea tu perfil y forma parte de BarberLink antes del lanzamiento de la app.</p>
+                <div class="home-update__actions">
+                  <a class="home-update__primary" data-update-primary href="barberlink.html" data-launch-open data-launch-copy="detailsCta">Ver lanzamiento</a>
+                  <button type="button" class="home-update__info home-update__icon" data-update-toggle aria-expanded="false" aria-controls="update-details-barberlink" aria-label="Ver información" data-i18n-title="home.updates.info" data-i18n-aria-label="home.updates.info" title="Ver información" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><circle cx="12" cy="7.5" r=".8" fill="currentColor" stroke="none"/></svg></button>
+                  <a class="home-update__icon" href="barberlink.html" data-update-website aria-label="Página web" data-i18n-title="home.updates.website" data-i18n-aria-label="home.updates.website" title="Página web"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18"/></svg></a>
+                </div>
+              </div>
+            </article>
+            <article class="home-update" data-update-slide tabindex="0" data-product="game" hidden>
               <img src="IMG/monster-apocalypse-cover.webp" width="1672" height="941" alt="" decoding="async">
               <div class="home-update__copy">
                 <p class="home-update__category" data-i18n="home.updates.game.category">VIDEOJUEGOS</p>
@@ -228,19 +260,7 @@
                 </div>
               </div>
             </article>
-              <article class="home-update" data-update-slide tabindex="0" data-product="barberlink" hidden>
-              <img src="assets/barberlink/web-desktop.jpg" width="1920" height="1080" alt="" decoding="async">
-              <div class="home-update__copy">
-                <p class="home-update__category" data-i18n="home.updates.barberlink.category">RESERVAS · BARBERÍAS</p>
-                <h3 >BarberLink</h3>
-                <p data-i18n="home.updates.barberlink.description">La app de reservas solo para barberías: tu corte en menos de un minuto, sin crear una cuenta. Ya en vivo en la web.</p>
-                <div class="home-update__actions">
-                  <a class="home-update__primary" data-update-primary href="https://barberlinknv.com" data-i18n="home.updates.visitSite">Visitar el sitio</a>
-                  <button type="button" class="home-update__info home-update__icon" data-update-toggle aria-expanded="false" aria-controls="update-details-barberlink" aria-label="Ver información" data-i18n-title="home.updates.info" data-i18n-aria-label="home.updates.info" title="Ver información" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><circle cx="12" cy="7.5" r=".8" fill="currentColor" stroke="none"/></svg></button>
-                  <a class="home-update__icon" href="barberlink.html" data-update-website aria-label="Página web" data-i18n-title="home.updates.website" data-i18n-aria-label="home.updates.website" title="Página web"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18"/></svg></a>
-                </div>
-              </div>
-            </article>
+
           <div class="home-updates__controls" data-updates-controls hidden>
             <p data-i18n="home.updates.controls">Explora nuestros proyectos</p>
             <div>
