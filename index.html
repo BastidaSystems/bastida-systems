@@ -24,7 +24,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="agency.css?v=2026-09-23-read-aloud">
-  <link rel="stylesheet" href="barberlink-promo.css?v=2026-10-31-minimal">
+  <link rel="stylesheet" href="barberlink-promo.css?v=2026-10-31-gallery">
   <link rel="stylesheet" href="home-updates.css?v=2026-10-21-mobile-spacing">
   <link rel="stylesheet" href="home-nav-light.css?v=2026-10-20">
   <!-- Social preview -->
@@ -78,10 +78,52 @@
   <script src="site-language.js?v=2026-10-22-presupuesto" defer></script>
 
   <dialog class="bl-launch" id="barberlink-launch" aria-labelledby="bl-launch-title" aria-describedby="bl-launch-description">
+    <button class="bl-launch__close" type="button" autofocus data-launch-close aria-label="Cerrar anuncio"><span aria-hidden="true">×</span></button>
+    <div class="bl-launch__layout">
+      <section class="bl-gallery" data-launch-gallery aria-label="Capturas de BarberLink" aria-roledescription="carrusel">
+        <div class="bl-gallery__track" data-gallery-track tabindex="0">
+          <figure class="bl-gallery__slide" data-gallery-slide>
+            <a href="assets/barberlink/screenshots/01-inicio.png" target="_blank" rel="noopener" data-gallery-image-link>
+              <img src="assets/barberlink/screenshots/01-inicio.png" width="1320" height="2868" alt="Inicio de BarberLink" data-gallery-image="0" decoding="async" loading="eager">
+            </a>
+          </figure>
+          <figure class="bl-gallery__slide" data-gallery-slide>
+            <a href="assets/barberlink/screenshots/02-seleccion.png" target="_blank" rel="noopener" data-gallery-image-link>
+              <img src="assets/barberlink/screenshots/02-seleccion.png" width="1320" height="2868" alt="Buscar u ofrecer servicios" data-gallery-image="1" decoding="async" loading="lazy">
+            </a>
+          </figure>
+          <figure class="bl-gallery__slide" data-gallery-slide>
+            <a href="assets/barberlink/screenshots/05-servicios.png" target="_blank" rel="noopener" data-gallery-image-link>
+              <img src="assets/barberlink/screenshots/05-servicios.png" width="1320" height="2868" alt="Servicios de barbería" data-gallery-image="2" decoding="async" loading="lazy">
+            </a>
+          </figure>
+          <figure class="bl-gallery__slide" data-gallery-slide>
+            <a href="assets/barberlink/screenshots/06-servicio-detalle.png" target="_blank" rel="noopener" data-gallery-image-link>
+              <img src="assets/barberlink/screenshots/06-servicio-detalle.png" width="1320" height="2868" alt="Detalle del corte" data-gallery-image="3" decoding="async" loading="lazy">
+            </a>
+          </figure>
+          <figure class="bl-gallery__slide" data-gallery-slide>
+            <a href="assets/barberlink/screenshots/07-reserva-fecha-hora.png" target="_blank" rel="noopener" data-gallery-image-link>
+              <img src="assets/barberlink/screenshots/07-reserva-fecha-hora.png" width="1320" height="2868" alt="Elegir fecha y hora" data-gallery-image="4" decoding="async" loading="lazy">
+            </a>
+          </figure>
+        </div>
+        <div class="bl-gallery__controls">
+          <div class="bl-gallery__dots" data-gallery-dots>
+            <button type="button" data-gallery-dot="0" aria-label="Ver captura 1" aria-current="true"><span></span></button>
+            <button type="button" data-gallery-dot="1" aria-label="Ver captura 2" aria-current="false"><span></span></button>
+            <button type="button" data-gallery-dot="2" aria-label="Ver captura 3" aria-current="false"><span></span></button>
+            <button type="button" data-gallery-dot="3" aria-label="Ver captura 4" aria-current="false"><span></span></button>
+            <button type="button" data-gallery-dot="4" aria-label="Ver captura 5" aria-current="false"><span></span></button>
+          </div>
+          <button class="bl-gallery__pause" type="button" data-gallery-pause aria-label="Pausar galería" aria-pressed="false"><span data-gallery-pause-icon aria-hidden="true">Ⅱ</span></button>
+        </div>
+      </section>
     <div class="bl-launch__content">
-      <button class="bl-launch__close" type="button" data-launch-close aria-label="Cerrar anuncio"><span aria-hidden="true">×</span></button>
+      <div class="bl-launch__identity">
       <img class="bl-launch__logo" src="assets/barberlink/logo.png" width="72" height="72" alt="" decoding="async">
       <h2 id="bl-launch-title" data-launch-copy="title">BarberLink.</h2>
+      </div>
       <p class="bl-launch__description" id="bl-launch-description" data-launch-copy="description">Únete antes del lanzamiento.</p>
       <div class="bl-launch__timer" role="timer" aria-label="Tiempo hasta el lanzamiento previsto" data-launch-timer>
         <div><strong data-launch-days>30</strong><span data-launch-copy="days">Días</span></div>
@@ -98,12 +140,16 @@
       <p class="bl-launch__verified" data-launch-copy="verified">Datos al 31 oct 2026</p>
       <div class="bl-launch__actions">
         <a class="bl-launch__primary" href="https://barberlinknv.com/acceso?professional=true&amp;continueProfessional=true" data-launch-copy="barberCta">Soy barbero</a>
+        <div class="bl-launch__links">
         <a class="bl-launch__secondary" href="https://barberlinknv.com/acceso" data-launch-copy="communityCta">Unirme como cliente</a>
         <a class="bl-launch__secondary" href="https://barberlinknv.com/" data-launch-copy="visitCta">Visitar BarberLink</a>
+        </div>
       </div>
+    </div>
     </div>
   </dialog>
   <script src="barberlink-promo.js?v=2026-10-31-visit" defer></script>
+  <script src="barberlink-gallery.js?v=2026-10-31" defer></script>
 
   <main class="page-main">
     <section class="home-redesign-hero" id="home" aria-labelledby="home-hero-title">
