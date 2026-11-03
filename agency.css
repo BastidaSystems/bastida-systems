@@ -9578,3 +9578,10 @@ select.form-field {
 .store-product-card__price{display:inline-block;margin-top:6px;font-weight:800;font-size:1.05rem;color:var(--bs-green-dark)}
 #physical-products{padding-top:8px}
 #physical-products h2{margin-bottom:18px}
+
+/* Marca del nav en peso Light — pedido de David (2026-11-03): solo el nombre
+   «Bastida Systems» del encabezado; no afecta enlaces ni otros textos. */
+#site-header .bs-brand-name,
+.home-redesign-page #site-header .bs-brand-name {
+  font-weight: 300;
+}
