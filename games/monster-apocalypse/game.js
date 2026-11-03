@@ -15,10 +15,22 @@
 // Motor: Three.js 0.160 desde CDN (copia web desplegada). La copia local usa ./lib vendored.
 // ============================================================
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { clone as cloneSkinned } from 'three/addons/utils/SkeletonUtils.js';
 // Etapa C1 (exploración): registro estructurado del mapa (MAPREG),
 // minimapa circular y mapa expandido (tecla M / botón MAPA) con
 // descubrimiento progresivo por línea de vista 2D — no atraviesa
 // paredes — persistente entre partidas (modo 'explore').
+// Etapa C2 (expansión): retícula de 3 calles (~2× superficie), tres
+// edificios explorables de una planta (Hospital, Comisaría, Fábrica)
+// con interiores navegables y puertas abiertas transitables, y
+// puntos de aparición perimetrales por datos (SPAWN_POINTS).
+// Ambiente: lluvia visual (LineSegments que siguen al jugador) y
+// sonido de lluvia procedural (ruido filtrado, sin archivos).
+// Visual alienígena (prueba): monstruo y zombie usan el modelo
+// alien1.glb con AnimationMixer (idle/crawl/run/attack/hit/death);
+// la IA de la Etapa B no cambia — solo cambia el visual y el HURT
+// del alien gana el retroceso de 1.41 m de su clip de daño.
 
 // ---------- Constantes ----------
 const MAG_SIZE = 30;
@@ -59,7 +71,144 @@ const SPREAD = 0.012;             // rad: dispersión máxima por disparo
 const INVULN_TIME = 0.5;          // s de invulnerabilidad tras recibir daño
 const MOUSE_SENS = 0.0021;        // sensibilidad base del mouse (× ajuste del jugador)
 const PLAYER_RADIUS = 0.55;
-const MAP = { halfW: 13, halfL: 58 }; // calle jugable (x, z)
+const MAP = { halfW: 52, halfL: 58 }; // límites jugables (x, z) tras la expansión C2
+const MAIN_HALF_W = 13;               // semiancho de la calle principal original
+const TRANSVERSALS = [-20, 24];       // centros z de las calles transversales (C2)
+// Puntos de aparición perimetrales (C2): extremos de las tres calles,
+// con jitter (jx/jz) alrededor del punto base.
+const SPAWN_POINTS = [
+  { x: 0, z: -55, jx: 10, jz: 0 }, { x: 0, z: 55, jx: 10, jz: 0 },
+  { x: -50, z: -20, jx: 0, jz: 4 }, { x: 50, z: -20, jx: 0, jz: 4 },
+  { x: -50, z: 24, jx: 0, jz: 4 }, { x: 50, z: 24, jx: 0, jz: 4 },
+];
+
+// ---------- Visual alienígena (GLB) ----------
+// Sustituye SOLO el visual de monstruo y zombie por el alien de
+// alien1.glb (Meshy + rig/animaciones Mixamo): la IA, los stats por
+// variante y el radio de colisión quedan como estaban. La carga es
+// asíncrona: mientras el modelo no esté listo, los enemigos usan el
+// visual procedural de siempre como respaldo temporal.
+const ALIEN_FILE = 'alien1.glb';
+const ALIEN_HIT_DUR = 1.03 / 1.45;   // s: el clip hit (1.03 s) acelerado ×1.45
+const ALIEN_HIT_PUSH = 1.41;         // m: retroceso neto medido del clip hit
+const ALIEN_DEAD_TIME = 2.35;        // s: cadáver alien en pantalla (clip death 2.30 s)
+let alienTemplate = null;            // { root, clips } tras cargar el GLB
+
+// Neutraliza el desplazamiento XZ de la raíz (mixamorig:Hips) de un
+// clip fijándolo al de su primera clave: el avance y el retroceso los
+// gobierna la lógica del juego, no la animación (nada de doble
+// movimiento ni saltos). Se conservan Y (altura de cadera) y rotaciones.
+function stripRootXZ(clip) {
+  for (const track of clip.tracks) {
+    if (!track.name.endsWith('.position') || !track.name.includes('Hips')) continue;
+    const v = track.values, x0 = v[0], z0 = v[2];
+    for (let i = 0; i < v.length; i += 3) { v[i] = x0; v[i + 2] = z0; }
+  }
+  return clip;
+}
+function alienOnLoad(gltf) {
+  const clips = {};
+  for (const c of gltf.animations) clips[c.name] = stripRootXZ(c);
+  alienTemplate = { root: gltf.scene, clips };
+}
+function alienOnError(err) { console.warn('alien1.glb no cargó; se mantiene el visual procedural', err); }
+// Carga del modelo: en el despliegue web el GLB viaja partido en
+// trozos (alien1.pNNN) por el límite de tamaño del canal de despliegue
+// y se reensambla aquí byte a byte; en local se carga el archivo
+// alien1.glb directamente. Si todo falla, respaldo procedural.
+fetch('alien1.parts.json')
+  .then(r => { if (!r.ok) throw new Error('sin manifiesto'); return r.json(); })
+  .then(man => Promise.all(man.parts.map(p => fetch(p).then(r => {
+    if (!r.ok) throw new Error('trozo ' + p);
+    return r.arrayBuffer();
+  }))))
+  .then(bufs => {
+    const url = URL.createObjectURL(new Blob(bufs, { type: 'model/gltf-binary' }));
+    new GLTFLoader().load(url, alienOnLoad, undefined, alienOnError);
+  })
+  .catch(() => { new GLTFLoader().load(ALIEN_FILE, alienOnLoad, undefined, alienOnError); });
+
+// Piezas ficticias para el visual alienígena: la lógica procedural de
+// poses (walkAnim, golpe, búsqueda) escribe rotaciones en mon.parts;
+// con el GLB esas escrituras deben ser inofensivas, porque la pose
+// real la lleva el AnimationMixer del modelo.
+function dummyParts() {
+  const r = () => ({ rotation: { x: 0 } });
+  return { armL: r(), armR: r(), legL: r(), legR: r() };
+}
+
+// Construye el visual alienígena de un enemigo: clona el modelo con
+// skin (SkeletonUtils), clona los materiales (para que el destello de
+// impacto sea individual por enemigo) y prepara su AnimationMixer.
+// Devuelve null si el modelo aún no terminó de cargar.
+function buildAlienVisual() {
+  if (!alienTemplate) return null;
+  const visual = cloneSkinned(alienTemplate.root);
+  const mats = [];
+  visual.traverse(o => {
+    if (o.isMesh) {
+      o.material = o.material.clone();
+      o.frustumCulled = false;   // con skin, la caja base engaña al culling al animar
+      mats.push(o.material);
+    }
+  });
+  const mixer = new THREE.AnimationMixer(visual);
+  const actions = {};
+  for (const name in alienTemplate.clips) {
+    const a = mixer.clipAction(alienTemplate.clips[name]);
+    a.enabled = true;
+    actions[name] = a;
+  }
+  return { visual, mats, mixer, actions, current: null, deathPlayed: false };
+}
+
+// Activa un clip con crossfade corto; si ya es el actual no hace nada
+// (salvo ajustar timeScale o reiniciarlo si restart = true).
+function alienPlay(mon, name, { loop = true, timeScale = 1, fade = 0.15, restart = false } = {}) {
+  const A = mon.alien;
+  if (!A) return;
+  const act = A.actions[name];
+  if (!act) return;
+  if (A.current === name && !restart) { act.timeScale = timeScale; return; }
+  const prev = A.current ? A.actions[A.current] : null;
+  act.reset();
+  act.setLoop(loop ? THREE.LoopRepeat : THREE.LoopOnce, Infinity);
+  act.clampWhenFinished = !loop;
+  act.timeScale = timeScale;
+  act.enabled = true;
+  act.play();
+  if (prev && prev !== act) { prev.fadeOut(fade); act.fadeIn(fade); }
+  A.current = name;
+}
+
+// Mapeo estado → clip del alien (mixer por enemigo). Se llama cada
+// frame: garantiza que SIEMPRE haya un clip activo — la pose bind del
+// GLB sin clip queda hundida y no es una pose válida en juego.
+function updateAlienAnim(mon, dt) {
+  const A = mon.alien;
+  if (!A) return;
+  switch (mon.state) {
+    case 'idle': alienPlay(mon, 'idle', { timeScale: mon.animRate }); break;
+    case 'chase': alienPlay(mon, mon.chaseClip, { timeScale: mon.animRate }); break;
+    case 'search': alienPlay(mon, mon.searchArrived ? 'idle' : mon.chaseClip, { timeScale: mon.animRate }); break;
+    // El clip attack dura 4.67 s: a ×3.4 se cierra en ~1.37 s, ágil.
+    case 'attack': alienPlay(mon, 'attack', { timeScale: 3.4 }); break;
+    case 'hurt': {
+      const restart = mon.hurtRestart; mon.hurtRestart = false;
+      alienPlay(mon, 'hit', { loop: false, timeScale: 1.03 / mon.hurtDurNow, fade: 0.07, restart });
+      break;
+    }
+    case 'dead':
+      if (!A.deathPlayed) {
+        A.deathPlayed = true;
+        const alt = Math.random() < 0.25;   // 25%: muerte larga (agonía)
+        // death2 dura 11.67 s: a ×5 se cierra en ~2.3 s, como death.
+        alienPlay(mon, alt ? 'death2' : 'death', { loop: false, timeScale: alt ? 5 : 1, fade: 0.1 });
+      }
+      break;
+  }
+  A.mixer.update(dt);
+}
 
 // ---------- Estado ----------
 const S = {
@@ -78,7 +227,7 @@ const S = {
   invulnUntil: 0,
   keys: {},
 };
-window.__ma = { version: 'etapa1', state: S, monstersAlive: () => monsters.length };
+window.__ma = { version: 'etapa1', state: S, monstersAlive: () => monsters.length, list: () => monsters, alienReady: () => !!alienTemplate };
 
 // Sensibilidad de apuntado: multiplicador 0.5–2.0 ajustable en la
 // pantalla inicial y persistente entre sesiones (localStorage ma_sens).
@@ -123,13 +272,15 @@ function makeTexture(draw, w = 256, h = 256, rx = 1, ry = 1) {
   t.colorSpace = THREE.SRGBColorSpace;
   return t;
 }
-const asphaltTex = makeTexture((g, w, h) => {
+const drawAsphalt = (g, w, h) => {
   g.fillStyle = '#33302e'; g.fillRect(0, 0, w, h);
   for (let i = 0; i < 2600; i++) { g.fillStyle = `rgba(${20 + Math.random() * 60 | 0},${18 + Math.random() * 50 | 0},${16 + Math.random() * 40 | 0},.5)`; g.fillRect(Math.random() * w, Math.random() * h, 2, 2); }
   g.strokeStyle = 'rgba(0,0,0,.55)'; g.lineWidth = 2;
   for (let i = 0; i < 7; i++) { g.beginPath(); let x = Math.random() * w, y = Math.random() * h; g.moveTo(x, y); for (let j = 0; j < 5; j++) { x += (Math.random() - .5) * 60; y += (Math.random() - .5) * 60; g.lineTo(x, y); } g.stroke(); }
   g.fillStyle = 'rgba(214,178,60,.75)'; g.fillRect(w / 2 - 3, 0, 6, 26); g.fillRect(w / 2 - 3, 58, 6, 26); g.fillRect(w / 2 - 3, 116, 6, 26);
-}, 256, 256, 3, 16);
+};
+const asphaltTex = makeTexture(drawAsphalt, 256, 256, 3, 16);   // calle principal (a lo largo de z)
+const asphaltTexX = makeTexture(drawAsphalt, 256, 256, 12, 2); // transversales C2 (a lo largo de x)
 function facadeTex(base, brokenRatio) {
   return makeTexture((g, w, h) => {
     g.fillStyle = base; g.fillRect(0, 0, w, h);
@@ -156,16 +307,107 @@ function addCollider(cx, cz, w, d) { colliders.push({ minX: cx - w / 2, maxX: cx
 // El minimapa y el mapa expandido se alimentan SOLO de este registro.
 const MAPREG = { streets: [], buildings: [], landmarks: [] };
 
+// ---------- Reservas y edificios explorables (Etapa C2) ----------
+// Solape de rectángulos con desigualdades estrictas: tocarse en un
+// borde NO cuenta como invasión (las filas de manzanas se apoyan en
+// los bordes de los corredores y de las huellas reservadas).
+function rectsOverlap(a, b) { return a.minX < b.maxX && a.maxX > b.minX && a.minZ < b.maxZ && a.maxZ > b.minZ; }
+function rectHitsAny(r, list, pad) {
+  for (const o of list) {
+    if (r.minX - pad < o.maxX && r.maxX + pad > o.minX && r.minZ - pad < o.maxZ && r.maxZ + pad > o.minZ) return true;
+  }
+  return false;
+}
+// Los tres edificios explorables: posición y huella definitivas.
+// - Hospital: al norte de la transversal z=-20, frente al sur.
+// - Comisaría: al este de la calle principal, frente al oeste; su
+//   pared norte queda sobre el borde sur de la transversal z=+24.
+// - Fábrica: al sur de la transversal z=+24 en su extremo este,
+//   frente al norte; comparte solo el borde x=34 con la Comisaría
+//   y su pared este coincide con el límite del mapa (x=52).
+const LANDMARK_DEFS = [
+  { id: 'hospital', name: 'HOSPITAL', cx: -28, cz: -41, w: 26, d: 16 },
+  { id: 'comisaria', name: 'COMISARÍA', cx: 26, cz: 40, w: 20, d: 16 },
+  { id: 'fabrica', name: 'FÁBRICA', cx: 43, cz: 47, w: 18, d: 20 },
+];
+// Rectángulos donde la ciudad decorativa NO puede construir: el
+// corredor de la calle principal (calle + aceras), los corredores
+// de las transversales (calle + aceras) y las huellas explorables.
+const LANDMARK_RECTS = LANDMARK_DEFS.map(L => ({ minX: L.cx - L.w / 2, maxX: L.cx + L.w / 2, minZ: L.cz - L.d / 2, maxZ: L.cz + L.d / 2 }));
+const RESERVED_RECTS = [
+  { minX: -20, maxX: 20, minZ: -60, maxZ: 60 },
+  { minX: -54, maxX: 54, minZ: -33, maxZ: -7 },
+  { minX: -54, maxX: 54, minZ: 11, maxZ: 37 },
+  ...LANDMARK_RECTS,
+];
+// Para el bucle histórico de la calle principal la reserva es más
+// fina: solo la banda de calle de cada transversal (±1 m). Así los
+// edificios de esquina pueden dar al frente principal hasta el
+// borde de la intersección, como en la ciudad original, sin
+// bloquear jamás el paso de las transversales.
+const MAIN_SKIP_RECTS = [
+  { minX: -20, maxX: 20, minZ: -60, maxZ: 60 },
+  { minX: -54, maxX: 54, minZ: -29, maxZ: -11 },
+  { minX: -54, maxX: 54, minZ: 15, maxZ: 33 },
+  ...LANDMARK_RECTS,
+];
+// Recursos compartidos de los interiores C2: UNA geometría unidad
+// que se escala por pieza y un puñado de materiales para todas las
+// paredes y el mobiliario de los tres edificios (disciplina de
+// rendimiento: nada de geometrías ni materiales por pieza).
+const unitBox = new THREE.BoxGeometry(1, 1, 1);
+const extWallMat = new THREE.MeshStandardMaterial({ map: facadeTex('#4a4038', .3), roughness: .95 });
+const intWallMat = new THREE.MeshStandardMaterial({ color: 0x6f6a5e, roughness: .95 });
+const doorLeafMat = new THREE.MeshStandardMaterial({ color: 0x4c4238, roughness: .8 });
+const furnMats = {
+  counter: new THREE.MeshStandardMaterial({ color: 0x707a80, roughness: .6, metalness: .3 }),
+  cloth: new THREE.MeshStandardMaterial({ color: 0x7a8a99, roughness: .9 }),
+  wood: new THREE.MeshStandardMaterial({ color: 0x6b4f35, roughness: .85 }),
+  metal: new THREE.MeshStandardMaterial({ color: 0x51606a, roughness: .5, metalness: .5 }),
+};
+
 function buildMap() {
-  // Suelo: calle + aceras
-  const street = new THREE.Mesh(new THREE.PlaneGeometry(MAP.halfW * 2, MAP.halfL * 2), new THREE.MeshStandardMaterial({ map: asphaltTex, roughness: .95 }));
+  // Etapa C2: suelo general bajo todo el mapa ampliado (queda por
+  // debajo de calles, aceras e interiores; sin él, las manzanas
+  // nuevas y los huecos entre calles se verían sobre el vacío).
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(112, 124), new THREE.MeshStandardMaterial({ color: 0x2a2724, roughness: 1 }));
+  ground.rotation.x = -Math.PI / 2; ground.position.y = -0.02; scene.add(ground);
+
+  // Suelo: calle principal + aceras (segmentadas en las dos
+  // intersecciones para no cruzar las transversales como franjas).
+  const street = new THREE.Mesh(new THREE.PlaneGeometry(MAIN_HALF_W * 2, MAP.halfL * 2), new THREE.MeshStandardMaterial({ map: asphaltTex, roughness: .95 }));
   street.rotation.x = -Math.PI / 2; scene.add(street);
-  MAPREG.streets.push({ minX: -MAP.halfW, maxX: MAP.halfW, minZ: -MAP.halfL, maxZ: MAP.halfL });
+  MAPREG.streets.push({ minX: -MAIN_HALF_W, maxX: MAIN_HALF_W, minZ: -MAP.halfL, maxZ: MAP.halfL });
   const sidewalkMat = new THREE.MeshStandardMaterial({ color: 0x554c42, roughness: 1 });
+  const swSegs = [[-MAP.halfL, -28], [-12, 16], [32, MAP.halfL]];
   [-1, 1].forEach(s => {
-    const sw = new THREE.Mesh(new THREE.BoxGeometry(7, 0.24, MAP.halfL * 2), sidewalkMat);
-    sw.position.set(s * (MAP.halfW + 3.5), 0.12, 0); scene.add(sw);
+    for (const [z1, z2] of swSegs) {
+      const sw = new THREE.Mesh(new THREE.BoxGeometry(7, 0.24, z2 - z1), sidewalkMat);
+      sw.position.set(s * (MAIN_HALF_W + 3.5), 0.12, (z1 + z2) / 2); scene.add(sw);
+    }
   });
+
+  // Etapa C2: calles transversales este–oeste (16 m de ancho, de
+  // x=-52 a +52), con aceras segmentadas en la intersección con la
+  // principal y barricadas de cierre en ambos extremos. El plano va
+  // a y=0.01 para no pelear (z-fighting) con el de la calle principal.
+  const crossMat = new THREE.MeshStandardMaterial({ map: asphaltTexX, roughness: .95 });
+  const barricadeMat = new THREE.MeshStandardMaterial({ color: 0x3a332b, roughness: 1 });
+  for (const cz of TRANSVERSALS) {
+    const cs = new THREE.Mesh(new THREE.PlaneGeometry(104, 16), crossMat);
+    cs.rotation.x = -Math.PI / 2; cs.position.set(0, 0.01, cz); scene.add(cs);
+    MAPREG.streets.push({ minX: -52, maxX: 52, minZ: cz - 8, maxZ: cz + 8 });
+    [-1, 1].forEach(sd => {
+      [-1, 1].forEach(sx => {
+        const sw = new THREE.Mesh(new THREE.BoxGeometry(39, 0.24, 5), sidewalkMat);
+        sw.position.set(sx * 32.5, 0.12, cz + sd * 10.5); scene.add(sw);
+      });
+    });
+    [-1, 1].forEach(sx => {
+      const wall = new THREE.Mesh(new THREE.BoxGeometry(1.5, 4, 30), barricadeMat);
+      wall.position.set(sx * 52.8, 2, cz); scene.add(wall); shootBlockers.push(wall);
+    });
+  }
 
   // Edificios en ruinas (ambos lados)
   const facades = [facadeTex('#4a3d33', .45), facadeTex('#3b3630', .6), facadeTex('#54453a', .35)];
@@ -174,16 +416,21 @@ function buildMap() {
     let z = -MAP.halfL + 4;
     while (z < MAP.halfL - 6) {
       const bw = 10 + rnd() * 5, bh = 9 + rnd() * 16, bd = 9 + rnd() * 4;
-      const x = side * (MAP.halfW + 7 + bd / 2);
+      const x = side * (MAIN_HALF_W + 7 + bd / 2);
       const ruined = rnd() < 0.4;
-      const b = new THREE.Mesh(new THREE.BoxGeometry(bd, bh, bw), new THREE.MeshStandardMaterial({ map: facades[(rnd() * 3) | 0], roughness: .9 }));
-      b.position.set(x, bh / 2, z + bw / 2);
-      if (ruined) b.rotation.z = side * 0.03;
-      scene.add(b); shootBlockers.push(b);
-      addCollider(x, z + bw / 2, bd, bw);
-      MAPREG.buildings.push({ minX: x - bd / 2, maxX: x + bd / 2, minZ: z, maxZ: z + bw });
-      if (ruined) { // escombro frente al edificio derruido
-        for (let i = 0; i < 5; i++) addRubble(side * (MAP.halfW + 1.5 + rnd() * 3), z + rnd() * bw, 0.5 + rnd() * 1.1, true);
+      // Etapa C2: el candidato no puede invadir los corredores de
+      // las calles ni las huellas de los edificios explorables.
+      const cand = { minX: x - bd / 2, maxX: x + bd / 2, minZ: z, maxZ: z + bw };
+      if (!rectHitsAny(cand, MAIN_SKIP_RECTS, 0)) {
+        const b = new THREE.Mesh(new THREE.BoxGeometry(bd, bh, bw), new THREE.MeshStandardMaterial({ map: facades[(rnd() * 3) | 0], roughness: .9 }));
+        b.position.set(x, bh / 2, z + bw / 2);
+        if (ruined) b.rotation.z = side * 0.03;
+        scene.add(b); shootBlockers.push(b);
+        addCollider(x, z + bw / 2, bd, bw);
+        MAPREG.buildings.push(cand);
+        if (ruined) { // escombro frente al edificio derruido
+          for (let i = 0; i < 5; i++) addRubble(side * (MAIN_HALF_W + 1.5 + rnd() * 3), z + rnd() * bw, 0.5 + rnd() * 1.1, true);
+        }
       }
       z += bw + 2 + rnd() * 5;
     }
@@ -195,7 +442,7 @@ function buildMap() {
   carSpots.forEach(([x, z, rot], i) => addCar(x, z, rot, carColors[i % carColors.length], i === 2));
 
   // Escombros en la calle
-  for (let i = 0; i < 26; i++) addRubble((Math.random() - .5) * (MAP.halfW * 2 - 4), (Math.random() - .5) * (MAP.halfL * 2 - 8), 0.3 + Math.random() * 0.9, false);
+  for (let i = 0; i < 26; i++) addRubble((Math.random() - .5) * (MAIN_HALF_W * 2 - 4), (Math.random() - .5) * (MAP.halfL * 2 - 8), 0.3 + Math.random() * 0.9, false);
 
   // Faroles inclinados con luz tenue
   [[-11, -30], [11, -5], [-11, 20], [11, 42]].forEach(([x, z], i) => {
@@ -219,9 +466,26 @@ function buildMap() {
 
   // Barricadas al final de la calle (límites)
   [-1, 1].forEach(s => {
-    const wall = new THREE.Mesh(new THREE.BoxGeometry(MAP.halfW * 2 + 14, 4, 1.5), new THREE.MeshStandardMaterial({ color: 0x3a332b, roughness: 1 }));
+    const wall = new THREE.Mesh(new THREE.BoxGeometry(MAIN_HALF_W * 2 + 14, 4, 1.5), new THREE.MeshStandardMaterial({ color: 0x3a332b, roughness: 1 }));
     wall.position.set(0, 2, s * (MAP.halfL + 0.8)); scene.add(wall); shootBlockers.push(wall);
   });
+
+  // Etapa C2: los tres edificios explorables, el relleno de
+  // manzanas decorativas de los cuadrantes y el ambiente extra de
+  // las transversales (con los constructores existentes).
+  buildHospital();
+  buildComisaria();
+  buildFabrica();
+  fillQuadrants(facades, rnd);
+  const crossCars = [[-30, -22, 1.5], [28, -17, 1.62], [-18, 27, 1.45], [44, 21, 1.55], [-44, 26, 1.5]];
+  crossCars.forEach(([x, z, rot], i) => addCar(x, z, rot, carColors[i % carColors.length], false));
+  for (let i = 0; i < 12; i++) {
+    const cz = TRANSVERSALS[i % 2];
+    addRubble((Math.random() - .5) * 96, cz + (Math.random() - .5) * 12, 0.3 + Math.random() * 0.9, false);
+  }
+  addLampPost(-24, -30.5, 0);
+  addLampPost(30, 34.5, 1);
+  addFireBarrel(36, 18);
 }
 const rubbleMat = new THREE.MeshStandardMaterial({ color: 0x59504a, roughness: 1 });
 const rubbleGeo = new THREE.DodecahedronGeometry(1, 0);
@@ -247,6 +511,226 @@ function addCar(x, z, rot, color, flipped) {
   addCollider(x, z, Math.abs(Math.sin(rot)) > .7 ? 4.4 : 2.2, Math.abs(Math.sin(rot)) > .7 ? 2.2 : 4.4);
 }
 buildMap();
+
+// ---------- Etapa C2: constructores de interiores y manzanas ----------
+// Pared maciza: bloquea movimiento (colliders), disparos y visión
+// (shootBlockers) — y por tanto también el descubrimiento de C1.
+function addWallSeg(cx, cz, w, d, h, mat) {
+  const m = new THREE.Mesh(unitBox, mat);
+  m.scale.set(w, h, d); m.position.set(cx, h / 2, cz);
+  scene.add(m); shootBlockers.push(m); addCollider(cx, cz, w, d);
+  return m;
+}
+// Dintel sobre un hueco de puerta: bloquea disparos pero no el paso
+// (nadie salta 2.4 m: ni el jugador ni los enemigos).
+function addLintel(cx, cz, w, d, y0, h, mat) {
+  const m = new THREE.Mesh(unitBox, mat);
+  m.scale.set(w, h, d); m.position.set(cx, y0 + h / 2, cz);
+  scene.add(m); shootBlockers.push(m);
+  return m;
+}
+// Pared a lo largo de X (z fija) con huecos de puerta de 2.2 m:
+// gaps = centros x de los huecos. Emite segmentos + dinteles.
+function wallRunX(z, x1, x2, h, mat, gaps = []) {
+  const T = 0.3, TOP = 2.4;
+  let cur = x1;
+  for (const gc of [...gaps].sort((a, b) => a - b)) {
+    const g1 = gc - 1.1, g2 = gc + 1.1;
+    if (g1 > cur) addWallSeg((cur + g1) / 2, z, g1 - cur, T, h, mat);
+    addLintel(gc, z, 2.2, T, TOP, h - TOP, mat);
+    cur = g2;
+  }
+  if (cur < x2) addWallSeg((cur + x2) / 2, z, x2 - cur, T, h, mat);
+}
+// Pared a lo largo de Z (x fija) con huecos de puerta de 2.2 m:
+// gaps = centros z de los huecos.
+function wallRunZ(x, z1, z2, h, mat, gaps = []) {
+  const T = 0.3, TOP = 2.4;
+  let cur = z1;
+  for (const gc of [...gaps].sort((a, b) => a - b)) {
+    const g1 = gc - 1.1, g2 = gc + 1.1;
+    if (g1 > cur) addWallSeg(x, (cur + g1) / 2, T, g1 - cur, h, mat);
+    addLintel(x, gc, T, 2.2, TOP, h - TOP, mat);
+    cur = g2;
+  }
+  if (cur < z2) addWallSeg(x, (cur + z2) / 2, T, z2 - cur, h, mat);
+}
+// Hoja de puerta decorativa, abierta y fija (la interacción llega
+// en C3): sin colisionador, sí bloquea disparos (es lo que se ve).
+function addDoorLeaf(hx, hz, rotY) {
+  const g = new THREE.Group();
+  const leaf = new THREE.Mesh(unitBox, doorLeafMat);
+  leaf.scale.set(1.05, 2.2, .06); leaf.position.set(.55, 1.1, 0);
+  g.add(leaf); g.position.set(hx, 0, hz); g.rotation.y = rotY;
+  scene.add(g); shootBlockers.push(leaf);
+}
+// Mueble: caja con colisionador y bloqueo de disparos.
+function addFurniture(cx, cz, w, h, d, mat) {
+  const m = new THREE.Mesh(unitBox, mat);
+  m.scale.set(w, h, d); m.position.set(cx, h / 2, cz);
+  scene.add(m); shootBlockers.push(m); addCollider(cx, cz, w, d);
+  return m;
+}
+// Suelo interior: lámina fina sin colisión, sobre el suelo general.
+function addFloor(cx, cz, w, d, color) {
+  const m = new THREE.Mesh(unitBox, new THREE.MeshStandardMaterial({ color, roughness: 1 }));
+  m.scale.set(w, .04, d); m.position.set(cx, .02, cz);
+  scene.add(m);
+  return m;
+}
+// Registra la huella del edificio explorable: como building (el
+// minimapa la pinta y el descubrimiento la trata como manzana) y
+// como landmark con nombre (el mapa expandido lo etiqueta).
+function registerLandmark(def) {
+  const r = { minX: def.cx - def.w / 2, maxX: def.cx + def.w / 2, minZ: def.cz - def.d / 2, maxZ: def.cz + def.d / 2 };
+  MAPREG.buildings.push(r);
+  MAPREG.landmarks.push({ id: def.id, name: def.name, ...r });
+  return r;
+}
+
+// HOSPITAL — centro (-28,-41), huella 26×16: x[-41,-15], z[-49,-33].
+// Frente al sur (pared z=-33) con la entrada; al norte, 3
+// habitaciones tras un tabique con una puerta por habitación; al
+// sur, recepción abierta y zona de mantenimiento en la esquina SE.
+function buildHospital() {
+  const def = LANDMARK_DEFS[0], cx = def.cx, cz = def.cz;
+  const x1 = cx - 13, x2 = cx + 13, z1 = cz - 8, z2 = cz + 8, H = 6;
+  registerLandmark(def);
+  addFloor(cx, cz, def.w, def.d, 0x4d4a42);
+  wallRunX(z2, x1, x2, H, extWallMat, [cx]);              // frente: entrada
+  wallRunX(z1, x1, x2, H, extWallMat);                   // fondo
+  wallRunZ(x1, z1, z2, H, extWallMat);                   // oeste
+  wallRunZ(x2, z1, z2, H, extWallMat);                   // este
+  wallRunX(cz, x1, x2, 3.2, intWallMat, [cx - 8.6, cx, cx + 8.6]); // tabique de habitaciones
+  wallRunZ(cx - 4.3, z1, cz, 3.2, intWallMat);           // división hab. 1–2
+  wallRunZ(cx + 4.3, z1, cz, 3.2, intWallMat);           // división hab. 2–3
+  wallRunZ(cx + 9, cz, cz + 4.5, 3.2, intWallMat, [cz + 2.2]);     // mantenimiento: pared oeste con puerta
+  wallRunX(cz + 4.5, cx + 9, x2, 3.2, intWallMat);       // mantenimiento: pared norte
+  addDoorLeaf(cx - 1.1, z2, 1.15);
+  addFurniture(cx - 4, cz + 6, 4, 1.1, .9, furnMats.counter);      // mostrador de recepción
+  addFurniture(cx - 8.6, cz - 4, 2, .9, .9, furnMats.cloth);       // camillas ×3
+  addFurniture(cx, cz - 4, 2, .9, .9, furnMats.cloth);
+  addFurniture(cx + 8.6, cz - 4, 2, .9, .9, furnMats.cloth);
+  addFurniture(x1 + .45, cz - 3, .5, 2, 2, furnMats.wood);          // estanterías ×2
+  addFurniture(x2 - .45, cz - 3, .5, 2, 2, furnMats.wood);
+}
+
+// COMISARÍA — centro (26,40), huella 20×16: x[16,36], z[32,48].
+// Frente al oeste (pared x=16) con la entrada a la calle principal.
+// Entrada y pasillo longitudinal al oeste; dos oficinas al este del
+// pasillo y la sala de seguridad al fondo este.
+function buildComisaria() {
+  const def = LANDMARK_DEFS[1], cx = def.cx, cz = def.cz;
+  const x1 = cx - 10, x2 = cx + 10, z1 = cz - 8, z2 = cz + 8, H = 6;
+  registerLandmark(def);
+  addFloor(cx, cz, def.w, def.d, 0x44484c);
+  wallRunZ(x1, z1, z2, H, extWallMat, [cz]);             // frente: entrada
+  wallRunZ(x2, z1, z2, H, extWallMat);                   // fondo este
+  wallRunX(z1, x1, x2, H, extWallMat);                   // norte
+  wallRunX(z2, x1, x2, H, extWallMat);                   // sur
+  wallRunZ(cx - 3.4, z1, z2, 3.2, intWallMat, [cz - 4, cz + 4]);   // pared del pasillo: puertas a oficinas
+  wallRunX(cz, cx - 3.4, cx + 5, 3.2, intWallMat);       // división entre oficinas
+  wallRunZ(cx + 5, z1, z2, 3.2, intWallMat, [cz]);       // sala de seguridad: pared con puerta
+  addDoorLeaf(x1, cz - 1.1, -0.9);
+  addFurniture(cx - 8, cz - 5, 1.6, .78, .9, furnMats.wood);       // escritorio de entrada
+  addFurniture(cx + 1, cz - 4, 1.8, .78, .9, furnMats.wood);       // escritorios de oficinas ×2
+  addFurniture(cx + 1, cz + 4, 1.8, .78, .9, furnMats.wood);
+  addFurniture(cx + 7.5, cz, 1, .85, 2.2, furnMats.metal);         // mesa de seguridad
+  addFurniture(x2 - .45, cz - 6, .5, 2, 2, furnMats.wood);         // estanterías ×2
+  addFurniture(x2 - .45, cz + 6, .5, 2, 2, furnMats.wood);
+}
+
+// FÁBRICA — centro (43,47), huella 18×20: x[34,52], z[37,57].
+// Frente al norte (pared z=37) con dos entradas a la transversal.
+// Entrada industrial abierta, área de maquinaria central, pasillo
+// este y sala de control en la esquina suroeste.
+function buildFabrica() {
+  const def = LANDMARK_DEFS[2], cx = def.cx, cz = def.cz;
+  const x1 = cx - 9, x2 = cx + 9, z1 = cz - 10, z2 = cz + 10, H = 6;
+  registerLandmark(def);
+  addFloor(cx, cz, def.w, def.d, 0x3f3b36);
+  wallRunX(z1, x1, x2, H, extWallMat, [cx - 4, cx + 4]); // frente: dos entradas
+  wallRunX(z2, x1, x2, H, extWallMat);                   // fondo sur
+  wallRunZ(x1, z1, z2, H, extWallMat);                   // oeste
+  wallRunZ(x2, z1, z2, H, extWallMat);                   // este (límite del mapa)
+  wallRunZ(cx + 5.6, cz - 4, z2, 3.2, intWallMat, [cz + 3]);       // pasillo este: pared con puerta
+  wallRunX(cz + 5, x1, cx - 2, 3.2, intWallMat, [cx - 5.5]);       // sala de control: pared con puerta
+  addDoorLeaf(cx - 5.1, z1, 1.15);
+  addDoorLeaf(cx + 2.9, z1, 1.15);
+  addFurniture(cx - 5, cz, 2.6, 2, 2, furnMats.metal);             // máquinas ×3
+  addFurniture(cx + 1, cz + 3, 2.6, 2, 2, furnMats.metal);
+  addFurniture(cx - 2, cz - 2.7, 2.2, 1.8, 1.8, furnMats.metal);
+  addFurniture(cx - 5.5, cz + 8.3, 2.2, 1, .8, furnMats.counter);  // consola de control
+  addFurniture(cx + 3, cz + 8, 1.2, 1.2, 1.2, furnMats.wood);       // cajas de carga ×3
+  addFurniture(cx + 4.6, cz + 8.9, 1.2, 1.2, 1.2, furnMats.wood);
+  addFurniture(cx + 2.2, cz + 6.6, 1.2, 1.2, 1.2, furnMats.wood);
+}
+
+// Relleno de manzanas decorativas de los cuadrantes entre calles:
+// filas de edificios con la misma semilla y el mismo patrón de la
+// ciudad original. Cada candidato se contrasta con lo ya registrado
+// (edificios y landmarks) y con las reservas (calles y huellas):
+// nada se solapa y los huecos con la calle quedan como aceras.
+function fillQuadrants(facades, rnd) {
+  const tryPlace = (cx, cz, w, d) => {
+    const r = { minX: cx - w / 2, maxX: cx + w / 2, minZ: cz - d / 2, maxZ: cz + d / 2 };
+    if (rectHitsAny(r, MAPREG.buildings, 1.2)) return;
+    if (rectHitsAny(r, RESERVED_RECTS, 0)) return;
+    const bh = 9 + rnd() * 16;
+    const b = new THREE.Mesh(new THREE.BoxGeometry(w, bh, d), new THREE.MeshStandardMaterial({ map: facades[(rnd() * 3) | 0], roughness: .9 }));
+    b.position.set(cx, bh / 2, cz);
+    scene.add(b); shootBlockers.push(b);
+    addCollider(cx, cz, w, d);
+    MAPREG.buildings.push(r);
+  };
+  // Fila a lo largo de X: fachadas sobre faceZ, creciendo hacia
+  // dirZ con profundidad dMin–dMax. UNA sola fila profunda por
+  // cuadrante: llena casi todo el fondo de la manzana y deja el
+  // resto como callejón trasero (dos filas competirían por la
+  // misma franja de ~25 m y se rechazarían entre sí).
+  const rowX = (x1, x2, faceZ, dirZ, dMin, dMax) => {
+    let x = x1;
+    while (x < x2 - 8) {
+      const w = 10 + rnd() * 5, d = dMin + rnd() * (dMax - dMin);
+      tryPlace(x + w / 2, faceZ + dirZ * (d / 2), w, d);
+      x += w + 2 + rnd() * 5;
+    }
+  };
+  rowX(-50, -16, -33, -1, 14, 20); rowX(16, 50, -33, -1, 14, 20);   // cuadrantes norte (a la transversal z=-20)
+  rowX(-50, -16, -7, 1, 12, 16); rowX(16, 50, -7, 1, 12, 16);       // cuadrantes medios (entre transversales)
+  rowX(-50, -16, 37, 1, 13, 19); rowX(16, 50, 37, 1, 13, 19);       // cuadrantes sur (a la transversal z=+24)
+  // Segunda pasada: bloques pequeños en los huecos que dejó la
+  // primera (esquinas ocupadas por la calle principal, landmarks…).
+  const rowXs = (x1, x2, faceZ, dirZ) => {
+    let x = x1;
+    while (x < x2 - 6) {
+      const w = 7 + rnd() * 4, d = 8 + rnd() * 4;
+      tryPlace(x + w / 2, faceZ + dirZ * (d / 2), w, d);
+      x += w + 1.5 + rnd() * 3;
+    }
+  };
+  rowXs(-50, -16, -33, -1); rowXs(16, 50, -33, -1);
+  rowXs(-50, -16, -7, 1); rowXs(16, 50, -7, 1);
+  rowXs(-50, -16, 37, 1); rowXs(16, 50, 37, 1);
+}
+
+// Farol adicional (mismo patrón que los de la calle principal).
+function addLampPost(x, z, i) {
+  const pole = new THREE.Mesh(new THREE.CylinderGeometry(.09, .12, 5.4, 6), new THREE.MeshStandardMaterial({ color: 0x2c2c30 }));
+  pole.position.set(x, 2.7, z); pole.rotation.z = (i % 2 ? -1 : 1) * 0.1; scene.add(pole);
+  const lamp = new THREE.Mesh(new THREE.SphereGeometry(.22, 8, 8), new THREE.MeshStandardMaterial({ emissive: 0xffa845, emissiveIntensity: 2, color: 0x221100 }));
+  lamp.position.set(x + (i % 2 ? -0.5 : 0.5), 5.4, z); scene.add(lamp);
+  const pl = new THREE.PointLight(0xff9a40, 12, 15); pl.position.copy(lamp.position); scene.add(pl);
+}
+// Hoguera adicional (mismo patrón que las existentes).
+function addFireBarrel(x, z) {
+  const barrel = new THREE.Mesh(new THREE.CylinderGeometry(.55, .55, 1.1, 10), new THREE.MeshStandardMaterial({ color: 0x59331c, roughness: .85 }));
+  barrel.position.set(x, .55, z); scene.add(barrel); shootBlockers.push(barrel); addCollider(x, z, 1.1, 1.1);
+  const fire = new THREE.Mesh(new THREE.ConeGeometry(.42, 1.1, 8), new THREE.MeshStandardMaterial({ emissive: 0xff6a1a, emissiveIntensity: 3, color: 0x381a00, transparent: true, opacity: .9 }));
+  fire.position.set(x, 1.5, z); scene.add(fire);
+  const l = new THREE.PointLight(0xff7a26, 20, 17); l.position.set(x, 1.8, z); scene.add(l);
+  window.__fires.push({ fire, light: l, base: 20, phase: Math.random() * 9 });
+}
 
 // ---------- Colisiones (círculo vs AABB) ----------
 function resolveCollisions(p, radius) {
@@ -303,6 +787,91 @@ const sfx = {
   empty() { beep(900, .04, 'square', .06); },
 };
 
+// ---------- Ambiente: lluvia visual ----------
+// 1200 segmentos (LineSegments, 2400 vértices) en una caja de
+// 44×22×44 m que sigue al jugador. Cada gota es un trazo de
+// 0.35–0.55 m inclinado por viento constante; la actualización
+// trabaja sobre el Float32Array de posiciones, sin asignaciones
+// por frame: al tocar el suelo la gota se recicla arriba y en x/z
+// se envuelve (wrap) en relación al jugador.
+const RAIN_COUNT = 1200;
+const RAIN_W = 44, RAIN_H = 22, RAIN_D = 44;   // caja de lluvia (m)
+const RAIN_FALL = 20;                          // velocidad de caída (m/s)
+const RAIN_WIND_X = 1.5, RAIN_WIND_Z = 0.5;    // viento constante (m/s)
+const RAIN_SLOPE_X = RAIN_WIND_X / RAIN_FALL;  // inclinación del trazo
+const RAIN_SLOPE_Z = RAIN_WIND_Z / RAIN_FALL;
+const rainLen = new Float32Array(RAIN_COUNT);
+const rainPos = new Float32Array(RAIN_COUNT * 6);
+for (let i = 0; i < RAIN_COUNT; i++) {
+  rainLen[i] = .35 + Math.random() * .2;       // trazo de 0.35–0.55 m
+  const j = i * 6;
+  const x = (Math.random() - .5) * RAIN_W, y = Math.random() * RAIN_H, z = (Math.random() - .5) * RAIN_D;
+  rainPos[j] = x; rainPos[j + 1] = y; rainPos[j + 2] = z;
+  rainPos[j + 3] = x - rainLen[i] * RAIN_SLOPE_X; rainPos[j + 4] = y + rainLen[i]; rainPos[j + 5] = z - rainLen[i] * RAIN_SLOPE_Z;
+}
+const rainGeo = new THREE.BufferGeometry();
+rainGeo.setAttribute('position', new THREE.BufferAttribute(rainPos, 3));
+const rainMat = new THREE.LineBasicMaterial({ color: 0x9db4c6, transparent: true, opacity: .33 });
+const rain = new THREE.LineSegments(rainGeo, rainMat);   // fog por defecto: la lluvia lejana se funde con la niebla
+rain.frustumCulled = false;
+rain.visible = false;   // solo durante la partida (mismo criterio que el HUD)
+scene.add(rain);
+
+function updateRain(dt) {
+  const cx = playerPos.x, cz = playerPos.z;
+  const fall = RAIN_FALL * dt, wx = RAIN_WIND_X * dt, wz = RAIN_WIND_Z * dt;
+  for (let i = 0; i < RAIN_COUNT; i++) {
+    const j = i * 6;
+    let x = rainPos[j] + wx, y = rainPos[j + 1] - fall, z = rainPos[j + 2] + wz;
+    // Wrap relativo al jugador: la caja lo sigue sin crear objetos
+    let rx = (x - cx) % RAIN_W; if (rx > RAIN_W / 2) rx -= RAIN_W; else if (rx < -RAIN_W / 2) rx += RAIN_W; x = cx + rx;
+    let rz = (z - cz) % RAIN_D; if (rz > RAIN_D / 2) rz -= RAIN_D; else if (rz < -RAIN_D / 2) rz += RAIN_D; z = cz + rz;
+    // Al tocar el suelo (y=0) se recicla arriba, en una x/z nuevas
+    if (y < 0) { y += RAIN_H; x = cx + (Math.random() - .5) * RAIN_W; z = cz + (Math.random() - .5) * RAIN_D; }
+    rainPos[j] = x; rainPos[j + 1] = y; rainPos[j + 2] = z;
+    rainPos[j + 3] = x - rainLen[i] * RAIN_SLOPE_X; rainPos[j + 4] = y + rainLen[i]; rainPos[j + 5] = z - rainLen[i] * RAIN_SLOPE_Z;
+  }
+  rainGeo.attributes.position.needsUpdate = true;
+}
+
+// ---------- Ambiente: sonido de lluvia (ruido procedural) ----------
+// Buffer de 2 s de ruido blanco en bucle → pasa-altos 350 Hz →
+// pasa-bajos 1100 Hz → rainGain. Sin archivos externos, como el
+// resto del audio; arranca una sola vez tras el gesto de JUGAR
+// (antes de eso ni siquiera existe el AudioContext).
+const RAIN_VOL = 0.055;      // volumen base sobrio
+let rainGain = null, rainStarted = false;
+function startRainSound() {
+  if (rainStarted) return;   // guardia: la fuente en bucle nace una sola vez
+  try {
+    const ac = audio();
+    if (ac.state === 'suspended') ac.resume();
+    const len = 2 * ac.sampleRate;
+    const buf = ac.createBuffer(1, len, ac.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+    const src = ac.createBufferSource();
+    src.buffer = buf; src.loop = true;
+    const hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 350;
+    const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1100;
+    rainGain = ac.createGain(); rainGain.gain.value = RAIN_VOL;
+    // Ráfagas: LFO lento (0.07 Hz) que suma ±0.015 al volumen base
+    const lfo = ac.createOscillator(); lfo.frequency.value = 0.07;
+    const lfoGain = ac.createGain(); lfoGain.gain.value = 0.015;
+    lfo.connect(lfoGain).connect(rainGain.gain);
+    src.connect(hp).connect(lp).connect(rainGain).connect(ac.destination);
+    src.start(); lfo.start();
+    rainStarted = true;
+  } catch (e) { /* audio no disponible */ }
+}
+// Nivel de lluvia según el estado: 1 jugando, 0.4 en pausa o con el
+// mapa grande abierto, 0.6 en la pantalla de muerte (ambiente).
+// Rampa suave con setTargetAtTime (τ = 0.4 s), sin estados nuevos.
+function setRainLevel(x) {
+  if (!rainGain) return;
+  try { rainGain.gain.setTargetAtTime(RAIN_VOL * x, audio().currentTime, 0.4); } catch (e) { /* sin audio */ }
+}
+
 // ---------- Monstruos ----------
 const monsters = [];
 const monsterMats = [];
@@ -312,6 +881,13 @@ function createMonster() {
   // Variante (Etapa B): 20% bruto, 20% veloz, 60% normal
   const roll = Math.random();
   const variant = roll < 0.20 ? 'bruto' : (roll < 0.40 ? 'veloz' : 'normal');
+  // Visual: alien GLB si ya cargó; si no, el procedural de siempre.
+  const alienVis = buildAlienVisual();
+  let parts, mats;
+  if (alienVis) {
+    g.add(alienVis.visual);
+    parts = dummyParts(); mats = alienVis.mats;
+  } else {
   const skin = new THREE.MeshStandardMaterial({ color: variant === 'bruto' ? 0x46543a : 0x5d7345, roughness: .85 });
   const darkSkin = new THREE.MeshStandardMaterial({ color: variant === 'bruto' ? 0x35412a : 0x445433, roughness: .9 });
   monsterMats.push(skin);
@@ -330,10 +906,12 @@ function createMonster() {
   const legL = new THREE.Mesh(legGeo, darkSkin); legL.position.set(-.2, .34, 0); g.add(legL);
   const legR = new THREE.Mesh(legGeo, darkSkin); legR.position.set(.2, .34, 0); g.add(legR);
   g.traverse(m => { if (m.isMesh) m.userData.isMonsterPart = true; });
+  parts = { armL, armR, legL, legR }; mats = [skin, darkSkin];
+  }
 
-  // Spawn: extremo lejano de la calle
-  const fromNorth = Math.random() < .5;
-  g.position.set((Math.random() - .5) * (MAP.halfW * 2 - 6), 0, fromNorth ? -MAP.halfL + 3 : MAP.halfL - 3);
+  // Spawn: punto perimetral al azar de SPAWN_POINTS (Etapa C2)
+  const sp = pickSpawnPoint();
+  g.position.set(sp.x, 0, sp.z);
   scene.add(g);
   // Estadísticas por variante: el bruto es grande (escala 1.18), tanque
   // (150 HP = 5 impactos) y lento (×0.85); el veloz es frágil (70 HP =
@@ -344,13 +922,20 @@ function createMonster() {
   // Variación individual (Etapa B, ajustes): nada se mueve sincronizado —
   // reacción al aggro 0.25–0.45 s, ciclo de ataque ×0.9–1.1, duración
   // HURT ×0.85–1.2, ritmo de animación ±10% y percepción desfasada.
-  const mon = { g, type: 'monster', variant, hp, speed, state: 'idle', stateT: 0, struck: false, steerT: 0, steerSign: (enemySeq++ % 2 === 0) ? 1 : -1, stuckT: 0, stuckX: g.position.x, stuckZ: g.position.z, flash: 0, walkPhase: Math.random() * 6, animRate: 0.9 + Math.random() * .2, swing: .6, armBase: -1.25, armSwing: .12, bobAmp: .05, partColor: 0x9db86a, parts: { armL, armR, legL, legR }, mats: [skin, darkSkin], lastKnown: null, lastSeenAgo: 999, seesPlayer: false, percepT: Math.random() * PERCEPTION_INTERVAL, reactT: 0.25 + Math.random() * .2, reactLeft: 0, attackCdMul: 0.9 + Math.random() * .2, hurtMul: 0.85 + Math.random() * .35, patrolX: (Math.random() - .5) * 16, patrolZ: g.position.z > 0 ? -30 : 30, searchArrived: false, scanT: 0, scanYaw: 0 };
+  const mon = { g, type: 'monster', variant, hp, speed, state: 'idle', stateT: 0, struck: false, steerT: 0, steerSign: (enemySeq++ % 2 === 0) ? 1 : -1, stuckT: 0, stuckX: g.position.x, stuckZ: g.position.z, flash: 0, walkPhase: Math.random() * 6, animRate: 0.9 + Math.random() * .2, swing: .6, armBase: -1.25, armSwing: .12, bobAmp: .05, partColor: 0x9db86a, parts, mats, alien: alienVis, chaseClip: variant === 'veloz' ? 'run' : 'crawl', hurtDurNow: ALIEN_HIT_DUR, hurtRestart: false, hurtFromX: 0, hurtFromZ: 0, hurtBackX: 0, hurtBackZ: 0, lastKnown: null, lastSeenAgo: 999, seesPlayer: false, percepT: Math.random() * PERCEPTION_INTERVAL, reactT: 0.25 + Math.random() * .2, reactLeft: 0, attackCdMul: 0.9 + Math.random() * .2, hurtMul: 0.85 + Math.random() * .35, patrolX: (Math.random() - .5) * 16, patrolZ: g.position.z > 0 ? -30 : 30, searchArrived: false, scanT: 0, scanYaw: 0 };
   g.userData.monster = mon;
   monsters.push(mon);
   return mon;
 }
 function createZombie() {
   const g = new THREE.Group();
+  // Visual: alien GLB si ya cargó; si no, el procedural de siempre.
+  const alienVis = buildAlienVisual();
+  let parts, mats;
+  if (alienVis) {
+    g.add(alienVis.visual);
+    parts = dummyParts(); mats = alienVis.mats;
+  } else {
   const bodyG = new THREE.Group();       // cuerpo inclinado hacia adelante al correr
   bodyG.rotation.x = 0.3;
   g.add(bodyG);
@@ -375,20 +960,28 @@ function createZombie() {
   const legL = new THREE.Mesh(legGeo, pants); legL.position.set(-.18, .32, 0); bodyG.add(legL);
   const legR = new THREE.Mesh(legGeo, pants); legR.position.set(.18, .32, 0); bodyG.add(legR);
   g.traverse(m => { if (m.isMesh) m.userData.isMonsterPart = true; });
+  parts = { armL, armR, legL, legR }; mats = [skin, skinDark, shirt, pants, hairMat];
+  }
 
-  // Spawn: mismo extremo lejano de la calle que el monstruo
-  const fromNorth = Math.random() < .5;
-  g.position.set((Math.random() - .5) * (MAP.halfW * 2 - 6), 0, fromNorth ? -MAP.halfL + 3 : MAP.halfL - 3);
+  // Spawn: mismo sistema perimetral por datos que el monstruo (C2)
+  const sp = pickSpawnPoint();
+  g.position.set(sp.x, 0, sp.z);
   scene.add(g);
   // Variante (Etapa B): 25% frenético — más rápido (×1.2) y frágil
   // (51 HP, sigue cayendo con 2 impactos); 75% normal. La velocidad
   // base lleva además variación individual de ±8%, y la reacción al
   // aggro es más corta que la del monstruo (0.10–0.25 s).
   const frenetic = Math.random() < 0.25;
-  const mon = { g, type: 'zombie', variant: frenetic ? 'frenetico' : 'normal', hp: frenetic ? 51 : ZOMBIE_HP, speed: ZOMBIE_SPEED * (frenetic ? 1.2 : 1) * (0.92 + Math.random() * .16), state: 'idle', stateT: 0, struck: false, steerT: 0, steerSign: (enemySeq++ % 2 === 0) ? 1 : -1, stuckT: 0, stuckX: g.position.x, stuckZ: g.position.z, flash: 0, walkPhase: Math.random() * 6, animRate: 2.1 * (0.9 + Math.random() * .2), swing: .95, armBase: -1.55, armSwing: .3, bobAmp: .1, partColor: 0xb9bfa4, parts: { armL, armR, legL, legR }, mats: [skin, skinDark, shirt, pants, hairMat], lastKnown: null, lastSeenAgo: 999, seesPlayer: false, percepT: Math.random() * PERCEPTION_INTERVAL, reactT: 0.10 + Math.random() * .15, reactLeft: 0, attackCdMul: 0.9 + Math.random() * .2, hurtMul: 0.85 + Math.random() * .35, patrolX: (Math.random() - .5) * 16, patrolZ: g.position.z > 0 ? -30 : 30, searchArrived: false, scanT: 0, scanYaw: 0 };
+  const mon = { g, type: 'zombie', variant: frenetic ? 'frenetico' : 'normal', hp: frenetic ? 51 : ZOMBIE_HP, speed: ZOMBIE_SPEED * (frenetic ? 1.2 : 1) * (0.92 + Math.random() * .16), state: 'idle', stateT: 0, struck: false, steerT: 0, steerSign: (enemySeq++ % 2 === 0) ? 1 : -1, stuckT: 0, stuckX: g.position.x, stuckZ: g.position.z, flash: 0, walkPhase: Math.random() * 6, animRate: 2.1 * (0.9 + Math.random() * .2), swing: .95, armBase: -1.55, armSwing: .3, bobAmp: .1, partColor: 0xb9bfa4, parts, mats, alien: alienVis, chaseClip: 'run', hurtDurNow: ALIEN_HIT_DUR, hurtRestart: false, hurtFromX: 0, hurtFromZ: 0, hurtBackX: 0, hurtBackZ: 0, lastKnown: null, lastSeenAgo: 999, seesPlayer: false, percepT: Math.random() * PERCEPTION_INTERVAL, reactT: 0.10 + Math.random() * .15, reactLeft: 0, attackCdMul: 0.9 + Math.random() * .2, hurtMul: 0.85 + Math.random() * .35, patrolX: (Math.random() - .5) * 16, patrolZ: g.position.z > 0 ? -30 : 30, searchArrived: false, scanT: 0, scanYaw: 0 };
   g.userData.monster = mon;
   monsters.push(mon);
   return mon;
+}
+// Punto de aparición: uno al azar de SPAWN_POINTS (extremos de las
+// tres calles), con su jitter alrededor del punto base.
+function pickSpawnPoint() {
+  const s = SPAWN_POINTS[(Math.random() * SPAWN_POINTS.length) | 0];
+  return { x: s.x + (Math.random() * 2 - 1) * s.jx, z: s.z + (Math.random() * 2 - 1) * s.jz };
 }
 // A partir de ZOMBIE_DELAY segundos, parte de los spawns son zombies corredores
 function spawnEnemy() {
@@ -420,6 +1013,20 @@ function damageMonster(mon, dmg, hitPoint) {
     // Reacción HURT: se detiene un instante; al salir va a CHASE, así
     // que recibir daño también despierta el aggro desde IDLE.
     mon.state = 'hurt'; mon.stateT = 0;
+    if (mon.alien) {
+      // HURT del alien: dura lo que su clip hit acelerado y retrocede
+      // 1.41 m (el retroceso neto del clip, cuyo root motion viene
+      // neutralizado) alejándose del jugador. Se captura el origen y
+      // la dirección aquí; el bucle aplica el desplazamiento con
+      // ease-out y al salir del estado la posición queda adoptada.
+      mon.hurtDurNow = ALIEN_HIT_DUR * mon.hurtMul;
+      mon.hurtFromX = mon.g.position.x; mon.hurtFromZ = mon.g.position.z;
+      let bx = mon.g.position.x - playerPos.x, bz = mon.g.position.z - playerPos.z;
+      const bl = Math.hypot(bx, bz);
+      if (bl < 1e-4) { bx = dirVec.x; bz = dirVec.z; } else { bx /= bl; bz /= bl; }
+      mon.hurtBackX = bx; mon.hurtBackZ = bz;
+      mon.hurtRestart = true;
+    }
   }
 }
 
@@ -469,6 +1076,7 @@ function toSearch(mon) {
 }
 // Animación de caminar/correr compartida por IDLE, CHASE y SEARCH.
 function walkAnim(mon) {
+  if (mon.alien) return;   // el GLB se anima con su mixer; nada de bob procedural (movería g.position.y)
   mon.parts.legL.rotation.x = Math.sin(mon.walkPhase) * mon.swing;
   mon.parts.legR.rotation.x = -Math.sin(mon.walkPhase) * mon.swing;
   mon.parts.armL.rotation.x = mon.armBase + Math.sin(mon.walkPhase) * mon.armSwing;
@@ -772,13 +1380,22 @@ function updateDiscovery(now) {
   }
   if (discoveryDirty && now - lastDiscoverySave >= 1) {   // guardado con debounce ~1 s
     lastDiscoverySave = now; discoveryDirty = false;
-    try { localStorage.setItem(DISCOVERY_KEY, JSON.stringify([...discovered])); } catch (e) { /* almacenamiento no disponible */ }
+    try { localStorage.setItem(DISCOVERY_KEY, JSON.stringify({ b: [mapBounds.minX, mapBounds.minZ, gridCols, gridRows], cells: [...discovered] })); } catch (e) { /* almacenamiento no disponible */ }
   }
 }
 function loadDiscovery() {
   try {
-    const arr = JSON.parse(localStorage.getItem(DISCOVERY_KEY) || '[]');
-    if (Array.isArray(arr)) for (const k of arr) if (typeof k === 'string') discovered.add(k);
+    const data = JSON.parse(localStorage.getItem(DISCOVERY_KEY) || 'null');
+    // Etapa C2: el guardado lleva la firma de la retícula (origen y
+    // tamaño en celdas). La expansión movió el origen, así que los
+    // guardados de C1 (un arreglo simple, sin firma) ya no alinean
+    // con las celdas nuevas y se descartan: el descubrimiento
+    // arranca de cero una sola vez, con la firma ya vigente.
+    if (data && Array.isArray(data.cells) && Array.isArray(data.b) &&
+        data.b[0] === mapBounds.minX && data.b[1] === mapBounds.minZ &&
+        data.b[2] === gridCols && data.b[3] === gridRows) {
+      for (const k of data.cells) if (typeof k === 'string') discovered.add(k);
+    }
   } catch (e) { /* datos corruptos o almacenamiento no disponible */ }
 }
 // Gancho para el futuro modo supervivencia (hoy ninguna UI lo
@@ -866,6 +1483,7 @@ function drawBigMap() {
 function openMap() {
   if (mapOpen || (S.mode !== 'playing' && S.mode !== 'paused')) return;
   mapOpen = true;
+  setRainLevel(0.4);   // con el mapa abierto suena como en pausa
   if (S.mode === 'playing') {
     if (touchMode) pauseGame();
     else if (document.pointerLockElement) document.exitPointerLock();
@@ -877,6 +1495,9 @@ function closeMap() {
   if (!mapOpen) return;
   mapOpen = false;
   el('map-overlay').classList.add('hidden');
+  // Al cerrar el mapa se restaura el nivel del estado actual
+  if (S.mode === 'playing') setRainLevel(1);
+  else if (S.mode === 'dead') setRainLevel(0.6);
 }
 el('map-close').addEventListener('click', closeMap);
 el('btn-map').addEventListener('touchstart', e => {
@@ -915,34 +1536,40 @@ document.addEventListener('mouseup', () => { S.mouseDown = false; });
 function lockPointer() { canvas.requestPointerLock(); }
 function startInput() { if (touchMode) tryMobileLandscape(); else lockPointer(); }
 el('play-btn').addEventListener('click', () => {
-  audio();
+  audio(); startRainSound();
   if (S.mode === 'menu' || S.mode === 'dead') { resetPlayer(); clearMonsters(); }
   el('start-screen').classList.add('hidden');
   el('death-screen').classList.add('hidden');
   el('hud').classList.remove('hidden');
   S.mode = 'playing'; S.startTime = performance.now() / 1000 - S.elapsed;
+  setRainLevel(1); rain.visible = true;
   updateHUD(); startInput();
 });
 el('restart-btn').addEventListener('click', () => {
+  startRainSound();
   resetPlayer(); clearMonsters();
   el('death-screen').classList.add('hidden');
   el('hud').classList.remove('hidden');
   S.mode = 'playing'; S.startTime = performance.now() / 1000;
+  setRainLevel(1); rain.visible = true;
   updateHUD(); startInput();
 });
 document.addEventListener('pointerlockchange', () => {
   if (document.pointerLockElement !== canvas && S.mode === 'playing') {
     S.mode = 'paused';
+    setRainLevel(0.4);
     el('start-screen').classList.remove('hidden');
     el('resume-hint').classList.remove('hidden');
   } else if (document.pointerLockElement === canvas && S.mode === 'paused') {
     S.mode = 'playing';
+    setRainLevel(1);
     el('start-screen').classList.add('hidden');
   }
 });
 function clearMonsters() { for (const m of monsters) scene.remove(m.g); monsters.length = 0; }
 function die() {
   S.mode = 'dead'; S.mouseDown = false; S.touchFire = false;
+  setRainLevel(0.6);   // la lluvia sigue sonando como ambiente al 60%
   resetJoy();
   vel.x = 0; vel.z = 0; vy = 0; jumpY = 0; grounded = true;
   if (document.pointerLockElement) document.exitPointerLock();
@@ -1057,6 +1684,7 @@ el('btn-pause').addEventListener('touchstart', e => {
 }, { passive: false });
 function pauseGame() {
   S.mode = 'paused'; S.touchFire = false; S.mouseDown = false; resetJoy();
+  setRainLevel(0.4);
   btnFire.classList.remove('active');
   el('start-screen').classList.remove('hidden');
   el('resume-hint').classList.remove('hidden');
@@ -1076,6 +1704,10 @@ function animate() {
     f.fire.scale.set(1 + n * .15, 1 + n * .3, 1 + n * .15);
   }
   muzzleFlash.intensity = Math.max(0, muzzleFlash.intensity - dt * 320);
+
+  // Lluvia (ambiente): cae también en pausa y en la pantalla de
+  // muerte; en el menú está oculta y no se actualiza.
+  if (rain.visible) updateRain(dt);
 
   if (S.mode === 'playing') {
     S.elapsed = now - S.startTime;
@@ -1178,6 +1810,14 @@ function animate() {
       }
 
       if (mon.state === 'dead') {
+        if (mon.alien) {
+          // GLB: suena su clip de muerte (la caída ya viene en la
+          // animación; nada de rotación procedural) y el cadáver se
+          // retira al cerrar el clip (~2.3 s).
+          updateAlienAnim(mon, dt);
+          if (mon.stateT >= ALIEN_DEAD_TIME) { scene.remove(mon.g); monsters.splice(i, 1); }
+          continue;
+        }
         // Caída gobernada por el bucle (respeta pausa y reinicio):
         // rotación z hasta 90° en ~0.3 s y retirada a los 0.35 s.
         const k = Math.min(1, mon.stateT / 0.3);
@@ -1206,10 +1846,20 @@ function animate() {
       let faceX = playerPos.x, faceZ = playerPos.z;   // mirada por defecto: el jugador
       if (mon.state === 'hurt') {
         // Reacción al daño: no avanza; inclinación breve del cuerpo.
-        // Duración individual: HURT_TIME × hurtMul (×0.85–1.2).
-        const hurtDur = HURT_TIME * mon.hurtMul;
+        // Duración individual: HURT_TIME × hurtMul (×0.85–1.2). El
+        // alien usa su propia duración (la de su clip hit acelerado).
+        const hurtDur = mon.alien ? mon.hurtDurNow : HURT_TIME * mon.hurtMul;
         const k = Math.min(1, mon.stateT / hurtDur);
-        flinchX = -0.25 * Math.sin(Math.PI * k);
+        flinchX = mon.alien ? 0 : -0.25 * Math.sin(Math.PI * k);
+        if (mon.alien) {
+          // Retroceso HURT del alien: 1.41 m hacia atrás con ease-out
+          // sobre la posición lógica; al terminar el estado queda
+          // adoptado, sin salto de vuelta al clip sin root motion.
+          const e = 1 - (1 - k) * (1 - k);
+          p.x = mon.hurtFromX + mon.hurtBackX * ALIEN_HIT_PUSH * e;
+          p.z = mon.hurtFromZ + mon.hurtBackZ * ALIEN_HIT_PUSH * e;
+          resolveCollisions(p, .5);
+        }
         if (mon.stateT >= hurtDur) {
           // ATTACK y HURT usan la distancia real (contacto físico)
           if (dist <= MONSTER_ATTACK_RANGE) { mon.state = 'attack'; mon.stateT = 0; mon.struck = false; }
@@ -1220,7 +1870,7 @@ function animate() {
         // recuperación absorbe la anticipación de 0.35 s.
         const cyc = MONSTER_ATTACK_CD * mon.attackCdMul;
         mon.walkPhase += dt * 7 * mon.animRate;
-        p.y = Math.abs(Math.sin(mon.walkPhase)) * mon.bobAmp;
+        if (!mon.alien) p.y = Math.abs(Math.sin(mon.walkPhase)) * mon.bobAmp;
         if (dist > ATTACK_EXIT_RANGE) {
           toChase(mon, false);
         } else {
@@ -1305,6 +1955,7 @@ function animate() {
           if (mon.scanT >= SEARCH_TIME) toIdle(mon);
         }
       }
+      updateAlienAnim(mon, dt);   // no-op si el enemigo es procedural
       mon.g.lookAt(faceX, 0, faceZ);
       if (flinchX) mon.g.rotation.x += flinchX;
     }
