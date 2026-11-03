@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Monster Apocalypse — Prototipo Etapa 1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="game-canvas"></canvas>
+
+  <!-- HUD -->
+  <div id="hud" class="hidden">
+    <div id="crosshair"><span></span><span></span><span></span><span></span></div>
+    <div id="hitmarker"></div>
+    <div id="damage-vignette"></div>
+
+    <div id="hud-bottom-left">
+      <label>VIDA</label>
+      <div id="health-bar-wrap"><div id="health-bar"></div></div>
+      <div id="health-text">100</div>
+    </div>
+
+    <div id="hud-bottom-right">
+      <div id="ammo"><span id="ammo-mag">30</span><span id="ammo-sep"> / </span><span id="ammo-reserve">∞</span></div>
+      <div id="reload-msg" class="hidden">RECARGANDO…</div>
+      <div id="weapon-name">RIFLE</div>
+    </div>
+
+    <div id="hud-top">
+      <div>BAJAS: <span id="kills">0</span></div>
+    </div>
+
+    <canvas id="minimap" width="296" height="296"></canvas>
+
+    <div id="rotate-hint">⟳ Gira tu celular para jugar en horizontal</div>
+
+    <!-- Controles táctiles (solo visibles/activos en dispositivos táctiles) -->
+    <div id="touch-ui">
+      <div id="look-zone"></div>
+      <div id="joystick"><div id="joystick-knob"></div></div>
+      <button id="btn-pause" aria-label="Pausar">⏸</button>
+      <button id="btn-map" aria-label="Ver el mapa">MAPA</button>
+      <button id="btn-reload" aria-label="Recargar">↻</button>
+      <button id="btn-jump" aria-label="Saltar">SALTAR</button>
+      <button id="btn-fire" aria-label="Disparar">DISPARAR</button>
+    </div>
+  </div>
+
+  <!-- Pantalla inicial / pausa -->
+  <div id="start-screen">
+    <h1>MONSTER<br>APOCALYPSE</h1>
+    <p class="subtitle">Prototipo jugable — Etapa 1</p>
+    <p class="story">La ciudad cayó. Los monstruos vienen por la calle y los zombies corren.<br>Sobrevive.</p>
+    <button id="play-btn">▶ JUGAR</button>
+    <div class="sens-box">
+      <b>Sensibilidad</b>
+      <input id="sens-slider" type="range" min="0.5" max="2" step="0.1" value="1">
+      <span id="sens-value">1.0×</span>
+    </div>
+    <div class="fog-box">
+      <b>Niebla</b>
+      <div class="fog-btns">
+        <button class="fog-btn" data-level="normal">Normal</button>
+        <button class="fog-btn" data-level="densa">Densa</button>
+        <button class="fog-btn" data-level="extrema">Extrema</button>
+      </div>
+    </div>
+    <div class="controls-box kb-only">
+      <div><b>W A S D</b> Moverse</div>
+      <div><b>Shift</b> Correr (sprint)</div>
+      <div><b>Space</b> Saltar</div>
+      <div><b>Mouse</b> Mirar / apuntar</div>
+      <div><b>Clic</b> Disparar (mantener = automático)</div>
+      <div><b>R</b> Recargar</div>
+      <div><b>M</b> Mapa</div>
+      <div><b>Esc</b> Pausar</div>
+    </div>
+    <div class="controls-box touch-only">
+      <div><b>Palanca</b> Moverse (lado izquierdo); a fondo = correr</div>
+      <div><b>Arrastrar</b> Mirar / apuntar (lado derecho)</div>
+      <div><b>DISPARAR</b> Mantener para disparar</div>
+      <div><b>SALTAR</b> Saltar</div>
+      <div><b>↻</b> Recargar</div>
+      <div><b>⏸</b> Pausar</div>
+      <div><b>MAPA</b> Ver el mapa</div>
+    </div>
+    <p id="resume-hint" class="hidden">Juego en pausa — clic en JUGAR para continuar.</p>
+  </div>
+
+  <!-- Pantalla de muerte -->
+  <div id="death-screen" class="hidden">
+    <h1 class="death-title">MORISTE</h1>
+    <p>Los monstruos te alcanzaron.</p>
+    <p class="death-stats">Bajas: <span id="death-kills">0</span> &nbsp;·&nbsp; Tiempo: <span id="death-time">0:00</span></p>
+    <button id="restart-btn">↻ REINICIAR</button>
+  </div>
+
+  <!-- Mapa expandido (Etapa C1): lo descubierto, sin enemigos -->
+  <div id="map-overlay" class="hidden">
+    <div id="map-panel">
+      <div id="map-head"><span>MAPA</span><button id="map-close" aria-label="Cerrar mapa">✕</button></div>
+      <canvas id="bigmap"></canvas>
+      <p id="map-hint">M / Esc para cerrar · Lo no explorado permanece oculto</p>
+    </div>
+  </div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+<script type="module" src="game.js"></script>
+</body>
+</html>

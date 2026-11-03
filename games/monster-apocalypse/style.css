@@ -1,0 +1,166 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0806; font-family: 'Segoe UI', Arial, sans-serif; color: #e8e0d0; touch-action: none; overscroll-behavior: none; }
+#game-canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+button { touch-action: none; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
+.hidden { display: none !important; }
+
+/* ---------- HUD ---------- */
+#hud { position: fixed; inset: 0; pointer-events: none; z-index: 10; }
+#crosshair { position: absolute; left: 50%; top: 50%; width: 22px; height: 22px; transform: translate(-50%, -50%); }
+#crosshair span { position: absolute; background: rgba(255,255,255,.9); box-shadow: 0 0 3px #000; }
+#crosshair span:nth-child(1) { left: 50%; top: 0;    width: 2px; height: 7px; transform: translateX(-50%); }
+#crosshair span:nth-child(2) { left: 50%; bottom: 0; width: 2px; height: 7px; transform: translateX(-50%); }
+#crosshair span:nth-child(3) { left: 0;  top: 50%; width: 7px; height: 2px; transform: translateY(-50%); }
+#crosshair span:nth-child(4) { right: 0; top: 50%; width: 7px; height: 2px; transform: translateY(-50%); }
+
+#hitmarker { position: absolute; left: 50%; top: 50%; width: 26px; height: 26px; transform: translate(-50%,-50%) rotate(45deg); opacity: 0; }
+#hitmarker::before, #hitmarker::after { content: ''; position: absolute; background: #ffcf4d; }
+#hitmarker::before { left: 50%; top: 0; width: 2px; height: 100%; transform: translateX(-50%); }
+#hitmarker::after  { top: 50%; left: 0; height: 2px; width: 100%; transform: translateY(-50%); }
+#hitmarker.show { opacity: 1; transition: none; }
+#hitmarker:not(.show) { transition: opacity .25s; }
+
+#damage-vignette { position: absolute; inset: 0; box-shadow: inset 0 0 140px 60px rgba(200,0,0,.55); opacity: 0; transition: opacity .35s; }
+#damage-vignette.show { opacity: 1; transition: none; }
+
+#hud-bottom-left { position: absolute; left: 26px; bottom: 24px; width: 280px; }
+#hud-bottom-left label { font-size: 12px; letter-spacing: 3px; color: #ffb59d; text-shadow: 0 1px 3px #000; }
+#health-bar-wrap { height: 18px; background: rgba(0,0,0,.6); border: 1px solid rgba(255,255,255,.35); margin-top: 4px; }
+#health-bar { height: 100%; width: 100%; background: linear-gradient(90deg, #c62f1d, #e86a3a); transition: width .2s; }
+#health-text { margin-top: 3px; font-size: 13px; color: #ffd9c9; text-shadow: 0 1px 2px #000; }
+
+#hud-bottom-right { position: absolute; right: 26px; bottom: 24px; text-align: right; }
+#ammo { font-size: 42px; font-weight: 800; text-shadow: 0 2px 5px #000; line-height: 1; }
+#ammo.low { color: #ff5a3c; }
+#ammo-reserve, #ammo-sep { font-size: 22px; color: #bcae97; }
+#weapon-name { font-size: 12px; letter-spacing: 4px; color: #ffb59d; margin-top: 4px; text-shadow: 0 1px 3px #000; }
+#reload-msg { color: #ffcf4d; font-size: 15px; letter-spacing: 2px; margin-top: 5px; animation: blink .5s steps(2) infinite; }
+@keyframes blink { 50% { opacity: .25; } }
+
+#hud-top { position: absolute; top: 18px; left: 50%; transform: translateX(-50%); font-size: 16px; letter-spacing: 3px; font-weight: 700; text-shadow: 0 2px 4px #000; background: rgba(0,0,0,.35); padding: 6px 18px; border: 1px solid rgba(255,255,255,.18); }
+
+/* ---------- Minimapa circular (Etapa C1) ---------- */
+#minimap { position: absolute; top: 16px; left: 16px; width: 148px; height: 148px; border-radius: 50%; border: 2px solid rgba(255,255,255,.35); background: #07090b; z-index: 5; }
+body.touch #minimap { top: 84px; left: 14px; }   /* bajo la barra de vida, que en táctil vive arriba a la izquierda */
+
+/* ---------- Mapa expandido (Etapa C1) ---------- */
+#map-overlay { position: fixed; inset: 0; z-index: 30; display: flex; align-items: center; justify-content: center; background: rgba(3,4,6,.85); }
+#map-panel { display: flex; flex-direction: column; align-items: center; gap: 10px; max-width: 94vw; }
+#map-head { width: 100%; display: flex; align-items: center; justify-content: space-between; }
+#map-head span { font-size: 18px; font-weight: 800; letter-spacing: 4px; color: #f3e5cf; text-shadow: 0 2px 4px #000; }
+#map-close { pointer-events: auto; cursor: pointer; width: 44px; height: 44px; border-radius: 10px; background: rgba(0,0,0,.5); border: 2px solid rgba(255,255,255,.5); color: #ffe9d6; font-size: 18px; }
+#bigmap { max-width: 92vw; max-height: 72vh; background: #07090b; border: 1px solid rgba(255,255,255,.25); }
+#map-hint { font-size: 13px; color: #b7ab94; letter-spacing: 1px; text-align: center; }
+
+/* ---------- Pantallas ---------- */
+#start-screen, #death-screen {
+  position: fixed; inset: 0; z-index: 20; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; text-align: center;
+  background: radial-gradient(ellipse at center, rgba(30,14,6,.82), rgba(5,3,2,.94));
+}
+#start-screen h1 { font-size: 64px; line-height: .95; letter-spacing: 3px; font-weight: 900; color: #f3e5cf; text-shadow: 0 0 24px rgba(255,90,30,.55), 0 4px 0 #571f0e; }
+.subtitle { margin-top: 10px; letter-spacing: 5px; font-size: 13px; color: #ff9c6b; text-transform: uppercase; }
+.story { margin-top: 18px; font-size: 17px; color: #cfc2ab; line-height: 1.5; }
+#play-btn, #restart-btn {
+  margin-top: 28px; pointer-events: auto; cursor: pointer; border: 2px solid #ff7b3c;
+  background: linear-gradient(180deg, #a83c14, #7c2708); color: #ffe9d6;
+  font-size: 21px; font-weight: 800; letter-spacing: 3px; padding: 14px 52px;
+}
+#play-btn:hover, #restart-btn:hover { background: linear-gradient(180deg, #c44c1c, #93330c); }
+.controls-box { margin-top: 28px; display: grid; gap: 6px; font-size: 15px; color: #b7ab94; text-align: left; }
+.controls-box b { color: #ffd9ae; display: inline-block; min-width: 74px; }
+#resume-hint { margin-top: 14px; color: #ffcf4d; font-size: 14px; }
+.sens-box { margin-top: 22px; display: flex; align-items: center; gap: 12px; font-size: 14px; color: #b7ab94; }
+.sens-box b { color: #ffd9ae; letter-spacing: 1px; }
+.sens-box input[type="range"] { width: 170px; accent-color: #ff7b3c; pointer-events: auto; cursor: pointer; }
+.fog-box { margin-top: 12px; display: flex; align-items: center; gap: 12px; font-size: 14px; color: #b7ab94; }
+.fog-box b { color: #ffd9ae; letter-spacing: 1px; }
+.fog-btns { display: flex; gap: 6px; }
+.fog-btn { pointer-events: auto; cursor: pointer; background: rgba(0,0,0,.45); color: #cfc2ab; border: 1px solid rgba(255,255,255,.35); font-size: 13px; font-weight: 700; letter-spacing: 1px; padding: 7px 14px; min-height: 36px; }
+.fog-btn.active { background: linear-gradient(180deg, #a83c14, #7c2708); border-color: #ff7b3c; color: #ffe9d6; }
+#sens-value { color: #ffd9ae; font-weight: 700; min-width: 40px; text-align: left; }
+.death-title { font-size: 68px; letter-spacing: 6px; color: #e0341f; text-shadow: 0 0 28px rgba(220,30,10,.6); }
+#death-screen p { margin-top: 12px; font-size: 17px; color: #cfc2ab; }
+.death-stats { font-size: 19px !important; color: #ffd9ae !important; }
+
+/* ---------- Controles táctiles (solo con body.touch) ---------- */
+.touch-only { display: none !important; }
+body.touch .touch-only { display: grid !important; }
+body.touch .kb-only { display: none !important; }
+
+#touch-ui { display: none; position: absolute; inset: 0; z-index: 12; }
+body.touch #touch-ui { display: block; }
+#look-zone { position: absolute; right: 0; top: 0; width: 55%; height: 100%; pointer-events: auto; touch-action: none; z-index: 1; }
+
+#joystick {
+  position: absolute; left: 22px; bottom: 26px; width: 124px; height: 124px; border-radius: 50%;
+  background: rgba(255,255,255,.07); border: 2px solid rgba(255,255,255,.35);
+  pointer-events: auto; touch-action: none; z-index: 3;
+}
+#joystick-knob {
+  position: absolute; left: 50%; top: 50%; width: 54px; height: 54px; border-radius: 50%;
+  background: rgba(255,255,255,.28); border: 2px solid rgba(255,255,255,.55);
+  transform: translate(-50%, -50%); pointer-events: none;
+}
+#btn-fire {
+  position: absolute; right: 22px; bottom: 26px; width: 98px; height: 98px; border-radius: 50%;
+  background: rgba(190,50,18,.55); border: 2px solid rgba(255,150,90,.85); color: #ffe9d6;
+  font-size: 15px; font-weight: 800; letter-spacing: 1px; pointer-events: auto; z-index: 3; cursor: pointer;
+}
+#btn-fire.active { background: rgba(240,80,25,.8); }
+#btn-reload {
+  position: absolute; right: 136px; bottom: 40px; width: 62px; height: 62px; border-radius: 50%;
+  background: rgba(0,0,0,.5); border: 2px solid rgba(255,255,255,.5); color: #ffd9ae;
+  font-size: 26px; pointer-events: auto; z-index: 3; cursor: pointer;
+}
+#btn-jump {
+  position: absolute; right: 136px; bottom: 118px; width: 62px; height: 62px; border-radius: 50%;
+  background: rgba(0,0,0,.5); border: 2px solid rgba(255,255,255,.5); color: #ffd9ae;
+  font-size: 11px; font-weight: 800; letter-spacing: 1px; pointer-events: auto; z-index: 3; cursor: pointer;
+}
+#btn-pause {
+  position: absolute; right: 14px; top: 12px; width: 56px; height: 56px; border-radius: 12px;
+  background: rgba(0,0,0,.5); border: 2px solid rgba(255,255,255,.5); color: #ffe9d6;
+  font-size: 20px; pointer-events: auto; z-index: 3; cursor: pointer;
+}
+#btn-map {
+  position: absolute; right: 78px; top: 12px; width: 56px; height: 56px; border-radius: 12px;
+  background: rgba(0,0,0,.5); border: 2px solid rgba(255,255,255,.5); color: #ffe9d6;
+  font-size: 12px; font-weight: 800; letter-spacing: 1px; pointer-events: auto; z-index: 3; cursor: pointer;
+}
+
+/* Aviso "gira tu celular": solo táctil + vertical + durante la partida (vive dentro del HUD) */
+#rotate-hint {
+  display: none; position: absolute; top: 62px; left: 50%; transform: translateX(-50%);
+  background: rgba(180,60,10,.93); color: #fff2df; font-size: 14px; font-weight: 700;
+  letter-spacing: 1px; padding: 9px 16px; border: 1px solid rgba(255,255,255,.4);
+  z-index: 15; pointer-events: none; text-align: center; max-width: 92vw; white-space: nowrap;
+}
+@media (orientation: portrait) { body.touch #rotate-hint { display: block; } }
+
+/* En táctil el HUD se reparte para no tapar los controles */
+body.touch #hud-bottom-left { top: 12px; left: 14px; bottom: auto; width: 190px; }
+body.touch #health-bar-wrap { height: 15px; }
+body.touch #hud-bottom-right { top: 78px; right: 16px; bottom: auto; }
+body.touch #ammo { font-size: 30px; }
+body.touch #hud-top { top: 12px; font-size: 13px; padding: 5px 12px; }
+
+/* ---------- Responsive: pantallas pequeñas ---------- */
+@media (max-width: 760px), (max-height: 520px) {
+  #start-screen h1 { font-size: 42px; }
+  .death-title { font-size: 46px; }
+  .story { font-size: 15px; margin-top: 12px; }
+  .subtitle { font-size: 11px; }
+  #play-btn, #restart-btn { font-size: 18px; padding: 13px 42px; margin-top: 20px; min-height: 56px; min-width: 200px; }
+  .controls-box { font-size: 13px; margin-top: 18px; }
+  .sens-box { margin-top: 16px; font-size: 13px; }
+  .sens-box input[type="range"] { width: 130px; }
+  .fog-box { margin-top: 10px; font-size: 13px; }
+  .fog-btn { padding: 6px 10px; font-size: 12px; }
+  #hud-bottom-left { left: 14px; bottom: 14px; width: 180px; }
+  #hud-bottom-right { right: 14px; bottom: 14px; }
+  #ammo { font-size: 30px; }
+  #hud-top { top: 10px; font-size: 13px; padding: 5px 12px; }
+  #death-screen p { font-size: 15px; }
+  #minimap { width: 112px; height: 112px; }
+}
