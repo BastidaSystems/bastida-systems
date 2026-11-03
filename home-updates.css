@@ -13,7 +13,7 @@
 .home-updates {
   min-width: 0;
   width: 100%;
-  max-width: 580px;
+  max-width: 680px;
   align-self: start;
   color: #f5f5f7;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -196,7 +196,7 @@ body.agency-page .home-update .home-update__icon[aria-expanded="true"] { border-
   .home-update__actions { gap: 8px; }
   body.agency-page .home-update .home-update__actions .home-update__primary { padding: 10px 14px; font-size: 14px; }
 }
-@media (max-width: 900px) { .home-updates { max-width: 580px; justify-self: center; } }
+@media (max-width: 900px) { .home-updates { max-width: 680px; justify-self: center; } }
 @media (max-width: 480px) {
   .home-update__copy { padding: 18px; min-height: 232px; }
   .home-updates__controls p { max-width: 160px; line-height: 1.5; }

@@ -5997,7 +5997,7 @@ body.agency-page.premium-page .portfolio-hero h1 {
   z-index: 2;
   display: grid;
   min-height: 612px;
-  grid-template-columns: minmax(0, 0.96fr) minmax(430px, 1.04fr);
+  grid-template-columns: minmax(0, 0.84fr) minmax(430px, 1.16fr);
   gap: clamp(34px, 5vw, 74px);
   align-items: center;
   padding-bottom: clamp(54px, 7vw, 86px);
