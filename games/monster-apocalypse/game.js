@@ -1077,6 +1077,20 @@ async function loadHospital() {
 }
 buildMap();
 roadSystem.load();
+
+// Lava: las piezas molten-heart queman al pisarlas. Sin partículas (decisión de David).
+let lavaHazard=null;
+roadSystem.load().then(()=>import('./lava-hazard.js?v=20261103-lava2')).then(hazardModule=>{
+    const zones=hazardModule.lavaZonesFromRecords(roadSystem.state.records);
+    if(!zones.length)return;
+    lavaHazard=hazardModule.createLavaHazard({zones,onDamage(damage){
+      const now=performance.now()/1000;
+      if(S.mode!=='playing'||invasionIntro?.active||now<S.invulnUntil||!Number.isFinite(damage)||damage<=0)return false;
+      S.invulnUntil=now+INVULN_TIME;S.health=Math.max(0,S.health-damage);
+      flashDamage();sfx.hurt();updateHUD();if(S.health<=0)die();return true;
+    }});
+    window.__ma.lavaInfo=()=>lavaHazard?.info();
+  }).catch(error=>console.warn('Lava no disponible',error));
 sidewalkSystem.load();
 barricadeSystem.load();
 buildingSystem.load();
@@ -3514,6 +3528,7 @@ function animate() {
   storm.update(dt,invasionIntro?.active||waveAtmosphere.suppressStorm?'paused':S.mode);
   citySkyline.update(storm.strength);
   propSystem.update(dt, playerPos, S.mode);
+  lavaHazard?.update(dt,{mode:S.mode,playerPosition:playerPos,jumpY,blocked:!!invasionIntro?.active||document.hidden});
   ammoShopAcc += dt;
   if (ammoShopAcc >= .1 || ammoShopMode !== S.mode) {
     ammoShopAcc = 0; ammoShopMode = S.mode; updateAmmoShop();
