@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="application-version" content="1.2">
+<meta name="theme-color" content="#0a0806">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Monster Apocalypse">
+<meta name="description" content="Explora una ciudad apocalíptica en Monster Apocalypse.">
+<!-- Vercel convierte estas rutas en URLs absolutas antes de publicar. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Monster Apocalypse">
+<meta property="og:title" content="Monster Apocalypse">
+<meta property="og:description" content="Explora una ciudad apocalíptica en Monster Apocalypse.">
+<meta property="og:url" content="./">
+<meta property="og:image" content="assets/ui/portada-share.jpg">
+<meta property="og:image:secure_url" content="assets/ui/portada-share.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="675">
+<meta property="og:image:alt" content="Portada de Monster Apocalypse: Las Vegas durante el apocalipsis.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Monster Apocalypse">
+<meta name="twitter:description" content="Explora una ciudad apocalíptica en Monster Apocalypse.">
+<meta name="twitter:image" content="assets/ui/portada-share.jpg">
+<meta name="twitter:image:alt" content="Portada de Monster Apocalypse: Las Vegas durante el apocalipsis.">
+<link rel="icon" href="assets/app/icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/app/icon-180.png">
+<title>Monster Apocalypse — v1.2 + LAVA (prueba)</title>
+<link rel="stylesheet" href="style.css?v=20261103-unlimited1">
+</head>
+<body>
+  <canvas id="game-canvas"></canvas>
+
+  <!-- INICIAR NIVEL reproduce la intro con audio; SALTAR espera al mapa. -->
+  <section id="intro-screen" class="hidden" aria-label="Introducción de Monster Apocalypse">
+    <video id="intro-video" data-src="assets/videos/intro2.mp4?v=20261015-intro2"
+      playsinline webkit-playsinline preload="none"
+      disablepictureinpicture aria-label="Video de introducción"></video>
+    <div id="intro-actions">
+      <button id="intro-skip" type="button" disabled aria-busy="true">CARGANDO…</button>
+    </div>
+  </section>
+
+  <section id="loading-screen" class="hidden" aria-label="Cargando nivel 1: Las Vegas" aria-live="polite" aria-busy="true">
+    <img class="loading-art" src="assets/ui/portada.webp?v=20261015-cover1" width="1672" height="941" alt="" decoding="async">
+    <div class="loading-copy">
+      <span class="loading-level">NIVEL 1 · LAS VEGAS</span>
+      <h2>CARGANDO</h2>
+      <p id="loading-status">Preparando la ciudad… 0%</p>
+      <div class="loading-track"><div id="loading-bar"></div></div>
+    </div>
+  </section>
+
+  <!-- HUD -->
+  <div id="hud" class="hidden">
+    <div id="crosshair"><span></span><span></span><span></span><span></span></div>
+    <div id="hitmarker"></div>
+    <div id="damage-vignette"></div>
+
+    <div id="hud-bottom-left" class="hidden">
+      <label>VIDA</label>
+      <div id="health-bar-wrap"><div id="health-bar"></div></div>
+      <div id="health-text">100</div>
+    </div>
+
+    <div id="hud-bottom-right">
+      <div id="ammo"><span id="ammo-mag">30</span><span id="ammo-sep"> / </span><span id="ammo-reserve">120</span></div>
+      <div id="reload-msg" class="hidden">RECARGANDO…</div>
+      <div id="ammo-empty" class="hidden">SIN MUNICIÓN · Busca un bote</div>
+      <div id="weapon-name">RIFLE</div>
+    </div>
+
+    <div id="hud-top">
+      <div>BAJAS: <span id="kills">0</span></div>
+    </div>
+    <div id="score-display" aria-label="Score local no verificado">SCORE: <span id="score-value">0</span><small>LOCAL · NO VERIFICADO</small></div>
+    <div id="wave-display" role="group" aria-label="Oleada 1">
+      <strong><svg class="wave-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m4 7 8-4 8 4-8 4zM4 12l8 4 8-4M4 17l8 4 8-4"/></svg><span class="wave-label">OLEADA</span> <span id="wave-number">1</span></strong>
+      <p id="wave-survival-message">¡Sobrevive lo más que puedas en oleadas!</p>
+      <span id="wave-status"><span id="wave-phase" hidden></span></span>
+    </div>
+    <p id="strat-objective" aria-label="Objetivo: Dirígete a la Strat">Dirígete a la Strat</p>
+    <div id="ammo-shop" class="hidden">
+      <button id="btn-buy-ammo" type="button" aria-label="Comprar 30 balas por 100 puntos" aria-keyshortcuts="E" disabled><kbd class="ammo-shop-key" aria-hidden="true">E</kbd><span id="ammo-shop-label">BALAS · 100</span></button>
+      <p id="ammo-shop-status" role="status">Acércate a un bote</p>
+    </div>
+
+    <canvas aria-label="Minimapa 3D isométrico: jugador, enemigos y suministros" id="minimap" width="296" height="296"></canvas>
+    <div id="stamina-display" hidden role="progressbar" aria-label="Resistencia para correr" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" aria-valuetext="100%" title="Resistencia para correr: 100%" data-exhausted="false" data-low="false">
+      <svg viewBox="0 0 44 44" aria-hidden="true">
+        <circle class="stamina-track" cx="22" cy="22" r="19" />
+        <circle id="stamina-fill" cx="22" cy="22" r="19" pathLength="100" stroke-dasharray="100" stroke-dashoffset="0" />
+        <g class="stamina-runner"><circle cx="27" cy="10" r="2.4"/><path d="M23 16l-4 8 6 4 3 7 M22 18l-6-1-4 5 M23 17l5 4 5-1 M19 24l-3 7-6 1"/></g>
+      </svg>
+    </div>
+
+    <div id="rotate-hint">⟳ Gira tu celular para jugar en horizontal</div>
+
+    <!-- Controles táctiles (solo visibles/activos en dispositivos táctiles) -->
+    <div id="touch-ui">
+      <div id="look-zone"></div>
+      <div id="joystick"><div id="joystick-knob"></div></div>
+      <button id="btn-fullscreen" aria-label="Pantalla completa" aria-pressed="false" title="Pantalla completa">⛶</button>
+      <button id="btn-pause" aria-label="Pausar">⏸</button>
+      <button id="btn-map" aria-label="Ver el mapa">MAPA</button>
+      <button id="btn-reload" aria-label="Recargar">↻</button>
+      <button id="btn-jump" aria-label="Saltar">SALTAR</button>
+      <button id="btn-fire" aria-label="Disparar y arrastrar para apuntar">DISPARAR</button>
+    </div>
+  </div>
+
+  <section id="fullscreen-help" class="hidden" role="dialog" aria-modal="true" aria-labelledby="fullscreen-help-title">
+    <div><h2 id="fullscreen-help-title">JUGAR A PANTALLA COMPLETA</h2>
+      <p id="fullscreen-help-text"></p>
+      <button id="fullscreen-help-close" type="button">ENTENDIDO</button>
+    </div>
+  </section>
+
+  <!-- Un menú principal; el nivel seleccionado inicia la carga y su introducción. -->
+  <div id="start-screen" class="main-menu" data-menu-view="menu" aria-label="Menú principal de Monster Apocalypse">
+    <div id="menu-shell">
+      <header class="menu-header">
+        <div class="menu-brand"><span>MONSTER</span><h1>APOCALYPSE</h1></div>
+        <div class="menu-header-actions">
+          <span id="menu-version" class="menu-eyebrow" aria-label="Versión 1.2">v1.2 · LAVA TEST</span>
+        </div>
+      </header>
+      <div class="menu-layout">
+        <nav class="menu-nav" role="tablist" aria-label="Menú principal" aria-orientation="vertical">
+          <button id="tab-levels" role="tab" aria-controls="panel-levels" aria-selected="true" type="button" data-menu-tab="levels"><span>01</span>NIVELES</button>
+          <button id="tab-settings" role="tab" aria-controls="panel-settings" aria-selected="false" tabindex="-1" type="button" data-menu-tab="settings"><span>02</span>AJUSTES</button>
+          <button id="tab-characters" role="tab" aria-controls="panel-characters" aria-selected="false" tabindex="-1" type="button" data-menu-tab="characters"><span>03</span>PERSONAJES</button>
+          <button id="tab-credits" role="tab" aria-controls="panel-credits" aria-selected="false" tabindex="-1" type="button" data-menu-tab="credits"><span>04</span>CRÉDITOS</button>
+        </nav>
+        <main class="menu-content">
+          <section id="panel-levels" role="tabpanel" aria-labelledby="tab-levels" tabindex="0">
+            <p class="menu-eyebrow">LA CIUDAD HA CAÍDO</p>
+            <h2>ELIGE TU DESTINO</h2>
+            <article class="mission-card" aria-label="Nivel 1: Las Vegas">
+              <div class="mission-copy"><span class="menu-badge">NIVEL 01 · DISPONIBLE</span>
+                <h3>LAS VEGAS</h3><p>Las calles están tomadas. Entra a la ciudad y sobrevive a las oleadas.</p>
+                <p class="menu-note">Personaje: <strong id="level-character-name">Julián</strong></p>
+                <button id="level-play-btn" class="menu-primary" type="button" data-level-id="1">JUGAR NIVEL 1 ›</button>
+              </div>
+            </article>
+    <div id="menu-records" class="menu-records" aria-label="Récords de este navegador">
+      <span>MÁX. OLEADAS <strong id="best-waves">0</strong></span>
+      <span>ZOMBIES KILLS <strong id="best-kills">0</strong></span>
+      <span>SCORE LOCAL <strong id="best-score">0</strong><small>NO VERIFICADO · V1</small></span>
+    </div>
+    <p id="last-score-summary" class="hidden"></p>
+    <div class="score-sharing" data-score-sharing="record">
+      <button type="button" class="score-share-button" aria-label="Compartir mi récord" title="Compartir mi récord"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3m-4 4 4-4 4 4M7 10H5v11h14V10h-2"/></svg></button>
+      <p class="score-share-status" role="status" aria-live="polite"></p>
+    </div>
+    <p id="load-error" class="hidden" role="alert">No pudimos completar la carga. Inicia el nivel para volver a cargar.</p>
+            <p class="menu-note">Una ciudad. Oleadas cada vez más intensas. Tus récords se guardan en este navegador.</p>
+          </section>
+          <section id="panel-settings" class="hidden" role="tabpanel" aria-labelledby="tab-settings" tabindex="0">
+            <p class="menu-eyebrow">A TU MANERA</p><h2>AJUSTES</h2>
+            <div class="settings-card">
+                  <div class="sens-box">
+      <b>Sensibilidad</b>
+      <input id="sens-slider" type="range" min="0.5" max="2" step="0.1" value="1">
+      <span id="sens-value">1.0×</span>
+    </div>
+    <div class="fog-box">
+      <b>Niebla</b>
+      <div class="fog-btns">
+        <button class="fog-btn" data-level="normal">Normal</button>
+        <button class="fog-btn" data-level="densa">Densa</button>
+        <button class="fog-btn" data-level="extrema">Extrema</button>
+      </div>
+    </div>
+    <div id="menu-graphics-host"></div>
+    <details class="menu-controls"><summary>CONTROLES</summary>
+    <div class="controls-box kb-only">
+      <div><b>W A S D</b> Moverse</div>
+      <div><b>Shift</b> Correr (sprint)</div>
+      <div><b>Q</b> Esquiva lateral según el ataque</div>
+      <div><b>Space</b> Saltar</div>
+      <div><b>Mouse</b> Mirar / apuntar</div>
+      <div><b>Clic izquierdo</b> Disparar (mantener = automático)</div>
+      <div><b>Clic derecho</b> Mantener para apuntar por la mira</div>
+      <div><b>R</b> Recargar</div>
+      <div><b>E</b> Comprar munición junto a un bote</div>
+      <div><b>M</b> Mapa</div>
+      <div><b>Esc</b> Pausar</div>
+    </div>
+    <div class="controls-box touch-only">
+      <div><b>Palanca</b> Moverse; a fondo = correr</div>
+      <div><b>Arrastrar</b> Mirar por el lado derecho</div>
+      <div><b>DISPARAR</b> Mantener para disparar; arrastrar para apuntar</div>
+      <div><b>SALTAR</b> Saltar</div>
+      <div><b>↻</b> Recargar</div>
+      <div><b>COMPRAR</b> Munición junto a un bote</div>
+      <div><b>⏸</b> Pausar</div>
+      <div><b>MAPA</b> Ver el mapa</div>
+    </div>
+    </details>
+
+            </div>
+          </section>
+          <section id="panel-characters" class="hidden" role="tabpanel" aria-labelledby="tab-characters" tabindex="0">
+            <p class="menu-eyebrow">QUIÉN ENFRENTA EL APOCALIPSIS</p><h2>PERSONAJES</h2>
+            <div class="character-list">
+            <article class="character-card">
+              <div class="character-art"><img src="assets/ui/julian-menu.webp" width="600" height="760" alt="Julián, personaje jugable" loading="lazy"></div>
+              <div class="character-copy"><span class="menu-badge">PERSONAJE DISPONIBLE</span><h3>JULIÁN</h3>
+                <p>Listo para entrar a la ciudad. Su rifle es la primera línea de defensa.</p>
+                <button id="character-select-btn" data-character="julian" data-name="Julián" class="menu-primary" type="button" aria-pressed="true">✓ SELECCIONADO</button>
+              </div>
+            </article>
+            </div>
+            <p id="character-status" class="menu-note" role="status">Julián es tu personaje para esta partida.</p>
+          </section>
+          <section id="panel-credits" class="hidden" role="tabpanel" aria-labelledby="tab-credits" tabindex="0">
+            <p class="menu-eyebrow">DETRÁS DEL JUEGO</p><h2>CRÉDITOS</h2>
+            <div class="credits-card"><p class="credits-project">MONSTER APOCALYPSE</p><h3>Una dedicatoria especial</h3>
+                  <aside id="credits-dedication" lang="en" aria-label="Dedication">
+      <p class="dedication-intro">Dedicated to my brothers</p>
+      <p class="dedication-names">Rafael A. Bastida,<br>Rodrigo R. Bastida,<br>and Jorge R. Bastida.</p>
+      <p class="dedication-from">From your brother,<br><strong>David R. Bastida.</strong></p>
+      <p class="dedication-quote">There is no greater blessing than walking through this life together as brothers.</p>
+      <p class="dedication-thanks">Thank you, God!</p>
+    </aside>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- Única interfaz de pausa. No es otro menú principal ni un panel nativo. -->
+  <section id="pause-screen" class="hidden" inert aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="pause-title">
+    <div class="pause-shell">
+      <span class="menu-eyebrow">MONSTER APOCALYPSE</span><h1 id="pause-title">PAUSA</h1>
+      <button id="pause-continue" class="menu-primary" type="button">CONTINUAR</button>
+      <button id="pause-restart" class="menu-back" type="button">REINICIAR</button>
+      <details id="pause-graphics-host" class="graphics-disclosure"><summary>CONFIGURACIÓN · GRÁFICOS</summary></details>
+      <button id="pause-menu" class="menu-back" type="button">SALIR AL MENÚ</button>
+    </div>
+  </section>
+
+  <!-- Pantalla de muerte -->
+  <div id="death-screen" class="hidden">
+    <h1 class="death-title">MORISTE</h1>
+    <p>Los monstruos te alcanzaron.</p>
+    <p class="death-stats">Bajas: <span id="death-kills">0</span> &nbsp;·&nbsp; Tiempo: <span id="death-time">0:00</span></p>
+    <p class="death-score">SCORE <strong id="death-score">0</strong></p>
+    <p id="death-score-breakdown"></p>
+    <p class="score-verification">Local · No verificado · Reglas V1</p>
+    <div class="score-sharing" data-score-sharing="result">
+      <button type="button" class="score-share-button" aria-label="Compartir score" title="Compartir score"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3m-4 4 4-4 4 4M7 10H5v11h14V10h-2"/></svg></button>
+      <p class="score-share-status" role="status" aria-live="polite"></p>
+    </div>
+    <div class="death-actions">
+      <button id="restart-btn" type="button">↻ REINICIAR</button>
+      <button id="death-menu-btn" class="menu-back" type="button">IR AL MENÚ</button>
+      <button id="death-settings-btn" class="menu-back" type="button">CONFIGURACIÓN</button>
+    </div>
+  </div>
+
+  <!-- Mapa expandido (Etapa C1): lo descubierto, sin enemigos -->
+  <div id="map-overlay" class="hidden" role="dialog" aria-modal="true" aria-label="Mapa de Las Vegas" aria-hidden="true">
+    <div id="map-panel">
+      <div id="map-head"><span>MAPA</span><button id="map-close" aria-label="Cerrar mapa">✕</button></div>
+      <canvas id="bigmap"></canvas>
+      <p id="map-hint">M / Esc para cerrar · Lo no explorado permanece oculto</p>
+    </div>
+  </div>
+
+<div id="graphics-v3-staging" hidden><fieldset id="graphics-v3-panel" class="graphics-v3"><legend>VISTA Y GRÁFICOS</legend>
+<label>Vista de juego<select id="game-view-v3"><option value="third">Tercera persona</option><option value="tactical">Táctica 3D</option></select></label>
+<label>Calidad gráfica<select id="graphics-quality-v3"><option value="auto">Automática</option><option value="low">Baja</option><option value="medium">Media</option><option value="high">Alta</option><option value="ultra">Ultra</option></select></label>
+<output id="graphics-v3-metrics" aria-live="off">Las métricas aparecen durante la partida.</output>
+<p>La navegación circular / N cambia la vista. MAPA / M conserva el mapa ampliado. Automática ajusta resolución y efectos; las vistas son independientes.</p>
+</fieldset></div>
+<script type="importmap">
+{ "imports": {
+  "three": "./vendor/three/three.module.min.js",
+  "three/addons/loaders/GLTFLoader.js": "./asset-loader.js",
+  "three/addons/": "./vendor/three/addons/"
+} }
+</script>
+  <script src="main-menu.js?v=20261022-death-menu1" defer></script>
+  <script src="intro.js?v=20261017-ui-clean" defer></script>
+  <script type="module" src="score-share.js?v=20261020-share-fix3"></script>
+  <script type="module" src="game.js?v=20261103-music1"></script>
+</body>
+</html>
