@@ -136,6 +136,7 @@
           <button id="tab-settings" role="tab" aria-controls="panel-settings" aria-selected="false" tabindex="-1" type="button" data-menu-tab="settings"><span>02</span>AJUSTES</button>
           <button id="tab-characters" role="tab" aria-controls="panel-characters" aria-selected="false" tabindex="-1" type="button" data-menu-tab="characters"><span>03</span>PERSONAJES</button>
           <button id="tab-credits" role="tab" aria-controls="panel-credits" aria-selected="false" tabindex="-1" type="button" data-menu-tab="credits"><span>04</span>CRÉDITOS</button>
+          <button id="tab-online" role="tab" aria-controls="panel-online" aria-selected="false" tabindex="-1" type="button" data-menu-tab="online"><span>05</span>MULTIPLAYER</button>
         </nav>
         <main class="menu-content">
           <section id="panel-levels" role="tabpanel" aria-labelledby="tab-levels" tabindex="0">
@@ -146,27 +147,6 @@
                 <h3>LAS VEGAS</h3><p>Las calles están tomadas. Entra a la ciudad y sobrevive a las oleadas.</p>
                 <p class="menu-note">Personaje: <strong id="level-character-name">Julián</strong></p>
                 <button id="level-play-btn" class="menu-primary" type="button" data-level-id="1">JUGAR NIVEL 1 ›</button>
-              </div>
-            </article>
-            <article class="mission-card" aria-label="Modo en línea (prueba)">
-              <div class="mission-copy"><span class="menu-badge">EN LÍNEA · PRUEBA</span>
-                <h3>COOPERATIVO — 2 JUGADORES</h3>
-                <p>Uno crea la sala y el otro entra con el código. El anfitrión lleva la partida: sus monstruos se ven en las dos pantallas. Por ahora, el mismo personaje para los dos: Julián.</p>
-                <style>
-                  #net-join-row{display:flex;gap:8px;margin-top:8px}
-                  #net-code-input{flex:1;min-width:0;background:#141414;border:1px solid #3a3a3a;color:#fff;border-radius:8px;padding:10px 12px;font:inherit;letter-spacing:3px;text-transform:uppercase}
-                  #net-code-display strong{letter-spacing:3px;font-size:1.25em}
-                  #net-hud{position:fixed;top:10px;right:12px;z-index:60;background:rgba(10,10,10,.72);color:#ffd23f;border:1px solid rgba(255,210,63,.35);border-radius:8px;padding:6px 10px;font-size:12px;pointer-events:none}
-                </style>
-                <div style="display:flex;gap:8px;flex-wrap:wrap">
-                  <button id="net-host-btn" class="menu-primary" type="button">CREAR SALA</button>
-                </div>
-                <div id="net-join-row">
-                  <input id="net-code-input" type="text" maxlength="4" placeholder="CÓDIGO" autocomplete="off" aria-label="Código de sala">
-                  <button id="net-join-btn" class="menu-primary" type="button">UNIRSE</button>
-                </div>
-                <p id="net-code-display" class="menu-note hidden">Código de sala: <strong id="net-code-value"></strong> — pásalo al otro jugador; cuando se conecte, pulsa JUGAR NIVEL 1.</p>
-                <p id="net-status" class="menu-note" role="status">En línea: sin conexión.</p>
               </div>
             </article>
     <div id="menu-records" class="menu-records" aria-label="Récords de este navegador">
@@ -252,6 +232,29 @@
     </aside>
             </div>
           </section>
+          <section id="panel-online" class="hidden" role="tabpanel" aria-labelledby="tab-online" tabindex="0">
+            <p class="menu-eyebrow">EN LÍNEA · PRUEBA</p><h2>MULTIPLAYER</h2>
+            <div class="settings-card">
+              <p>Cooperativo para 2 jugadores. Uno crea la sala y el otro entra con el código. El anfitrión lleva la partida: sus monstruos se ven en las dos pantallas. Por ahora, el mismo personaje para los dos: Julián.</p>
+              <style>
+                #net-join-row{display:flex;gap:8px;margin-top:8px}
+                #net-code-input{flex:1;min-width:0;background:#141414;border:1px solid #3a3a3a;color:#fff;border-radius:8px;padding:10px 12px;font:inherit;letter-spacing:3px;text-transform:uppercase}
+                #net-code-display strong{letter-spacing:3px;font-size:1.25em}
+                #net-hud{position:fixed;top:10px;right:12px;z-index:60;background:rgba(10,10,10,.72);color:#ffd23f;border:1px solid rgba(255,210,63,.35);border-radius:8px;padding:6px 10px;font-size:12px;pointer-events:none}
+                #net-play-btn{margin-top:10px}
+              </style>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button id="net-host-btn" class="menu-primary" type="button">CREAR SALA</button>
+              </div>
+              <div id="net-join-row">
+                <input id="net-code-input" type="text" maxlength="4" placeholder="CÓDIGO" autocomplete="off" aria-label="Código de sala">
+                <button id="net-join-btn" class="menu-primary" type="button">UNIRSE</button>
+              </div>
+              <p id="net-code-display" class="menu-note hidden">Código de sala: <strong id="net-code-value"></strong> — pásalo al otro jugador; cuando se conecte, pulsa JUGAR NIVEL 1 aquí abajo.</p>
+              <p id="net-status" class="menu-note" role="status">En línea: sin conexión.</p>
+              <button id="net-play-btn" class="menu-primary hidden" type="button">JUGAR NIVEL 1 ›</button>
+            </div>
+          </section>
         </main>
       </div>
     </div>
@@ -313,6 +316,6 @@
   <script src="intro.js?v=20261017-ui-clean" defer></script>
   <script type="module" src="score-share.js?v=20261020-share-fix3"></script>
   <script type="module" src="game.js?v=20261103-online1"></script>
-<script type="module" src="netplay.js?v=20261103-online1"></script>
+<script type="module" src="netplay.js?v=20261104-online2"></script>
 </body>
 </html>

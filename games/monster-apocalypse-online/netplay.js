@@ -153,8 +153,10 @@ function wireConnection(c) {
   conn.on('open', async () => {
     await ensureRemotePlayer();
     startSendLoop();
-    if (role === 'host') setStatus('Invitado conectado. Pulsa JUGAR NIVEL 1 para empezar los dos.');
-    else setStatus('Conectado a la sala. Esperando a que el anfitrión inicie el nivel…');
+    if (role === 'host') {
+      setStatus('Invitado conectado. Pulsa JUGAR NIVEL 1 para empezar los dos.');
+      $('net-play-btn')?.classList.remove('hidden');
+    } else setStatus('Conectado a la sala. Esperando a que el anfitrión inicie el nivel…');
   });
   conn.on('data', data => {
     if (!data || typeof data !== 'object') return;
@@ -234,6 +236,9 @@ requestAnimationFrame(netLoop);
 // ---------- UI ----------
 $('net-host-btn')?.addEventListener('click', () => void hostRoom());
 $('net-join-btn')?.addEventListener('click', () => void joinRoom());
+// El anfitrión inicia la partida desde la pantalla Multiplayer: equivale al
+// botón JUGAR NIVEL 1 de la pantalla de niveles.
+$('net-play-btn')?.addEventListener('click', () => document.getElementById('level-play-btn')?.click());
 
 // Diagnóstico (consola/pruebas): estado de la conexión y de la sincronización.
 window.__maNetDebug = () => ({
