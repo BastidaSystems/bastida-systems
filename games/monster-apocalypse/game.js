@@ -3146,7 +3146,7 @@ function startInput() {
 function showLoadingProgress(percent){
   window.__maIntro?.setProgress(percent);
   el('loading-bar').style.width=percent+'%';
-  el('loading-status').textContent=percent===100?'LISTO':'Preparando la ciudad… '+percent+'%';
+  el('loading-status').textContent=percent===100?'LISTO':'Preparando la ciudad…';
 }
 const loadingGate=createLoadingGate({
   getError:()=>alienLabError||explosiveLab.state.error||[roadSystem,sidewalkSystem,lampPostSystem,propSystem,thirdPerson,barricadeSystem].find(system=>!system.state.ready&&system.state.error)?.state.error || damageOverlay.info().errors[0],
@@ -3610,7 +3610,7 @@ function animate() {
     if(propSystem.state.ready) floatingSystem.update(dt,playerPos,{autoSpawn:false});
 
     // Spawner
-    if(ENEMIES_ENABLED)waveSystem.update(dt);
+    if(ENEMIES_ENABLED&&!window.__maNetGuest)waveSystem.update(dt);
     waveHudClock+=dt;if(waveHudClock>=.2){waveHudClock=0;updateWaveHUD();}
 
     // Monstruos: máquina de estados IDLE → CHASE → ATTACK, con HURT,
@@ -3923,3 +3923,14 @@ resizeGameViewport();
 
 // PLAY may have started the intro while this module was still downloading.
 if(window.__maIntro&&window.__maIntro.phase!=='pending')void startSession();
+
+// Online Etapa 1 (cooperativo): adaptador mínimo para netplay.js. El invitado
+// no genera oleadas propias (ver el guard de waveSystem.update en animate);
+// el anfitrión expone su estado y el de sus monstruos para transmitirlos.
+let __netMonsterSeq=0;
+window.__maNetAdapter={
+  scene,camera,THREE,
+  localState(){return {p:[playerPos.x,playerPos.y,playerPos.z],yaw,pitch,hp:S.health,mode:S.mode};},
+  monsters(){const out=[];for(const m of monsters){if(!m.g)continue;m.__nid??=++__netMonsterSeq;out.push({id:m.__nid,x:m.g.position.x,y:m.g.position.y,z:m.g.position.z,hp:Math.max(0,Math.ceil(m.hp||0))});}return out;},
+  setGuest(v){window.__maNetGuest=!!v;},
+};

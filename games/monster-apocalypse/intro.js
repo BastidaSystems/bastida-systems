@@ -16,7 +16,7 @@
     video.pause();video.removeAttribute('src');video.load();resolveFinished();
   }
   function setProgress(value){
-    if(!ready)skip.textContent='CARGANDO '+Math.max(0,Math.min(99,Math.round(value)))+'%';
+    if(!ready)skip.textContent='CARGANDO…';
   }
   function setReady(){
     ready=true;skip.disabled=false;skip.textContent='SALTAR ›';skip.removeAttribute('aria-busy');
@@ -36,7 +36,7 @@
     if(phase==='playing'||menu.dataset.menuView!=='menu'||menu.classList.contains('hidden')||play.dataset.levelId!=='1'||document.getElementById('tab-levels').getAttribute('aria-selected')!=='true')return;
     event.preventDefault();event.stopImmediatePropagation();
     resetCompletion();ready=false;failed=false;
-    skip.disabled=true;skip.setAttribute('aria-busy','true');skip.textContent='CARGANDO 0%';
+    skip.disabled=true;skip.setAttribute('aria-busy','true');skip.textContent='CARGANDO…';
     phase='playing';
     document.body.classList.add('intro-playing');screen.classList.remove('hidden');
     document.addEventListener('keydown',onKey,true);document.addEventListener('keyup',onKey,true);
