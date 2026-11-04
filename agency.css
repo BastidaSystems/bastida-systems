@@ -9595,3 +9595,31 @@ select.form-field {
   letter-spacing: 0.04em;
   line-height: 1.7;
 }
+
+/* Home — AI agents section (2026-11-04) */
+.home-ai__intro {
+  margin: 18px auto 0;
+  max-width: 780px;
+  color: rgba(7, 17, 13, 0.72);
+  font-size: clamp(1rem, 1.5vw, 1.12rem);
+  line-height: 1.62;
+}
+
+.home-ai__points {
+  margin: 16px 0 0;
+  color: var(--bs-green-dark);
+  font-size: 0.92rem;
+  font-weight: 750;
+  letter-spacing: 0.01em;
+}
+
+.home-ai__grid {
+  margin-top: 36px;
+  text-align: left;
+}
+
+.home-ai-card__icon svg {
+  display: block;
+  width: 22px;
+  height: 22px;
+}
