@@ -3146,7 +3146,7 @@ function startInput() {
 function showLoadingProgress(percent){
   window.__maIntro?.setProgress(percent);
   el('loading-bar').style.width=percent+'%';
-  el('loading-status').textContent=percent===100?'LISTO':'Preparando la ciudad… '+percent+'%';
+  el('loading-status').textContent=percent===100?'LISTO':'Preparando la ciudad…';
 }
 const loadingGate=createLoadingGate({
   getError:()=>alienLabError||explosiveLab.state.error||[roadSystem,sidewalkSystem,lampPostSystem,propSystem,thirdPerson,barricadeSystem].find(system=>!system.state.ready&&system.state.error)?.state.error || damageOverlay.info().errors[0],
