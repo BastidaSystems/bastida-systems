@@ -9585,3 +9585,13 @@ select.form-field {
 .home-redesign-page #site-header .bs-brand-name {
   font-weight: 300;
 }
+
+/* Línea de stack bajo los botones del hero (2026-11-03) */
+.home-hero-stack {
+  margin: 22px 0 0;
+  color: rgba(242, 246, 244, 0.5);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  line-height: 1.7;
+}
