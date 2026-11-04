@@ -372,11 +372,12 @@ img {
   border-radius: 8px;
   background: #fff;
   box-shadow: var(--shadow);
+  aspect-ratio: 16 / 9;
 }
 
 .hero-screen img {
   width: 100%;
-  aspect-ratio: 16 / 9;
+  height: 100%;
   object-fit: cover;
   object-position: left top;
 }
@@ -675,9 +676,13 @@ img {
   box-shadow: 0 24px 56px rgba(15, 23, 42, 0.1);
 }
 
+.feature-media {
+  aspect-ratio: 16 / 10;
+}
+
 .feature-media img {
   width: 100%;
-  aspect-ratio: 16 / 10;
+  height: 100%;
   object-fit: cover;
   object-position: left top;
 }
