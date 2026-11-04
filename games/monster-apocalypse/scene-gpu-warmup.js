@@ -5,8 +5,11 @@ import {Vector4} from 'three';
 export function createSceneGpuWarmup({renderer,scene,camera}) {
   const state={ready:false,meshes:0,textures:0,draws:0,durationMs:0};
   let loading;
-  const nextFrame=()=>new Promise(resolve=>requestAnimationFrame(resolve));
+  const nextFrame=()=>new Promise(resolve=>{let done=false;const fire=()=>{if(!done){done=true;resolve();}};requestAnimationFrame(fire);setTimeout(fire,100);});
   async function waitForGpu(){
+    // Best-effort sync only: the warmup pre-uploads textures to avoid hitches,
+    // but a slow GPU must never fail the session — whatever is not uploaded yet
+    // is uploaded lazily by three.js on first draw.
     const gl=renderer.getContext();
     if(!gl.fenceSync){gl.finish();return;}
     const fence=gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE,0);gl.flush();
@@ -15,10 +18,11 @@ export function createSceneGpuWarmup({renderer,scene,camera}) {
       while(true){
         const status=gl.clientWaitSync(fence,0,0);
         if(status===gl.ALREADY_SIGNALED||status===gl.CONDITION_SATISFIED)return;
-        if(status===gl.WAIT_FAILED||gl.isContextLost()||performance.now()-started>60000)throw Error('No terminó la preparación de gráficos');
+        if(status===gl.WAIT_FAILED||gl.isContextLost()||performance.now()-started>120000)return;
         await nextFrame();
       }
-    }finally{gl.deleteSync(fence);}
+    }catch{/* warmup is optional; continue without the fence sync */}
+    finally{gl.deleteSync(fence);}
   }
   function warm({extraObjects=[],extraWarmup=()=>{}}={}){
     if(loading)return loading;
