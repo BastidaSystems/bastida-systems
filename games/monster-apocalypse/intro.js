@@ -33,7 +33,7 @@
     }
   }
   function start(event){
-    if(phase==='playing'||menu.dataset.menuView!=='menu'||menu.classList.contains('hidden')||play.dataset.levelId!=='1'||document.getElementById('tab-levels').getAttribute('aria-selected')!=='true')return;
+    if(phase==='playing'||menu.dataset.menuView!=='menu'||menu.classList.contains('hidden')||play.dataset.levelId!=='1'||!(document.getElementById('tab-levels').getAttribute('aria-selected')==='true'||document.getElementById('tab-online')?.getAttribute('aria-selected')==='true'))return;
     event.preventDefault();event.stopImmediatePropagation();
     resetCompletion();ready=false;failed=false;
     skip.disabled=true;skip.setAttribute('aria-busy','true');skip.textContent='CARGANDO…';
