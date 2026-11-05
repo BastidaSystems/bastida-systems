@@ -7,7 +7,8 @@
   function update() {
     let visible = 0;
     cards.forEach(card => {
-      card.hidden = active !== 'all' && card.dataset.category !== active;
+      const categories = (card.dataset.category || '').split(/\s+/);
+      card.hidden = active !== 'all' && !categories.includes(active);
       if (!card.hidden) visible++;
     });
     filters.querySelectorAll('button').forEach(button => {
