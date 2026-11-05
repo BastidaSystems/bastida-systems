@@ -88,3 +88,6 @@
 .bl-guide-compact .bl-guide__help{padding:18px 20px}
 .bl-guide-compact .bl-guide__help p{margin:6px 0 0}
 .bl-guide-compact .bl-guide__finish{padding:30px 16px 8px}
+
+/* Uniform step images 2026-11-04: same frame for every step */
+.bl-step-card__img{display:block;width:100%;max-width:210px;aspect-ratio:4/3;object-fit:cover;border-radius:12px;border:1px solid #45423c;background:#111}
