@@ -43,3 +43,13 @@
 .bl-guide-crop img{position:absolute;max-width:none;width:var(--shot-width);left:var(--shot-left);top:var(--shot-top);height:auto}
 .bl-guide__steps p.bl-guide-caption{font-size:12px;line-height:1.7;color:#c6bda9}
 @media(max-width:700px){.bl-guide-crop{max-width:190px}}
+
+.bl-guide-crop{display:block}
+.bl-guide-expand summary{list-style:none;cursor:zoom-in;color:var(--bl-gold);font-size:12px;text-align:center;line-height:1.8}
+.bl-guide-expand summary::-webkit-details-marker{display:none}
+.bl-guide-expand summary:focus-visible{outline:2px solid var(--bl-gold);outline-offset:5px}
+.bl-guide-expand-open,.bl-guide-expand-close{display:block;margin-top:10px}
+.bl-guide-expand-close,.bl-guide-expand[open] .bl-guide-preview-small,.bl-guide-expand[open] .bl-guide-expand-open{display:none}
+.bl-guide-expand[open] .bl-guide-expand-close{display:block}
+.bl-guide-expand[open] summary{cursor:zoom-out}
+.bl-guide-expand[open]>.bl-guide-crop{max-width:100%}
