@@ -1540,3 +1540,8 @@ img {
     animation: none !important;
   }
 }
+
+/* 2026-11-05: fuera la plataforma gris (.hero-visual::after de agency.css) — quedaba encima del dashboard en web y en teléfono. Solo Beoflow. */
+.beoflow-page .hero-visual::after {
+  display: none;
+}
