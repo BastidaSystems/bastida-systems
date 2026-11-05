@@ -50,3 +50,11 @@ body.projects-page .projects-contact a { color: #0066cc; font-size: 16px; text-d
 .projects-page .project-card, .projects-page .project-card:hover { border: 0; border-radius: 0; background: transparent; box-shadow: none; transform: none; overflow: visible; }
 body.projects-page .project-media img { min-height: 0; max-height: 100%; object-position: center; }
 @media (prefers-reduced-motion: reduce) { body.projects-page .project-card .project-media img { transition: none; transform: none; } }
+
+/* Hover descriptions 2026-11-04: dark overlay with white text */
+.project-media{position:relative}
+.project-overlay{position:absolute;inset:0;background:rgba(10,10,10,.93);color:#fff;display:flex;align-items:center;padding:22px;opacity:0;transition:opacity .25s ease;pointer-events:none}
+.project-overlay p{margin:0;font-size:15.5px;line-height:1.55;font-weight:500}
+@media (hover:hover) and (pointer:fine){
+  .project-card:hover .project-overlay,.project-card:focus-within .project-overlay{opacity:1}
+}
