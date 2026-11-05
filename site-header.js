@@ -23,6 +23,7 @@
 
       <nav class="bs-nav site-menu-links" id="bs-primary-nav" aria-label="Primary navigation">
         <a href="index.html" data-nav-page="index.html" data-i18n="nav.home">Home</a>
+        <a href="work.html" data-nav-page="work.html" data-i18n="nav.work">Work</a>
       </nav>
 
       <label class="language-picker">
