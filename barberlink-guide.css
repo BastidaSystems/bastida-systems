@@ -53,3 +53,38 @@
 .bl-guide-expand[open] .bl-guide-expand-close{display:block}
 .bl-guide-expand[open] summary{cursor:zoom-out}
 .bl-guide-expand[open]>.bl-guide-crop{max-width:100%}
+
+/* Compact redesign 2026-11-04: same content, half the scroll */
+.bl-guide-compact .bl-guide__main{padding-top:20px}
+.bl-guide-compact .bl-guide__intro{padding-block:20px 24px}
+.bl-guide-compact .bl-guide__intro h1{font-size:clamp(30px,6.4vw,42px);line-height:1.08}
+.bl-guide-compact .bl-guide__intro p{max-width:56ch}
+.bl-guide-compact .bl-guide__prep{padding:18px 20px;margin-top:6px}
+.bl-guide-compact .bl-guide__prep ul{display:grid;gap:6px 22px;margin-top:8px}
+@media(min-width:720px){.bl-guide-compact .bl-guide__prep ul{grid-template-columns:1fr 1fr}}
+.bl-guide-compact .bl-guide__entry,.bl-guide-compact .bl-guide__setup{padding-top:30px}
+.bl-moves{display:grid;gap:14px;margin-top:16px}
+@media(min-width:720px){.bl-moves{grid-template-columns:1fr 1fr}}
+.bl-move{display:flex;gap:14px;align-items:flex-start;padding:16px 18px;border:1px solid var(--bl-line);border-radius:14px;background:#191817}
+.bl-move__text{flex:1;min-width:0}
+.bl-move__text h3{margin:4px 0 6px}
+.bl-move__text p{margin:0}
+.bl-move figure{margin:0;flex:0 0 76px}
+.bl-move .bl-screen__image{width:76px}
+.bl-move figcaption{margin-top:6px;font-size:12px;line-height:1.35}
+.bl-guide-compact .bl-guide__image-note{margin-top:10px}
+.bl-steps-grid{list-style:none;padding:0;margin:18px 0 26px;display:grid;gap:12px}
+@media(min-width:720px){.bl-steps-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(min-width:1024px){.bl-steps-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.bl-step-card{padding:16px 18px;border:1px solid var(--bl-line);border-radius:14px;background:#191817}
+.bl-step-card__head{display:flex;align-items:baseline;gap:10px}
+.bl-step-card__n{font-size:12px;font-weight:700;letter-spacing:.12em;color:var(--bl-gold,#d9b98a)}
+.bl-step-card h3{margin:0;font-size:18px}
+.bl-step-card p{margin:8px 0 0}
+.bl-step-card__shot{display:block;margin-top:12px;text-decoration:none}
+.bl-step-card__shot .bl-guide-crop{max-width:150px;margin:0!important}
+.bl-step-card__view{display:inline-block;margin-top:8px;font-size:13px}
+.bl-step-card__note{font-size:13px;opacity:.85}
+.bl-guide-compact .bl-guide__help{padding:18px 20px}
+.bl-guide-compact .bl-guide__help p{margin:6px 0 0}
+.bl-guide-compact .bl-guide__finish{padding:30px 16px 8px}
