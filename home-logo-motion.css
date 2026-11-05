@@ -1,5 +1,5 @@
 /* Match the encoded video background, including the static poster. */
-.home-redesign-page .home-ai { --home-soft: #f3f5f5; background: #f3f5f5; isolation: isolate; }
+.home-redesign-page .home-ai { --home-soft: #f4f6f6; background: #f4f6f6; isolation: isolate; }
 /* Brand motion beside the AI agents introduction. */
 .home-redesign-page .home-ai__layout {
   display: grid;
@@ -36,9 +36,8 @@
   aspect-ratio: 1;
   object-fit: contain;
   background: transparent;
-  /* Normalize the near-white video plate to white, then blend it away. */
-  filter: brightness(1.06);
-  mix-blend-mode: multiply;
+  /* The section background matches the encoded video plate (#f4f6f6) exactly,
+     so no blend or filter is needed and no square shows in any browser. */
   border: 0;
   box-shadow: none;
 }
