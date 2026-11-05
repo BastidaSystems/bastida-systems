@@ -37,3 +37,9 @@
 .bl-guide__finish .bl-guide__back{display:block;margin-top:22px}
 @media(max-width:700px){.bl-guide__main{padding-top:22px}.bl-guide__intro{padding-block:30px}.bl-guide__intro h1{font-size:38px;letter-spacing:-1.3px}.bl-guide__intro>p:not(.bl-eyebrow){font-size:15px}.bl-guide__prep,.bl-guide__help{padding:24px 20px}.bl-guide__prep ul{grid-template-columns:minmax(0,1fr);font-size:13px;gap:12px}.bl-guide__entry,.bl-guide__setup{padding-top:40px}.bl-guide h2{font-size:26px}.bl-guide__prep h2,.bl-guide__help h2{font-size:20px}.bl-guide__row{grid-template-columns:minmax(0,1fr) 112px;gap:18px;padding-block:26px}.bl-guide__row h3{font-size:20px}.bl-guide__row p{font-size:13px;line-height:1.75}.bl-guide__row .bl-screen__image{max-width:104px}.bl-guide__row figcaption{font-size:10px}.bl-guide__steps{grid-template-columns:minmax(0,1fr)}.bl-guide__steps li{padding:22px}.bl-guide__finish{padding-inline:0}.bl-guide__finish .bl-btn{max-width:100%;gap:10px}}
 @media(max-width:370px){.bl-guide__row{grid-template-columns:minmax(0,1fr)}.bl-guide__row figure{display:flex;align-items:center;gap:18px}.bl-guide__row .bl-screen__image{width:100px;flex:0 0 100px;margin:0}.bl-guide__row figcaption{text-align:left;max-width:140px}}
+
+/* Show only the relevant app fields; preserve the original screenshot pixels. */
+.bl-guide-crop{position:relative;overflow:hidden;width:100%;max-width:210px;margin:20px auto 0!important;border-radius:12px;border:1px solid #45423c}
+.bl-guide-crop img{position:absolute;max-width:none;width:var(--shot-width);left:var(--shot-left);top:var(--shot-top);height:auto}
+.bl-guide__steps p.bl-guide-caption{font-size:12px;line-height:1.7;color:#c6bda9}
+@media(max-width:700px){.bl-guide-crop{max-width:190px}}
