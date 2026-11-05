@@ -1,0 +1,4 @@
+# Keep the original media archive in Git without shipping it in the Pages site.
+# Public pages and scripts use the optimized web assets in IMG/ and assets/.
+exclude:
+  - "IMGS REALES"
